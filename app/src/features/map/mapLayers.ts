@@ -1,0 +1,159 @@
+// Eigene Kartenebenen (Orte, Fänge, Standort). Werden nach jedem Stilwechsel neu eingehängt.
+import type { GeoJSONSource, Map as MlMap, StyleSpecification } from 'maplibre-gl';
+import type { FeatureCollection } from 'geojson';
+import { ALL_MARKERS, markerDataUrl } from './markerIcons';
+
+export const LAYERS = {
+  places: 'fp-places',
+  catches: 'fp-catches',
+  clusters: 'fp-catch-clusters',
+  clusterCount: 'fp-catch-cluster-count',
+  meAccuracy: 'fp-me-accuracy',
+  me: 'fp-me',
+} as const;
+export const INTERACTIVE_LAYERS = [LAYERS.places, LAYERS.catches, LAYERS.clusters];
+
+const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] };
+
+/** Schlichter Ersatzstil ohne Netz: nur Hintergrund, damit eigene Markierungen sichtbar bleiben. */
+export function fallbackStyle(theme: 'light' | 'dark'): StyleSpecification {
+  return {
+    version: 8,
+    name: 'fangpunkt-offline',
+    sources: {},
+    layers: [
+      {
+        id: 'background',
+        type: 'background',
+        paint: { 'background-color': theme === 'dark' ? '#173139' : '#e3ebec' },
+      },
+    ],
+  };
+}
+
+// Symbole einmal rastern (72 px, Pixelverhältnis 2 → 36 CSS-Pixel), dann bei jedem Stil wiederverwenden.
+let iconCache: Promise<Map<string, ImageData>> | undefined;
+function rasterIcons(): Promise<Map<string, ImageData>> {
+  iconCache ??= Promise.all(
+    ALL_MARKERS.map(
+      (kind) =>
+        new Promise<[string, ImageData]>((resolve, reject) => {
+          const img = new Image(72, 72);
+          img.onload = () => {
+            const c = document.createElement('canvas');
+            c.width = c.height = 72;
+            const ctx = c.getContext('2d');
+            if (!ctx) return reject(new Error('Canvas nicht verfügbar'));
+            ctx.drawImage(img, 0, 0, 72, 72);
+            resolve([kind, ctx.getImageData(0, 0, 72, 72)]);
+          };
+          img.onerror = () => reject(new Error(`Symbol ${kind} nicht ladbar`));
+          img.src = markerDataUrl(kind);
+        }),
+    ),
+  ).then((entries) => new Map(entries));
+  return iconCache;
+}
+
+export interface OverlayData {
+  places: FeatureCollection;
+  catches: FeatureCollection;
+  me: FeatureCollection;
+}
+
+export async function addOverlays(map: MlMap, data: OverlayData, glyphFont: string[]) {
+  const icons = await rasterIcons();
+  for (const [kind, img] of icons) if (!map.hasImage(kind)) map.addImage(kind, img, { pixelRatio: 2 });
+
+  if (!map.getSource('fp-me')) map.addSource('fp-me', { type: 'geojson', data: data.me });
+  if (!map.getSource('fp-places')) map.addSource('fp-places', { type: 'geojson', data: data.places });
+  if (!map.getSource('fp-catches'))
+    map.addSource('fp-catches', {
+      type: 'geojson',
+      data: data.catches,
+      cluster: true,
+      clusterRadius: 44,
+      clusterMaxZoom: 15,
+    });
+
+  if (!map.getLayer(LAYERS.meAccuracy))
+    map.addLayer({
+      id: LAYERS.meAccuracy,
+      type: 'fill',
+      source: 'fp-me',
+      filter: ['==', ['geometry-type'], 'Polygon'],
+      paint: { 'fill-color': '#2F7FE0', 'fill-opacity': 0.14, 'fill-outline-color': '#2F7FE0' },
+    });
+  if (!map.getLayer(LAYERS.clusters))
+    map.addLayer({
+      id: LAYERS.clusters,
+      type: 'circle',
+      source: 'fp-catches',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': '#D9731F',
+        'circle-opacity': 0.92,
+        'circle-radius': ['step', ['get', 'point_count'], 16, 10, 20, 50, 25],
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-width': 2.5,
+      },
+    });
+  // Beschriftung nur, wenn der Stil Schriften anbietet (der Offline-Ersatzstil tut das nicht)
+  if (!map.getLayer(LAYERS.clusterCount) && map.getStyle().glyphs)
+    map.addLayer({
+      id: LAYERS.clusterCount,
+      type: 'symbol',
+      source: 'fp-catches',
+      filter: ['has', 'point_count'],
+      layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': glyphFont, 'text-size': 13 },
+      paint: { 'text-color': '#ffffff' },
+    });
+  if (!map.getLayer(LAYERS.catches))
+    map.addLayer({
+      id: LAYERS.catches,
+      type: 'symbol',
+      source: 'fp-catches',
+      filter: ['!', ['has', 'point_count']],
+      layout: {
+        'icon-image': ['get', 'kind'],
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'symbol-sort-key': ['get', 'sort'],
+      },
+    });
+  if (!map.getLayer(LAYERS.places))
+    map.addLayer({
+      id: LAYERS.places,
+      type: 'symbol',
+      source: 'fp-places',
+      layout: {
+        'icon-image': ['get', 'kind'],
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'icon-anchor': ['match', ['get', 'kind'], 'place-spot', 'bottom', 'center'],
+      },
+    });
+  if (!map.getLayer(LAYERS.me))
+    map.addLayer({
+      id: LAYERS.me,
+      type: 'circle',
+      source: 'fp-me',
+      filter: ['==', ['geometry-type'], 'Point'],
+      paint: {
+        'circle-radius': 8,
+        'circle-color': '#2F7FE0',
+        'circle-stroke-color': '#ffffff',
+        'circle-stroke-width': 3,
+      },
+    });
+}
+
+export function setOverlayData(map: MlMap, data: Partial<OverlayData>) {
+  const set = (id: string, fc?: FeatureCollection) =>
+    fc && (map.getSource(id) as GeoJSONSource | undefined)?.setData(fc);
+  set('fp-places', data.places);
+  set('fp-catches', data.catches);
+  set('fp-me', data.me);
+}
+
+export { EMPTY };

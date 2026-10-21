@@ -30,6 +30,7 @@
 }
 .main {
   grid-area: main;
+  position: relative;
   overflow: auto;
   overscroll-behavior: contain;
   min-width: 0;

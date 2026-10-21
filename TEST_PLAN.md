@@ -141,6 +141,7 @@ Checkliste je Gerät: Installation, Intro, Standortfreigabe, Fang offline mit Fo
 | BAK-6 | `app/src/domain/backup/reminder.test.ts` | Schwellen und „Später" |
 | BAK-7 | `app/src/domain/backup/legacy.test.ts` | Feldabbildung der Alt-App |
 | E2E | `app/tests/e2e/*.spec.ts` | PWA-1…4/6, Navigation, axe, Theme, Sicherungs-Ablauf komplett, Persistenz nach Neustart |
+| Karte (M3) | `app/tests/e2e/map.spec.ts`, `app/src/features/map/*.test.ts` | MAP-1/2/3/5, MRK-1/2, Legende, Cluster, Theme-Stil; OpenFreeMap wird in Tests durch einen lokalen Stil ersetzt, Standort durch eine Attrappe |
 
 ## 6. Release-Abnahme 1.0 (Definition of Done)
 

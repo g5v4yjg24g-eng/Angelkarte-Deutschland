@@ -33,3 +33,22 @@ function safeStorage(): Storage | undefined {
     return undefined;
   }
 }
+
+/** Tatsächlich angezeigtes Theme (Systemeinstellung oder erzwungene Wahl). */
+export function effectiveTheme(root: HTMLElement = document.documentElement): 'light' | 'dark' {
+  const forced = root.dataset.theme;
+  if (forced === 'light' || forced === 'dark') return forced;
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+/** Meldet Änderungen des tatsächlichen Themes (System oder Einstellung). */
+export function subscribeTheme(cb: () => void): () => void {
+  const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
+  mq?.addEventListener('change', cb);
+  const mo = new MutationObserver(cb);
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  return () => {
+    mq?.removeEventListener('change', cb);
+    mo.disconnect();
+  };
+}
