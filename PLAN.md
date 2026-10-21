@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-21 · Status: **M2 abgeschlossen** · nächster Schritt M3 (Deutschlandkarte) nach Freigabe
+Stand: 2026-10-21 · Status: **M3 abgeschlossen** · nächster Schritt M4 (Gewässerbasis) nach Freigabe
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -158,12 +158,18 @@ Abhängig von: M1
 - *Abnahme (Ergebnisse):* 89 Unit-Tests, 28 E2E-Tests grün; Roundtrip identisch; 7 Arten kaputter/manipulierter Dateien abgelehnt ohne Datenänderung; Rollback bei Abbruch; 10 000 Einträge Export+Import < 10 s; Migration v1 → v2.
 - *Offen:* BAK-7 mit einem **echten** Export der Alt-Apps prüfen (bitte Datei bereitstellen). Fangbuch zeigt bis M5 nur die Anzahl gespeicherter Einträge.
 
-### M3 – Deutschlandkarte
+### M3 – Deutschlandkarte — ✅ erledigt 2026-10-21 (Branch `m3/karte`)
 Abhängig von: M1
-- MapLibre GL JS mit Basiskarte (E2), Attribution, Zoom, Kompass, Standort (Freigabe nur auf Knopfdruck, Fehlerzustände).
-- Tipp auf die Karte öffnet ein Bottom Sheet mit „Angelstelle / Steg / Fang / Kontakt / Sonstiges".
-- Darstellung eigener Markierungen (Symbolsystem, Clustering).
-- *Abnahme:* 60 fps beim Verschieben auf einem Mittelklasse-Android [A]; Standort wird nie ohne Nutzeraktion angefragt; Offline zeigt die Karte einen klaren Hinweis statt grauer Fläche.
+- ✅ MapLibre GL JS 6 (lazy geladen) mit OpenFreeMap über den Port `BasemapProvider`; Stil `positron` (hell) / `dark` (dunkel) folgt dem Theme; **deutsche Beschriftung** (`name:de` vor `name`).
+- ✅ Ohne Netz oder bei gestörtem Anbieter: schlichter Ersatzstil mit Hinweis; eigene Markierungen bleiben sichtbar und antippbar (MAP-5).
+- ✅ Tipp auf die Karte → Sheet „Neu an dieser Stelle": Angelstelle, Angelsteg, Parkplatz, Zugang, Gefahrenstelle, Sonstige Markierung. Fang/Kontakt sichtbar als „folgt mit M5".
+- ✅ Orte ansehen, bearbeiten (auch Art ändern), löschen mit „Rückgängig"; Fänge aus Sicherungen werden angezeigt und sind antippbar (Details, Bearbeiten ab M5).
+- ✅ Symbolsystem: Form = Ortsart, Kreis = Fangereignis, jeweils mit eigenem Zeichen; Fänge gruppiert (Cluster mit Zahl), Antippen zoomt hinein; Legende.
+- ✅ Standort erst nach Erklärung und Zustimmung, nur solange sichtbar, mit Genauigkeitskreis und verständlichen Fehlermeldungen (MAP-1/2).
+- ✅ Tipp-Logik: bei überlappenden Symbolen gewinnt das nächstgelegene.
+- *Abnahme (Ergebnisse):* 94 Unit-Tests, 42 E2E-Tests grün; Kartentests 4× wiederholt stabil (56/56). Start-Bundle 141 KB gzip, Karte 291 KB gzip nachgeladen; Kartenworker im Offline-Cache.
+- *Gefundene und behobene Fehler:* verspätetes `close`-Ereignis des Dialogs schloss ein direkt danach geöffnetes Sheet; Erinnerungsleiste verschob die Karte während der Bedienung.
+- *Offen:* 60 fps auf Mittelklasse-Android ist headless nicht messbar → Gerätetest S2b. Gewässer-Ebene folgt in M4.
 
 ### M4 – Gewässerbasis (Stufe 1) und Gewässerprofil
 Abhängig von: M3, Spike S1
@@ -272,4 +278,5 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 2. ~~M0~~ erledigt (Ergebnisse DATA_SOURCES §10); offen: S1b, S2b.
 3. ~~M1~~ erledigt.
 4. ~~M2~~ erledigt.
-5. **M3** (Deutschlandkarte mit OpenFreeMap, Standort, Tipp-Aktion, eigene Markierungen), nach deiner Freigabe.
+5. ~~M3~~ erledigt.
+6. **M4** (Gewässer-Pipeline Deutschland, Gewässer-Ebene, Suche, Gewässerprofil), nach deiner Freigabe.

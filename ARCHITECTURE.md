@@ -104,6 +104,13 @@ Abhängigkeitsregel: `features → domain/data/ports`; `domain` importiert **nic
 4. **Eigene Markierungen** (GeoJSON-Quelle aus Dexie, geclustert).
 5. **Standort** (Punkt + Genauigkeitskreis).
 
+### 5.1a Umsetzung (M3)
+- `app/src/features/map/MapView.tsx` (lazy), Ebenen in `mapLayers.ts`, Symbole in `markerIcons.ts` (SVG → Raster 72 px, Pixelverhältnis 2).
+- Eigene Ebenen werden nach jedem Stilwechsel (`style.load`) neu eingehängt; Daten kommen live aus Dexie.
+- Basiskarten-Beschriftung wird beim Laden auf `name:de` → `name` umgestellt (`germanLabels.ts`).
+- Ersatzstil `fangpunkt-offline` (nur Hintergrund) bei fehlendem Netz oder Stilfehler.
+- Testzugriff: `window.__fangpunktMap` (für E2E; enthält keine Nutzerdaten über die Karte hinaus).
+
 ### 5.2 Tipp-Ablauf
 ```
 Tipp auf Karte

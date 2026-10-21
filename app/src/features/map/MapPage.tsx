@@ -1,12 +1,20 @@
+import { lazy, Suspense } from 'react';
 import { de } from '../../i18n/de';
-import { EmptyState } from '../../design/components/EmptyState';
-import { MapIcon } from '../../design/icons';
+import { Notice } from '../../design/components/Notice';
 
-// Platzhalter bis M3 (Deutschlandkarte mit MapLibre).
+// MapLibre (~230 KB gzip) wird erst mit der Kartenansicht geladen (Bundle-Budget, TEST_PLAN §4).
+const MapView = lazy(() => import('./MapView'));
+
 export function MapPage() {
   return (
-    <EmptyState icon={<MapIcon size={32} />} title={de.map.emptyTitle} note={de.common.comingIn('M3')}>
-      {de.map.emptyText}
-    </EmptyState>
+    <Suspense
+      fallback={
+        <div style={{ padding: 'var(--space-4)' }}>
+          <Notice>{de.map.loading}</Notice>
+        </div>
+      }
+    >
+      <MapView />
+    </Suspense>
   );
 }

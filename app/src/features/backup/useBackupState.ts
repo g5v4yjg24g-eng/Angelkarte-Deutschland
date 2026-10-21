@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { getDb } from '../../data/db';
-import { changesSince } from '../../data/backupService';
+import { changesSince } from '../../data/changes';
 import { getSetting } from '../../data/settings';
 import { backupReminderDue } from '../../domain/backup/reminder';
 

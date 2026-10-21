@@ -12,7 +12,8 @@ export function BackupReminder() {
   const { pathname } = useLocation();
   if (!state?.reminderDue || pathname.startsWith('/mehr/daten')) return null;
   return (
-    <div className={styles.bar} role="status">
+    // Auf der Karte schwebend, damit sie die Karte nicht verschiebt, während man tippt
+    <div className={[styles.bar, pathname === '/' ? styles.floating : ''].join(' ')} role="status">
       <span>{de.backup.reminder(state.changes)}</span>
       <span className={styles.actions}>
         <button

@@ -2,6 +2,8 @@ import { act, render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import { routes } from './router';
+import { providers } from './providers';
+import { ProvidersProvider } from '../ports/providers';
 
 vi.mock('virtual:pwa-register/react', () => ({
   useRegisterSW: () => ({
@@ -12,7 +14,11 @@ vi.mock('virtual:pwa-register/react', () => ({
 }));
 
 function renderAt(path: string) {
-  return render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />);
+  return render(
+    <ProvidersProvider value={providers}>
+      <RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />
+    </ProvidersProvider>,
+  );
 }
 
 describe('AppShell', () => {
