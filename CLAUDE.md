@@ -4,7 +4,8 @@ Deutschlandweite Angel-App als PWA namens **„Fangpunkt"** (Arbeitsname, E5). N
 Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`, `DATA_MODEL.md`, `TEST_PLAN.md`. **Vor jeder größeren Änderung lesen.** Bei Abweichungen das Dokument im selben PR aktualisieren.
 
 ## Projektstatus
-- Phase: **Entscheidungen E1–E9 getroffen** (PLAN.md §6). Nächster Schritt M0 (Spikes), dann M1.
+- Phase: **M0 abgeschlossen** (Ergebnisse DATA_SOURCES.md §10). Nächster Schritt M1 nach Freigabe.
+- Gewässer-Pipeline: `tools/water-pipeline` (Doku dort). Kein Feature-`tippecanoe.minzoom` verwenden (Bug, siehe DATA_SOURCES §10.1); die Vollständigkeitsprüfung in `run.sh` nicht entfernen.
 - Rechtsinhalte zuerst nur für **NRW** (E7).
 - Altprojekte `g5v4yjg24g-eng/angelkarte` und `g5v4yjg24g-eng/angelkarte-hohendeicher-see` sind **nur Referenz**. Nie verändern, nie Code oder Daten 1:1 kopieren (insbesondere nicht `tiefen.js`/`zonen.js`, Lizenz ungeklärt).
 

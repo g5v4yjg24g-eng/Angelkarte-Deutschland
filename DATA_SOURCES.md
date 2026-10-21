@@ -45,7 +45,7 @@ Die App leitet **keine** höhere Stufe aus einer niedrigeren ab. Ein OSM-Tag `le
 
 **Lizenzfolge ODbL:** Das erzeugte Gewässer-Datenpaket ist eine abgeleitete Datenbank und muss unter ODbL angeboten werden (Download-Link auf der Quellenseite). Die kartografische Darstellung ist ein „Produced Work" mit Attribution. Private Nutzerdaten werden nicht veröffentlicht und sind nicht betroffen [A; O: bei späterem Teilen von Angelstellen erneut prüfen].
 
-**Spike S1 (M0) – zu messen:** Anzahl Objekte je Typ (Bremen → Hochrechnung DE), PMTiles-Größe z6–14, Suchindex-Größe, Laufzeit der Pipeline.
+**Spike S1 (M0) – durchgeführt am 2026-10-21 mit NRW statt Bremen**, Ergebnisse in §10.
 
 ---
 
@@ -165,8 +165,10 @@ Wetterwerte werden als **Modell- bzw. Stationswerte** gekennzeichnet („nicht a
 
 ## 9. Offene Prüfungen (Checkliste)
 
-- [ ] S1: Pipeline-Messung Bremen → Hochrechnung DE (M0)
-- [ ] S2: OpenFreeMap-Styles und Performance auf Geräten (M0)
+- [x] S1: Pipeline-Messung (NRW) → Hochrechnung DE, siehe §10.1
+- [ ] S1b: Hochrechnung durch einen vollen Deutschland-Lauf bestätigen (vor M4; braucht Zugriff auf `download.geofabrik.de`, siehe §10.3)
+- [x] S2: OpenFreeMap-Styles headless gemessen, siehe §10.2
+- [ ] S2b: Test auf echten Geräten (Checkliste `tools/map-spike/README.md`, durch dich)
 - [ ] Photon-Originalbedingungen (nur falls Fallback nötig)
 - [ ] Hosting-Konditionen Cloudflare R2 / Range-Support GitHub Pages (vor M4)
 - [ ] Metadatensatz M-V Tiefenkarten erneut abrufen; Vertragskonditionen anfragen (vor M9)
@@ -176,3 +178,64 @@ Wetterwerte werden als **Modell- bzw. Stationswerte** gekennzeichnet („nicht a
 - [x] ~~DWD-Lizenztext für Bright Sky~~ entfällt (E3 = nicht kommerziell)
 - [ ] Je Bundesland Portal-URL und aktuelle Fassung (M7/M8)
 - [ ] Markenrecherche App-Name (vor öffentlichem Release)
+
+---
+
+## 10. Messergebnisse M0 (2026-10-21)
+
+### 10.1 Spike S1 – Gewässer-Pipeline mit NRW
+
+Eingabe: `nordrhein_westfalen-latest.osm.pbf` von download.openstreetmap.fr, 1 110 678 265 Byte, MD5 geprüft, Datenstand 2026-10-21 [V]. Werkzeuge: osmium-tool 1.16.0, tippecanoe 2.49.0 [V]. Code: `tools/water-pipeline`.
+
+| Messgröße | NRW [V] | Hochrechnung Deutschland [A] |
+|---|---|---|
+| Laufzeit gesamt (Filtern → Kacheln → Prüfung) | 137 s | ca. 10–25 min |
+| Gewässerobjekte gesamt | 163 294 | ca. 0,7–1,7 Mio. |
+| davon Flächen | 63 134 | |
+| davon Linien (Flüsse, Kanäle, benannte Bäche) | 100 161 | |
+| Flächen ohne Namen | 60 354 (95,6 %) | |
+| Flächen ohne `water=*` (Typ unbekannt) | 30 414 (48 %) | |
+| Flächen < 0,1 ha | 44 327 (70 %) | |
+| Median Fläche | 0,04 ha | |
+| ausgeschlossen (Klärbecken, Rückhaltebecken u. a.) | 10 931 | |
+| Splitter-Geometrien < 1 m² / < 2 m (verworfen) | 309 | |
+| **`water.pmtiles` (z8–14)** | **20,9 MB** | **ca. 85–220 MB** |
+| größte Kachel z8 / z14 | 31 KB / 5 KB | ähnlich |
+| Suchindex (18 548 Einträge inkl. 5 371 Orte) | 1,5 MB roh, **0,5 MB gzip**, 260 Shards, größter Shard 34 KB gzip | ca. 2–5 MB gzip; Shards auf 3 Zeichen verfeinern |
+| Gewässer-Metadaten (`waters.ndjson`) | 31,7 MB roh, 5,6 MB gzip | ca. 22–58 MB gzip → **muss nach Kachel geteilt werden** |
+| Zuordnung Kreis/kreisfreie Stadt | 94,4 % | |
+| Zuordnung Gemeinde | 81,8 % | |
+
+**Hochrechnung:** Faktor 4 (Datenvolumen: Deutschland-PBF ≈ 4,5 GB bei Geofabrik gegenüber 1,1 GB NRW) bis Faktor 10,5 (Fläche: 357 592 km² gegenüber 34 112 km²). Nordostdeutschland ist seenreicher als NRW, der obere Wert ist deshalb plausibel. Die Hochrechnung ist eine Annahme, bis S1b sie mit einem vollen Lauf bestätigt.
+
+**Befunde und Folgen:**
+1. **Bug in tippecanoe 2.49:** Die Feature-Eigenschaft `tippecanoe.minzoom` lässt überlappende Nachbarobjekte verschwinden. Reproduziert mit genau 2 Objekten (De Wittsee + angrenzender Teich). Der See fehlte in allen Zoomstufen. Lösung: Attribut `mz` plus Filter `-j` beim Kacheln plus Stilfilter. **`run.sh` prüft seitdem, dass jedes Objekt in den z14-Kacheln steht, und bricht sonst ab.**
+2. osmium vergibt für Flächen eigene IDs (`a` = 2·Way-ID bzw. 2·Relation-ID+1). Die Pipeline rechnet sie in OSM-IDs zurück. Gegenprobe: De Wittsee = `osm:w35044256`, Kleiner De Wittsee = `osm:w27634541`, identisch mit den OSM-Referenzen der Alt-App [V].
+3. Fast die Hälfte der Wasserflächen hat in OSM keinen Typ. Das Profil muss „Gewässer (Typ unbekannt)" sauber darstellen; nichts wird geraten.
+4. 95 % der Flächen sind unbenannt. Die Suche findet deshalb nur einen kleinen Teil (benannte Gewässer und Orte). Unbenannte Teiche erreicht man nur über die Karte.
+5. Kreisfreie Städte haben in OSM keine Gemeindeebene (admin_level 8). Die Anzeige nutzt dann die Kreisebene.
+6. Ein Fluss verläuft oft als Linie durch einen See (z. B. Nette durch den De Wittsee). Regel für den Tipp: Die Fläche unter dem Finger hat Vorrang, Linien gelten nur im 12-px-Umkreis.
+7. Mit 85–220 MB passt die Deutschland-Datei nicht zu GitHub Pages (100 MB pro Datei). Das bestätigt E4: ab M4 Cloudflare R2, alternativ eine Datei pro Bundesland.
+
+### 10.2 Spike S2 – OpenFreeMap in MapLibre (headless)
+
+Aufbau: MapLibre GL JS 6.15.0 (BSD-3-Clause) und pmtiles 4.5.0 (BSD-3-Clause) [V: package.json]. Gemessen mit Chromium headless, 390 × 844 px, DPR 3, Touch, 4-fache CPU-Drosselung, Software-WebGL, leerer Cache. Code: `tools/map-spike`.
+
+| Stil | Ansicht | bis Karte fertig | Datenmenge Basiskarte |
+|---|---|---|---|
+| liberty | Deutschland z5,3 | 4,5 s | 2,9 MB |
+| liberty | Köln z11 | 2,9 s | 0,7 MB |
+| liberty | De Wittsee z14 | 2,9 s | 0,4 MB |
+| positron | Deutschland / Köln / De Wittsee | 2,9 / 2,5 / 2,7 s | 1,8 / 0,7 / 0,4 MB |
+| dark | Deutschland / Köln / De Wittsee | 2,6 / 2,3 / 2,0 s | 1,5 / 0,6 / 0,3 MB |
+| liberty + Gewässer-Overlay | Köln / De Wittsee | 3,0 / 3,1 s | + 34 / 32 KB Overlay |
+
+- Verfügbare Stile: `liberty`, `positron`, `bright`, `dark`, `fiord` (jeweils HTTP 200) [V]. Kacheldaten-Stand laut TileJSON: `planet/20261018_080001_pt`, also 3 Tage alt; maxzoom 14 [V].
+- Attribution kommt automatisch: „OpenFreeMap © OpenMapTiles Data from OpenStreetMap" [V].
+- Keine JavaScript-Fehler. `liberty` erzeugt harmlose Stilwarnungen (Autobahnschilder-Filter).
+- Bildraten beim Verschieben (5–13 fps) entstehen durch Software-WebGL und **sind keine Aussage über echte Geräte** → S2b.
+- Tipp-Test: Seemitte → „De Wittsee · See"; Feld → „Kein Gewässer"; Fluss nördlich → „Nette · Fluss" [V]. Die Attributionsleiste verdeckt unten antippbare Fläche → in M3 kompakte Attribution verwenden.
+- **Empfehlung für M3:** `positron` (hell) und `dark` (dunkel) als Basis. Sie sind ruhiger und leichter als `liberty`, und das eigene Gewässer-Overlay hebt sich besser ab. Die endgültige Wahl folgt nach S2b auf deinen Geräten.
+
+### 10.3 Umgebung
+- `download.geofabrik.de` wird in der Cloud-Umgebung von der Netzwerkrichtlinie gesperrt (Verbindungsabbruch) [V]. Ausweichquelle `download.openstreetmap.fr` bietet nur NRW und dessen Regierungsbezirke [V]. Für den vollen Deutschland-Lauf (S1b) muss entweder Geofabrik in den Netzwerkeinstellungen der Umgebung freigegeben oder `planet.openstreetmap.org` (erreichbar [V]) mit eigenem Zuschnitt genutzt werden. Der Planet ist um ein Vielfaches größer als der Deutschland-Auszug.

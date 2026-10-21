@@ -45,6 +45,14 @@ const r6 = (x: number) => Math.round(x * 1e6) / 1e6;
 // GeoJSON-Position → [lng, lat] (Höhenwert wird ignoriert)
 const lngLat = (p: Position): [number, number] => [p[0] ?? 0, p[1] ?? 0];
 
+// osmium vergibt für Flächen eigene IDs ("a" + 2·Way-ID bzw. 2·Relation-ID+1). Für stabile Bezüge
+// zur OSM-Datenbank wird daraus wieder die Original-ID gemacht: "osm:w<id>" bzw. "osm:r<id>".
+export function osmWid(exportId: string): string {
+  const kind = exportId[0], num = Number(exportId.slice(1));
+  if (kind === 'a') return num % 2 === 0 ? `osm:w${num / 2}` : `osm:r${(num - 1) / 2}`;
+  return `osm:${exportId}`;
+}
+
 function bboxOf(g: Geometry): Bbox {
   const b: Bbox = [Infinity, Infinity, -Infinity, -Infinity];
   const visit = (p: Position) => {
@@ -82,7 +90,7 @@ async function main(): Promise<void> {
   const places: { n: string; kind: string; c: [number, number] }[] = [];
   const waters: WaterRecord[] = [];
   const tilesAreas: string[] = [], tilesLines: string[] = [];
-  const counts = { excludedAreas: 0, unnamedAreas: 0, unnamedLinesSkipped: 0, tinyAreasUnder01ha: 0, otherGeometry: 0 };
+  const counts = { degenerate: 0, excludedAreas: 0, unnamedAreas: 0, unnamedLinesSkipped: 0, tinyAreasUnder01ha: 0, otherGeometry: 0 };
 
   const rl = createInterface({ input: createReadStream(input), crlfDelay: Infinity });
   for await (const raw of rl) {
@@ -109,23 +117,29 @@ async function main(): Promise<void> {
       if (t === null) continue;
       if (t === 'excluded') { counts.excludedAreas++; continue; }
       const ha = area(f) / 1e4;
+      if (ha < 1e-4) { counts.degenerate++; continue; }   // < 1 m²: Splitter, kein Gewässer
       if (ha < 0.1) counts.tinyAreasUnder01ha++;
       if (!tags.name) counts.unnamedAreas++;
+      const wid = osmWid(f.id);
       const [lng, lat] = lngLat(pointOnFeature(f).geometry.coordinates);
-      waters.push({ wid: `osm:${f.id}`, n: tags.name, t, ha: Math.round(ha * 100) / 100,
+      waters.push({ wid, n: tags.name, t, ha: Math.round(ha * 100) / 100,
         c: [r6(lat), r6(lng)], bb: bboxOf(g), adm: {} });
-      tilesAreas.push(JSON.stringify({ type: 'Feature', tippecanoe: { minzoom: areaMinZoom(ha) },
-        properties: { wid: `osm:${f.id}`, t, ...(tags.name ? { n: tags.name } : {}) }, geometry: g }));
+      // Kein Feature-"tippecanoe.minzoom": verschluckt in tippecanoe 2.49 überlappende Nachbarn (Spike S1).
+      // Stattdessen Attribut mz, nach dem der Kartenstil filtert.
+      tilesAreas.push(JSON.stringify({ type: 'Feature',
+        properties: { wid, t, mz: areaMinZoom(ha), ...(tags.name ? { n: tags.name } : {}) }, geometry: g }));
       continue;
     }
     if (g.type === 'LineString' && tags.waterway) {
       const t: WaterType = tags.waterway === 'canal' ? 'canal' : tags.waterway === 'river' ? 'river' : 'stream';
       if (t === 'stream' && !tags.name) { counts.unnamedLinesSkipped++; continue; }
-      const coords = (g as LineString).coordinates, [mlng, mlat] = lngLat(coords[Math.floor(coords.length / 2)] ?? [0, 0]);
-      waters.push({ wid: `osm:${f.id}`, n: tags.name, t, km: Math.round(length(f) * 100) / 100,
+      const km = length(f);
+      if (km < 0.002) { counts.degenerate++; continue; }   // < 2 m: Splitter
+      const wid = osmWid(f.id), coords = (g as LineString).coordinates, [mlng, mlat] = lngLat(coords[Math.floor(coords.length / 2)] ?? [0, 0]);
+      waters.push({ wid, n: tags.name, t, km: Math.round(km * 100) / 100,
         c: [r6(mlat), r6(mlng)], bb: bboxOf(g), adm: {} });
-      tilesLines.push(JSON.stringify({ type: 'Feature', tippecanoe: { minzoom: t === 'stream' ? 12 : 8 },
-        properties: { wid: `osm:${f.id}`, t, ...(tags.name ? { n: tags.name } : {}) }, geometry: g }));
+      tilesLines.push(JSON.stringify({ type: 'Feature',
+        properties: { wid, t, mz: t === 'stream' ? 12 : 8, ...(tags.name ? { n: tags.name } : {}) }, geometry: g }));
       continue;
     }
     counts.otherGeometry++;

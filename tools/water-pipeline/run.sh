@@ -25,12 +25,22 @@ echo "3/4 Klassifizieren, Verwaltungszuordnung, Suchindex (Node)"
 node --import tsx "$HERE/src/process.ts" "$OUT/export.geojsonseq" "$OUT"
 
 echo "4/4 Vektorkacheln (tippecanoe → PMTiles)"
+# Zoomfilter über das Attribut mz (Mindest-Zoom). Feature-"tippecanoe.minzoom" wird bewusst nicht
+# verwendet: In tippecanoe 2.49 verschluckt es überlappende Nachbarn (Befund Spike S1).
+MZ_FILTER='["any",["all",["==","mz",6],[">=","$zoom",6]],["all",["==","mz",8],[">=","$zoom",8]],["all",["==","mz",10],[">=","$zoom",10]],["all",["==","mz",12],[">=","$zoom",12]],["all",["==","mz",13],[">=","$zoom",13]]]'
 tippecanoe -o "$OUT/water.pmtiles" --force \
-  -Z6 -z14 --drop-smallest-as-needed --extend-zooms-if-still-dropping \
-  --simplification=4 --detect-shared-borders \
+  -Z8 -z14 --drop-smallest-as-needed \
+  -j "{\"*\":$MZ_FILTER}" \
+  --simplification=4 \
   -L areas:"$OUT/tiles-areas.geojsonseq" \
   -L lines:"$OUT/tiles-lines.geojsonseq" \
   --read-parallel --quiet
+
+echo "5/5 Vollständigkeit: jedes Objekt muss bei z14 in den Kacheln stehen"
+expected=$(cat "$OUT/tiles-areas.geojsonseq" "$OUT/tiles-lines.geojsonseq" | grep -o '"wid":"[^"]*"' | sort -u | wc -l)
+actual=$(tippecanoe-decode -Z14 -z14 "$OUT/water.pmtiles" | grep -o '"wid": "[^"]*"' | sort -u | wc -l)
+echo "  erwartet: $expected  in z14-Kacheln: $actual"
+if [ "$expected" -ne "$actual" ]; then echo "FEHLER: Objekte fehlen in den Kacheln" >&2; exit 1; fi
 
 echo "Fertig in $(( $(date +%s) - t0 )) s"
 ls -la "$OUT"

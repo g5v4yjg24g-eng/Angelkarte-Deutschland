@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-21 · Status: **Entscheidungen getroffen (§6)** · nächster Schritt M0 (Spikes)
+Stand: 2026-10-21 · Status: **M0 abgeschlossen** · nächster Schritt M1 nach Freigabe
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -127,10 +127,12 @@ M0 Entscheidungen ──► M1 Gerüst ──► M2 Lokale Daten ──► M5 Fa
 M11 Härtung/Release (nach M1–M7)
 ```
 
-### M0 – Entscheidungen und Spikes (vor Code)
-- Entscheidungen E1–E8 (§6) treffen.
-- **Spike S1 (≤ 1 Tag):** Gewässer-Pipeline für **ein** Bundesland (Bremen, ~20 MB PBF) ausprobieren: Größe des PMTiles-Ergebnisses und des Suchindex messen und auf Deutschland hochrechnen.
-- **Spike S2 (≤ ½ Tag):** OpenFreeMap-Style in MapLibre auf iPhone und Android prüfen (Performance, Attribution).
+### M0 – Entscheidungen und Spikes (vor Code) — ✅ erledigt 2026-10-21 (außer S1b/S2b)
+- ✅ Entscheidungen E1–E9 (§6).
+- ✅ **Spike S1:** Gewässer-Pipeline mit **NRW** (Geofabrik/Bremen war in der Umgebung gesperrt). Ergebnis: 163 294 Gewässer, 20,9 MB PMTiles, Hochrechnung DE 85–220 MB. Details DATA_SOURCES §10.1.
+- ✅ **Spike S2:** OpenFreeMap + MapLibre + eigenes Overlay headless gemessen. Details DATA_SOURCES §10.2.
+- ☐ **S1b:** voller Deutschland-Lauf (vor M4; braucht Geofabrik-Freigabe).
+- ☐ **S2b:** Test auf deinen Geräten (Checkliste `tools/map-spike/README.md`; sinnvoll, sobald M1 eine Vorschau-URL hat).
 - *Abnahme:* Entscheidungen in PLAN.md dokumentiert; Messwerte S1 und S2 in DATA_SOURCES.md eingetragen.
 
 ### M1 – Projektgerüst, Designsystem, PWA-Hülle
@@ -252,7 +254,7 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 |---|---|---|---|
 | R1 | Datenverlust durch Browser-Löschung (iOS löscht Speicher von nicht installierten Websites nach 7 Tagen ohne Nutzung [A, verbreitet dokumentiert; O: aktuellen WebKit-Stand prüfen]) | hoch | Installation empfehlen, `persist()`, Backup-Erinnerung, Export |
 | R2 | OpenFreeMap fällt aus oder ändert die Bedingungen | mittel | Anbieter konfigurierbar; Fallback-Style; M10 Self-Hosting |
-| R3 | Größe der Gewässerdaten Deutschland unklar | mittel | Spike S1, Zoom-abhängige Generalisierung, Kacheln statt Einzeldatei |
+| R3 | Größe der Gewässerdaten Deutschland: hochgerechnet 85–220 MB PMTiles, 22–58 MB Metadaten (S1) | mittel | Metadaten nach Kachel teilen; Hosting mit Range-Requests (R2); S1b bestätigt die Zahlen |
 | R4 | Tiefen-/Zonendaten ohne Nutzungsrecht | hoch (rechtlich) | Nur mit schriftlicher Erlaubnis; Altdaten HH nicht übernehmen |
 | R5 | Rechtsangaben veraltet oder falsch | hoch | Prüfdatum, Veraltungswarnung, Hinweis „keine Rechtsauskunft", Quelle direkt verlinkt |
 | R6 | iOS-PWA-Einschränkungen (kein Hintergrund-GPS, Push nur installiert ab 16.4) | mittel | Keine Funktion darauf aufbauen |
@@ -263,5 +265,5 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 ## 8. Empfohlener nächster Schritt
 
 1. ~~Entscheidungen E1–E9~~ erledigt.
-2. **M0:** Spikes S1 (Gewässer-Pipeline Bremen) und S2 (OpenFreeMap auf Geräten) durchführen, Messwerte in DATA_SOURCES.md eintragen.
-3. Danach Start mit **M1** (Projektgerüst, Designsystem, Logo, Intro, PWA-Hülle).
+2. ~~M0~~ erledigt (Ergebnisse DATA_SOURCES §10); offen: S1b, S2b.
+3. **M1** (Projektgerüst, Designsystem, Logo, Intro, PWA-Hülle), nach deiner Freigabe.
