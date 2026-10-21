@@ -63,6 +63,11 @@ export function CatchDetailPage() {
       <div className={styles.actions}>
         <Button onClick={() => setEditing(true)}>{de.map.edit}</Button>
         {item.position && (
+          <Button variant="secondary" onClick={() => void navigate('/', { state: { assignWater: item.id } })}>
+            {item.waterId ? de.catchForm.changeWater : de.catchForm.assignWater}
+          </Button>
+        )}
+        {item.position && (
           <Button variant="secondary" onClick={() => void navigate('/', { state: { focusCatch: item.id } })}>
             {t.showOnMap}
           </Button>

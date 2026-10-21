@@ -36,7 +36,7 @@ import {
 import { WaterProfile } from './WaterProfile';
 import { SearchSheet } from './SearchSheet';
 import { CatchDetails, Legend, NewHere, PlaceDetails, PlaceForm } from './MapSheets';
-import { CatchForm, type CatchContext } from '../catches/CatchForm';
+import { CatchForm, type CatchContext, type WaterChoice } from '../catches/CatchForm';
 import { useRunningSession } from '../sessions/useSessions';
 import { tryStartSession } from '../sessions/sessionActions';
 import { useGeolocation } from './useGeolocation';
@@ -56,6 +56,7 @@ type SheetState =
   | { kind: 'place'; id: string }
   | { kind: 'catch'; id: string }
   | { kind: 'catchForm'; context?: CatchContext; id?: string }
+  | { kind: 'assignWater'; id: string; candidates?: WaterInfo[] }
   | { kind: 'legend' }
   | { kind: 'locate' };
 
@@ -85,6 +86,8 @@ function locHintSeen(): boolean {
 /** Navigationszustand: aus dem Fangbuch „Auf der Karte zeigen" */
 export interface MapFocusState {
   focusCatch?: string;
+  /** Aus dem Fangbuch: Gewässer für diesen Eintrag zuordnen (M5.5) */
+  assignWater?: string;
 }
 
 /** Gewässer an einem Bildschirmpunkt: Fläche unter dem Finger, sonst Fließgewässer im Umkreis. */
@@ -103,8 +106,52 @@ function waterAt(map: MlMap, point: { x: number; y: number }): WaterInfo | undef
   return line ? waterFromTile(line.properties, true) : undefined;
 }
 
-const toWaterRef = (info?: WaterInfo) =>
-  info ? { wid: info.wid, ...(info.name ? { name: info.name } : {}) } : undefined;
+/**
+ * Gewässer in der Nähe eines Punktes (Zuordnung, M5.5): die Fläche unter dem Punkt zuerst, dann weitere Flächen
+ * und Fließgewässer im Umkreis; jedes nur einmal, höchstens fünf.
+ */
+function waterCandidates(map: MlMap, point: { x: number; y: number }, radius = 40): WaterInfo[] {
+  const out: WaterInfo[] = [];
+  const add = (props: Record<string, unknown>, isLine: boolean) => {
+    const w = waterFromTile(props, isLine);
+    if (w && !out.some((o) => o.wid === w.wid)) out.push(w);
+  };
+  if (map.getLayer(WATER.fill))
+    for (const f of map.queryRenderedFeatures([point.x, point.y], { layers: [WATER.fill] }))
+      add(f.properties, false);
+  const layers = [WATER.fill, WATER.lineHit].filter((l) => map.getLayer(l));
+  if (layers.length)
+    for (const f of map.queryRenderedFeatures(
+      [
+        [point.x - radius, point.y - radius],
+        [point.x + radius, point.y + radius],
+      ],
+      { layers },
+    ))
+      add(f.properties, f.layer.id === WATER.lineHit);
+  return out.slice(0, 5);
+}
+
+const toChoice = (w: WaterInfo): WaterChoice => ({
+  wid: w.wid,
+  type: w.type,
+  ...(w.name ? { name: w.name } : {}),
+});
+
+/** Kontext für ein neues Formular: genau ein Gewässer → zugeordnet; mehrere → Auswahl, vorbelegt mit dem unter dem Punkt. */
+function waterContext(
+  map: MlMap,
+  point: { x: number; y: number },
+): Pick<CatchContext, 'water' | 'waterOptions'> {
+  const found = waterCandidates(map, point);
+  const under = map.getLayer(WATER.fill)
+    ? map.queryRenderedFeatures([point.x, point.y], { layers: [WATER.fill] }).length > 0
+    : false;
+  const first = found[0];
+  if (!first) return {};
+  if (found.length === 1) return { water: toChoice(first) };
+  return { ...(under ? { water: toChoice(first) } : {}), waterOptions: found.map(toChoice) };
+}
 
 declare global {
   interface Window {
@@ -426,16 +473,15 @@ export default function MapView() {
     const fix = locating ? geo.fix : undefined;
     const c = fix ?? map?.getCenter();
     if (!c) return;
-    const info = map ? waterAt(map, map.project([c.lng, c.lat])) : undefined;
-    if (info) setSelectedWid(info.wid);
-    const water = toWaterRef(info);
+    const near = map ? waterContext(map, map.project([c.lng, c.lat])) : {};
+    if (near.water) setSelectedWid(near.water.wid);
     setSheet({
       kind: 'catchForm',
       context: {
         position: fix
           ? { lat: fix.lat, lng: fix.lng, accuracyM: Math.round(fix.accuracy), source: 'gps' }
           : { lat: c.lat, lng: c.lng, source: 'map-tap' },
-        ...(water ? { water } : {}),
+        ...near,
       },
     });
   }
@@ -453,6 +499,32 @@ export default function MapView() {
     // Sheet erst nach dem Sprung öffnen (nicht synchron im Effekt)
     queueMicrotask(() => setSheet({ kind: 'catch', id: c.id }));
   }, [focusCatch, catches, ready, navigate]);
+
+  // Aus dem Fangbuch: Gewässer nachträglich zuordnen. Erst hinspringen, dann nach dem Laden der Kacheln suchen.
+  const assignFor = (location.state as MapFocusState | null)?.assignWater;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !assignFor || !catches) return;
+    void navigate('.', { replace: true, state: null });
+    const c = catches.find((x) => x.id === assignFor);
+    const pos = c?.position;
+    if (!c || !pos) return;
+    map.jumpTo({ center: [pos.lng, pos.lat], zoom: Math.max(map.getZoom(), 15) });
+    queueMicrotask(() => setSheet({ kind: 'assignWater', id: c.id }));
+    map.once('idle', () => {
+      const candidates = waterCandidates(map, map.project([pos.lng, pos.lat]));
+      setSheet((s) => (s?.kind === 'assignWater' && s.id === c.id ? { ...s, candidates } : s));
+    });
+  }, [assignFor, catches, ready, navigate]);
+
+  async function assignWater(id: string, w?: WaterInfo) {
+    await repo('catches').update(id, {
+      waterId: w?.wid,
+      waterSnapshot: w ? (w.name ? { name: w.name } : {}) : undefined,
+    });
+    setSheet(null);
+    setToast({ text: w ? de.catchForm.assigned(w.name ?? de.water.unnamed) : de.catchForm.assignRemoved });
+  }
 
   useEffect(() => {
     if (!toast) return;
@@ -482,15 +554,17 @@ export default function MapView() {
             ...(sheet.water ? { water: sheet.water } : {}),
           })
         }
-        onCatch={() =>
+        onCatch={() => {
+          const map = mapRef.current;
+          const near = map ? waterContext(map, map.project([sheet.lng, sheet.lat])) : {};
           setSheet({
             kind: 'catchForm',
             context: {
               position: { lat: sheet.lat, lng: sheet.lng, source: 'map-tap' },
-              ...(sheet.water ? { water: sheet.water } : {}),
+              ...(sheet.water ? { water: sheet.water } : near),
             },
-          })
-        }
+          });
+        }}
       />
     );
   } else if (sheet?.kind === 'catchForm') {
@@ -510,6 +584,38 @@ export default function MapView() {
           }}
         />
       );
+  } else if (sheet?.kind === 'assignWater') {
+    const target = catches?.find((c) => c.id === sheet.id);
+    sheetTitle = de.catchForm.assignTitle;
+    sheetBody = target ? (
+      <div className={styles.form}>
+        {!sheet.candidates ? (
+          <p className="muted">{de.catchForm.assignSearching}</p>
+        ) : sheet.candidates.length === 0 ? (
+          <Notice>{de.catchForm.assignNone}</Notice>
+        ) : (
+          <>
+            <p>{de.catchForm.assignIntro}</p>
+            <div className={styles.choiceList}>
+              {sheet.candidates.map((w) => (
+                <Button
+                  key={w.wid}
+                  variant={w.wid === target.waterId ? 'primary' : 'secondary'}
+                  onClick={() => void assignWater(target.id, w)}
+                >
+                  {de.catchForm.waterOption(w.name ?? de.water.unnamed, de.water.types[w.type])}
+                </Button>
+              ))}
+            </div>
+          </>
+        )}
+        {target.waterId && (
+          <Button variant="ghost" onClick={() => void assignWater(target.id)}>
+            {de.catchForm.assignRemove}
+          </Button>
+        )}
+      </div>
+    ) : null;
   } else if (sheet?.kind === 'placeForm') {
     const existing = sheet.id ? places?.find((p) => p.id === sheet.id) : undefined;
     sheetTitle = sheet.id

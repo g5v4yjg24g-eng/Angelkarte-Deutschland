@@ -53,7 +53,7 @@ async function newCatchAt(page: Page, lng: number, lat: number) {
 }
 
 /**
- * Eine sichtbare Stelle ohne Gewässer, eigene Symbole und Bedienelemente (je nach Bildschirmbreite verschieden).
+ * Eine sichtbare Stelle ohne Gewässer im Umkreis (die App sucht 40 px weit), ohne eigene Symbole und Bedienelemente.
  * Gesucht wird im mittleren Band der Karte, mit Abstand zu Suchfeld, Knöpfen und Navigation.
  */
 async function dryPoint(page: Page, skip = 0) {
@@ -65,12 +65,12 @@ async function dryPoint(page: Page, skip = 0) {
       map.getLayer(l),
     );
     let found = 0;
-    for (let y = height * 0.35; y < height * 0.7; y += 20)
-      for (let x = width * 0.15; x < width * 0.75; x += 20) {
+    for (let y = height * 0.22; y < height * 0.72; y += 16)
+      for (let x = width * 0.1; x < width * 0.8; x += 16) {
         const hits = map.queryRenderedFeatures(
           [
-            [x - 30, y - 30],
-            [x + 30, y + 30],
+            [x - 48, y - 48],
+            [x + 48, y + 48],
           ],
           { layers },
         );
@@ -200,7 +200,8 @@ test('„Fang erfassen" am Gewässer ordnet den See zu; Filter im Fangbuch', asy
   });
   await page.getByRole('button', { name: 'Fang erfassen' }).click();
   const form = page.getByRole('dialog', { name: 'Fang oder Kontakt erfassen' });
-  await expect(form.getByText('De Wittsee')).toBeVisible();
+  // See unter der Kartenmitte ist vorgewählt; der Fluss am Ufer steht zur Auswahl (M5.5)
+  await expect(form.getByRole('combobox', { name: 'Gewässer' })).toHaveValue('osm:w35044256');
   await form.getByRole('radio', { name: /^Fehlbiss/ }).check();
   await expect(form.getByLabel('Fischart')).toHaveCount(0);
   await form.getByRole('button', { name: 'Speichern' }).click();

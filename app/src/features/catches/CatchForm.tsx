@@ -24,6 +24,7 @@ import {
   type CatchOutcome,
 } from '../../domain/schemas';
 import { SPECIES, speciesById } from '../../domain/species';
+import type { WaterType } from '../../domain/water';
 import {
   draftFromCatch,
   draftToFields,
@@ -40,9 +41,16 @@ import styles from './CatchForm.module.css';
 const t = de.catchForm;
 
 /** Ort und Bezüge eines neuen Eintrags (kommen von der Karte, einem Ort oder dem Gewässerprofil). */
+export interface WaterChoice {
+  wid: string;
+  name?: string;
+  type?: WaterType;
+}
 export interface CatchContext {
   position?: NonNullable<Catch['position']>;
-  water?: { wid: string; name?: string };
+  water?: WaterChoice;
+  /** Mehrere Gewässer in der Nähe: zur Auswahl (M5.5) */
+  waterOptions?: WaterChoice[];
   placeId?: string;
 }
 
@@ -87,6 +95,8 @@ export function CatchForm({
     initial ? draftFromCatch(initial) : emptyDraft(Date.now()),
   );
   const [position, setPosition] = useState(initial ? initial.position : context?.position);
+  // Gewählte Zuordnung bei mehreren nahen Gewässern ('' = keins)
+  const [waterWid, setWaterWid] = useState(context?.water?.wid ?? '');
   const [errors, setErrors] = useState<DraftErrors>({});
   const [saveError, setSaveError] = useState<string>();
   const [busy, setBusy] = useState(false);
@@ -140,11 +150,13 @@ export function CatchForm({
 
   const caught = draft.outcome === 'caught';
   const sized = caught || draft.outcome === 'contact';
+  const options = context?.waterOptions ?? [];
+  const chosenWater = options.length > 1 ? options.find((o) => o.wid === waterWid) : context?.water;
   const water = initial
     ? initial.waterSnapshot?.name
       ? { name: initial.waterSnapshot.name }
       : undefined
-    : context?.water;
+    : chosenWater;
 
   async function save(e?: React.FormEvent, { withPhotos = true } = {}) {
     e?.preventDefault();
@@ -170,10 +182,10 @@ export function CatchForm({
             input: {
               ...fields,
               ...(position ? { position } : {}),
-              ...(context?.water
+              ...(chosenWater
                 ? {
-                    waterId: context.water.wid,
-                    waterSnapshot: context.water.name ? { name: context.water.name } : {},
+                    waterId: chosenWater.wid,
+                    waterSnapshot: chosenWater.name ? { name: chosenWater.name } : {},
                   }
                 : {}),
               ...(context?.placeId ? { placeId: context.placeId } : {}),
@@ -309,10 +321,27 @@ export function CatchForm({
             {t.useMyLocation}
           </Button>
         )}
-        <p>
-          <strong>{t.water}: </strong>
-          {water ? (water.name ?? de.water.unnamed) : <span className="muted">{t.waterUnknown}</span>}
-        </p>
+        {!initial && options.length > 1 ? (
+          <SelectField
+            label={t.waterChoose}
+            options={[
+              ...options.map((o) => ({
+                value: o.wid,
+                label: o.type
+                  ? t.waterOption(o.name ?? de.water.unnamed, de.water.types[o.type])
+                  : (o.name ?? de.water.unnamed),
+              })),
+              { value: '', label: t.waterNone },
+            ]}
+            value={waterWid}
+            onChange={(e) => setWaterWid(e.target.value)}
+          />
+        ) : (
+          <p>
+            <strong>{t.water}: </strong>
+            {water ? (water.name ?? de.water.unnamed) : <span className="muted">{t.waterUnknown}</span>}
+          </p>
+        )}
       </div>
 
       {!initial && running && (

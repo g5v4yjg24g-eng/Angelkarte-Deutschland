@@ -356,3 +356,10 @@
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
 }
+.choiceList {
+  display: grid;
+  gap: var(--space-2);
+}
+.choiceList > * {
+  justify-content: flex-start;
+}
