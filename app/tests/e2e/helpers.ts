@@ -72,3 +72,32 @@ export async function useLocalExternals(page: Page) {
   await page.route('https://tiles.openfreemap.org/**', (r) => r.fulfill({ json: TEST_BASEMAP_STYLE }));
   await serveWaterFixture(page);
 }
+
+/** Bildschirmposition einer Koordinate (Seite, nicht Kartencontainer). */
+export async function screenPoint(page: Page, lng: number, lat: number) {
+  return page.evaluate(
+    ([lng, lat]) => {
+      const map = window.__fangpunktMap;
+      if (!map) throw new Error('Karte fehlt');
+      const p = map.project([lng, lat]);
+      const r = map.getContainer().getBoundingClientRect();
+      return { x: r.left + p.x, y: r.top + p.y };
+    },
+    [lng, lat] as const,
+  );
+}
+
+/** Wartet, bis ein eigenes Symbol an der Stelle gezeichnet ist (Platzierung läuft verzögert), und tippt es an. */
+export async function tapRendered(page: Page, layer: string, lng: number, lat: number, dy = 0) {
+  const p = await screenPoint(page, lng, lat);
+  await page.waitForFunction(
+    ([layer, x, y]) => {
+      const map = window.__fangpunktMap;
+      if (!map) return false;
+      const r = map.getContainer().getBoundingClientRect();
+      return map.queryRenderedFeatures([x - r.left, y - r.top], { layers: [layer] }).length > 0;
+    },
+    [layer, p.x, p.y + dy] as const,
+  );
+  await page.mouse.click(p.x, p.y + dy);
+}

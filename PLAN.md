@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-21 · Status: **M4 abgeschlossen** · nächster Schritt M5 (Fangbuch) nach Freigabe
+Stand: 2026-10-21 · Status: **M5 in Arbeit** (M5.1 und M5.3 erledigt) · weiter mit M5.2 Fotos
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -182,13 +182,16 @@ Abhängig von: M3, Spike S1
 - *Abnahme (Ergebnisse):* Stichprobe WAT-2 automatisiert (`src/sample.ts`): 19/20 vor der Grenzgewässer-Ergänzung, nur der Bodensee fehlte; der Actions-Lauf veröffentlicht nur bei 20/20. 103 Unit-Tests und 51 E2E-Tests grün (ein Intro-Zeittest kippt gelegentlich unter Volllast, einzeln stabil). Datenstand im Profil sichtbar, Abdeckung in der Suche; fehlende Angaben als „unbekannt"/„keine geprüften Angaben".
 - *Offen:* WAT-4 (Nachfolger bei weggefallener `wid`) wird mit dem ersten Datenpaket-Update fällig [O]. Ob GitHub Pages die 157-MB-Datei dauerhaft ausliefert, zeigt der erste Live-Betrieb [O]. Fließgewässer zeigen nur den angetippten Abschnitt.
 
-### M5 – Fangbuch und Sessions
+### M5 – Fangbuch und Sessions — in Arbeit (Branch `m5/fangbuch`)
 Abhängig von: M2, M4
-- Formular Fang / Kontakt / Fehlbiss mit progressiver Offenlegung; Fotos (Kompression, Blob-Speicher).
-- Sessions: Start/Stopp, laufende Session in der Kopfzeile, automatische Zuordnung, nachträgliches Bearbeiten.
-- Liste mit Filter und Suche, Detailansicht, Bearbeiten, Löschen mit Rückgängig.
-- Gewässerzuordnung automatisch (Punkt-in-Polygon gegen geladene Gewässer), manuell änderbar.
-- *Abnahme:* Erfassung komplett offline (Flugmodus) inklusive Foto; nach Neustart vorhanden.
+Freigegeben 2026-10-21 mit drei Entscheidungen: **kein automatisches Wetter in M5** (braucht Netz und schickt einen gerundeten Standort an Dritte; eigener Schritt nach M6), **GPS nur auf ausdrücklichen Wunsch** (sonst angetippte Stelle bzw. Kartenmitte), **Reihenfolge** M5.1 + M5.3 → M5.2 → M5.4 → M5.5.
+- ✅ **M5.1 Schnellerfassung:** Fang / Fischkontakt / Fehlbiss / Beobachtung mit einem Tipp; Art (zuletzt genutzte zuerst), Datum, Uhrzeit vorbelegt; „Mehr Details" für Länge/Gewicht (gemessen/gewogen nur bei gelandetem Fisch), Verbleib, Kontaktdetail, Methode, Köder (zuletzt benutzte als Schnellauswahl), Bedingungen; Notizen. Einstiege: Tipp auf die Karte, gespeicherter Ort („Fang hier erfassen"), Knopf „Fang erfassen" (Kartenmitte bzw. eigener Standort, wenn die Standortanzeige an ist). Gewässer wird übernommen, wenn es an der Stelle bekannt ist. Prüfung über dasselbe Zod-Schema wie Import/Datenbank, Fehler am Feld. Funktioniert ohne Netz.
+- ✅ **M5.3 Fangbuch:** Liste nach Tagen, Suche (Art, Gewässer, Köder, Notiz), Filter (Ergebnis, Zeitraum, Art, Gewässer), Detailseite, Bearbeiten (Angaben, die das Formular nicht zeigt, bleiben erhalten), Löschen mit „Rückgängig", „Auf der Karte zeigen"; auf der Karte Fang ansehen, bearbeiten, löschen.
+- ☐ **M5.2 Fotos:** Kamera/Galerie, Neu-Kodierung ≤ 1600 px ohne EXIF, Vorschaubild, „Ohne Foto speichern" bei vollem Speicher (CAT-2, CAT-5).
+- ☐ **M5.4 Sessions:** Start/Stopp, laufende Session in der Kopfzeile, automatische Zuordnung, Korrektur > 24 h (SES-1..3).
+- ☐ **M5.5 Gewässerzuordnung:** Auswahl bei mehreren nahen Gewässern, „später zuordnen", wenn offline unbekannt.
+- *Abnahme (Ziel):* Erfassung komplett offline (Flugmodus) inklusive Foto; nach Neustart vorhanden.
+- *Stand M5.1/M5.3:* 117 Unit-Tests, 62 E2E-Tests grün (Fangbuch-Tests 40/40 bei 4 parallelen Läufen). Gefunden und behoben: `crypto.randomUUID` fehlt außerhalb von HTTPS/localhost (z. B. Test im Heimnetz über IP) → eigene ID-Funktion mit Ersatz.
 
 ### M6 – Statistik
 Abhängig von: M5
@@ -284,4 +287,4 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 4. ~~M2~~ erledigt.
 5. ~~M3~~ erledigt.
 6. ~~M4~~ erledigt.
-7. **M5** (Fangbuch und Sessions), nach deiner Freigabe.
+7. **M5** (Fangbuch und Sessions): M5.1 und M5.3 erledigt, weiter mit M5.2.

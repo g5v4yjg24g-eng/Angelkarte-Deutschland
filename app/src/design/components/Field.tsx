@@ -1,4 +1,9 @@
-import { useId, type InputHTMLAttributes, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import {
+  useId,
+  type InputHTMLAttributes,
+  type SelectHTMLAttributes,
+  type TextareaHTMLAttributes,
+} from 'react';
 import styles from './Field.module.css';
 
 type Common = { label: string; hint?: string; error?: string | undefined };

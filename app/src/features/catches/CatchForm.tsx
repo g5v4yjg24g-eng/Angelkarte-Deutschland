@@ -92,7 +92,7 @@ export function CatchForm({
 
   const set = <K extends DraftField>(k: K, v: CatchDraft[K]) => {
     setDraft((d) => ({ ...d, [k]: v }));
-    if (errors[k]) setErrors(({ [k]: _drop, ...rest }) => rest);
+    if (errors[k]) setErrors((prev) => Object.fromEntries(Object.entries(prev).filter(([f]) => f !== k)));
   };
   const errorText = (k: DraftField) => {
     const e = errors[k];
@@ -143,6 +143,7 @@ export function CatchForm({
           });
       onSaved(saved);
     } catch (err) {
+      console.error(err);
       setSaveError(userMessage(err));
       setBusy(false);
     }

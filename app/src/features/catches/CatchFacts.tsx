@@ -1,17 +1,12 @@
 // Angaben eines Fangbuch-Eintrags (Karte und Fangbuch). Zeigt nur, was erfasst wurde.
 import { de } from '../../i18n/de';
 import type { Catch } from '../../domain/schemas';
-import { speciesById } from '../../domain/species';
 import { formatDateTime } from '../../lib/storage';
 import { markerDataUrl } from '../map/markerIcons';
+import { catchTitle } from './catchText';
 import styles from './CatchFacts.module.css';
 
 const t = de.catchForm;
-
-export const catchTitle = (c: Catch) => {
-  const species = speciesById(c.speciesId);
-  return `${de.map.outcomes[c.outcome]}${species ? ` · ${species.de}` : ''}`;
-};
 
 export function CatchHead({ item }: { item: Catch }) {
   return (
@@ -39,10 +34,17 @@ export function CatchFacts({ item }: { item: Catch }) {
     .filter(Boolean)
     .join(' · ');
   const rows: [string, string | undefined][] = [
-    [de.map.length, item.lengthCm === undefined ? undefined : de.map.lengthValue(item.lengthCm, item.lengthMethod === 'measured')],
+    [
+      de.map.length,
+      item.lengthCm === undefined
+        ? undefined
+        : de.map.lengthValue(item.lengthCm, item.lengthMethod === 'measured'),
+    ],
     [
       t.fields.weight,
-      item.weightG === undefined ? undefined : t.weightValue(item.weightG / 1000, item.weightMethod !== 'weighed'),
+      item.weightG === undefined
+        ? undefined
+        : t.weightValue(item.weightG / 1000, item.weightMethod !== 'weighed'),
     ],
     [t.fields.released, item.released && t.releasedOptions[item.released]],
     [t.fields.contactDetail, item.contactDetail && t.contactDetails[item.contactDetail]],

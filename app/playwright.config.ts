@@ -7,6 +7,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list']],
+  // Software-WebGL mehrerer paralleler Browser ist langsam: Zustände bekommen 10 s statt 5 s
+  expect: { timeout: 10_000 },
   use: {
     baseURL: 'http://localhost:4173',
     trace: 'retain-on-failure',

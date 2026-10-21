@@ -121,7 +121,12 @@ export const de = {
     all: 'Alle',
     allSpecies: 'Alle Arten',
     allWaters: 'Alle Gewässer',
-    periods: { all: 'Gesamter Zeitraum', '7d': 'Letzte 7 Tage', '30d': 'Letzte 30 Tage', year: 'Dieses Jahr' },
+    periods: {
+      all: 'Gesamter Zeitraum',
+      '7d': 'Letzte 7 Tage',
+      '30d': 'Letzte 30 Tage',
+      year: 'Dieses Jahr',
+    },
     outcomesPlural: {
       caught: 'Fänge',
       contact: 'Fischkontakte',

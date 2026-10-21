@@ -57,7 +57,8 @@ test('Alt-App importieren, sichern, wieder einlesen, rückgängig machen', async
     .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('link', { name: 'Fangbuch' })
     .click();
-  await expect(page.getByRole('heading', { name: '3 Einträge gespeichert' })).toBeVisible();
+  // Fangbuch zeigt die importierten Einträge der Alt-App
+  await expect(page.getByText('3 Einträge', { exact: true })).toBeVisible();
   const reminder = page.getByText('6 Änderungen sind noch nicht gesichert.');
   await expect(reminder).toBeVisible();
   await page.getByRole('button', { name: 'Später' }).click();

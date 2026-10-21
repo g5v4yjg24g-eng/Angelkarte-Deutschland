@@ -4,6 +4,7 @@ import { CatchSchema, PlaceSchema, SessionSchema, type Catch, type Place, type S
 import { speciesIdFromName } from '../species';
 import { DEFAULT_TZ, localToZonedIso, toZonedIso } from '../time';
 import type { InvalidRecord } from './parse';
+import { newId as newUuid } from '../id';
 
 type Raw = Record<string, unknown>;
 
@@ -187,7 +188,7 @@ function convertEntry(e: Raw, newId: () => string): { c: Catch; photo?: LegacyPh
   return photo ? { c, photo } : { c };
 }
 
-export function convertLegacy(json: unknown, newId: () => string = () => crypto.randomUUID()): LegacyResult {
+export function convertLegacy(json: unknown, newId: () => string = newUuid): LegacyResult {
   const out: LegacyResult = { catches: [], sessions: [], places: [], photos: [], invalid: [], notes: [] };
   const root: Raw = Array.isArray(json) ? { entries: json } : isObj(json) ? json : {};
   const list = (k: string) => (Array.isArray(root[k]) ? (root[k] as unknown[]) : []);
