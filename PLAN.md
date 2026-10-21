@@ -179,8 +179,8 @@ Abhängig von: M3, Spike S1
 - ✅ Gewässer antippbar → Profil: Name, Typ, Fläche (aus Geometrie, gekennzeichnet), Lage (Gemeinde/Kreis/Land), Quelle OSM + Datenstand + Link, Tiefenkarte „nicht verfügbar" ohne Knopf, Rechtsstatus des Landes („in Arbeit, M7"), eigene Orte/Fänge am Gewässer, „Hier markieren". Hervorhebung des gewählten Gewässers.
 - ✅ Suche nach Gewässern und Orten aus eigenem Index (kein Nominatim), Umlaut-tolerant, OSM-Zusatznamen (z. B. Möhnesee ↔ Möhnetalsperre), Sortierung nach Treffergüte, Bedeutung und Nähe.
 - ✅ Kartenstil nach Gerätetest überarbeitet (hell `liberty`; dunkel petrolgrünes Land, sattblaues Wasser).
-- *Abnahme (Ergebnisse):* Stichprobe WAT-2 automatisiert (`src/sample.ts`): 19/20 vor der Grenzgewässer-Ergänzung, nur der Bodensee fehlte; der Actions-Lauf veröffentlicht nur bei 20/20. 103 Unit-Tests und 51 E2E-Tests grün (ein Intro-Zeittest kippt gelegentlich unter Volllast, einzeln stabil). Datenstand im Profil sichtbar, Abdeckung in der Suche; fehlende Angaben als „unbekannt"/„keine geprüften Angaben".
-- *Offen:* WAT-4 (Nachfolger bei weggefallener `wid`) wird mit dem ersten Datenpaket-Update fällig [O]. Ob GitHub Pages die 157-MB-Datei dauerhaft ausliefert, zeigt der erste Live-Betrieb [O]. Fließgewässer zeigen nur den angetippten Abschnitt.
+- *Abnahme (Ergebnisse):* Stichprobe WAT-2 automatisiert (`src/sample.ts`): **20/20** im Release-Lauf (Bodensee dank Grenzgewässer-Ergänzung). Release `wasserdaten-2026-10-21-5` live auf GitHub Pages, Range-Abrufe und Suche/Profil dort geprüft. 103 Unit-Tests und 51 E2E-Tests grün (ein Intro-Zeittest kippt gelegentlich unter Volllast, einzeln stabil). Datenstand im Profil sichtbar, Abdeckung in der Suche; fehlende Angaben als „unbekannt"/„keine geprüften Angaben".
+- *Offen:* WAT-4 (Nachfolger bei weggefallener `wid`) wird mit dem ersten Datenpaket-Update fällig [O]. Fließgewässer zeigen nur den angetippten Abschnitt.
 
 ### M5 – Fangbuch und Sessions — in Arbeit (Branch `m5/fangbuch`)
 Abhängig von: M2, M4
