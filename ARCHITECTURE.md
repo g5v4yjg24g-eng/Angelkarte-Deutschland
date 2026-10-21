@@ -20,6 +20,7 @@ Stand: 2026-10-21 · Entwurf · Kennzeichnung: **[V]** verifiziert · **[A]** An
 | Routing | **React Router (Library-Modus)** | Einfach, URL-fähig (Deep-Links auf Gewässer und Fang) | TanStack Router (mächtiger als nötig) |
 | Zustand | **Dexie `liveQuery`** für persistente Daten + **Zustand** (Lib) für UI-Zustand | Die DB ist die Wahrheit; kein doppelter Store | Redux (zu schwer) |
 | Lokale DB | **IndexedDB über Dexie 4** | Ausgereift, Migrationen, Indizes, Blob-Speicherung, gute TS-Typen | OPFS + SQLite-WASM (stärker, aber größer und komplexer; erst bei Sync-Bedarf neu bewerten); localStorage (ungeeignet) |
+| ZIP | **fflate** (MIT) | Sicherungen mit Fotos als ZIP; klein, ohne Abhängigkeiten; pmtiles nutzt es ab M3 ohnehin | JSZip (größer) |
 | Validierung | **Zod** | Ein Schema für Formulare, Import, Rechtsdaten und Migrationen | Eigene Prüfungen (fehleranfällig) |
 | Karte | **MapLibre GL JS** | Open Source (BSD-3) [A: Lizenz bei Installation prüfen], Vektorkacheln, WebGL-Performance für ganz Deutschland, PMTiles-Protokoll | Leaflet (Raster; Vektorlayer für Tausende Polygone zu langsam) |
 | Kachelformat | **PMTiles** | Eine Datei auf Objektspeicher, Abruf per HTTP-Range, keine Kachelserver-Software [V: docs.protomaps.com] | Kachelserver (Betriebsaufwand) |

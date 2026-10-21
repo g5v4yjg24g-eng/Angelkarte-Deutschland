@@ -15,12 +15,7 @@ export function MorePage() {
           hint={de.more.regulationsHint}
           badge={<Badge>{de.common.inProgress}</Badge>}
         />
-        <ListLink
-          icon={<DatabaseIcon />}
-          title={de.more.backup}
-          hint={de.more.backupHint}
-          badge={<Badge>{de.common.inProgress}</Badge>}
-        />
+        <ListLink to="/mehr/daten" icon={<DatabaseIcon />} title={de.more.backup} hint={de.more.backupHint} />
       </div>
       <div className={styles.card}>
         <ListLink

@@ -106,7 +106,7 @@ Stichprobe WAT-2 (wird in S1/M4 bestätigt): Bodensee, Chiemsee, Müritz, Steinh
 | BAK-4 | Import bricht mitten ab (Fehler injiziert) | Rollback; Zustand wie vorher |
 | BAK-5 | 10 000 Einträge | Import < 10 s auf Desktop [A]; UI bleibt bedienbar (Fortschritt) |
 | BAK-6 | Backup-Erinnerung | Erscheint nach Schwelle (5 Änderungen oder 14 Tage), „Später" pausiert 3 Tage |
-| BAK-7 | Altprojekt-Import (E9), mit echten Exporten beider Alt-Apps | Mapping laut DATA_MODEL §8 korrekt |
+| BAK-7 | Altprojekt-Import (E9), mit echten Exporten beider Alt-Apps | Mapping laut DATA_MODEL §8 korrekt. *Stand M2: automatisiert mit einem aus dem Alt-App-Code nachgebauten Export (`app/src/test/fixtures/legacy-angelkarte-v2.ts`); Prüfung mit einem echten Export steht aus [O].* |
 
 ## 4. Nicht-funktionale Kriterien
 
@@ -128,6 +128,19 @@ Stichprobe WAT-2 (wird in S1/M4 bestätigt): Bodensee, Chiemsee, Müritz, Steinh
 | Windows/macOS | Chrome, Firefox, Safari (mac), Edge | Fenster 1280 und 1920 px |
 
 Checkliste je Gerät: Installation, Intro, Standortfreigabe, Fang offline mit Foto, Export-Download, Import über Dateiauswahl, Update-Hinweis, Dunkelmodus.
+
+## 5a. Umsetzung der Testfälle (Stand M2)
+
+| Bereich | Datei | Umfang |
+|---|---|---|
+| Kontrast | `app/src/design/tokens.test.ts` | 34 Farbpaare hell/dunkel |
+| Zeit | `app/src/domain/time.test.ts` | Sommer-/Winterzeit, Umstellung, Mitternacht |
+| Repository, CAT-3/4 | `app/src/data/repository.test.ts` | Validierung, Revision, Papierkorb |
+| Migration | `app/src/data/db.test.ts` | v1 → Probe-v2 mit Datenumwandlung |
+| BAK-1…5, 7 | `app/src/data/backupService.test.ts` | Roundtrip JSON/ZIP, 7 Arten kaputter Dateien, Strategien, Rollback, Snapshots, 10 000 Einträge |
+| BAK-6 | `app/src/domain/backup/reminder.test.ts` | Schwellen und „Später" |
+| BAK-7 | `app/src/domain/backup/legacy.test.ts` | Feldabbildung der Alt-App |
+| E2E | `app/tests/e2e/*.spec.ts` | PWA-1…4/6, Navigation, axe, Theme, Sicherungs-Ablauf komplett, Persistenz nach Neustart |
 
 ## 6. Release-Abnahme 1.0 (Definition of Done)
 
