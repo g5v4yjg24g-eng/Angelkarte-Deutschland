@@ -54,7 +54,7 @@ jobs:
                  --speed-limit 100000 --speed-time 120 -o "$name" "$url" \
                && curl -sS --fail --retry 3 --connect-timeout 60 --max-time 120 -o "$name.md5" "$url.md5" \
                && md5sum -c "$name.md5"; then
-              mv "$name" germany.osm.pbf
+              [ "$name" = germany.osm.pbf ] || mv "$name" germany.osm.pbf
               echo "EXTRACT_URL=$url" >> "$GITHUB_ENV"
               ls -la germany.osm.pbf
               exit 0
