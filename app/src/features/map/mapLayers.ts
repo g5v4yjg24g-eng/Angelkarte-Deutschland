@@ -28,7 +28,9 @@ const selected: ExpressionSpecification = ['boolean', ['feature-state', 'sel'], 
  * Gewässer aus der Pipeline (PMTiles). Unsichtbar, solange nichts ausgewählt ist – die Basiskarte zeichnet
  * das Wasser schon; diese Ebenen dienen dem Antippen und der Hervorhebung. Liegen unter den eigenen Symbolen.
  */
-export function addWaterLayers(map: MlMap, tilesUrl: string, attribution: string) {
+export function addWaterLayers(map: MlMap, tilesUrl: string, attribution: string, theme: 'light' | 'dark') {
+  // Hervorhebung muss sich vom Wasser der Basiskarte abheben (hell: Hellblau, dunkel: Tiefblau)
+  const sel = theme === 'dark' ? '#7FE0EE' : '#0F5C6E';
   if (!map.getSource(WATER.source))
     map.addSource(WATER.source, {
       type: 'vector',
@@ -46,7 +48,10 @@ export function addWaterLayers(map: MlMap, tilesUrl: string, attribution: string
     source: WATER.source,
     'source-layer': 'areas',
     filter: minZoomFilter,
-    paint: { 'fill-color': '#1F7A8C', 'fill-opacity': ['case', selected, 0.28, 0] },
+    paint: {
+      'fill-color': theme === 'dark' ? '#4FB8CC' : '#1F7A8C',
+      'fill-opacity': ['case', selected, 0.28, 0],
+    },
   });
   add({
     id: WATER.outline,
@@ -54,7 +59,7 @@ export function addWaterLayers(map: MlMap, tilesUrl: string, attribution: string
     source: WATER.source,
     'source-layer': 'areas',
     filter: minZoomFilter,
-    paint: { 'line-color': '#0F5C6E', 'line-width': 2.5, 'line-opacity': ['case', selected, 1, 0] },
+    paint: { 'line-color': sel, 'line-width': 2.5, 'line-opacity': ['case', selected, 1, 0] },
   });
   add({
     id: WATER.lineHit,
@@ -70,7 +75,7 @@ export function addWaterLayers(map: MlMap, tilesUrl: string, attribution: string
     source: WATER.source,
     'source-layer': 'lines',
     filter: minZoomFilter,
-    paint: { 'line-color': '#0F5C6E', 'line-width': 4, 'line-opacity': ['case', selected, 1, 0] },
+    paint: { 'line-color': sel, 'line-width': 4, 'line-opacity': ['case', selected, 1, 0] },
   });
 }
 
@@ -86,7 +91,7 @@ export function fallbackStyle(theme: 'light' | 'dark'): StyleSpecification {
       {
         id: 'background',
         type: 'background',
-        paint: { 'background-color': theme === 'dark' ? '#173139' : '#e3ebec' },
+        paint: { 'background-color': theme === 'dark' ? '#2C5550' : '#e3ebec' },
       },
     ],
   };

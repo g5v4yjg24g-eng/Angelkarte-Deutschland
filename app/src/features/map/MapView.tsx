@@ -161,12 +161,25 @@ export default function MapView() {
       ))
         map.setLayoutProperty(id, 'text-field', textField);
       const adj = basemap.adjustments(themeRef.current);
-      for (const id of adj.hideLayers ?? []) if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
-      for (const [id, prop, value] of adj.paint ?? [])
-        if (map.getLayer(id)) map.setPaintProperty(id, prop as never, value as never);
+      for (const id of adj.hideLayers ?? [])
+        if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
+      // Nur Eigenschaften, die zum Ebenentyp passen: Ein Fehler hier würde das Einhängen der eigenen Ebenen verhindern
+      const fits = (type: string, prop: string) =>
+        type === 'symbol' ? /^(text|icon)-/.test(prop) : prop.startsWith(`${type}-`);
+      const layers = map.getStyle().layers;
+      for (const [match, prop, value] of adj.paint ?? [])
+        for (const l of layers)
+          if ((typeof match === 'string' ? l.id === match : match.test(l.id)) && fits(l.type, prop))
+            map.setPaintProperty(l.id, prop as never, value as never);
       void addOverlays(map, overlay.current, basemap.glyphFont).then(() => {
         const m = waterRef.current;
-        if (m) addWaterLayers(map, water.tilesUrl(m), `${m.source.attribution} (${m.source.license})`);
+        if (m)
+          addWaterLayers(
+            map,
+            water.tilesUrl(m),
+            `${m.source.attribution} (${m.source.license})`,
+            themeRef.current,
+          );
         setReady(true);
       });
     });
@@ -284,6 +297,7 @@ export default function MapView() {
         map,
         water.tilesUrl(waterManifest),
         `${waterManifest.source.attribution} (${waterManifest.source.license})`,
+        themeRef.current,
       );
   }, [ready, waterManifest, water]);
 

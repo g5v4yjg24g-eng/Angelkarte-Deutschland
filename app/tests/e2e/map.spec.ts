@@ -300,15 +300,36 @@ test('Fänge aus einer Sicherung erscheinen auf der Karte; Gruppen lassen sich a
   await expect(d.getByText('Großer De Witt See')).toBeVisible();
 });
 
-test('Karte ruft OpenFreeMap im Stil passend zum Theme ab', async ({ page }) => {
+test('Karte nutzt OpenFreeMap „liberty" und färbt sie im dunklen Theme um', async ({ page }) => {
   const urls: string[] = [];
+  // Ebenennamen wie im echten Stil, damit die Farbregeln greifen (inkl. einer Ebene, die nur teilweise passt)
+  const style = {
+    ...TEST_STYLE,
+    layers: [
+      { id: 'background', type: 'background', paint: { 'background-color': '#f8f4f0' } },
+      { id: 'waterway_river', type: 'background', paint: { 'background-color': '#a0c8f0' } },
+    ],
+  };
   await page.route('https://tiles.openfreemap.org/**', (route) => {
     urls.push(route.request().url());
-    return route.fulfill({ json: TEST_STYLE });
+    return route.fulfill({ json: style });
   });
+  // Während eines Stilwechsels hat MapLibre kurz keinen Stil; dann gilt die Farbe als noch unbekannt
+  const bg = () =>
+    page.evaluate(() => {
+      try {
+        return window.__fangpunktMap?.getPaintProperty('background', 'background-color');
+      } catch {
+        return undefined;
+      }
+    });
   await page.emulateMedia({ colorScheme: 'dark' });
   await openMap(page);
-  expect(urls).toContain('https://tiles.openfreemap.org/styles/fiord');
+  expect(urls).toContain('https://tiles.openfreemap.org/styles/liberty');
+  expect(await bg()).toBe('#2C5550');
+  // Regeln mit unpassendem Ebenentyp werden übersprungen, die eigenen Ebenen sind trotzdem da
+  expect(await page.evaluate(() => !!window.__fangpunktMap?.getLayer('fp-places'))).toBe(true);
   await page.emulateMedia({ colorScheme: 'light' });
-  await expect.poll(() => urls.includes('https://tiles.openfreemap.org/styles/liberty')).toBe(true);
+  await expect.poll(bg).toBe('#f8f4f0');
+  await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'));
 });

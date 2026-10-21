@@ -15,6 +15,6 @@ export interface BasemapProvider {
 
 export interface StyleAdjustments {
   hideLayers?: string[];
-  /** [Ebene, Paint-Eigenschaft, Wert] */
-  paint?: [layer: string, property: string, value: string | number][];
+  /** [Ebene oder Muster für Ebenen-IDs, Paint-Eigenschaft, Wert]; spätere Einträge gewinnen. */
+  paint?: [layer: string | RegExp, property: string, value: unknown][];
 }
