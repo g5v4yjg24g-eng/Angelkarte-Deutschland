@@ -235,7 +235,8 @@ Aufbau: MapLibre GL JS 6.15.0 (BSD-3-Clause) und pmtiles 4.5.0 (BSD-3-Clause) [V
 - Keine JavaScript-Fehler. `liberty` erzeugt harmlose Stilwarnungen (Autobahnschilder-Filter).
 - Bildraten beim Verschieben (5–13 fps) entstehen durch Software-WebGL und **sind keine Aussage über echte Geräte** → S2b.
 - Tipp-Test: Seemitte → „De Wittsee · See"; Feld → „Kein Gewässer"; Fluss nördlich → „Nette · Fluss" [V]. Die Attributionsleiste verdeckt unten antippbare Fläche → in M3 kompakte Attribution verwenden.
-- **Empfehlung für M3:** `positron` (hell) und `dark` (dunkel) als Basis. Sie sind ruhiger und leichter als `liberty`, und das eigene Gewässer-Overlay hebt sich besser ab. Die endgültige Wahl folgt nach S2b auf deinen Geräten.
+- **Umgesetzt in M3:** `positron`/`dark`; die Stile beschriften standardmäßig international/englisch, die App stellt auf `name:de` um [V: Bildvergleich 2026-10-21].
+- **Empfehlung für M3 (ursprünglich):** `positron` (hell) und `dark` (dunkel) als Basis. Sie sind ruhiger und leichter als `liberty`, und das eigene Gewässer-Overlay hebt sich besser ab. Die endgültige Wahl folgt nach S2b auf deinen Geräten.
 
 ### 10.3 Umgebung
 - `download.geofabrik.de` wird in der Cloud-Umgebung von der Netzwerkrichtlinie gesperrt (Verbindungsabbruch) [V]. Ausweichquelle `download.openstreetmap.fr` bietet nur NRW und dessen Regierungsbezirke [V]. Für den vollen Deutschland-Lauf (S1b) muss entweder Geofabrik in den Netzwerkeinstellungen der Umgebung freigegeben oder `planet.openstreetmap.org` (erreichbar [V]) mit eigenem Zuschnitt genutzt werden. Der Planet ist um ein Vielfaches größer als der Deutschland-Auszug.

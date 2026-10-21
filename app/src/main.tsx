@@ -5,12 +5,16 @@ import './design/fonts.css';
 import './design/tokens.css';
 import './design/base.css';
 import { createAppRouter } from './app/router';
+import { providers } from './app/providers';
+import { ProvidersProvider } from './ports/providers';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('#root fehlt in index.html');
 
 createRoot(root).render(
   <StrictMode>
-    <RouterProvider router={createAppRouter()} />
+    <ProvidersProvider value={providers}>
+      <RouterProvider router={createAppRouter()} />
+    </ProvidersProvider>
   </StrictMode>,
 );

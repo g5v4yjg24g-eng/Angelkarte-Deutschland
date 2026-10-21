@@ -5,7 +5,6 @@ import { collectErrors, waitForApp } from './helpers';
 test.use({ serviceWorkers: 'block' });
 
 const VIEWS = [
-  { path: '/', heading: 'Die Deutschlandkarte entsteht gerade' },
   { path: '/fangbuch', heading: 'Fangbuch' },
   { path: '/statistik', heading: 'Statistik' },
   { path: '/mehr', heading: 'Mehr' },
@@ -22,7 +21,6 @@ test('Navigation über die Hauptleiste erreicht alle Bereiche', async ({ page })
     ['Fangbuch', 'Fangbuch'],
     ['Statistik', 'Statistik'],
     ['Mehr', 'Mehr'],
-    ['Karte', 'Die Deutschlandkarte entsteht gerade'],
   ] as const) {
     await nav.getByRole('link', { name }).click();
     await expect(page.getByRole('heading', { name: heading })).toBeVisible();

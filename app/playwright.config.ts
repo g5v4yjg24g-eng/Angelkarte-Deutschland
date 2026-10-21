@@ -7,7 +7,14 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list']],
-  use: { baseURL: 'http://localhost:4173', trace: 'retain-on-failure', locale: 'de-DE' },
+  use: {
+    baseURL: 'http://localhost:4173',
+    trace: 'retain-on-failure',
+    locale: 'de-DE',
+    timezoneId: 'Europe/Berlin',
+    // WebGL für MapLibre in Headless-Chromium (Software-Rendering)
+    launchOptions: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] },
+  },
   webServer: {
     command: 'pnpm build && pnpm preview',
     url: 'http://localhost:4173',
