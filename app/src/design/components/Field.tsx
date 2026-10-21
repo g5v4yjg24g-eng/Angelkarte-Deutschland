@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import { useId, type InputHTMLAttributes, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import styles from './Field.module.css';
 
 type Common = { label: string; hint?: string; error?: string | undefined };
@@ -33,6 +33,36 @@ export function TextArea({
     <div className={styles.field}>
       <label htmlFor={id}>{label}</label>
       <textarea id={id} rows={3} aria-describedby={desc} aria-invalid={!!error || undefined} {...rest} />
+      {hint && <small id={`${id}-h`}>{hint}</small>}
+      {error && (
+        <small id={`${id}-e`} className={styles.error}>
+          {error}
+        </small>
+      )}
+    </div>
+  );
+}
+
+/** Auswahlliste (natives select: auf Mobilgeräten die gewohnte Systemauswahl). */
+export function SelectField<T extends string>({
+  label,
+  hint,
+  error,
+  options,
+  ...rest
+}: Common & { options: readonly { value: T; label: string }[] } & SelectHTMLAttributes<HTMLSelectElement>) {
+  const id = useId();
+  const desc = [hint && `${id}-h`, error && `${id}-e`].filter(Boolean).join(' ') || undefined;
+  return (
+    <div className={styles.field}>
+      <label htmlFor={id}>{label}</label>
+      <select id={id} aria-describedby={desc} aria-invalid={!!error || undefined} {...rest}>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
       {hint && <small id={`${id}-h`}>{hint}</small>}
       {error && (
         <small id={`${id}-e`} className={styles.error}>
