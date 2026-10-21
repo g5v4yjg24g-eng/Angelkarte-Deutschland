@@ -5,9 +5,10 @@ on:
     branches: ['**']
   pull_request:
 
+# Gepinnt: Playwright 1.56 (passend zum lokalen Chromium) unterstützt Ubuntu 26.04 (ubuntu-latest) nicht.
 jobs:
   app:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
