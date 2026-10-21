@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-21 · Status: **M3 abgeschlossen** · nächster Schritt M4 (Gewässerbasis) nach Freigabe
+Stand: 2026-10-21 · Status: **M4 abgeschlossen** · nächster Schritt M5 (Fangbuch) nach Freigabe
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -127,12 +127,12 @@ M0 Entscheidungen ──► M1 Gerüst ──► M2 Lokale Daten ──► M5 Fa
 M11 Härtung/Release (nach M1–M7)
 ```
 
-### M0 – Entscheidungen und Spikes (vor Code) — ✅ erledigt 2026-10-21 (außer S1b/S2b)
+### M0 – Entscheidungen und Spikes (vor Code) — ✅ erledigt 2026-10-21
 - ✅ Entscheidungen E1–E9 (§6).
 - ✅ **Spike S1:** Gewässer-Pipeline mit **NRW** (Geofabrik/Bremen war in der Umgebung gesperrt). Ergebnis: 163 294 Gewässer, 20,9 MB PMTiles, Hochrechnung DE 85–220 MB. Details DATA_SOURCES §10.1.
 - ✅ **Spike S2:** OpenFreeMap + MapLibre + eigenes Overlay headless gemessen. Details DATA_SOURCES §10.2.
-- ☐ **S1b:** voller Deutschland-Lauf (vor M4; braucht Geofabrik-Freigabe).
-- ☐ **S2b:** Test auf deinen Geräten (Checkliste `tools/map-spike/README.md`; sinnvoll, sobald M1 eine Vorschau-URL hat).
+- ✅ **S1b:** voller Deutschland-Lauf: 157 MB PMTiles, Hochrechnung bestätigt. Details DATA_SOURCES §10.4.
+- ✅ **S2b:** Gerätetest durch dich (2026-10-21): Bedienung, Tempo und Darstellung in Ordnung; Kartenstil daraufhin geändert (hell `liberty`, dunkel eigene Farben nach deiner Vorlage), DATA_SOURCES §10.2.
 - *Abnahme:* Entscheidungen in PLAN.md dokumentiert; Messwerte S1 und S2 in DATA_SOURCES.md eingetragen.
 
 ### M1 – Projektgerüst, Designsystem, PWA-Hülle — ✅ erledigt 2026-10-21 (Branch `m1/app-geruest`)
@@ -160,7 +160,7 @@ Abhängig von: M1
 
 ### M3 – Deutschlandkarte — ✅ erledigt 2026-10-21 (Branch `m3/karte`)
 Abhängig von: M1
-- ✅ MapLibre GL JS 6 (lazy geladen) mit OpenFreeMap über den Port `BasemapProvider`; Stil `positron` (hell) / `dark` (dunkel) folgt dem Theme; **deutsche Beschriftung** (`name:de` vor `name`).
+- ✅ MapLibre GL JS 6 (lazy geladen) mit OpenFreeMap über den Port `BasemapProvider`; Stil folgt dem Theme (seit M4: `liberty`, dunkel umgefärbt); **deutsche Beschriftung** (`name:de` vor `name`).
 - ✅ Ohne Netz oder bei gestörtem Anbieter: schlichter Ersatzstil mit Hinweis; eigene Markierungen bleiben sichtbar und antippbar (MAP-5).
 - ✅ Tipp auf die Karte → Sheet „Neu an dieser Stelle": Angelstelle, Angelsteg, Parkplatz, Zugang, Gefahrenstelle, Sonstige Markierung. Fang/Kontakt sichtbar als „folgt mit M5".
 - ✅ Orte ansehen, bearbeiten (auch Art ändern), löschen mit „Rückgängig"; Fänge aus Sicherungen werden angezeigt und sind antippbar (Details, Bearbeiten ab M5).
@@ -171,12 +171,16 @@ Abhängig von: M1
 - *Gefundene und behobene Fehler:* verspätetes `close`-Ereignis des Dialogs schloss ein direkt danach geöffnetes Sheet; Erinnerungsleiste verschob die Karte während der Bedienung.
 - *Offen:* 60 fps auf Mittelklasse-Android ist headless nicht messbar → Gerätetest S2b. Gewässer-Ebene folgt in M4.
 
-### M4 – Gewässerbasis (Stufe 1) und Gewässerprofil
+### M4 – Gewässerbasis (Stufe 1) und Gewässerprofil — ✅ erledigt 2026-10-21 (Branch `m4/gewaesser`)
 Abhängig von: M3, Spike S1
-- Datenpipeline `tools/water-pipeline` (OSM-PBF → gefilterte Gewässer → PMTiles + Suchindex + Gewässer-Metadaten), reproduzierbar per Skript, mit Versionsnummer und Datenstand.
-- Gewässer-Layer antippbar → Profil (Name, Typ, Fläche, Lage/Gemeinde/Land, Quelle OSM + Stand, Tiefenkartenstatus „nicht verfügbar", Rechtsstatus des Landes, eigene Stellen/Fänge).
-- Suche: Gewässer und Orte aus eigenem Index (kein Nominatim-Autocomplete).
-- *Abnahme:* Stichprobe von 20 bekannten Gewässern (Liste in TEST_PLAN) auffindbar und korrekt verortet; Profil zeigt fehlende Angaben als „unbekannt"; der Datenstand ist sichtbar.
+- ✅ Datenpipeline `tools/water-pipeline` (OSM-PBF → gefilterte Gewässer → PMTiles + Suchindex + Manifest mit Datenstand), reproduzierbar per Skript und als GitHub-Actions-Lauf „Gewässerdaten erzeugen" mit Veröffentlichung als Release `wasserdaten-*`.
+- ✅ Prüfung jedes Objekts nach dem Kacheln (vorhanden **und** unveränderte Eigenschaften); tippecanoe ≥ 2.55 erzwungen, weil 2.49 Objekte verlor und IDs vertauschte (DATA_SOURCES §10.4).
+- ✅ Grenzgewässer (Bodensee, Stettiner Haff u. a.) werden beim Bauen über eine Overpass-Abfrage vervollständigt (deine Entscheidung, Option A).
+- ✅ Gewässer antippbar → Profil: Name, Typ, Fläche (aus Geometrie, gekennzeichnet), Lage (Gemeinde/Kreis/Land), Quelle OSM + Datenstand + Link, Tiefenkarte „nicht verfügbar" ohne Knopf, Rechtsstatus des Landes („in Arbeit, M7"), eigene Orte/Fänge am Gewässer, „Hier markieren". Hervorhebung des gewählten Gewässers.
+- ✅ Suche nach Gewässern und Orten aus eigenem Index (kein Nominatim), Umlaut-tolerant, OSM-Zusatznamen (z. B. Möhnesee ↔ Möhnetalsperre), Sortierung nach Treffergüte, Bedeutung und Nähe.
+- ✅ Kartenstil nach Gerätetest überarbeitet (hell `liberty`; dunkel petrolgrünes Land, sattblaues Wasser).
+- *Abnahme (Ergebnisse):* Stichprobe WAT-2 automatisiert (`src/sample.ts`): 19/20 vor der Grenzgewässer-Ergänzung, nur der Bodensee fehlte; der Actions-Lauf veröffentlicht nur bei 20/20. 103 Unit-Tests und 51 E2E-Tests grün (ein Intro-Zeittest kippt gelegentlich unter Volllast, einzeln stabil). Datenstand im Profil sichtbar, Abdeckung in der Suche; fehlende Angaben als „unbekannt"/„keine geprüften Angaben".
+- *Offen:* WAT-4 (Nachfolger bei weggefallener `wid`) wird mit dem ersten Datenpaket-Update fällig [O]. Ob GitHub Pages die 157-MB-Datei dauerhaft ausliefert, zeigt der erste Live-Betrieb [O]. Fließgewässer zeigen nur den angetippten Abschnitt.
 
 ### M5 – Fangbuch und Sessions
 Abhängig von: M2, M4
@@ -249,7 +253,7 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 | **E1** | Frontend-Stack | **React + Vite + TypeScript** | Begründung in ARCHITECTURE §2 |
 | **E2** | Basiskarte | **OpenFreeMap für MVP, eigene Protomaps-PMTiles ab M10** | Anbieter per Konfiguration austauschbar |
 | **E3** | Kommerziell? | **Nicht kommerziell** | Open-Meteo Free ist nutzbar (CC BY 4.0, Attribution). Bei späterer Kommerzialisierung muss Wetter neu bewertet werden. |
-| **E4** | Hosting | **GitHub Pages für M1–M3, Cloudflare Pages + R2 ab M4** | [O] R2-Konditionen vor M4 prüfen |
+| **E4** | Hosting | **GitHub Pages**; Gewässerdaten als GitHub-Release, beim Bauen eingebunden (Entscheidung M4, ARCHITECTURE §6.1a). Cloudflare R2 nur noch Option (Offline-Regionen M10) | Pages-Grenzen beobachten [O] |
 | **E5** | App-Name | **„Fangpunkt"** (Arbeitsname) | Markenrecherche (DPMA) vor öffentlichem Start [O] |
 | **E6** | Tiefenkarten | **Kein Tiefen-Feature im MVP**; Schnittstelle vorbereiten; Anfragen an Garmin, LM M-V, Anglerverband HH parallel | M9 erst nach schriftlicher Lizenzklärung |
 | **E7** | Erstes Land für Rechtsinhalte | **NRW** | M7 erfasst NRW vollständig (neu geprüft am amtlichen Text). Weitere Länder in M8. Hamburg ist nicht mehr vorgezogen. |
@@ -264,7 +268,7 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 |---|---|---|---|
 | R1 | Datenverlust durch Browser-Löschung (iOS löscht Speicher von nicht installierten Websites nach 7 Tagen ohne Nutzung [A, verbreitet dokumentiert; O: aktuellen WebKit-Stand prüfen]) | hoch | Installation empfehlen, `persist()`, Backup-Erinnerung, Export |
 | R2 | OpenFreeMap fällt aus oder ändert die Bedingungen | mittel | Anbieter konfigurierbar; Fallback-Style; M10 Self-Hosting |
-| R3 | Größe der Gewässerdaten Deutschland: hochgerechnet 85–220 MB PMTiles, 22–58 MB Metadaten (S1) | mittel | Metadaten nach Kachel teilen; Hosting mit Range-Requests (R2); S1b bestätigt die Zahlen |
+| R3 | Größe der Gewässerdaten Deutschland: **157 MB PMTiles** (S1b), Metadaten stecken in den Kacheln | mittel | Range-Requests (Pages liefert 206); bei Problemen Aufteilung je Bundesland oder R2 |
 | R4 | Tiefen-/Zonendaten ohne Nutzungsrecht | hoch (rechtlich) | Nur mit schriftlicher Erlaubnis; Altdaten HH nicht übernehmen |
 | R5 | Rechtsangaben veraltet oder falsch | hoch | Prüfdatum, Veraltungswarnung, Hinweis „keine Rechtsauskunft", Quelle direkt verlinkt |
 | R6 | iOS-PWA-Einschränkungen (kein Hintergrund-GPS, Push nur installiert ab 16.4) | mittel | Keine Funktion darauf aufbauen |
@@ -275,8 +279,9 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 ## 8. Empfohlener nächster Schritt
 
 1. ~~Entscheidungen E1–E9~~ erledigt.
-2. ~~M0~~ erledigt (Ergebnisse DATA_SOURCES §10); offen: S1b, S2b.
+2. ~~M0~~ erledigt (Ergebnisse DATA_SOURCES §10).
 3. ~~M1~~ erledigt.
 4. ~~M2~~ erledigt.
 5. ~~M3~~ erledigt.
-6. **M4** (Gewässer-Pipeline Deutschland, Gewässer-Ebene, Suche, Gewässerprofil), nach deiner Freigabe.
+6. ~~M4~~ erledigt.
+7. **M5** (Fangbuch und Sessions), nach deiner Freigabe.
