@@ -181,6 +181,8 @@ async function main(): Promise<void> {
       if (t === 'excluded') { counts.excludedAreas++; continue; }
       const ha = area(f) / 1e4;
       if (ha < 1e-4) { counts.degenerate++; continue; } // < 1 m²: Splitter, kein Gewässer
+      // Mittlere Breite 2·Fläche/Umfang < 0,5 m: Digitalisierungsstreifen, fällt bei z14 unter die Kachelauflösung
+      if ((2 * ha * 1e4) / (length(f) * 1000) < 0.5) { counts.degenerate++; continue; }
       if (ha < 0.1) counts.tinyAreasUnder01ha++;
       if (!tags.name) counts.unnamedAreas++;
       const wid = osmWid(f.id);

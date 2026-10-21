@@ -8,7 +8,7 @@ Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`,
 - Karte: `app/src/features/map`. E2E-Tests dürfen OpenFreeMap nicht abrufen (`page.route` auf lokalen Teststil). Auf eigene Symbole erst tippen, wenn sie gerendert sind (Symbolplatzierung ist verzögert).
 - Datenschicht: `app/src/data` (Dexie), Fachlogik `app/src/domain` (rein, ohne DB). Tests der Datenschicht laufen mit `// @vitest-environment node` + fake-indexeddb (jsdom-Blob ist unvollständig).
 - App liegt in `app/` (pnpm-Workspace mit `tools/*`). Marken-Master: `app/src/design/brand/fish.json` → nach Änderungen `pnpm icons`.
-- Gewässer-Pipeline: `tools/water-pipeline` (Doku dort). Kein Feature-`tippecanoe.minzoom` verwenden (Bug, siehe DATA_SOURCES §10.1); die Vollständigkeitsprüfung in `run.sh` nicht entfernen.
+- Gewässer-Pipeline: `tools/water-pipeline` (Doku dort). Nur tippecanoe ≥ 2.55 (2.49 aus Ubuntu verliert Objekte und vertauscht IDs, DATA_SOURCES §10.4). Die Prüfung in Schritt 5 (`src/verify.ts`) nie entfernen oder lockern.
 - Rechtsinhalte zuerst nur für **NRW** (E7).
 - Altprojekte `g5v4yjg24g-eng/angelkarte` und `g5v4yjg24g-eng/angelkarte-hohendeicher-see` sind **nur Referenz**. Nie verändern, nie Code oder Daten 1:1 kopieren (insbesondere nicht `tiefen.js`/`zonen.js`, Lizenz ungeklärt).
 
