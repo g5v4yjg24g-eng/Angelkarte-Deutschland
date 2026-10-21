@@ -1,0 +1,14 @@
+{
+  "name": "@fangpunkt/map-spike",
+  "private": true,
+  "type": "module",
+  "description": "Spike S2: OpenFreeMap-Basiskarte + eigenes Gewässer-PMTiles in MapLibre, mit Messskript",
+  "scripts": {
+    "serve": "node serve.mjs",
+    "measure": "node measure.mjs"
+  },
+  "dependencies": {
+    "maplibre-gl": "6.15.0",
+    "pmtiles": "4.5.0"
+  }
+}

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Fangpunkt – Karten-Spike</title>
+  <link rel="stylesheet" href="/vendor/maplibre/maplibre-gl.css">
+  <script type="importmap">{ "imports": { "fflate": "/vendor/fflate/browser.js" } }</script>
+  <style>
+    html, body, #map { margin: 0; height: 100%; }
+    body { font: 14px system-ui, sans-serif; }
+    #info { position: absolute; top: 8px; left: 8px; right: 8px; z-index: 1; background: #fffe; color: #123;
+      padding: 8px 10px; border-radius: 8px; box-shadow: 0 2px 8px #0003; max-width: 420px; }
+    #info b { display: block; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="info" aria-live="polite"><b>Karten-Spike</b><span id="sel">Gewässer antippen …</span></div>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

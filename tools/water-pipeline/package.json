@@ -1,0 +1,24 @@
+{
+  "name": "@fangpunkt/water-pipeline",
+  "private": true,
+  "type": "module",
+  "description": "OSM-Auszug → Gewässer-PMTiles, Suchindex und Gewässer-Metadaten",
+  "scripts": {
+    "build": "bash run.sh",
+    "process": "tsx src/process.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@turf/area": "7.4.0",
+    "@turf/boolean-point-in-polygon": "7.4.0",
+    "@turf/length": "7.4.0",
+    "@turf/point-on-feature": "7.4.0",
+    "flatbush": "4.6.2"
+  },
+  "devDependencies": {
+    "@types/geojson": "7946.0.16",
+    "@types/node": "26.6.5",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2"
+  }
+}

@@ -1,0 +1,6 @@
+node_modules/
+# Pipeline-/Spike-Ausgaben (ODbL-Daten, groß) nicht einchecken
+tools/map-spike/data/
+tools/*/out/
+*.pmtiles
+*.osm.pbf

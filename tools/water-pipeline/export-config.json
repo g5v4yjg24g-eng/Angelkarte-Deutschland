@@ -1,0 +1,11 @@
+{
+  "attributes": { "type": false, "id": false },
+  "linear_tags": ["waterway=river", "waterway=canal", "waterway=stream"],
+  "area_tags": [
+    "natural=water",
+    "water",
+    "landuse=reservoir",
+    "landuse=basin",
+    "boundary=administrative"
+  ]
+}
