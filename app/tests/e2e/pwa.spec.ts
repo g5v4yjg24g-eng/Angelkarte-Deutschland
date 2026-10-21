@@ -1,5 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { waitForApp } from './helpers';
+import { waitForApp, useLocalExternals } from './helpers';
+
+test.beforeEach(async ({ page }) => {
+  await useLocalExternals(page);
+});
 
 test('PWA-1: Manifest ist vollständig und alle Icons sind abrufbar', async ({ page, request }) => {
   await page.goto('/');

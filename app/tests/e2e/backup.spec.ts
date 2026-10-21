@@ -4,9 +4,13 @@ import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { legacyExport } from '../../src/test/fixtures/legacy-angelkarte-v2';
-import { collectErrors, waitForApp } from './helpers';
+import { collectErrors, waitForApp, useLocalExternals } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
+
+test.beforeEach(async ({ page }) => {
+  await useLocalExternals(page);
+});
 
 const dir = mkdtempSync(join(tmpdir(), 'fangpunkt-e2e-'));
 const legacyFile = join(dir, 'angelkarte-2026-10-18.json');

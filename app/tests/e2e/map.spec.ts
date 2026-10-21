@@ -4,11 +4,14 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { legacyExport } from '../../src/test/fixtures/legacy-angelkarte-v2';
-import { collectErrors, waitForApp } from './helpers';
+import { collectErrors, serveWaterFixture, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
 // Lokaler Ersatz für OpenFreeMap: Tests belasten den Dienst nicht und laufen ohne Netz.
+/** Erwartete Meldungen: Gewässerdaten sind in diesen Tests absichtlich nicht vorhanden (404). */
+const unexpected = (errors: string[]) => errors.filter((e) => !/status of 404/.test(e));
+
 const TEST_STYLE = {
   version: 8,
   name: 'test',
@@ -17,6 +20,8 @@ const TEST_STYLE = {
 };
 
 async function mockBasemap(page: Page) {
+  // Kartentests ohne Gewässerdaten (die prüft water.spec.ts); sonst öffnet ein Tipp ins Wasser das Profil
+  await serveWaterFixture(page, { missing: true });
   let styleRequests = 0;
   await page.route('https://tiles.openfreemap.org/**', (route) => {
     styleRequests++;
@@ -160,7 +165,7 @@ test('MAP-3/MRK-1: Tipp auf die Karte legt einen Steg an; bearbeiten, löschen, 
   await waitForApp(page);
   await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'));
   await expect.poll(() => placeCount(page)).toBe(1);
-  expect(errors).toEqual([]);
+  expect(unexpected(errors)).toEqual([]);
 });
 
 test('Legende zeigt alle Symbole', async ({ page }) => {
@@ -246,7 +251,7 @@ test('MAP-5: Ohne Netz bleibt die Karte mit eigenen Markierungen nutzbar', async
   await expect.poll(() => placeCount(page)).toBe(1);
   await context.setOffline(false);
   await expect(page.getByText(/^Offline:/)).toHaveCount(0);
-  expect(errors.filter((e) => !/ERR_INTERNET_DISCONNECTED|Failed to fetch/.test(e))).toEqual([]);
+  expect(unexpected(errors).filter((e) => !/ERR_INTERNET_DISCONNECTED|Failed to fetch/.test(e))).toEqual([]);
 });
 
 test('Fänge aus einer Sicherung erscheinen auf der Karte; Gruppen lassen sich aufzoomen', async ({

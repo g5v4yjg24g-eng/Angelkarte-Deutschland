@@ -22,7 +22,11 @@ osmium export "$OUT/filtered.osm.pbf" -c "$HERE/export-config.json" \
   --add-unique-id=type_id -f geojsonseq -o "$OUT/export.geojsonseq" --overwrite
 
 echo "3/4 Klassifizieren, Verwaltungszuordnung, Suchindex (Node)"
-node --import tsx "$HERE/src/process.ts" "$OUT/export.geojsonseq" "$OUT"
+# Datenstand aus dem PBF-Kopf (Replikationszeitpunkt des Auszugs)
+# (Zugeschnittene Auszüge verlieren ihn – dann DATA_DATE von außen übergeben.)
+DATA_DATE=${DATA_DATE:-$(osmium fileinfo -g header.option.osmosis_replication_timestamp "$IN" 2>/dev/null || true)}
+DATA_DATE="$DATA_DATE" SOURCE_NAME="$(basename "$IN")" \
+  node --max-old-space-size=6144 --import tsx "$HERE/src/process.ts" "$OUT/export.geojsonseq" "$OUT"
 
 echo "4/4 Vektorkacheln (tippecanoe → PMTiles)"
 # Zoomfilter über das Attribut mz (Mindest-Zoom). Feature-"tippecanoe.minzoom" wird bewusst nicht

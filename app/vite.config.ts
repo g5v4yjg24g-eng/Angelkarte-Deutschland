@@ -45,7 +45,17 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,mjs,css,html,svg,png,woff2,webmanifest}'],
         navigateFallback: 'index.html',
+        // Gewässerdaten (öffentliche Daten) nie vorab, sondern nur bei Abruf in den Cache
+        globIgnores: ['**/data/**'],
         cleanupOutdatedCaches: true,
+        runtimeCaching: [
+          {
+            // Manifest und Suchindex: offline nutzbar, sobald einmal geladen (Suche nach besuchten Anfangsbuchstaben)
+            urlPattern: /\/(water-manifest\.json|search\/[a-z0-9]+\.json)$/,
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'fangpunkt-water-index', expiration: { maxEntries: 800 } },
+          },
+        ],
       },
     }),
   ],
