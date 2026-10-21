@@ -14,7 +14,7 @@ Stand: 2026-10-21 · Entwurf · Kennzeichnung: **[V]** verifiziert · **[A]** An
 
 | Schicht | Wahl | Begründung | Verworfen |
 |---|---|---|---|
-| Sprache | **TypeScript (strict)** | Gefordert; fängt Modellfehler früh | – |
+| Sprache | **TypeScript 6.0 (strict)** | Gefordert; fängt Modellfehler früh. TS 7 erst, wenn typescript-eslint es unterstützt (Stand 2026-10: < 6.1) | – |
 | Build | **Vite** | Schnell, Standard für SPAs, sehr gutes PWA-Plugin | Webpack (langsamer, mehr Konfiguration) |
 | UI | **React 19** | Größtes Ökosystem, gut dokumentiert, viele Entwickler finden sich zurecht; `react-map-gl` bzw. direkte MapLibre-Anbindung erprobt | SvelteKit (kleiner, aber weniger Bibliotheken und SSR-Fokus unnötig); Vanilla (Altprojekt zeigt Wartungsgrenzen) |
 | Routing | **React Router (Library-Modus)** | Einfach, URL-fähig (Deep-Links auf Gewässer und Fang) | TanStack Router (mächtiger als nötig) |
@@ -169,9 +169,10 @@ Online-Status: Ein Indikator in der Kopfzeile erscheint nur offline. Online-pfli
 
 - Logo: ein stilisierter Fisch (Seitenansicht, 2–3 Flächen, geometrisch) als **ein SVG-Master** (`design/brand/fish.svg`). Daraus werden per Build-Skript alle PNG-Icons (inkl. `maskable` mit Safe Zone 80 %) und das Apple-Touch-Icon erzeugt.
 - Intro: Inline-SVG + CSS-Animation **direkt in `index.html`**, damit es vor dem JS-Bundle sichtbar ist. Der Fisch schwimmt ein, der Schwanz schlägt einmal, dann blendet es zur App über.
-  - Dauer: max. 1,2 s; endet früher, wenn die App schneller bereit ist und mindestens 600 ms vergangen sind.
+  - Dauer: Mindestens 750 ms Animation, danach 250 ms Ausblenden, sobald die App bereit ist (umgesetzt in M1). Ist die App langsamer, bleibt das Intro als Ladebildschirm stehen, höchstens 8 s.
   - Tipp überspringt das Intro.
-  - `prefers-reduced-motion: reduce` → statisches Logo, Überblendung ≤ 200 ms.
+  - `prefers-reduced-motion: reduce` → statisches Logo, 200 ms, Überblendung 150 ms.
+  - Theme-Wahl liegt bewusst in `localStorage` (`fangpunkt.theme`): Sie muss vor dem ersten Zeichnen synchron lesbar sein. Alle übrigen Einstellungen kommen ab M2 in die Datenbank.
   - Kaltstart-Erkennung: Das Intro läuft nur beim Laden des Dokuments. Eine Rückkehr aus dem Hintergrund lädt das Dokument nicht neu, deshalb ist kein Zusatzcode nötig. Bei `pageshow` mit `persisted=true` (bfcache) wird es nicht erneut gezeigt.
 - Designsystem: Tokens in `design/tokens.css`. Vorschlag „Tiefwasser" (wird in M1 visuell abgestimmt):
   - Primär Petrol `#0F5C6E`, Akzent Signalorange `#F2994A` (für Fang-Hervorhebungen), Neutraltöne mit leichtem Blaustich, Fehler `#C2410C`, Erfolg `#15803D`.

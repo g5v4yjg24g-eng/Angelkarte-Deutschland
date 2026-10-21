@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-21 · Status: **M0 abgeschlossen** · nächster Schritt M1 nach Freigabe
+Stand: 2026-10-21 · Status: **M1 abgeschlossen** · nächster Schritt M2 (lokale Datenhaltung) nach Freigabe
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -135,15 +135,18 @@ M11 Härtung/Release (nach M1–M7)
 - ☐ **S2b:** Test auf deinen Geräten (Checkliste `tools/map-spike/README.md`; sinnvoll, sobald M1 eine Vorschau-URL hat).
 - *Abnahme:* Entscheidungen in PLAN.md dokumentiert; Messwerte S1 und S2 in DATA_SOURCES.md eingetragen.
 
-### M1 – Projektgerüst, Designsystem, PWA-Hülle
+### M1 – Projektgerüst, Designsystem, PWA-Hülle — ✅ erledigt 2026-10-21 (Branch `m1/app-geruest`)
 Abhängig von: M0
-- Vite + React + TypeScript (strict), ESLint, Prettier, Vitest, Playwright, CI (GitHub Actions).
-- Design-Tokens (Farben, Typo, Abstände, Radien, Schatten) hell und dunkel; Basiskomponenten (Button, IconButton, Sheet, Dialog, Field, Toast, EmptyState, Badge).
-- Fisch-Logo als SVG-Master, daraus Icons (192, 512, maskable, Apple-Touch, Favicon).
-- Intro-Animation (Kaltstart, ≤ 1,2 s, abbrechbar, Reduced-Motion-Variante).
-- App-Shell mit Navigation: Karte · Fangbuch · Statistik · Mehr (Recht, Daten & Backup, Einstellungen, Info/Quellen).
-- vite-plugin-pwa: Precache, Update-Hinweis („Neue Version – neu laden").
-- *Abnahme:* Lighthouse PWA installierbar; Lighthouse Performance ≥ 90 (mobil, Shell); Intro erscheint bei Kaltstart und nicht nach Tab-Wechsel; Reduced Motion zeigt statisches Logo ≤ 300 ms.
+- ✅ pnpm-Workspace (`app/`, `tools/*`); Vite 8, React 19, TypeScript 6.0 strict, ESLint mit Schichtregeln, Prettier, Vitest, Playwright; CI-Workflow (`.github/workflows/ci.yml`).
+- ✅ Design-Tokens „Tiefwasser" hell/dunkel mit **automatischem Kontrasttest** (34 Farbpaare, WCAG AA); Schriften Inter + Fraunces selbst gehostet (nur latin/latin-ext).
+- ✅ Basiskomponenten: Button, IconButton, EmptyState, Badge, ListLink, SegmentedControl, Toast, Page/Section. *Sheet, Dialog und Field folgen, wenn sie gebraucht werden (M3/M5).*
+- ✅ Fisch-Logo als **ein Master** (`app/src/design/brand/fish.json`) → React-Komponente, Intro und alle Icons (`pnpm icons`: 192, 512, maskable 512, Apple-Touch 180, favicon.svg).
+- ✅ Intro inline in `index.html`: nur beim Kaltstart, Mindestdauer 750 ms + 250 ms Ausblenden, per Tipp überspringbar, Reduced Motion: statisch (200 ms), Sicherheitsnetz 8 s.
+- ✅ App-Shell: Karte · Fangbuch · Statistik · Mehr (unten auf dem Handy, Schiene links ab 900 px), Einstellungen (Theme System/Hell/Dunkel), Info & Quellen, 404, Fehlergrenze, Offline-Hinweis.
+- ✅ vite-plugin-pwa: Precache (544 KB), Update-Hinweis „Jetzt aktualisieren / Später", Navigations-Fallback offline.
+- ✅ Vorschau-Workflow für GitHub Pages (`.github/workflows/pages.yml`), aktiv sobald Pages auf „GitHub Actions" steht.
+- *Abnahme (Ergebnisse):* 47 Unit-Tests, 24 E2E-Tests (mobil + Desktop) grün, darunter PWA-1/2/3/4/6, axe ohne ernste Verstöße hell/dunkel, kein horizontales Scrollen bei 390 px, Touch-Ziele ≥ 44 px. Lighthouse mobil: Performance 96, Barrierefreiheit 100, Best Practices 100, LCP 2,4 s. JS 105 KB gzip.
+- *Offen:* PWA-5 (Update-Hinweis bei neuer Version) nur manuell geprüft, nicht automatisiert. Lighthouse 12 hat keine PWA-Kategorie mehr; Installierbarkeit ist über PWA-1 (Manifest, Icons) und den aktiven Service Worker (PWA-6) belegt. Test auf echten Geräten steht aus (S2b).
 
 ### M2 – Lokale Datenhaltung
 Abhängig von: M1
@@ -266,4 +269,5 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 
 1. ~~Entscheidungen E1–E9~~ erledigt.
 2. ~~M0~~ erledigt (Ergebnisse DATA_SOURCES §10); offen: S1b, S2b.
-3. **M1** (Projektgerüst, Designsystem, Logo, Intro, PWA-Hülle), nach deiner Freigabe.
+3. ~~M1~~ erledigt.
+4. **M2** (lokale Datenhaltung, Export/Import, Import der Alt-App), nach deiner Freigabe.

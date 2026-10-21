@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Fangpunkt</title>
+    <meta
+      name="description"
+      content="Gewässer finden, Angelstellen merken, Fänge dokumentieren – in ganz Deutschland."
+    />
+    <meta name="theme-color" content="#0B2A33" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Fangpunkt" />
+    <script>
+      // Vor dem ersten Zeichnen: gespeichertes Theme setzen (sonst blitzt das falsche auf).
+      try {
+        var t = localStorage.getItem('fangpunkt.theme');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+    <style>
+      /* Intro: nur beim vollständigen Laden der Seite (Kaltstart). Eine Rückkehr aus dem Hintergrund lädt
+         das Dokument nicht neu, deshalb erscheint es dort nicht. Details: ARCHITECTURE §8. */
+      #intro {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: grid;
+        place-items: center;
+        background: #0b2a33;
+        color: #e8f4f5;
+        transition: opacity 250ms ease-out;
+        cursor: pointer;
+      }
+      #intro.is-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #intro .intro-inner {
+        display: grid;
+        justify-items: center;
+        gap: 12px;
+      }
+      #intro svg {
+        width: min(44vw, 200px);
+        height: auto;
+        overflow: visible;
+      }
+      #intro .intro-word {
+        font:
+          650 30px/1 'Fraunces Variable',
+          Georgia,
+          'Times New Roman',
+          serif;
+        letter-spacing: 0.01em;
+      }
+      .intro-anim #intro .fish-body {
+        animation: fish-in 620ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+      .intro-anim #intro .fish-tail {
+        animation: tail-flick 360ms ease-in-out 380ms 1 both;
+      }
+      .intro-anim #intro .fish-eye {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: eye-pop 300ms cubic-bezier(0.3, 1.6, 0.5, 1) 520ms both;
+      }
+      .intro-anim #intro .fish-ripple {
+        stroke-dasharray: 80;
+        animation: ripple-draw 520ms ease-out 200ms both;
+      }
+      .intro-anim #intro .intro-word {
+        animation: word-in 380ms ease-out 480ms both;
+      }
+      @keyframes fish-in {
+        from {
+          transform: translateX(-38px);
+          opacity: 0;
+        }
+        to {
+          transform: none;
+          opacity: 1;
+        }
+      }
+      @keyframes tail-flick {
+        0%,
+        100% {
+          transform: rotate(0);
+        }
+        35% {
+          transform: rotate(-12deg);
+        }
+        70% {
+          transform: rotate(8deg);
+        }
+      }
+      @keyframes eye-pop {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+      @keyframes ripple-draw {
+        from {
+          stroke-dashoffset: 80;
+        }
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @keyframes word-in {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .intro-static #intro {
+        transition-duration: 150ms;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="intro" aria-hidden="true" title="Intro überspringen">
+      <div class="intro-inner">
+        <svg viewBox="0 0 100 100" role="presentation"><!--FISH--></svg>
+        <div class="intro-word">Fangpunkt</div>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        root.classList.add(reduce ? 'intro-static' : 'intro-anim');
+        root.dataset.intro = 'shown';
+        var start = performance.now();
+        // Mindestdauer, damit die Animation nicht abgeschnitten wirkt; danach blendet das Intro aus,
+        // sobald die App bereit ist. Die App wartet nie auf das Intro.
+        var MIN_MS = reduce ? 200 : 750;
+        var done = false;
+        function hide() {
+          if (done) return;
+          done = true;
+          var el = document.getElementById('intro');
+          if (!el) return;
+          el.classList.add('is-out');
+          setTimeout(
+            function () {
+              el.remove();
+              root.dataset.intro = 'done';
+            },
+            reduce ? 150 : 250,
+          );
+        }
+        window.__fangpunktAppReady = function () {
+          setTimeout(hide, Math.max(0, MIN_MS - (performance.now() - start)));
+        };
+        document.getElementById('intro').addEventListener('click', hide);
+        // Sicherheitsnetz: Lädt die App nicht (z. B. Fehler), verdeckt das Intro sie nicht ewig.
+        setTimeout(hide, 8000);
+      })();
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
