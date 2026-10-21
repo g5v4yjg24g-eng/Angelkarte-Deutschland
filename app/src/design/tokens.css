@@ -1,0 +1,108 @@
+/* Design-Tokens „Tiefwasser". Farben als Paare geprüft (WCAG AA) in tokens.test.ts.
+   Theme: System (Standard), erzwungen über <html data-theme="light|dark">. */
+:root {
+  color-scheme: light;
+  --color-bg: #f3f6f6;
+  --color-surface: #ffffff;
+  --color-surface-2: #e8eff0;
+  --color-border: #cfdcde;
+  --color-text: #0e2229;
+  --color-text-muted: #4a5f66;
+  --color-primary: #0f5c6e;
+  --color-primary-hover: #0b4a59;
+  --color-on-primary: #ffffff;
+  --color-accent: #f2994a;
+  --color-on-accent: #2b1600;
+  --color-success: #15803d;
+  --color-danger: #b93a0b;
+  --color-on-danger: #ffffff;
+  --color-warning-bg: #fdf0d5;
+  --color-warning-text: #6b3d00;
+  --color-focus: #c2620c;
+  --color-scrim: rgb(6 20 25 / 0.45);
+  --color-brand-deep: #0b2a33;
+
+  --font-ui: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  --leading: 1.5;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  --shadow-1: 0 1px 2px rgb(14 34 41 / 0.08), 0 1px 1px rgb(14 34 41 / 0.04);
+  --shadow-2: 0 6px 24px rgb(14 34 41 / 0.14);
+
+  --touch: 44px;
+  --nav-height: 64px;
+  --header-height: 56px;
+  --rail-width: 88px;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur-med: 250ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-bg: #0a181d;
+    --color-surface: #10242a;
+    --color-surface-2: #173139;
+    --color-border: #26444d;
+    --color-text: #e4eef0;
+    --color-text-muted: #9cb2b8;
+    --color-primary: #5cc4d6;
+    --color-primary-hover: #7fd3e1;
+    --color-on-primary: #06232a;
+    --color-accent: #f5a962;
+    --color-on-accent: #2b1600;
+    --color-success: #4ade80;
+    --color-danger: #f28b5c;
+    --color-on-danger: #2a0d00;
+    --color-warning-bg: #3a2a0c;
+    --color-warning-text: #f8d48a;
+    --color-focus: #f5a962;
+    --color-scrim: rgb(0 0 0 / 0.55);
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 8px 28px rgb(0 0 0 / 0.5);
+  }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-bg: #0a181d;
+  --color-surface: #10242a;
+  --color-surface-2: #173139;
+  --color-border: #26444d;
+  --color-text: #e4eef0;
+  --color-text-muted: #9cb2b8;
+  --color-primary: #5cc4d6;
+  --color-primary-hover: #7fd3e1;
+  --color-on-primary: #06232a;
+  --color-accent: #f5a962;
+  --color-on-accent: #2b1600;
+  --color-success: #4ade80;
+  --color-danger: #f28b5c;
+  --color-on-danger: #2a0d00;
+  --color-warning-bg: #3a2a0c;
+  --color-warning-text: #f8d48a;
+  --color-focus: #f5a962;
+  --color-scrim: rgb(0 0 0 / 0.55);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 8px 28px rgb(0 0 0 / 0.5);
+}

@@ -1,0 +1,87 @@
+/* Mobil: Kopfzeile oben, Navigationsleiste unten. Ab 900 px: Navigationsschiene links. */
+.shell {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: 'header' 'main' 'nav';
+  height: 100dvh;
+}
+.header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: calc(var(--header-height) + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) var(--space-4) 0;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 650;
+  font-size: var(--text-xl);
+  font-variation-settings: 'opsz' 48;
+  letter-spacing: 0.005em;
+}
+.main {
+  grid-area: main;
+  overflow: auto;
+  overscroll-behavior: contain;
+  min-width: 0;
+}
+.nav {
+  grid-area: nav;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  min-height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+.navItem {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 2px;
+  min-height: var(--touch);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+.navIcon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.active {
+  color: var(--color-text);
+}
+.active .navIcon {
+  background: var(--color-surface-2);
+  color: var(--color-primary);
+}
+
+@media (min-width: 900px) {
+  .shell {
+    grid-template-columns: var(--rail-width) 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: 'nav header' 'nav main';
+  }
+  .nav {
+    grid-template-columns: none;
+    grid-auto-rows: 72px;
+    align-content: start;
+    padding: var(--space-4) 0;
+    border-top: 0;
+    border-right: 1px solid var(--color-border);
+  }
+}

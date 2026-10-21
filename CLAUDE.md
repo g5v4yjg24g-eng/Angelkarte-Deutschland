@@ -4,7 +4,8 @@ Deutschlandweite Angel-App als PWA namens **„Fangpunkt"** (Arbeitsname, E5). N
 Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`, `DATA_MODEL.md`, `TEST_PLAN.md`. **Vor jeder größeren Änderung lesen.** Bei Abweichungen das Dokument im selben PR aktualisieren.
 
 ## Projektstatus
-- Phase: **M0 abgeschlossen** (Ergebnisse DATA_SOURCES.md §10). Nächster Schritt M1 nach Freigabe.
+- Phase: **M1 abgeschlossen** (PLAN.md §4). Nächster Schritt M2 nach Freigabe.
+- App liegt in `app/` (pnpm-Workspace mit `tools/*`). Marken-Master: `app/src/design/brand/fish.json` → nach Änderungen `pnpm icons`.
 - Gewässer-Pipeline: `tools/water-pipeline` (Doku dort). Kein Feature-`tippecanoe.minzoom` verwenden (Bug, siehe DATA_SOURCES §10.1); die Vollständigkeitsprüfung in `run.sh` nicht entfernen.
 - Rechtsinhalte zuerst nur für **NRW** (E7).
 - Altprojekte `g5v4yjg24g-eng/angelkarte` und `g5v4yjg24g-eng/angelkarte-hohendeicher-see` sind **nur Referenz**. Nie verändern, nie Code oder Daten 1:1 kopieren (insbesondere nicht `tiefen.js`/`zonen.js`, Lizenz ungeklärt).
@@ -42,7 +43,7 @@ Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`,
 - UI immer auch bei 390 px Breite und im Dunkelmodus prüfen; `prefers-reduced-motion` beachten.
 - Leere, Lade- und Fehlerzustände sind Teil jeder Ansicht, nicht Nacharbeit.
 
-## Befehle (gültig ab M1)
+## Befehle (im Repo-Root)
 ```
 pnpm install
 pnpm dev          # Entwicklungsserver
@@ -50,6 +51,7 @@ pnpm build        # Produktionsbuild inkl. SW
 pnpm typecheck
 pnpm lint
 pnpm test         # Vitest
-pnpm e2e          # Playwright (Chromium ist vorinstalliert, kein "playwright install")
+pnpm e2e          # Playwright gegen den Produktionsbuild (Chromium vorinstalliert; @playwright/test bleibt auf 1.56.1 = chromium-1194)
+pnpm icons        # App-Icons aus dem Marken-Master erzeugen
 pnpm validate:data
 ```
