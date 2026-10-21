@@ -240,6 +240,9 @@ Aufbau: MapLibre GL JS 6.15.0 (BSD-3-Clause) und pmtiles 4.5.0 (BSD-3-Clause) [V
 - **Umgesetzt in M3 (überholt):** `positron`/`dark`; die Stile beschriften standardmäßig international/englisch, die App stellt auf `name:de` um [V: Bildvergleich 2026-10-21].
 - **Empfehlung für M3 (ursprünglich):** `positron` (hell) und `dark` (dunkel) als Basis. Sie sind ruhiger und leichter als `liberty`, und das eigene Gewässer-Overlay hebt sich besser ab. Die endgültige Wahl folgt nach S2b auf deinen Geräten.
 
+### 10.3 Umgebung
+- `download.geofabrik.de` wird in der Cloud-Umgebung von der Netzwerkrichtlinie gesperrt (Verbindungsabbruch) [V]. Ausweichquelle `download.openstreetmap.fr` bietet nur NRW und dessen Regierungsbezirke [V]. Für S1b genutzt: `download.openstreetmap.fr/extracts/europe/germany.osm.pbf` (Deutschland gesamt, mit `.md5`) [V 2026-10-21]. `overpass-api.de` ist in der Cloud-Umgebung ebenfalls gesperrt [V]; der Datenlauf läuft deshalb in GitHub Actions (§10.4).
+
 ### 10.4 S1b – Deutschland-Lauf (2026-10-21)
 
 Eingabe: `germany.osm.pbf` von download.openstreetmap.fr (`/extracts/europe/`), 5 911 927 632 Byte, MD5 geprüft, Datenstand 2026-10-21T02:06:20Z [V]. Werkzeuge: osmium-tool 1.16.0, **tippecanoe 2.79.0** (aus dem Quellcode) [V].
@@ -259,6 +262,3 @@ Eingabe: `germany.osm.pbf` von download.openstreetmap.fr (`/extracts/europe/`), 
 3. **Grenzgewässer:** 41 Gewässer-Relationen reichen über den Auszug hinaus (u. a. Bodensee, Stettiner Haff, Sauer) und fielen ganz weg. Entscheidung des Nutzers (2026-10-21, Option A): Schritt 1b lädt genau diese Relationen **beim Bauen** mit einer einzigen Overpass-Abfrage vollständig nach (gleiche Daten und Lizenz, ODbL). Nicht zur Laufzeit der App. Die OSM-Editier-API scheidet aus, da sie laut Nutzungsrichtlinie nicht für Lesezugriffe gedacht ist [V: operations.osmfoundation.org/policies/api, 2026-10-21]. Das Manifest vermerkt die Ergänzung (`source.supplement`).
 4. Overpass ist aus der Cloud-Entwicklungsumgebung gesperrt [V]. Der Datenlauf läuft deshalb in GitHub Actions (`.github/workflows/wasserdaten.yml`) und veröffentlicht das Ergebnis als Release `wasserdaten-*`.
 5. Suche: OSM-Zusatznamen (`name:de`, `alt_name`, `official_name`) werden indiziert (Möhnetalsperre ↔ Möhnesee); ein Klammerzusatz („Schweriner See (Außensee)") zählt als genauer Treffer.
-
-### 10.3 Umgebung
-- `download.geofabrik.de` wird in der Cloud-Umgebung von der Netzwerkrichtlinie gesperrt (Verbindungsabbruch) [V]. Ausweichquelle `download.openstreetmap.fr` bietet nur NRW und dessen Regierungsbezirke [V]. Für den vollen Deutschland-Lauf (S1b) muss entweder Geofabrik in den Netzwerkeinstellungen der Umgebung freigegeben oder `planet.openstreetmap.org` (erreichbar [V]) mit eigenem Zuschnitt genutzt werden. Der Planet ist um ein Vielfaches größer als der Deutschland-Auszug.
