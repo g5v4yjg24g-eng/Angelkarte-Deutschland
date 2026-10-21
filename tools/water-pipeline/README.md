@@ -37,5 +37,7 @@ Lizenz der Ausgabedaten: **ODbL 1.0** (© OpenStreetMap-Mitwirkende). Die Ausgab
 
 ## Bekannte Grenzen (für M4 zu lösen)
 - Fließgewässer bestehen in OSM aus vielen Abschnitten (Ways). Die Suche fasst sie je Name + Kreis zusammen; ein Gewässerprofil „ganzer Fluss" braucht in M4 die `type=waterway`-Relationen.
-- Landesgrenzen (admin_level 4) fehlen in Länderauszügen oft, weil die Relation nicht vollständig enthalten ist. Für das Bundesland sollte der Auszug selbst die Quelle sein.
+- Gewässer am Rand des Auszugs liegen teils außerhalb der Landes- und Kreisgrenzen (NRW: 5,6 % ohne Kreis). Beim Deutschland-Lauf entfällt das bis auf die Staatsgrenze.
+- Kreisfreie Städte haben keine Gemeindeebene (admin_level 8); dann gilt die Kreisebene.
+- Ein OSM-Way kann zugleich Fläche und Fließgewässer-Linie sein und erscheint dann zweimal mit derselben `wid` (NRW: 1 Fall). Wird in M4 zusammengeführt.
 - `wid` basiert auf OSM-IDs. Zur Stabilität siehe ARCHITECTURE §6.2.
