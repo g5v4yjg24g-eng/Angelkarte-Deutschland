@@ -1,13 +1,13 @@
 # Gewässerdaten für ganz Deutschland erzeugen und als Release „wasserdaten-*" veröffentlichen
 # (tools/water-pipeline, ARCHITECTURE §6.1). Daten © OpenStreetMap-Mitwirkende, ODbL 1.0.
-# Start: Actions → „Gewässerdaten erzeugen" → Run workflow, oder ein Tag „datenlauf-<datum>" pushen.
+# Start: Actions → „Gewässerdaten erzeugen" → Run workflow, oder einen Branch „datenlauf/<datum>" pushen.
 # Der Pages-Workflow holt beim nächsten Bauen automatisch das neueste Release.
 name: Gewässerdaten erzeugen
 
 on:
   workflow_dispatch:
   push:
-    tags: ['datenlauf-*']
+    branches: ['datenlauf/**']
 
 permissions:
   contents: write
@@ -22,10 +22,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 150
     env:
-      WORK: ${{ runner.temp }}/wasser
       EXTRACT_URL: https://download.openstreetmap.fr/extracts/europe/germany.osm.pbf
     steps:
       - uses: actions/checkout@v4
+      - run: echo "WORK=$RUNNER_TEMP/wasser" >> "$GITHUB_ENV"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
