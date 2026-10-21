@@ -10,7 +10,13 @@ Erzeugt aus einem OSM-Auszug (`.osm.pbf`) die statischen Gewässerdaten der App:
 | `report.json` | Mengen, Größen und Abdeckung (Grundlage der Hochrechnung in DATA_SOURCES.md) |
 
 ## Voraussetzungen
-- `osmium-tool` ≥ 1.16, `tippecanoe` ≥ 2.17 (schreibt PMTiles direkt); unter Ubuntu 24.04: `apt-get install osmium-tool tippecanoe`
+- `osmium-tool` ≥ 1.16 (Ubuntu 24.04: `apt-get install osmium-tool`)
+- **`tippecanoe` ≥ 2.55** – die Ubuntu-Version 2.49 ist **ungeeignet**: Sie verliert Objekte (behoben in 2.52) und vertauscht bei großen Datenmengen Eigenschaften zwischen Objekten, z. B. die `wid` (String-Pool-Kollisionen, behoben in 2.55). Befund S1b, DATA_SOURCES §10.4. `run.sh` bricht bei zu alter Version ab. Bauen aus dem Quellcode (ca. 1 min):
+  ```bash
+  apt-get install build-essential libsqlite3-dev zlib1g-dev
+  git clone --depth 1 --branch 2.79.0 https://github.com/felt/tippecanoe.git && make -C tippecanoe -j
+  TIPPECANOE_DIR=$PWD/tippecanoe bash run.sh …   # oder: make -C tippecanoe install
+  ```
 - Node 22, pnpm
 
 ## Aufruf
@@ -21,7 +27,7 @@ bash run.sh <auszug.osm.pbf> <ausgabeordner>
 
 ## Bezugsquellen für Auszüge
 - Geofabrik (`download.geofabrik.de`), alle Bundesländer. War in der Cloud-Umgebung durch die Netzwerkrichtlinie gesperrt (2026-10-21).
-- OpenStreetMap France (`download.openstreetmap.fr/extracts/europe/germany/`), dort nur NRW und dessen Regierungsbezirke (Stand 2026-10-21).
+- OpenStreetMap France: Deutschland gesamt `download.openstreetmap.fr/extracts/europe/germany-latest.osm.pbf` (5,9 GB, mit `.md5`), Länder unter `…/europe/germany/` (dort nur NRW und dessen Regierungsbezirke). Stand 2026-10-21.
 
 Lizenz der Ausgabedaten: **ODbL 1.0** (© OpenStreetMap-Mitwirkende). Die Ausgaben werden nicht ins Repo eingecheckt.
 
@@ -31,9 +37,10 @@ Lizenz der Ausgabedaten: **ODbL 1.0** (© OpenStreetMap-Mitwirkende). Die Ausgab
 - Ausgeschlossen (gezählt): `water=wastewater|reflecting_pool|fountain|swimming_pool|basin|pool`, `landuse=basin`.
 - Unbenannte Bäche werden nicht übernommen. Unbenannte Flächen schon (in der App als „Unbenanntes Gewässer").
 - Mindest-Zoom nach Fläche als Attribut `mz`: ≥ 1000 ha z6, ≥ 100 ha z8, ≥ 10 ha z10, ≥ 1 ha z12, sonst z13 (Linien: Fluss/Kanal z8, Bach z12). Umsetzung über den tippecanoe-Filter `-j` und denselben Filter im Kartenstil.
-- **Nicht** die Feature-Eigenschaft `tippecanoe.minzoom` verwenden: In tippecanoe 2.49 verschluckt sie überlappende Nachbarn (Befund S1, DATA_SOURCES §10.1).
+- Kein Feature-`tippecanoe.minzoom`: In 2.49 verschluckte es überlappende Nachbarn (Befund S1, behoben in 2.52). Das Attribut `mz` bleibt, weil der Kartenstil denselben Filter braucht.
 - Splitter-Geometrien (< 1 m² bzw. < 2 m) werden verworfen und im Bericht als `degenerate` gezählt.
-- Schritt 5 von `run.sh` bricht ab, wenn nicht jedes Objekt in den z14-Kacheln steht.
+- Polygone mit mittlerer Breite (2·Fläche/Umfang) unter 0,5 m gelten ebenfalls als Splitter (Digitalisierungsstreifen, kleiner als die z14-Auflösung).
+- Schritt 5 von `run.sh` (`src/verify.ts`) bricht ab, wenn ein Objekt in den z14-Kacheln fehlt **oder dort andere Eigenschaften trägt als in der Eingabe**.
 
 ## Bekannte Grenzen (für M4 zu lösen)
 - Fließgewässer bestehen in OSM aus vielen Abschnitten (Ways). Die Suche fasst sie je Name + Kreis zusammen; ein Gewässerprofil „ganzer Fluss" braucht in M4 die `type=waterway`-Relationen.

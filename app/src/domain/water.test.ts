@@ -82,5 +82,13 @@ describe('Suche', () => {
     expect(search(E, 'nettetal')[0]).toMatchObject({ isPlace: true, context: 'Kreis Viersen' });
     expect(search(E, 'nettetal')[0]).not.toHaveProperty('wid');
   });
+  it('Klammerzusatz gilt als genauer Treffer; die Größe entscheidet', () => {
+    const F: SearchEntry[] = [
+      ['Schweriner See', 'other', 52.2, 13.89, 'Storkow (Mark)', 223, 'osm:w2'],
+      ['Schweriner See (Außensee)', 'lake', 53.73, 11.48, 'Lübstorf', 355, 'osm:r3'],
+      ['Schweriner Seeblick', 'pond', 53.6, 11.4, 'Schwerin', 10, 'osm:w4'],
+    ];
+    expect(search(F, 'schweriner see').map((r) => r.wid)).toEqual(['osm:r3', 'osm:w2', 'osm:w4']);
+  });
   it('kein Ergebnis für zu kurze Anfragen', () => expect(search(E, 'n')).toEqual([]));
 });

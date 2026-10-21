@@ -62,7 +62,9 @@ export function search(
     if (seen.has(key)) continue; // derselbe Eintrag kann aus mehreren Wörtern stammen
     seen.add(key);
     // Treffergüte zuerst, dann Bedeutung (Größe/Ortsart), dann Nähe zur Kartenmitte
-    const quality = n === q ? 3 : n.startsWith(q) ? 2 : 1;
+    // Ein Klammerzusatz zählt nicht gegen den genauen Treffer: „Schweriner See (Außensee)", „Möhnesee (Möhnetalsperre)"
+    const base = normalize(e[0].replace(/\s*\([^)]*\)\s*$/, ''));
+    const quality = n === q || base === q ? 3 : n.startsWith(q) ? 2 : 1;
     const weight = e[1].startsWith('place:') ? (PLACE_WEIGHT[e[1]] ?? 50) : e[5];
     const dist = near
       ? Math.hypot(e[2] - near.lat, (e[3] - near.lng) * Math.cos((near.lat * Math.PI) / 180))
