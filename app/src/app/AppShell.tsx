@@ -6,6 +6,7 @@ import { Badge } from '../design/components/Badge';
 import { useOnline } from '../lib/useOnline';
 import { UpdatePrompt } from './UpdatePrompt';
 import { BackupReminder } from '../features/backup/BackupReminder';
+import { SessionChip } from '../features/sessions/SessionChip';
 import styles from './AppShell.module.css';
 
 const NAV = [
@@ -35,14 +36,17 @@ export function AppShell() {
           <FishMark size={30} />
           <span className={styles.wordmark}>{de.app.name}</span>
         </span>
-        {!online && (
-          <span title={de.status.offlineHint}>
-            <Badge tone="warning">
-              <OfflineIcon size={14} />
-              {de.status.offline}
-            </Badge>
-          </span>
-        )}
+        <span className={styles.headerEnd}>
+          <SessionChip />
+          {!online && (
+            <span title={de.status.offlineHint}>
+              <Badge tone="warning">
+                <OfflineIcon size={14} />
+                <span className={styles.offlineText}>{de.status.offline}</span>
+              </Badge>
+            </span>
+          )}
+        </span>
       </header>
       <nav className={styles.nav} aria-label={de.nav.label}>
         {NAV.map(({ to, label, icon: Icon, end }) => (

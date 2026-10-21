@@ -5,6 +5,8 @@ import { NotFound } from './NotFound';
 import { MapPage } from '../features/map/MapPage';
 import { CatchesPage } from '../features/catches/CatchesPage';
 import { CatchDetailPage } from '../features/catches/CatchDetailPage';
+import { SessionsPage } from '../features/sessions/SessionsPage';
+import { SessionDetailPage } from '../features/sessions/SessionDetailPage';
 import { StatsPage } from '../features/stats/StatsPage';
 import { MorePage } from '../features/more/MorePage';
 import { SettingsPage } from '../features/settings/SettingsPage';
@@ -22,6 +24,8 @@ export const routes = [
         children: [
           { index: true, element: <MapPage /> },
           { path: 'fangbuch', element: <CatchesPage /> },
+          { path: 'fangbuch/sessions', element: <SessionsPage /> },
+          { path: 'fangbuch/sessions/:id', element: <SessionDetailPage /> },
           { path: 'fangbuch/:id', element: <CatchDetailPage /> },
           { path: 'statistik', element: <StatsPage /> },
           { path: 'mehr', element: <MorePage /> },

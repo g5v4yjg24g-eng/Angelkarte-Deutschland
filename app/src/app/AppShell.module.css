@@ -86,3 +86,21 @@
     border-right: 1px solid var(--color-border);
   }
 }
+
+.headerEnd {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+@media (max-width: 440px) {
+  /* Nur das Symbol; der Text bleibt für Screenreader */
+  .offlineText {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

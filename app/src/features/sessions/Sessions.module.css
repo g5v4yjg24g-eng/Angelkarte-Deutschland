@@ -1,0 +1,117 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-success) 16%, var(--color-surface));
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.chipWarn {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+.chipWarn .dot {
+  background: var(--color-warning-text);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .chip:not(.chipWarn) .dot {
+    animation: pulse 2s ease-in-out infinite;
+  }
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.list li + li {
+  border-top: 1px solid var(--color-border);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 64px;
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text);
+  text-decoration: none;
+  background: var(--color-surface);
+}
+.rowText {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.rowTitle {
+  font-weight: 600;
+}
+.stack {
+  display: grid;
+  gap: var(--space-4);
+}
+.facts {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+.facts > div {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: var(--space-2);
+}
+.facts dt {
+  color: var(--color-text-muted);
+}
+.facts dd {
+  margin: 0;
+}
+.pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.outside {
+  color: var(--color-warning-text);
+  font-size: var(--text-sm);
+}
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.top p {
+  margin: 0;
+}
+@media (max-width: 440px) {
+  /* Schmale Kopfzeile: nur Punkt und Laufzeit (der volle Text steht im aria-label) */
+  .chipPrefix {
+    display: none;
+  }
+}

@@ -14,6 +14,8 @@ import { MAX_PHOTOS_PER_CATCH } from '../../domain/photo';
 import { newId } from '../../domain/id';
 import { PhotoReadError, processPhoto } from '../../lib/processPhoto';
 import { PhotoPicker, type PendingPhoto } from './PhotoPicker';
+import { useRunningSession } from '../sessions/useSessions';
+import { covers } from '../../domain/session';
 import {
   BaitTypeSchema,
   CatchOutcomeSchema,
@@ -94,6 +96,8 @@ export function CatchForm({
   const [photoError, setPhotoError] = useState<string>();
   const [quotaFull, setQuotaFull] = useState(false);
   const existingPhotos = (initial?.photoIds ?? []).filter((id) => !removedPhotos.includes(id));
+  // Neue Einträge gehören zur laufenden Session, wenn ihr Zeitpunkt in die Session fällt (M5.4)
+  const running = useRunningSession();
 
   async function addPhotos(files: File[]) {
     setPhotoError(undefined);
@@ -173,6 +177,7 @@ export function CatchForm({
                   }
                 : {}),
               ...(context?.placeId ? { placeId: context.placeId } : {}),
+              ...(running && covers(running, fields.at) ? { sessionId: running.id } : {}),
             },
             addPhotos,
           });
@@ -309,6 +314,10 @@ export function CatchForm({
           {water ? (water.name ?? de.water.unnamed) : <span className="muted">{t.waterUnknown}</span>}
         </p>
       </div>
+
+      {!initial && running && (
+        <p className="muted">{de.sessions.assignHint(running.startAt.slice(11, 16))}</p>
+      )}
 
       <details ref={details} className={styles.details} open={openDetails || undefined}>
         <summary>{t.more}</summary>

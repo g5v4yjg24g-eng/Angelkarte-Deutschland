@@ -4,7 +4,7 @@ Deutschlandweite Angel-App als PWA namens **„Fangpunkt"** (Arbeitsname, E5). N
 Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`, `DATA_MODEL.md`, `TEST_PLAN.md`. **Vor jeder größeren Änderung lesen.** Bei Abweichungen das Dokument im selben PR aktualisieren.
 
 ## Projektstatus
-- Phase: **M5 in Arbeit** (PLAN.md §4): M5.1 Erfassung, M5.2 Fotos, M5.3 Fangbuch erledigt; weiter mit M5.4 Sessions.
+- Phase: **M5 in Arbeit** (PLAN.md §4): M5.1 Erfassung, M5.2 Fotos, M5.3 Fangbuch, M5.4 Sessions erledigt; weiter mit M5.5 Gewässerzuordnung.
 - Fotos: `lib/processPhoto.ts` (Neu-Kodierung entfernt EXIF), Speichern nur über `data/catchService.ts` (eine Transaktion mit dem Fang).
 - Fangbuch: `app/src/features/catches`, Formularlogik rein in `app/src/domain/catchDraft.ts`. IDs immer über `domain/id.ts` (`crypto.randomUUID` fehlt außerhalb sicherer Kontexte).
 - Karte: `app/src/features/map`. E2E-Tests dürfen OpenFreeMap nicht abrufen (`page.route` auf lokalen Teststil). Auf eigene Symbole erst tippen, wenn sie gerendert sind (Symbolplatzierung ist verzögert).

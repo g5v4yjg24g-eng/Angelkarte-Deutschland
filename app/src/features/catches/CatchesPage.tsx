@@ -18,6 +18,8 @@ import { filterCatches, groupByDay, NO_FILTER, waterNames, type CatchFilter } fr
 import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
 import { PhotoThumb } from './CatchPhotos';
+import { ListLink } from '../../design/components/ListLink';
+import { useRunningSession } from '../sessions/useSessions';
 import styles from './CatchesPage.module.css';
 
 const t = de.catches;
@@ -35,6 +37,21 @@ const dayLabel = (day: string) =>
     year: 'numeric',
     timeZone: 'UTC',
   });
+
+/** Einstieg zu den Sessions (zeigt eine laufende an) */
+function SessionsLink() {
+  const running = useRunningSession();
+  return (
+    <div className={styles.sessionsLink}>
+      <ListLink
+        to={running ? `/fangbuch/sessions/${running.id}` : '/fangbuch/sessions'}
+        icon={<BookIcon />}
+        title={running ? de.sessions.running : de.sessions.listLink}
+        hint={running ? de.sessions.since(running.startAt.slice(11, 16)) : de.sessions.listHint}
+      />
+    </div>
+  );
+}
 
 /** Vorschaubild des ersten Fotos in der Liste */
 function RowPhoto({ id }: { id: string }) {
@@ -141,6 +158,7 @@ export function CatchesPage() {
   if (active.length === 0)
     return (
       <Page title={t.title}>
+        <SessionsLink />
         <EmptyState
           icon={<BookIcon size={32} />}
           title={t.emptyTitle}
@@ -158,6 +176,7 @@ export function CatchesPage() {
 
   return (
     <Page title={t.title}>
+      <SessionsLink />
       <div className={styles.filters}>
         <TextField
           label={t.search}

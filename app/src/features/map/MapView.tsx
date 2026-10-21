@@ -37,6 +37,8 @@ import { WaterProfile } from './WaterProfile';
 import { SearchSheet } from './SearchSheet';
 import { CatchDetails, Legend, NewHere, PlaceDetails, PlaceForm } from './MapSheets';
 import { CatchForm, type CatchContext } from '../catches/CatchForm';
+import { useRunningSession } from '../sessions/useSessions';
+import { tryStartSession } from '../sessions/sessionActions';
 import { useGeolocation } from './useGeolocation';
 import { germanTextFields } from './germanLabels';
 import styles from './MapView.module.css';
@@ -130,6 +132,7 @@ export default function MapView() {
   const [selectedWid, setSelectedWid] = useState<string>();
   const location = useLocation();
   const navigate = useNavigate();
+  const runningSession = useRunningSession();
   const themeRef = useRef(theme);
   useEffect(() => {
     themeRef.current = theme;
@@ -676,6 +679,18 @@ export default function MapView() {
         />
       </div>
       {locating && geo.fix && <p className={styles.accuracy}>{de.map.accuracy(geo.fix.accuracy)}</p>}
+      {runningSession === null && (
+        <button
+          type="button"
+          className={styles.sessionFab}
+          onClick={() =>
+            void tryStartSession().then((r) => setToast({ text: r.error ?? de.sessions.started }))
+          }
+        >
+          <span className={styles.playIcon} aria-hidden="true" />
+          <span>{de.sessions.start}</span>
+        </button>
+      )}
       <button type="button" className={styles.fab} onClick={onAddCatch}>
         <PlusIcon />
         <span>{de.map.addCatchFab}</span>
