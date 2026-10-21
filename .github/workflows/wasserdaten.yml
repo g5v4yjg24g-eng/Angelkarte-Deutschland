@@ -1,0 +1,90 @@
+# Gewässerdaten für ganz Deutschland erzeugen und als Release „wasserdaten-*" veröffentlichen
+# (tools/water-pipeline, ARCHITECTURE §6.1). Daten © OpenStreetMap-Mitwirkende, ODbL 1.0.
+# Start: Actions → „Gewässerdaten erzeugen" → Run workflow, oder einen Branch „datenlauf/<datum>" pushen.
+# Der Pages-Workflow holt beim nächsten Bauen automatisch das neueste Release.
+name: Gewässerdaten erzeugen
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['datenlauf/**']
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: wasserdaten
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    env:
+      EXTRACT_URL: https://download.openstreetmap.fr/extracts/europe/germany.osm.pbf
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "WORK=$RUNNER_TEMP/wasser" >> "$GITHUB_ENV"
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Werkzeuge installieren
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y osmium-tool build-essential libsqlite3-dev zlib1g-dev
+          # tippecanoe aus Ubuntu (2.49) ist ungeeignet: verliert Objekte, vertauscht IDs (DATA_SOURCES §10.4)
+          git clone --depth 1 --branch 2.79.0 https://github.com/felt/tippecanoe.git "$RUNNER_TEMP/tippecanoe"
+          make -C "$RUNNER_TEMP/tippecanoe" -j"$(nproc)" tippecanoe tippecanoe-decode
+          "$RUNNER_TEMP/tippecanoe/tippecanoe" --version
+          df -h "$RUNNER_TEMP"
+
+      - name: Deutschland-Auszug laden (≈ 6 GB, MD5 geprüft)
+        run: |
+          mkdir -p "$WORK"
+          cd "$WORK"
+          curl -sS --fail --retry 5 --retry-delay 30 -o germany.osm.pbf "$EXTRACT_URL"
+          curl -sS --fail --retry 5 -o germany.osm.pbf.md5 "$EXTRACT_URL.md5"
+          md5sum -c germany.osm.pbf.md5
+          ls -la germany.osm.pbf
+
+      - name: Pipeline (inkl. Grenzgewässer über Overpass und Prüfung jedes Objekts)
+        working-directory: tools/water-pipeline
+        run: TIPPECANOE_DIR="$RUNNER_TEMP/tippecanoe" bash run.sh "$WORK/germany.osm.pbf" "$WORK/out"
+
+      - name: Stichprobe WAT-2 (20 bekannte Gewässer)
+        working-directory: tools/water-pipeline
+        run: node --import tsx src/sample.ts "$WORK/out" | tee "$WORK/out/stichprobe.txt"
+
+      - name: Release veröffentlichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd "$WORK/out"
+          tar -czf wasserdaten.tar.gz water.pmtiles water-manifest.json search
+          date=$(jq -r '.dataDate[0:10]' water-manifest.json)
+          tag="wasserdaten-$date-$GITHUB_RUN_NUMBER"
+          {
+            echo "Gewässerdaten für Deutschland, Datenstand $(jq -r .dataDate water-manifest.json)."
+            echo
+            echo "Daten © OpenStreetMap-Mitwirkende, lizenziert unter der Open Database License (ODbL) 1.0."
+            echo "Quelle: $EXTRACT_URL. $(jq -r '.source.supplement // ""' water-manifest.json)"
+            echo "Erzeugt mit tools/water-pipeline (Commit $GITHUB_SHA)."
+            echo
+            echo '```'
+            jq '{waters: .waters | {total, areas, lines, degenerate}, search: .search | {entries, gzipBytes}}' report.json
+            cat stichprobe.txt
+            echo '```'
+          } > notes.md
+          gh release create "$tag" wasserdaten.tar.gz report.json \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Gewässerdaten $date" --notes-file notes.md
+          ls -la wasserdaten.tar.gz
+
+      - name: Vorschau neu bauen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --repo "$GITHUB_REPOSITORY" --ref main
