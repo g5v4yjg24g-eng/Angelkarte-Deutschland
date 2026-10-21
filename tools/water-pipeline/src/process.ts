@@ -93,7 +93,17 @@ function areaMinZoom(ha: number): number {
   return ha >= 1000 ? 6 : ha >= 100 ? 8 : ha >= 10 ? 10 : ha >= 1 ? 12 : 13;
 }
 
-export function normalize(s: string): string {
+export /** Weitere Namen aus OSM-Tags, die vom Hauptnamen abweichen (für die Suche). */
+function altNames(tags: Record<string, string>): string[] {
+  const main = normalize(tags.name ?? '');
+  const names = ['name:de', 'alt_name', 'official_name', 'alt_name:de']
+    .flatMap((k) => (tags[k] ?? '').split(';'))
+    .map((n) => n.trim())
+    .filter((n) => n && normalize(n) !== main);
+  return [...new Map(names.map((n) => [normalize(n), n])).values()];
+}
+
+function normalize(s: string): string {
   return s.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
     .normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 }
@@ -190,7 +200,12 @@ async function main(): Promise<void> {
       const adm = adminAt(lng, lat);
       account(t, !!tags.name, adm);
       areasHa.push(ha);
-      if (tags.name) entries.push([tags.name, t, r6(lat), r6(lng), adm.g ?? adm.k ?? '', Math.round(Math.log10(1 + ha) * 100), wid]);
+      if (tags.name) {
+        const rank = Math.round(Math.log10(1 + ha) * 100), ctx = adm.g ?? adm.k ?? '';
+        entries.push([tags.name, t, r6(lat), r6(lng), ctx, rank, wid]);
+        // Weitere Namen aus OSM (z. B. Möhnetalsperre: name:de=Möhnesee), angezeigt als „Weiterer Name (Name)"
+        for (const alt of altNames(tags)) entries.push([`${alt} (${tags.name})`, t, r6(lat), r6(lng), ctx, rank, wid]);
+      }
       // Kein Feature-"tippecanoe.minzoom": verschluckt in tippecanoe 2.49 überlappende Nachbarn (Spike S1).
       // Stattdessen Attribut mz, nach dem tippecanoe (-j) und der Kartenstil filtern.
       await areasOut.write(JSON.stringify({ type: 'Feature', properties: {
