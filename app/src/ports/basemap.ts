@@ -9,4 +9,12 @@ export interface BasemapProvider {
   hosts: string[];
   /** Schrift für Beschriftungen eigener Ebenen; genutzt nur, wenn der geladene Stil Glyphen anbietet. */
   glyphFont: string[];
+  /** Anpassungen nach dem Laden des Stils (fehlende Ebenen werden übersprungen). */
+  adjustments(theme: MapTheme): StyleAdjustments;
+}
+
+export interface StyleAdjustments {
+  hideLayers?: string[];
+  /** [Ebene, Paint-Eigenschaft, Wert] */
+  paint?: [layer: string, property: string, value: string | number][];
 }

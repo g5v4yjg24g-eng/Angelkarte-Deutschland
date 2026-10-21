@@ -308,7 +308,7 @@ test('Karte ruft OpenFreeMap im Stil passend zum Theme ab', async ({ page }) => 
   });
   await page.emulateMedia({ colorScheme: 'dark' });
   await openMap(page);
-  expect(urls).toContain('https://tiles.openfreemap.org/styles/dark');
+  expect(urls).toContain('https://tiles.openfreemap.org/styles/fiord');
   await page.emulateMedia({ colorScheme: 'light' });
-  await expect.poll(() => urls.includes('https://tiles.openfreemap.org/styles/positron')).toBe(true);
+  await expect.poll(() => urls.includes('https://tiles.openfreemap.org/styles/liberty')).toBe(true);
 });

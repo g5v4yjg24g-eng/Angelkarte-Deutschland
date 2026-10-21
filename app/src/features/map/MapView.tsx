@@ -160,6 +160,10 @@ export default function MapView() {
         map.getStyle().layers as Parameters<typeof germanTextFields>[0],
       ))
         map.setLayoutProperty(id, 'text-field', textField);
+      const adj = basemap.adjustments(themeRef.current);
+      for (const id of adj.hideLayers ?? []) if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none');
+      for (const [id, prop, value] of adj.paint ?? [])
+        if (map.getLayer(id)) map.setPaintProperty(id, prop as never, value as never);
       void addOverlays(map, overlay.current, basemap.glyphFont).then(() => {
         const m = waterRef.current;
         if (m) addWaterLayers(map, water.tilesUrl(m), `${m.source.attribution} (${m.source.license})`);

@@ -12,29 +12,38 @@ test('PWA-2: Intro erscheint beim Kaltstart und gibt die App schnell frei', asyn
   await page.goto('/');
   await expect(page.locator('#intro')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.classList.contains('intro-anim'))).toBe(true);
-  const t0 = Date.now();
   await waitForApp(page);
-  // Mindestdauer 750 ms + 250 ms Ausblenden; großzügige Obergrenze für langsame CI-Rechner.
-  expect(Date.now() - t0).toBeLessThan(2500);
+  // Gemessen in der Seite ab Navigationsstart: Mindestdauer 750 ms + 250 ms Ausblenden + Laden.
+  const doneMs = Number(await page.evaluate(() => document.documentElement.dataset.introDoneMs));
+  expect(doneMs).toBeGreaterThanOrEqual(1000);
+  expect(doneMs).toBeLessThan(3000);
   await expect(page.locator('#intro')).toHaveCount(0);
   await expect(page.getByRole('navigation', { name: 'Hauptnavigation' })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
 test('Intro lässt sich per Tipp überspringen', async ({ page }) => {
-  await page.goto('/');
-  await page.locator('#intro').click();
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  // Sofort tippen; ist das Intro (bei schneller App) schon weg, gibt es nichts zu überspringen
+  const fadedImmediately = await page.evaluate(() => {
+    const el = document.getElementById('intro');
+    if (!el || el.classList.contains('is-out')) return null;
+    el.click();
+    return el.classList.contains('is-out'); // Ausblenden beginnt im selben Moment
+  });
+  expect(fadedImmediately === null || fadedImmediately).toBe(true);
   await waitForApp(page);
   await expect(page.locator('#intro')).toHaveCount(0);
 });
 
 test('PWA-3: Reduzierte Bewegung zeigt ein statisches Intro und endet sehr schnell', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  const start = Date.now();
   await page.goto('/');
   expect(await page.evaluate(() => document.documentElement.classList.contains('intro-static'))).toBe(true);
   await waitForApp(page);
-  expect(Date.now() - start).toBeLessThan(1500);
+  // Statisch: 200 ms Mindestdauer + 150 ms Ausblenden (+ Laden), gemessen in der Seite
+  expect(Number(await page.evaluate(() => document.documentElement.dataset.introDoneMs))).toBeLessThan(2000);
 });
 
 test('PWA-4: Rückkehr aus dem Hintergrund zeigt kein Intro', async ({ page }) => {

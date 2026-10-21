@@ -156,6 +156,8 @@
             function () {
               el.remove();
               root.dataset.intro = 'done';
+              // Zeitpunkt ab Navigationsstart (für Tests der Ladezeit, ARCHITECTURE §8)
+              root.dataset.introDoneMs = String(Math.round(performance.now()));
             },
             reduce ? 150 : 250,
           );
