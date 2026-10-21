@@ -1,7 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { collectErrors, waitForApp } from './helpers';
+import { collectErrors, waitForApp, useLocalExternals } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
+
+test.beforeEach(async ({ page }) => {
+  await useLocalExternals(page);
+});
 
 test('PWA-2: Intro erscheint beim Kaltstart und gibt die App schnell frei', async ({ page }) => {
   const errors = collectErrors(page);

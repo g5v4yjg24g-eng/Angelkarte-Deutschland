@@ -1,6 +1,8 @@
-// Deutschlandkarte (M3): Basiskarte über den BasemapProvider, eigene Orte und Fänge, Tipp-Aktion, Standort.
+// Deutschlandkarte: Basiskarte (BasemapProvider), Gewässer (WaterDataProvider, M4), eigene Orte und Fänge,
+// Tipp-Aktion, Suche, Standort.
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { AttributionControl, Map as MlMap, setWorkerUrl, type MapMouseEvent } from 'maplibre-gl';
+import { addProtocol, AttributionControl, Map as MlMap, setWorkerUrl, type MapMouseEvent } from 'maplibre-gl';
+import { Protocol } from 'pmtiles';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -9,6 +11,8 @@ import { useProviders } from '../../ports/providersContext';
 import { getDb } from '../../data/db';
 import { repo } from '../../data/repository';
 import type { PlaceType } from '../../domain/schemas';
+import { waterFromTile, type WaterInfo, type WaterManifest } from '../../domain/water';
+import type { SearchResult } from '../../domain/search';
 import { IconButton, Button } from '../../design/components/Button';
 import { Sheet } from '../../design/components/Sheet';
 import { Toast } from '../../design/components/Toast';
@@ -19,23 +23,32 @@ import { useOnline } from '../../lib/useOnline';
 import { circlePolygon, toFeatures } from './geojson';
 import {
   addOverlays,
+  addWaterLayers,
   EMPTY,
   fallbackStyle,
   INTERACTIVE_LAYERS,
   LAYERS,
   setOverlayData,
   type OverlayData,
+  WATER,
 } from './mapLayers';
+import { WaterProfile } from './WaterProfile';
+import { SearchSheet } from './SearchSheet';
 import { CatchDetails, Legend, NewHere, PlaceDetails, PlaceForm } from './MapSheets';
 import { useGeolocation } from './useGeolocation';
 import { germanTextFields } from './germanLabels';
 import styles from './MapView.module.css';
 
 setWorkerUrl(workerUrl);
+// Gewässerdaten liegen als PMTiles-Datei vor (HTTP-Range-Abrufe statt Kachelserver)
+addProtocol('pmtiles', new Protocol().tile);
 
+type WaterRef = { wid: string; name?: string };
 type SheetState =
-  | { kind: 'new'; lat: number; lng: number }
-  | { kind: 'placeForm'; type: PlaceType; lat: number; lng: number; id?: string }
+  | { kind: 'new'; lat: number; lng: number; water?: WaterRef }
+  | { kind: 'placeForm'; type: PlaceType; lat: number; lng: number; id?: string; water?: WaterRef }
+  | { kind: 'water'; info: WaterInfo; lat: number; lng: number }
+  | { kind: 'search'; near: { lat: number; lng: number } }
   | { kind: 'place'; id: string }
   | { kind: 'catch'; id: string }
   | { kind: 'legend' }
@@ -72,7 +85,7 @@ declare global {
 }
 
 export default function MapView() {
-  const { basemap } = useProviders();
+  const { basemap, water } = useProviders();
   const theme = useEffectiveTheme();
   const online = useOnline();
   const container = useRef<HTMLDivElement>(null);
@@ -85,6 +98,9 @@ export default function MapView() {
   const [locating, setLocating] = useState(false);
   const geo = useGeolocation(locating);
   const centeredOnFix = useRef(false);
+  const [waterManifest, setWaterManifest] = useState<WaterManifest | null>(null);
+  const waterRef = useRef<WaterManifest | null>(null);
+  const [selectedWid, setSelectedWid] = useState<string>();
   const themeRef = useRef(theme);
   useEffect(() => {
     themeRef.current = theme;
@@ -131,16 +147,30 @@ export default function MapView() {
     mapRef.current = map;
     window.__fangpunktMap = map;
 
+    // Wurde der aktuelle Stil schon geladen? Nur Fehler davor sind Stilfehler (→ Ersatzstil).
+    let styleLoaded = false;
+    const setStyle = map.setStyle.bind(map);
+    map.setStyle = ((...args: Parameters<typeof setStyle>) => {
+      styleLoaded = false;
+      return setStyle(...args);
+    }) as typeof map.setStyle;
     map.on('style.load', () => {
+      styleLoaded = true;
       for (const { id, textField } of germanTextFields(
         map.getStyle().layers as Parameters<typeof germanTextFields>[0],
       ))
         map.setLayoutProperty(id, 'text-field', textField);
-      void addOverlays(map, overlay.current, basemap.glyphFont).then(() => setReady(true));
+      void addOverlays(map, overlay.current, basemap.glyphFont).then(() => {
+        const m = waterRef.current;
+        if (m) addWaterLayers(map, water.tilesUrl(m), `${m.source.attribution} (${m.source.license})`);
+        setReady(true);
+      });
     });
     map.on('error', (e) => {
-      // Stil nicht ladbar (z. B. offline oder Anbieter gestört): auf schlichten Hintergrund wechseln
-      if (!map.isStyleLoaded() || /style/i.test(String(e.error?.message))) {
+      // Stil nicht ladbar (z. B. offline oder Anbieter gestört): auf schlichten Hintergrund wechseln.
+      // Fehler einzelner Datenquellen (Kacheln, Gewässer) zählen nicht – sonst entsteht eine Schleife.
+      const fromSource = 'sourceId' in e && !!(e as { sourceId?: string }).sourceId;
+      if (!styleLoaded && !fromSource) {
         setBaseFailed(true);
         setUsingFallback(true);
         map.setStyle(fallbackStyle(themeRef.current));
@@ -181,6 +211,23 @@ export default function MapView() {
       }
       if (hit?.layer.id === LAYERS.places) return setSheet({ kind: 'place', id: String(hit.properties.id) });
       if (hit?.layer.id === LAYERS.catches) return setSheet({ kind: 'catch', id: String(hit.properties.id) });
+      // Gewässer: Fläche unter dem Finger, sonst Fließgewässer im Umkreis (Flüsse laufen oft durch Seen)
+      const area = map.getLayer(WATER.fill)
+        ? map.queryRenderedFeatures(e.point, { layers: [WATER.fill] })[0]
+        : undefined;
+      const line =
+        !area && map.getLayer(WATER.lineHit)
+          ? map.queryRenderedFeatures(box, { layers: [WATER.lineHit] })[0]
+          : undefined;
+      const info = area
+        ? waterFromTile(area.properties, false)
+        : line
+          ? waterFromTile(line.properties, true)
+          : undefined;
+      if (info) {
+        setSelectedWid(info.wid);
+        return setSheet({ kind: 'water', info, lat: e.lngLat.lat, lng: e.lngLat.lng });
+      }
       setSheet({ kind: 'new', lat: e.lngLat.lat, lng: e.lngLat.lng });
     });
     return () => {
@@ -210,6 +257,85 @@ export default function MapView() {
     setUsingFallback(!wantBase);
     map.setStyle(wantBase ? basemap.styleUrl(theme) : fallbackStyle(theme), { diff: false });
   }, [theme, online, basemap]);
+
+  // Gewässerdaten: Manifest laden; ohne Manifest bleibt die Karte ohne Gewässerebene nutzbar
+  useEffect(() => {
+    let cancelled = false;
+    void water.loadManifest().then((m) => {
+      if (cancelled || !m) return;
+      waterRef.current = m;
+      setWaterManifest(m);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [water, online]);
+
+  // Gewässerebene einhängen, sobald Manifest UND eigene Ebenen bereit sind – egal, was zuerst fertig ist.
+  // (map.isStyleLoaded() taugt dafür nicht: es ist false, solange noch Kacheln laden.)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map && ready && waterManifest)
+      addWaterLayers(
+        map,
+        water.tilesUrl(waterManifest),
+        `${waterManifest.source.attribution} (${waterManifest.source.license})`,
+      );
+  }, [ready, waterManifest, water]);
+
+  // Ausgewähltes Gewässer hervorheben, solange sein Profil oder das Anlegen daran offen ist
+  const sheetOnWater =
+    sheet?.kind === 'water' || ((sheet?.kind === 'new' || sheet?.kind === 'placeForm') && !!sheet.water);
+  const highlightWid = sheetOnWater ? selectedWid : undefined;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !highlightWid || !ready || !map.getSource(WATER.source)) return;
+    const ids = ['areas', 'lines'].map((sourceLayer) => ({
+      source: WATER.source,
+      sourceLayer,
+      id: highlightWid,
+    }));
+    ids.forEach((f) => map.setFeatureState(f, { sel: true }));
+    return () => ids.forEach((f) => map.getSource(WATER.source) && map.setFeatureState(f, { sel: false }));
+  }, [highlightWid, ready]);
+
+  function onSearchPick(r: SearchResult) {
+    const map = mapRef.current;
+    setSheet(null);
+    if (!map) return;
+    const zoom = r.isPlace ? (r.kind === 'place:city' ? 11 : 12.5) : 14;
+    map.flyTo({ center: [r.lng, r.lat], zoom, essential: true });
+    if (!r.wid) return;
+    const wid = r.wid;
+    // Nach jedem nachgeladenen Kartenteil erneut suchen, bis das Gewässer da ist (langsame Netze/Geräte)
+    const tryOpen = () => {
+      for (const sourceLayer of ['areas', 'lines']) {
+        if (!map.getSource(WATER.source)) return false;
+        const f = map.querySourceFeatures(WATER.source, {
+          sourceLayer,
+          filter: ['==', ['get', 'wid'], wid],
+        })[0];
+        const info = f && waterFromTile(f.properties, sourceLayer === 'lines');
+        if (info) {
+          setSelectedWid(wid);
+          setSheet({ kind: 'water', info, lat: r.lat, lng: r.lng });
+          return true;
+        }
+      }
+      return false;
+    };
+    const onData = () => {
+      if (!map.isMoving() && tryOpen()) stop();
+    };
+    const stop = () => {
+      map.off('sourcedata', onData);
+      map.off('idle', onData);
+      clearTimeout(timer);
+    };
+    const timer = setTimeout(stop, 15_000);
+    map.on('sourcedata', onData);
+    map.on('idle', onData);
+  }
 
   // Daten in die Ebenen (und für den nächsten Stilwechsel merken)
   useEffect(() => {
@@ -265,7 +391,16 @@ export default function MapView() {
       <NewHere
         lat={sheet.lat}
         lng={sheet.lng}
-        onPick={(type) => setSheet({ kind: 'placeForm', type, lat: sheet.lat, lng: sheet.lng })}
+        {...(sheet.water ? { waterName: sheet.water.name ?? de.water.unnamed } : {})}
+        onPick={(type) =>
+          setSheet({
+            kind: 'placeForm',
+            type,
+            lat: sheet.lat,
+            lng: sheet.lng,
+            ...(sheet.water ? { water: sheet.water } : {}),
+          })
+        }
       />
     );
   } else if (sheet?.kind === 'placeForm') {
@@ -276,6 +411,7 @@ export default function MapView() {
     sheetBody = (
       <PlaceForm
         initial={existing ?? { type: sheet.type }}
+        {...(sheet.water ? { water: sheet.water } : {})}
         lat={sheet.lat}
         lng={sheet.lng}
         onCancel={() => setSheet(null)}
@@ -305,6 +441,32 @@ export default function MapView() {
   } else if (sheetCatch) {
     sheetTitle = de.map.outcomes[sheetCatch.outcome];
     sheetBody = <CatchDetails item={sheetCatch} />;
+  } else if (sheet?.kind === 'water') {
+    const { info } = sheet;
+    sheetTitle = info.name ?? de.water.unnamed;
+    sheetBody = (
+      <WaterProfile
+        info={info}
+        manifest={waterManifest}
+        counts={{
+          places: places?.filter((p) => p.waterId === info.wid && !p.deletedAt).length ?? 0,
+          catches: catches?.filter((c) => c.waterId === info.wid && !c.deletedAt).length ?? 0,
+        }}
+        onMarkHere={() =>
+          setSheet({
+            kind: 'new',
+            lat: sheet.lat,
+            lng: sheet.lng,
+            water: { wid: info.wid, ...(info.name ? { name: info.name } : {}) },
+          })
+        }
+      />
+    );
+  } else if (sheet?.kind === 'search') {
+    sheetTitle = de.search.title;
+    sheetBody = (
+      <SearchSheet water={water} manifest={waterManifest} near={sheet.near} onPick={onSearchPick} />
+    );
   } else if (sheet?.kind === 'legend') {
     sheetTitle = de.map.legendTitle;
     sheetBody = <Legend clustersLabeled={!usingFallback} />;
@@ -338,6 +500,17 @@ export default function MapView() {
   return (
     <div className={styles.wrap}>
       <div ref={container} className={styles.map} role="region" aria-label={de.map.label} />
+      <button
+        type="button"
+        className={styles.searchPill}
+        onClick={() => {
+          const c = mapRef.current?.getCenter();
+          setSheet({ kind: 'search', near: { lat: c?.lat ?? 51.2, lng: c?.lng ?? 10.4 } });
+        }}
+      >
+        <SearchIcon />
+        <span>{de.search.open}</span>
+      </button>
       <div className={styles.status}>
         {!ready && <Notice>{de.map.loading}</Notice>}
         {ready && usingFallback && (
@@ -401,6 +574,24 @@ export default function MapView() {
         </Toast>
       )}
     </div>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg
+      width={20}
+      height={20}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <circle cx="10.5" cy="10.5" r="6.5" />
+      <path d="m15.5 15.5 5 5" />
+    </svg>
   );
 }
 

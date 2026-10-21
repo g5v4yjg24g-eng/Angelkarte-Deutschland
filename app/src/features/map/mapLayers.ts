@@ -1,5 +1,5 @@
 // Eigene Kartenebenen (Orte, Fänge, Standort). Werden nach jedem Stilwechsel neu eingehängt.
-import type { GeoJSONSource, Map as MlMap, StyleSpecification } from 'maplibre-gl';
+import type { ExpressionSpecification, GeoJSONSource, Map as MlMap, StyleSpecification } from 'maplibre-gl';
 import type { FeatureCollection } from 'geojson';
 import { ALL_MARKERS, markerDataUrl } from './markerIcons';
 
@@ -12,6 +12,67 @@ export const LAYERS = {
   me: 'fp-me',
 } as const;
 export const INTERACTIVE_LAYERS = [LAYERS.places, LAYERS.catches, LAYERS.clusters];
+
+export const WATER = {
+  source: 'fp-water',
+  fill: 'fp-water-fill',
+  outline: 'fp-water-outline',
+  lineHit: 'fp-water-line-hit',
+  lineSel: 'fp-water-line-sel',
+} as const;
+
+const minZoomFilter: ExpressionSpecification = ['>=', ['zoom'], ['get', 'mz']];
+const selected: ExpressionSpecification = ['boolean', ['feature-state', 'sel'], false];
+
+/**
+ * Gewässer aus der Pipeline (PMTiles). Unsichtbar, solange nichts ausgewählt ist – die Basiskarte zeichnet
+ * das Wasser schon; diese Ebenen dienen dem Antippen und der Hervorhebung. Liegen unter den eigenen Symbolen.
+ */
+export function addWaterLayers(map: MlMap, tilesUrl: string, attribution: string) {
+  if (!map.getSource(WATER.source))
+    map.addSource(WATER.source, {
+      type: 'vector',
+      url: `pmtiles://${tilesUrl}`,
+      promoteId: 'wid',
+      attribution,
+    });
+  const before = map.getLayer(LAYERS.meAccuracy) ? LAYERS.meAccuracy : undefined;
+  const add = (layer: Parameters<MlMap['addLayer']>[0]) => {
+    if (!map.getLayer(layer.id)) map.addLayer(layer, before);
+  };
+  add({
+    id: WATER.fill,
+    type: 'fill',
+    source: WATER.source,
+    'source-layer': 'areas',
+    filter: minZoomFilter,
+    paint: { 'fill-color': '#1F7A8C', 'fill-opacity': ['case', selected, 0.28, 0] },
+  });
+  add({
+    id: WATER.outline,
+    type: 'line',
+    source: WATER.source,
+    'source-layer': 'areas',
+    filter: minZoomFilter,
+    paint: { 'line-color': '#0F5C6E', 'line-width': 2.5, 'line-opacity': ['case', selected, 1, 0] },
+  });
+  add({
+    id: WATER.lineHit,
+    type: 'line',
+    source: WATER.source,
+    'source-layer': 'lines',
+    filter: minZoomFilter,
+    paint: { 'line-color': '#0F5C6E', 'line-width': 14, 'line-opacity': 0 },
+  });
+  add({
+    id: WATER.lineSel,
+    type: 'line',
+    source: WATER.source,
+    'source-layer': 'lines',
+    filter: minZoomFilter,
+    paint: { 'line-color': '#0F5C6E', 'line-width': 4, 'line-opacity': ['case', selected, 1, 0] },
+  });
+}
 
 const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] };
 

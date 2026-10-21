@@ -1,10 +1,11 @@
 // Verarbeitet den osmium-Export (GeoJSON-Sequenz) zu:
-//  - tiles-areas.geojsonseq / tiles-lines.geojsonseq  (Eingabe für tippecanoe)
-//  - waters.ndjson   (Gewässer-Metadaten, ein Datensatz pro OSM-Objekt)
-//  - search/<shard>.json  (Suchindex, nach Token-Präfix geteilt)
-//  - report.json     (Mengen, Größen, Abdeckung – Grundlage für die Hochrechnung)
-// Aufruf: node --import tsx src/process.ts <export.geojsonseq> <ausgabeordner>
-import { createReadStream, mkdirSync, rmSync, writeFileSync, createWriteStream } from 'node:fs';
+//  - tiles-areas.geojsonseq / tiles-lines.geojsonseq  (Eingabe für tippecanoe; Profilfelder stecken in den Kacheln)
+//  - search/<xx>.json + search/index.json             (Suchindex, nach Wort-Präfix geteilt)
+//  - water-manifest.json                              (Datenstand, Lizenz, Abdeckung)
+//  - report.json                                      (Mengen und Größen, Grundlage für DATA_SOURCES.md)
+// Zwei Durchläufe über die Exportdatei, damit auch der Deutschland-Auszug nicht komplett im Speicher liegt.
+// Aufruf: DATA_DATE=<iso> SOURCE_NAME=<datei> node --import tsx src/process.ts <export.geojsonseq> <ausgabeordner>
+import { createReadStream, createWriteStream, mkdirSync, rmSync, writeFileSync, type WriteStream } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';
@@ -18,14 +19,18 @@ import Flatbush from 'flatbush';
 type Tags = Record<string, string>;
 type WaterType = 'lake' | 'pond' | 'reservoir' | 'river' | 'canal' | 'stream' | 'oxbow' | 'harbour' | 'other';
 type Bbox = [number, number, number, number];
+type ExportFeature = Feature<Geometry, Tags> & { id: string };
 
-interface Admin { level: 4 | 6 | 8; name: string; geom: Polygon | MultiPolygon; bbox: Bbox }
-interface WaterRecord {
-  wid: string; n?: string; t: WaterType;
-  ha?: number; km?: number;
-  c: [number, number];             // [lat, lng], repräsentativer Punkt
-  bb: Bbox;                        // [minLng, minLat, maxLng, maxLat]
-  adm: { s?: string; k?: string; g?: string };
+interface Admin {
+  level: 4 | 6 | 8;
+  name: string;
+  geom: Polygon | MultiPolygon;
+  bbox: Bbox;
+}
+interface Adm {
+  s?: string;
+  k?: string;
+  g?: string;
 }
 
 const [inputArg, outArg] = process.argv.slice(2);
@@ -39,7 +44,15 @@ const WATER_TYPE: Record<string, WaterType> = {
 };
 // Für Angler irrelevante Wasserflächen: werden gezählt, aber nicht übernommen.
 const EXCLUDED_WATER = new Set(['wastewater', 'reflecting_pool', 'fountain', 'swimming_pool', 'basin', 'pool']);
-const KREIS_LEVEL = 6, GEMEINDE_LEVEL = 8, LAND_LEVEL = 4;
+
+// Bundesländer (admin_level 4) → Kürzel wie in DATA_MODEL (StateCode). Andere Staaten bleiben ohne Kürzel.
+const STATE_CODES: [RegExp, string][] = [
+  [/^Baden-Württemberg$/, 'BW'], [/^(Freistaat )?Bayern$/, 'BY'], [/^Berlin$/, 'BE'], [/^Brandenburg$/, 'BB'],
+  [/Bremen$/, 'HB'], [/Hamburg$/, 'HH'], [/^Hessen$/, 'HE'], [/^Mecklenburg-Vorpommern$/, 'MV'],
+  [/^Niedersachsen$/, 'NI'], [/^Nordrhein-Westfalen$/, 'NW'], [/^Rheinland-Pfalz$/, 'RP'], [/^Saarland$/, 'SL'],
+  [/^(Freistaat )?Sachsen$/, 'SN'], [/^Sachsen-Anhalt$/, 'ST'], [/^Schleswig-Holstein$/, 'SH'], [/^(Freistaat )?Thüringen$/, 'TH'],
+];
+export const stateCode = (name: string) => STATE_CODES.find(([re]) => re.test(name))?.[1];
 
 const r6 = (x: number) => Math.round(x * 1e6) / 1e6;
 // GeoJSON-Position → [lng, lat] (Höhenwert wird ignoriert)
@@ -71,7 +84,7 @@ function areaType(tags: Tags): WaterType | 'excluded' | null {
   if (tags.water) return EXCLUDED_WATER.has(tags.water) ? 'excluded' : WATER_TYPE[tags.water] ?? 'other';
   if (tags.landuse === 'reservoir') return 'reservoir';
   if (tags.landuse === 'basin') return 'excluded';
-  if (tags.natural === 'water') return 'other';   // ohne water=* keine Typ-Vermutung
+  if (tags.natural === 'water') return 'other'; // ohne water=* keine Typ-Vermutung
   return null;
 }
 
@@ -85,97 +98,131 @@ export function normalize(s: string): string {
     .normalize('NFKD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
-async function main(): Promise<void> {
-  const admins: Admin[] = [];
-  const places: { n: string; kind: string; c: [number, number] }[] = [];
-  const waters: WaterRecord[] = [];
-  const tilesAreas: string[] = [], tilesLines: string[] = [];
-  const counts = { degenerate: 0, excludedAreas: 0, unnamedAreas: 0, unnamedLinesSkipped: 0, tinyAreasUnder01ha: 0, otherGeometry: 0 };
-
-  const rl = createInterface({ input: createReadStream(input), crlfDelay: Infinity });
+async function* features(file: string): AsyncGenerator<ExportFeature> {
+  const rl = createInterface({ input: createReadStream(file), crlfDelay: Infinity });
   for await (const raw of rl) {
-    const line = raw.replace(/^\x1e/, '').trim();   // RFC 8142: Record-Separator
-    if (!line) continue;
-    const f = JSON.parse(line) as Feature<Geometry, Tags> & { id: string };
-    const tags = f.properties ?? {}, g = f.geometry;
+    const line = raw.replace(/^\x1e/, '').trim(); // RFC 8142: Record-Separator
+    if (line) yield JSON.parse(line) as ExportFeature;
+  }
+}
 
+/** Schreibt mit Rücksicht auf Gegendruck (große Ausgaben). */
+function writer(path: string) {
+  const ws: WriteStream = createWriteStream(path);
+  return {
+    async write(s: string) {
+      if (!ws.write(s)) await new Promise((r) => ws.once('drain', r));
+    },
+    end: () => new Promise<void>((r) => ws.end(r)),
+  };
+}
+
+async function main(): Promise<void> {
+  // ---------- Durchlauf 1: Verwaltungsgrenzen und Orte ----------
+  const admins: Admin[] = [];
+  const places: { n: string; kind: string; c: [number, number]; adm: Adm }[] = [];
+  for await (const f of features(input)) {
+    const tags = f.properties ?? {}, g = f.geometry;
     if (tags.boundary === 'administrative' && (g.type === 'Polygon' || g.type === 'MultiPolygon')) {
       const level = Number(tags.admin_level);
-      if ((level === LAND_LEVEL || level === KREIS_LEVEL || level === GEMEINDE_LEVEL) && tags.name)
+      if ((level === 4 || level === 6 || level === 8) && tags.name)
         admins.push({ level: level as Admin['level'], name: tags.name, geom: g, bbox: bboxOf(g) });
-      continue;
+    } else if (g.type === 'Point' && tags.place && tags.name) {
+      const [lng, lat] = lngLat((g as Point).coordinates);
+      places.push({ n: tags.name, kind: tags.place, c: [r6(lat), r6(lng)], adm: {} });
     }
-    if (g.type === 'Point') {
-      if (tags.place && tags.name) {
-        const [lng, lat] = lngLat((g as Point).coordinates);
-        places.push({ n: tags.name, kind: tags.place, c: [r6(lat), r6(lng)] });
-      }
-      continue;
+  }
+  const index = new Flatbush(Math.max(admins.length, 1));
+  for (const a of admins) index.add(a.bbox[0], a.bbox[1], a.bbox[2], a.bbox[3]);
+  if (!admins.length) index.add(0, 0, 0, 0);
+  index.finish();
+  const adminAt = (lng: number, lat: number): Adm => {
+    const adm: Adm = {};
+    for (const i of index.search(lng, lat, lng, lat)) {
+      const a = admins[i];
+      if (!a || !booleanPointInPolygon([lng, lat], a.geom)) continue;
+      if (a.level === 4) {
+        const code = stateCode(a.name);
+        if (code) adm.s = code;
+      } else if (a.level === 6) adm.k = a.name;
+      else adm.g = a.name;
     }
+    return adm;
+  };
+  for (const p of places) p.adm = adminAt(p.c[1], p.c[0]);
+
+  // ---------- Durchlauf 2: Gewässer ----------
+  const counts = { degenerate: 0, excludedAreas: 0, unnamedAreas: 0, unnamedLinesSkipped: 0, tinyAreasUnder01ha: 0 };
+  const byType: Record<string, { count: number; named: number }> = {};
+  const byState: Record<string, number> = {};
+  const areasHa: number[] = [];
+  let total = 0, lines = 0, withState = 0, withKreis = 0, withGemeinde = 0;
+  type Entry = [name: string, kind: string, lat: number, lng: number, context: string, rank: number, wid: string];
+  const entries: Entry[] = [];
+  const lineGroups = new Map<string, { n: string; t: WaterType; c: [number, number]; km: number; ctx: string; wid: string }>();
+  const areasOut = writer(join(outDir, 'tiles-areas.geojsonseq'));
+  const linesOut = writer(join(outDir, 'tiles-lines.geojsonseq'));
+
+  const account = (t: WaterType, named: boolean, adm: Adm) => {
+    const b = (byType[t] ??= { count: 0, named: 0 });
+    b.count++;
+    if (named) b.named++;
+    total++;
+    if (adm.s) { withState++; byState[adm.s] = (byState[adm.s] ?? 0) + 1; }
+    if (adm.k) withKreis++;
+    if (adm.g) withGemeinde++;
+  };
+
+  for await (const f of features(input)) {
+    const tags = f.properties ?? {}, g = f.geometry;
     if (g.type === 'Polygon' || g.type === 'MultiPolygon') {
       const t = areaType(tags);
       if (t === null) continue;
       if (t === 'excluded') { counts.excludedAreas++; continue; }
       const ha = area(f) / 1e4;
-      if (ha < 1e-4) { counts.degenerate++; continue; }   // < 1 m²: Splitter, kein Gewässer
+      if (ha < 1e-4) { counts.degenerate++; continue; } // < 1 m²: Splitter, kein Gewässer
       if (ha < 0.1) counts.tinyAreasUnder01ha++;
       if (!tags.name) counts.unnamedAreas++;
       const wid = osmWid(f.id);
       const [lng, lat] = lngLat(pointOnFeature(f).geometry.coordinates);
-      waters.push({ wid, n: tags.name, t, ha: Math.round(ha * 100) / 100,
-        c: [r6(lat), r6(lng)], bb: bboxOf(g), adm: {} });
+      const adm = adminAt(lng, lat);
+      account(t, !!tags.name, adm);
+      areasHa.push(ha);
+      if (tags.name) entries.push([tags.name, t, r6(lat), r6(lng), adm.g ?? adm.k ?? '', Math.round(Math.log10(1 + ha) * 100), wid]);
       // Kein Feature-"tippecanoe.minzoom": verschluckt in tippecanoe 2.49 überlappende Nachbarn (Spike S1).
-      // Stattdessen Attribut mz, nach dem der Kartenstil filtert.
-      tilesAreas.push(JSON.stringify({ type: 'Feature',
-        properties: { wid, t, mz: areaMinZoom(ha), ...(tags.name ? { n: tags.name } : {}) }, geometry: g }));
-      continue;
-    }
-    if (g.type === 'LineString' && tags.waterway) {
+      // Stattdessen Attribut mz, nach dem tippecanoe (-j) und der Kartenstil filtern.
+      await areasOut.write(JSON.stringify({ type: 'Feature', properties: {
+        wid, t, mz: areaMinZoom(ha), ha: Math.round(ha * 100) / 100,
+        ...(tags.name ? { n: tags.name } : {}), ...adm }, geometry: g }) + '\n');
+    } else if (g.type === 'LineString' && tags.waterway) {
       const t: WaterType = tags.waterway === 'canal' ? 'canal' : tags.waterway === 'river' ? 'river' : 'stream';
       if (t === 'stream' && !tags.name) { counts.unnamedLinesSkipped++; continue; }
       const km = length(f);
-      if (km < 0.002) { counts.degenerate++; continue; }   // < 2 m: Splitter
-      const wid = osmWid(f.id), coords = (g as LineString).coordinates, [mlng, mlat] = lngLat(coords[Math.floor(coords.length / 2)] ?? [0, 0]);
-      waters.push({ wid, n: tags.name, t, km: Math.round(km * 100) / 100,
-        c: [r6(mlat), r6(mlng)], bb: bboxOf(g), adm: {} });
-      tilesLines.push(JSON.stringify({ type: 'Feature',
-        properties: { wid, t, mz: t === 'stream' ? 12 : 8, ...(tags.name ? { n: tags.name } : {}) }, geometry: g }));
-      continue;
-    }
-    counts.otherGeometry++;
-  }
-
-  // Verwaltungszuordnung über den repräsentativen Punkt
-  const index = new Flatbush(Math.max(admins.length, 1));
-  for (const a of admins) index.add(a.bbox[0], a.bbox[1], a.bbox[2], a.bbox[3]);
-  if (!admins.length) index.add(0, 0, 0, 0);
-  index.finish();
-  const key = { 4: 's', 6: 'k', 8: 'g' } as const;
-  for (const w of waters) {
-    const [lat, lng] = w.c, pt: Position = [lng, lat];
-    for (const i of index.search(lng, lat, lng, lat)) {
-      const a = admins[i];
-      if (a && booleanPointInPolygon(pt, a.geom)) w.adm[key[a.level]] = a.name;
+      if (km < 0.002) { counts.degenerate++; continue; } // < 2 m: Splitter
+      const wid = osmWid(f.id), coords = (g as LineString).coordinates;
+      const [lng, lat] = lngLat(coords[Math.floor(coords.length / 2)] ?? [0, 0]);
+      const adm = adminAt(lng, lat);
+      account(t, !!tags.name, adm);
+      lines++;
+      // Fließgewässer bestehen aus vielen Abschnitten: für die Suche je Name + Kreis zusammenfassen
+      if (tags.name) {
+        const key = `${tags.name}|${t}|${adm.k ?? ''}`;
+        const grp = lineGroups.get(key);
+        if (grp) grp.km += km;
+        else lineGroups.set(key, { n: tags.name, t, c: [r6(lat), r6(lng)], km, ctx: adm.k ?? adm.g ?? '', wid });
+      }
+      await linesOut.write(JSON.stringify({ type: 'Feature', properties: {
+        wid, t, mz: t === 'stream' ? 12 : 8, ...(tags.name ? { n: tags.name } : {}), ...adm }, geometry: g }) + '\n');
     }
   }
+  await areasOut.end();
+  await linesOut.end();
 
-  // Suchindex: benannte Gewässer, Fließgewässer je Name+Kreis zusammengefasst, plus Orte.
-  type Entry = [name: string, kind: string, lat: number, lng: number, context: string, rank: number];
-  const entries: Entry[] = [];
-  const lineGroups = new Map<string, WaterRecord[]>();
-  for (const w of waters) {
-    if (!w.n) continue;
-    if (w.km !== undefined) {
-      const k = `${w.n}|${w.t}|${w.adm.k ?? ''}`;
-      (lineGroups.get(k) ?? lineGroups.set(k, []).get(k)!).push(w);
-    } else entries.push([w.n, w.t, w.c[0], w.c[1], w.adm.g ?? w.adm.k ?? '', Math.round(Math.log10(1 + (w.ha ?? 0)) * 100)]);
-  }
-  for (const group of lineGroups.values()) {
-    const w = group[Math.floor(group.length / 2)]!, km = group.reduce((s, x) => s + (x.km ?? 0), 0);
-    entries.push([w.n!, w.t, w.c[0], w.c[1], w.adm.k ?? '', Math.round(Math.log10(1 + km * 10) * 100)]);
-  }
-  for (const p of places) entries.push([p.n, `place:${p.kind}`, p.c[0], p.c[1], '', 0]);
+  for (const grp of lineGroups.values())
+    entries.push([grp.n, grp.t, grp.c[0], grp.c[1], grp.ctx, Math.round(Math.log10(1 + grp.km * 10) * 100), grp.wid]);
+  for (const p of places) entries.push([p.n, `place:${p.kind}`, p.c[0], p.c[1], p.adm.k ?? '', 0, '']);
 
+  // ---------- Suchindex ----------
   const shards = new Map<string, Entry[]>();
   for (const e of entries) {
     const prefixes = new Set(normalize(e[0]).split(' ').filter((t) => t.length >= 2).map((t) => t.slice(0, 2)));
@@ -190,36 +237,38 @@ async function main(): Promise<void> {
     searchRaw += json.length; searchGz += gz;
     if (gz > maxShardGz) { maxShardGz = gz; maxShard = p; }
   }
+  writeFileSync(join(outDir, 'search', 'index.json'), JSON.stringify([...shards.keys()].sort()));
 
-  const watersOut = createWriteStream(join(outDir, 'waters.ndjson'));
-  let watersRaw = '';
-  for (const w of waters) { const s = JSON.stringify(w) + '\n'; watersRaw += s; watersOut.write(s); }
-  watersOut.end();
-  writeFileSync(join(outDir, 'tiles-areas.geojsonseq'), tilesAreas.join('\n') + '\n');
-  writeFileSync(join(outDir, 'tiles-lines.geojsonseq'), tilesLines.join('\n') + '\n');
+  // ---------- Manifest ----------
+  const dataDate = process.env.DATA_DATE ?? '';
+  writeFileSync(join(outDir, 'water-manifest.json'), JSON.stringify({
+    format: 'fangpunkt-water',
+    formatVersion: 1,
+    dataDate,
+    generatedAt: new Date().toISOString(),
+    source: {
+      name: 'OpenStreetMap',
+      extract: process.env.SOURCE_NAME ?? input,
+      license: 'ODbL-1.0',
+      attribution: '© OpenStreetMap-Mitwirkende',
+      url: 'https://www.openstreetmap.org/copyright',
+    },
+    coverage: Object.keys(byState).sort(),
+    tiles: 'water.pmtiles',
+    search: 'search/',
+  }, null, 2));
 
-  const byType: Record<string, { count: number; named: number }> = {};
-  for (const w of waters) {
-    const b = (byType[w.t] ??= { count: 0, named: 0 });
-    b.count++; if (w.n) b.named++;
-  }
-  const areasHa = waters.filter((w) => w.ha !== undefined).map((w) => w.ha!).sort((a, b) => a - b);
-  const q = (p: number) => areasHa[Math.floor((areasHa.length - 1) * p)] ?? 0;
+  areasHa.sort((a, b) => a - b);
+  const q = (p: number) => Math.round((areasHa[Math.floor((areasHa.length - 1) * p)] ?? 0) * 100) / 100;
   const report = {
-    input, generatedAt: new Date().toISOString(),
+    input, dataDate, generatedAt: new Date().toISOString(),
     admins: { land: admins.filter((a) => a.level === 4).length, kreis: admins.filter((a) => a.level === 6).length,
       gemeinde: admins.filter((a) => a.level === 8).length },
     places: places.length,
-    waters: { total: waters.length, areas: areasHa.length, lines: waters.length - areasHa.length, byType, ...counts },
+    waters: { total, areas: areasHa.length, lines, byType, byState, ...counts },
     areaHaQuantiles: { p10: q(0.1), p50: q(0.5), p90: q(0.9), p99: q(0.99), max: q(1) },
-    adminCoverage: {
-      gemeinde: waters.filter((w) => w.adm.g).length / Math.max(waters.length, 1),
-      kreis: waters.filter((w) => w.adm.k).length / Math.max(waters.length, 1),
-      land: waters.filter((w) => w.adm.s).length / Math.max(waters.length, 1),
-    },
-    search: { entries: entries.length, shards: shards.size, rawBytes: searchRaw, gzipBytes: searchGz,
-      maxShard, maxShardGzipBytes: maxShardGz },
-    watersMeta: { rawBytes: watersRaw.length, gzipBytes: gzipSync(watersRaw).length },
+    adminCoverage: { land: withState / Math.max(total, 1), kreis: withKreis / Math.max(total, 1), gemeinde: withGemeinde / Math.max(total, 1) },
+    search: { entries: entries.length, shards: shards.size, rawBytes: searchRaw, gzipBytes: searchGz, maxShard, maxShardGzipBytes: maxShardGz },
   };
   writeFileSync(join(outDir, 'report.json'), JSON.stringify(report, null, 2));
   console.log(JSON.stringify(report, null, 2));

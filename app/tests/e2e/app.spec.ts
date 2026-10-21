@@ -1,8 +1,12 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { collectErrors, waitForApp } from './helpers';
+import { collectErrors, waitForApp, useLocalExternals } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
+
+test.beforeEach(async ({ page }) => {
+  await useLocalExternals(page);
+});
 
 const VIEWS = [
   { path: '/fangbuch', heading: 'Fangbuch' },

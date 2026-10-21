@@ -16,10 +16,23 @@ const Icon = ({ kind }: { kind: Parameters<typeof markerDataUrl>[0] }) => (
   <img src={markerDataUrl(kind)} width={28} height={28} alt="" aria-hidden="true" />
 );
 
-export function NewHere({ lat, lng, onPick }: { lat: number; lng: number; onPick: (t: PlaceType) => void }) {
+export function NewHere({
+  lat,
+  lng,
+  waterName,
+  onPick,
+}: {
+  lat: number;
+  lng: number;
+  waterName?: string;
+  onPick: (t: PlaceType) => void;
+}) {
   return (
     <>
-      <p className="muted tabular">{de.map.coords(lat, lng)}</p>
+      <p className="muted tabular">
+        {waterName ? `${waterName} · ` : ''}
+        {de.map.coords(lat, lng)}
+      </p>
       <div className={styles.typeGrid}>
         {PLACE_TYPES.map((t) => (
           <button key={t} type="button" className={styles.typeButton} onClick={() => onPick(t)}>
@@ -42,12 +55,15 @@ export function NewHere({ lat, lng, onPick }: { lat: number; lng: number; onPick
 /** Formular für neue und bestehende Orte. */
 export function PlaceForm({
   initial,
+  water,
   lat,
   lng,
   onSaved,
   onCancel,
 }: {
   initial: Pick<Place, 'type'> & Partial<Place>;
+  /** Gewässer, an dem der Ort liegt (aus der Gewässerebene) */
+  water?: { wid: string; name?: string };
   lat: number;
   lng: number;
   onSaved: (p: Place) => void;
@@ -72,9 +88,11 @@ export function PlaceForm({
       const r = repo('places');
       const p = initial.id
         ? await r.update(initial.id, fields as Partial<Place>)
-        : await r.create({ ...fields, position: { lat, lng, source: 'map-tap' } } as Parameters<
-            typeof r.create
-          >[0]);
+        : await r.create({
+            ...fields,
+            position: { lat, lng, source: 'map-tap' },
+            ...(water ? { waterId: water.wid, waterSnapshot: water.name ? { name: water.name } : {} } : {}),
+          } as Parameters<typeof r.create>[0]);
       onSaved(p);
     } catch (err) {
       setError(userMessage(err));
