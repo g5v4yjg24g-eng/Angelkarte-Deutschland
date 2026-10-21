@@ -30,6 +30,19 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Gewässerdaten (ODbL) liegen als Anhang des neuesten Releases „wasserdaten-*" (erzeugt mit tools/water-pipeline).
+      # Fehlen sie, wird die App ohne Gewässerebene gebaut – die übrige App funktioniert trotzdem.
+      - name: Gewässerdaten holen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 50 --json tagName --jq '[.[] | select(.tagName | startswith("wasserdaten-"))][0].tagName // empty')
+          if [ -z "$tag" ]; then echo "Keine Gewässerdaten-Release gefunden"; exit 0; fi
+          echo "Verwende $tag"
+          gh release download "$tag" --repo "$GITHUB_REPOSITORY" --pattern 'wasserdaten.tar.gz' --dir /tmp
+          mkdir -p app/public/data/water
+          tar -xzf /tmp/wasserdaten.tar.gz -C app/public/data/water
+          ls -la app/public/data/water
       - run: pnpm build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/

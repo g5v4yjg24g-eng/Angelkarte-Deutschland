@@ -41,10 +41,14 @@ tippecanoe -o "$OUT/water.pmtiles" --force \
   --read-parallel --quiet
 
 echo "5/5 Vollständigkeit: jedes Objekt muss bei z14 in den Kacheln stehen"
-expected=$(cat "$OUT/tiles-areas.geojsonseq" "$OUT/tiles-lines.geojsonseq" | grep -o '"wid":"[^"]*"' | sort -u | wc -l)
-actual=$(tippecanoe-decode -Z14 -z14 "$OUT/water.pmtiles" | grep -o '"wid": "[^"]*"' | sort -u | wc -l)
-echo "  erwartet: $expected  in z14-Kacheln: $actual"
-if [ "$expected" -ne "$actual" ]; then echo "FEHLER: Objekte fehlen in den Kacheln" >&2; exit 1; fi
+cat "$OUT/tiles-areas.geojsonseq" "$OUT/tiles-lines.geojsonseq" | grep -o '"wid":"osm:[^"]*"' | cut -d'"' -f4 | sort -u > "$OUT/check-expected.txt"
+tippecanoe-decode -Z14 -z14 "$OUT/water.pmtiles" | grep -o '"wid": "osm:[^"]*"' | cut -d'"' -f4 | sort -u > "$OUT/check-tiles.txt"
+comm -23 "$OUT/check-expected.txt" "$OUT/check-tiles.txt" > "$OUT/check-missing.txt"
+echo "  erwartet: $(wc -l < "$OUT/check-expected.txt")  fehlend in z14-Kacheln: $(wc -l < "$OUT/check-missing.txt")"
+if [ -s "$OUT/check-missing.txt" ]; then
+  echo "FEHLER: Objekte fehlen in den Kacheln (Liste: $OUT/check-missing.txt)" >&2; head -20 "$OUT/check-missing.txt" >&2; exit 1
+fi
+rm -f "$OUT"/check-*.txt
 
 echo "Fertig in $(( $(date +%s) - t0 )) s"
 ls -la "$OUT"
