@@ -4,7 +4,8 @@ Deutschlandweite Angel-App als PWA namens **„Fangpunkt"** (Arbeitsname, E5). N
 Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`, `DATA_MODEL.md`, `TEST_PLAN.md`. **Vor jeder größeren Änderung lesen.** Bei Abweichungen das Dokument im selben PR aktualisieren.
 
 ## Projektstatus
-- Phase: **M1 abgeschlossen** (PLAN.md §4). Nächster Schritt M2 nach Freigabe.
+- Phase: **M2 abgeschlossen** (PLAN.md §4). Nächster Schritt M3 nach Freigabe.
+- Datenschicht: `app/src/data` (Dexie), Fachlogik `app/src/domain` (rein, ohne DB). Tests der Datenschicht laufen mit `// @vitest-environment node` + fake-indexeddb (jsdom-Blob ist unvollständig).
 - App liegt in `app/` (pnpm-Workspace mit `tools/*`). Marken-Master: `app/src/design/brand/fish.json` → nach Änderungen `pnpm icons`.
 - Gewässer-Pipeline: `tools/water-pipeline` (Doku dort). Kein Feature-`tippecanoe.minzoom` verwenden (Bug, siehe DATA_SOURCES §10.1); die Vollständigkeitsprüfung in `run.sh` nicht entfernen.
 - Rechtsinhalte zuerst nur für **NRW** (E7).

@@ -5,6 +5,7 @@ import { BookIcon, ChartIcon, FishMark, MapIcon, MoreIcon, OfflineIcon } from '.
 import { Badge } from '../design/components/Badge';
 import { useOnline } from '../lib/useOnline';
 import { UpdatePrompt } from './UpdatePrompt';
+import { BackupReminder } from '../features/backup/BackupReminder';
 import styles from './AppShell.module.css';
 
 const NAV = [
@@ -59,6 +60,7 @@ export function AppShell() {
         ))}
       </nav>
       <main className={styles.main} id="main">
+        <BackupReminder />
         <Outlet />
       </main>
       <UpdatePrompt />

@@ -16,6 +16,15 @@ importers:
       '@fontsource-variable/inter':
         specifier: 5.3.0
         version: 5.3.0
+      dexie:
+        specifier: 4.4.6
+        version: 4.4.6
+      dexie-react-hooks:
+        specifier: 4.4.0
+        version: 4.4.0(dexie@4.4.6)(react@19.3.1)
+      fflate:
+        specifier: 0.8.3
+        version: 0.8.3
       react:
         specifier: 19.3.1
         version: 19.3.1
@@ -25,6 +34,9 @@ importers:
       react-router:
         specifier: 8.5.0
         version: 8.5.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@axe-core/playwright':
         specifier: 4.14.0
@@ -68,6 +80,9 @@ importers:
       eslint-plugin-react-refresh:
         specifier: 0.5.7
         version: 0.5.7(eslint@10.13.0)
+      fake-indexeddb:
+        specifier: 6.2.6
+        version: 6.2.6
       globals:
         specifier: 17.13.0
         version: 17.13.0
@@ -2108,6 +2123,15 @@ packages:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
 
+  dexie-react-hooks@4.4.0:
+    resolution: {integrity: sha512-ObLXBS5+4BJU8vtSvBx6b9fY6zZYgniAtwxzjCHsUQadgbqYN6935X2/1TWw4Rf2N1aZV1io5/ziox4vKuxABA==}
+    peerDependencies:
+      dexie: '>=4.2.0-alpha.1 <5.0.0'
+      react: '>=16'
+
+  dexie@4.4.6:
+    resolution: {integrity: sha512-hJP/BO6mjB+tX6hToIO1kmxYLNmun90wYbfcoAoLpKEyDYal/k33dg0TAfoUe2TDsbbLoVIzljJ3BN2UbR5EOg==}
+
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
 
@@ -2265,6 +2289,10 @@ packages:
   expect-type@1.4.0:
     resolution: {integrity: sha512-KfYbmpRm0VbLjEvVa9yGwCi9GI34xvi7A/HXYWQO65CSD2u3MczUJSuwXKFIxlGsgBQizV9q5J9NHj4VG0n+pA==}
     engines: {node: '>=12.0.0'}
+
+  fake-indexeddb@6.2.6:
+    resolution: {integrity: sha512-ihhmr0KoET51jT8R4YhbUYuLLvr1qqO6INISygtN16i8loR8kAxtAUr4+EKHTSMjL+lggaAn4OC7DRqzrNgnuQ==}
+    engines: {node: '>=18'}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -5399,6 +5427,13 @@ snapshots:
 
   detect-libc@2.1.2: {}
 
+  dexie-react-hooks@4.4.0(dexie@4.4.6)(react@19.3.1):
+    dependencies:
+      dexie: 4.4.6
+      react: 19.3.1
+
+  dexie@4.4.6: {}
+
   dom-accessibility-api@0.5.16: {}
 
   dom-accessibility-api@0.6.3: {}
@@ -5654,6 +5689,8 @@ snapshots:
   eta@4.6.0: {}
 
   expect-type@1.4.0: {}
+
+  fake-indexeddb@6.2.6: {}
 
   fast-deep-equal@3.1.3: {}
 
