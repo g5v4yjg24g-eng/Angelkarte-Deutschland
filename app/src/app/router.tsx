@@ -8,6 +8,7 @@ import { StatsPage } from '../features/stats/StatsPage';
 import { MorePage } from '../features/more/MorePage';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { AboutPage } from '../features/about/AboutPage';
+import { BackupPage } from '../features/backup/BackupPage';
 
 export const routes = [
   {
@@ -24,6 +25,7 @@ export const routes = [
           { path: 'mehr', element: <MorePage /> },
           { path: 'mehr/einstellungen', element: <SettingsPage /> },
           { path: 'mehr/info', element: <AboutPage /> },
+          { path: 'mehr/daten', element: <BackupPage /> },
           { path: '*', element: <NotFound /> },
         ],
       },

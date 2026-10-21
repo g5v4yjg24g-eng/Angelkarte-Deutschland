@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-21 · Status: **M1 abgeschlossen** · nächster Schritt M2 (lokale Datenhaltung) nach Freigabe
+Stand: 2026-10-21 · Status: **M2 abgeschlossen** · nächster Schritt M3 (Deutschlandkarte) nach Freigabe
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -148,14 +148,15 @@ Abhängig von: M0
 - *Abnahme (Ergebnisse):* 47 Unit-Tests, 24 E2E-Tests (mobil + Desktop) grün, darunter PWA-1/2/3/4/6, axe ohne ernste Verstöße hell/dunkel, kein horizontales Scrollen bei 390 px, Touch-Ziele ≥ 44 px. Lighthouse mobil: Performance 96, Barrierefreiheit 100, Best Practices 100, LCP 2,4 s. JS 105 KB gzip.
 - *Offen:* PWA-5 (Update-Hinweis bei neuer Version) nur manuell geprüft, nicht automatisiert. Lighthouse 12 hat keine PWA-Kategorie mehr; Installierbarkeit ist über PWA-1 (Manifest, Icons) und den aktiven Service Worker (PWA-6) belegt. Test auf echten Geräten steht aus (S2b).
 
-### M2 – Lokale Datenhaltung
+### M2 – Lokale Datenhaltung — ✅ erledigt 2026-10-21 (Branch `m2/lokale-daten`)
 Abhängig von: M1
-- Dexie-Schema v1 (DATA_MODEL.md), Repositories pro Entität, Zod-Schemas, Migrationsgerüst.
-- `navigator.storage.persist()` mit erklärendem Hinweis; Speicherplatzanzeige.
-- Export (JSON, optional mit Fotos als ZIP), Import mit Validierung, Vorschau und Konfliktstrategie.
-- Importer für Backups der Alt-App (`{app:'angelkarte', version:2}`, E9), inkl. Fotos aus DataURLs → Photo-Blobs.
-- Backup-Erinnerung.
-- *Abnahme:* Roundtrip-Test (Export → Löschen → Import → identisch); kaputte und manipulierte Dateien werden abgelehnt, ohne Daten zu verändern; Migrationstest v1 → v2 (Dummy).
+- ✅ Dexie-Schema v1, Repositories (Validierung, Revision, Papierkorb 30 Tage), Zod-Schemas, Migrationsgerüst mit Test.
+- ✅ `navigator.storage.persist()` auf Knopfdruck mit Erklärung; Speicheranzeige.
+- ✅ Export als ZIP mit Fotos oder JSON ohne Fotos, mit SHA-256-Prüfsumme. Import mit Prüfung je Datensatz, Vorschau (neu/gleich/abweichend), drei Strategien, eine Transaktion (alles oder nichts), automatischer Snapshot und „Rückgängig".
+- ✅ Importer für die Alt-App (E9) inkl. Fotos, Sessions, Stegen und Angelplätzen; Originaldaten bleiben erhalten.
+- ✅ Sicherungs-Erinnerung (ab 5 Änderungen oder nach 14 Tagen; „Später" = 3 Tage).
+- *Abnahme (Ergebnisse):* 89 Unit-Tests, 28 E2E-Tests grün; Roundtrip identisch; 7 Arten kaputter/manipulierter Dateien abgelehnt ohne Datenänderung; Rollback bei Abbruch; 10 000 Einträge Export+Import < 10 s; Migration v1 → v2.
+- *Offen:* BAK-7 mit einem **echten** Export der Alt-Apps prüfen (bitte Datei bereitstellen). Fangbuch zeigt bis M5 nur die Anzahl gespeicherter Einträge.
 
 ### M3 – Deutschlandkarte
 Abhängig von: M1
@@ -270,4 +271,5 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 1. ~~Entscheidungen E1–E9~~ erledigt.
 2. ~~M0~~ erledigt (Ergebnisse DATA_SOURCES §10); offen: S1b, S2b.
 3. ~~M1~~ erledigt.
-4. **M2** (lokale Datenhaltung, Export/Import, Import der Alt-App), nach deiner Freigabe.
+4. ~~M2~~ erledigt.
+5. **M3** (Deutschlandkarte mit OpenFreeMap, Standort, Tipp-Aktion, eigene Markierungen), nach deiner Freigabe.

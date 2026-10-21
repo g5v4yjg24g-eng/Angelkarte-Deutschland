@@ -105,7 +105,7 @@ interface Place extends Meta {
   notes?: string;                    // max 2000
   position: LatLng & { accuracyM?: number; source: 'map-tap' | 'gps' | 'import' };
   waterId?: string;
-  waterSnapshot?: { name?: string; centroid: LatLng };
+  waterSnapshot?: { name?: string; centroid?: LatLng };   // centroid fehlt bei Alt-App-Importen
   photoIds?: string[];
 }
 ```
@@ -128,7 +128,7 @@ interface Catch extends Meta {
   tz: string;
   position?: LatLng & { accuracyM?: number; source: 'map-tap' | 'gps' | 'place' | 'import' };
   waterId?: string;
-  waterSnapshot?: { name?: string; centroid: LatLng };
+  waterSnapshot?: { name?: string; centroid?: LatLng };   // centroid fehlt bei Alt-App-Importen
   placeId?: string;
   sessionId?: string;
 
@@ -153,9 +153,13 @@ interface Catch extends Meta {
   photoIds?: string[];
 }
 
-interface Conditions {
-  waterTempC?: number; turbidity?: 'clear'|'slightly_turbid'|'turbid';
-  airTempC?: number; windBft?: number; windDir?: Compass8; cloudPct?: 0|25|50|75|100;
+interface Conditions {          // umgesetzt in M2; Felder der Alt-App abgebildet
+  sky?: 'sunny'|'cloudy'|'rain'|'mixed';
+  cloudCover?: '0-25'|'25-50'|'50-75'|'75-100';   // Spanne in %, keine erfundene Punktangabe
+  airTempC?: number; waterTempC?: number;
+  windBft?: number; windDir?: Compass8;
+  pressureHpa?: number; pressureTrend?: 'falling'|'steady'|'rising';
+  turbidity?: 'clear'|'slightly_turbid'|'turbid'; waterPlants?: 'none'|'few'|'many';
 }
 
 interface WeatherSnapshot {
@@ -168,6 +172,7 @@ interface WeatherSnapshot {
 }
 ```
 Indizes: `id, at, outcome, speciesId, waterId, sessionId, placeId, method, updatedAt, deletedAt`.
+Zusätzlich (M2): `contactIntensity?: 1–5` (Stärke des Kontakts, aus der Alt-App) und `legacy?: { source: 'angelkarte-v2'; raw }` (unveränderte Originaldaten eines Imports, damit nichts verloren geht).
 Validierung: `lengthCm` 1–250, `weightG` 1–100 000, `depthFishedM` 0–300; bei `outcome !== 'caught'` sind Länge und Gewicht nur als „geschätzt" erlaubt.
 
 ### 5.3 Session – Angelsession
@@ -300,6 +305,15 @@ Anzeige-Logik: Landesrecht und Gewässerregeln werden **getrennt** dargestellt. 
 | Rekorde | Größte gemessene Länge je Art (nur `lengthMethod='measured'`); Schätzungen separat | – |
 
 `observation` zählt in keiner Fangkennzahl. Ungültige Sessions (Ende vor Start, > 24 h ohne Bestätigung) werden ausgeschlossen und gezählt angezeigt.
+
+## 9a. Umsetzungsstand (M2, 2026-10-21)
+
+- Schemas: `app/src/domain/schemas.ts` (Zod 4). Methoden: spinning, jigging, dropshot, bottom, float, feeder, fly, trolling, other. Ködertypen: softbait, crankbait, spinner, spoon, spinnerbait, chatterbait, jigspinner, natural, other.
+- Artenliste: `app/src/domain/species.ts`, 31 Arten + „Andere Art", **Entwurf**: wissenschaftliche Namen noch nicht gegen GBIF geprüft [O].
+- Datenbank: `app/src/data/db.ts` (Dexie 4, Name `fangpunkt`, Version 1) mit Tabellen catches, places, sessions, baitPresets, photos, settings, snapshots.
+- Fotos: `thumb` ist optional (wird ab M5 beim Anlegen erzeugt); Alt-App-Fotos werden als Blob übernommen.
+- Snapshots: vollständiger Stand inkl. Fotos vor jedem Import, die letzten 2 bleiben erhalten; in der App über „Stand vor dem Import wiederherstellen" nutzbar.
+- Alt-App-Import (§8): umgesetzt in `app/src/domain/backup/legacy.ts`. Nicht abbildbare Felder (z. B. automatisch geladenes Wetter `wx`) bleiben unter `legacy.raw` erhalten. Termine (`plans`) werden gemeldet und nicht übernommen.
 
 ## 10. Migrationen
 

@@ -1,0 +1,19 @@
+.notice {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+.success {
+  border-color: var(--color-success);
+}
+.warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border-color: transparent;
+}
+.error {
+  border-color: var(--color-danger);
+  border-width: 2px;
+}
