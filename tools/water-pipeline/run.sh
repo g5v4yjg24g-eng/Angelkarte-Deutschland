@@ -43,11 +43,20 @@ elif [ "${BORDER_WATERS:-fetch}" = skip ]; then
   echo "  $n_border unvollständige Gewässer-Relationen werden ausgelassen (BORDER_WATERS=skip)"
 else
   ids=$(sed 's/^r//' "$OUT/border-relations.txt" | paste -sd,)
-  echo "  $n_border unvollständige Gewässer-Relationen, Abfrage bei ${OVERPASS_URL:=https://overpass-api.de/api/interpreter}"
-  curl -sS --fail --retry 3 --retry-delay 30 --max-time 600 \
-    -A "Fangpunkt-Gewaesserpipeline/1 (nicht kommerziell; https://github.com/g5v4yjg24g-eng/Angelkarte-Deutschland)" \
-    --data-urlencode "data=[out:xml][timeout:300];rel(id:$ids);(._;>;);out meta;" \
-    "$OVERPASS_URL" -o "$OUT/border-waters.osm"
+  # Mehrere öffentliche Overpass-Server (gleiche OSM-Daten); der erste erreichbare liefert
+  OVERPASS_URLS=${OVERPASS_URL:-https://overpass-api.de/api/interpreter https://overpass.private.coffee/api/interpreter https://overpass.kumi.systems/api/interpreter https://maps.mail.ru/osm/tools/overpass/api/interpreter}
+  echo "  $n_border unvollständige Gewässer-Relationen"
+  fetched=""
+  for url in $OVERPASS_URLS; do
+    echo "  Abfrage bei $url"
+    if curl -sS --fail --retry 2 --retry-delay 20 --connect-timeout 30 --max-time 600 \
+         -A "Fangpunkt-Gewaesserpipeline/1 (nicht kommerziell; https://github.com/g5v4yjg24g-eng/Angelkarte-Deutschland)" \
+         --data-urlencode "data=[out:xml][timeout:300];rel(id:$ids);(._;>;);out meta;" \
+         "$url" -o "$OUT/border-waters.osm" && grep -q '<relation ' "$OUT/border-waters.osm"; then
+      fetched=$url; break
+    fi
+  done
+  if [ -z "$fetched" ]; then echo "FEHLER: kein Overpass-Server erreichbar" >&2; exit 1; fi
   got=$(grep -c '<relation ' "$OUT/border-waters.osm" || true)
   if [ "$got" -ne "$n_border" ]; then
     echo "FEHLER: Overpass lieferte $got von $n_border Relationen" >&2; exit 1
@@ -57,7 +66,7 @@ else
   mv "$OUT/filtered-full.osm.pbf" "$OUT/filtered.osm.pbf"
   left=$(incomplete_relations "$OUT/filtered.osm.pbf" | comm -12 - "$OUT/border-relations.txt" | wc -l)
   if [ "$left" -ne 0 ]; then echo "FEHLER: $left Relationen bleiben unvollständig" >&2; exit 1; fi
-  BORDER_SUPPLEMENT="$n_border Relationen über Overpass API ergänzt, Abruf $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  BORDER_SUPPLEMENT="$n_border Relationen über Overpass API ergänzt ($(echo "$fetched" | cut -d/ -f3)), Abruf $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "  $BORDER_SUPPLEMENT"
 fi
 
