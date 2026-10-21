@@ -10,3 +10,4 @@ app/dev-dist/
 app/test-results/
 app/playwright-report/
 app/public/data/
+!app/tests/fixtures/water/*.pmtiles
