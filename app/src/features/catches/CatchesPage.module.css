@@ -83,3 +83,15 @@ a.row:hover {
   display: grid;
   gap: var(--space-4);
 }
+.rowPhoto {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.rowPhoto img,
+.rowPhoto span {
+  width: 48px;
+  height: 48px;
+}

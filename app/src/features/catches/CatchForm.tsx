@@ -8,8 +8,12 @@ import { Notice } from '../../design/components/Notice';
 import { SegmentedControl } from '../../design/components/SegmentedControl';
 import { SelectField, TextArea, TextField } from '../../design/components/Field';
 import { getDb } from '../../data/db';
-import { repo } from '../../data/repository';
-import { userMessage } from '../../data/errors';
+import { saveCatch } from '../../data/catchService';
+import { isQuotaError, userMessage } from '../../data/errors';
+import { MAX_PHOTOS_PER_CATCH } from '../../domain/photo';
+import { newId } from '../../domain/id';
+import { PhotoReadError, processPhoto } from '../../lib/processPhoto';
+import { PhotoPicker, type PendingPhoto } from './PhotoPicker';
 import {
   BaitTypeSchema,
   CatchOutcomeSchema,
@@ -84,6 +88,28 @@ export function CatchForm({
   const [errors, setErrors] = useState<DraftErrors>({});
   const [saveError, setSaveError] = useState<string>();
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<PendingPhoto[]>([]);
+  const [removedPhotos, setRemovedPhotos] = useState<string[]>([]);
+  const [processing, setProcessing] = useState(false);
+  const [photoError, setPhotoError] = useState<string>();
+  const [quotaFull, setQuotaFull] = useState(false);
+  const existingPhotos = (initial?.photoIds ?? []).filter((id) => !removedPhotos.includes(id));
+
+  async function addPhotos(files: File[]) {
+    setPhotoError(undefined);
+    setProcessing(true);
+    const room = MAX_PHOTOS_PER_CATCH - existingPhotos.length - pending.length;
+    const added: PendingPhoto[] = [];
+    for (const f of files.slice(0, Math.max(0, room)))
+      try {
+        added.push({ key: newId(), photo: await processPhoto(f) });
+      } catch (err) {
+        setPhotoError(err instanceof PhotoReadError ? t.photoUnreadable : userMessage(err));
+      }
+    if (files.length > room) setPhotoError(t.photoLimit(MAX_PHOTOS_PER_CATCH));
+    setPending((p) => [...p, ...added]);
+    setProcessing(false);
+  }
   const details = useRef<HTMLDetailsElement>(null);
 
   const all = useLiveQuery(() => getDb().catches.toArray(), []);
@@ -116,9 +142,10 @@ export function CatchForm({
       : undefined
     : context?.water;
 
-  async function save(e: React.FormEvent) {
-    e.preventDefault();
+  async function save(e?: React.FormEvent, { withPhotos = true } = {}) {
+    e?.preventDefault();
     setSaveError(undefined);
+    setQuotaFull(false);
     const { fields, errors: errs } = draftToFields(draft, initial ? { base: initial } : {});
     if (!fields) {
       setErrors(errs);
@@ -127,24 +154,34 @@ export function CatchForm({
     }
     setBusy(true);
     try {
-      const r = repo('catches');
+      const addPhotos = withPhotos ? pending.map((p) => p.photo) : [];
       const saved = initial
-        ? await r.update(initial.id, { ...fields, position })
-        : await r.create({
-            ...fields,
-            ...(position ? { position } : {}),
-            ...(context?.water
-              ? {
-                  waterId: context.water.wid,
-                  waterSnapshot: context.water.name ? { name: context.water.name } : {},
-                }
-              : {}),
-            ...(context?.placeId ? { placeId: context.placeId } : {}),
+        ? await saveCatch({
+            id: initial.id,
+            changes: { ...fields, position },
+            addPhotos,
+            removePhotoIds: removedPhotos,
+          })
+        : await saveCatch({
+            input: {
+              ...fields,
+              ...(position ? { position } : {}),
+              ...(context?.water
+                ? {
+                    waterId: context.water.wid,
+                    waterSnapshot: context.water.name ? { name: context.water.name } : {},
+                  }
+                : {}),
+              ...(context?.placeId ? { placeId: context.placeId } : {}),
+            },
+            addPhotos,
           });
       onSaved(saved);
     } catch (err) {
       console.error(err);
-      setSaveError(userMessage(err));
+      // Speicher voll: nichts wurde gespeichert (eine Transaktion); ohne Fotos geht es meist trotzdem (CAT-5)
+      if (isQuotaError(err) && withPhotos && pending.length) setQuotaFull(true);
+      else setSaveError(userMessage(err));
       setBusy(false);
     }
   }
@@ -229,6 +266,16 @@ export function CatchForm({
           onChange={(e) => set('time', e.target.value)}
         />
       </div>
+
+      <PhotoPicker
+        existingIds={existingPhotos}
+        pending={pending}
+        processing={processing}
+        error={photoError}
+        onPick={(files) => void addPhotos(files)}
+        onRemoveExisting={(id) => setRemovedPhotos((r) => [...r, id])}
+        onRemovePending={(key) => setPending((p) => p.filter((x) => x.key !== key))}
+      />
 
       <div className={styles.where}>
         <p>
@@ -383,11 +430,21 @@ export function CatchForm({
 
       {hasErrors && <Notice tone="error">{t.errors.summary}</Notice>}
       {saveError && <Notice tone="error">{saveError}</Notice>}
+      {quotaFull && (
+        <Notice tone="error">
+          <strong>{t.quotaTitle}</strong> {t.quotaText}
+          <span className={styles.noticeAction}>
+            <Button variant="secondary" onClick={() => void save(undefined, { withPhotos: false })}>
+              {t.saveWithoutPhotos}
+            </Button>
+          </span>
+        </Notice>
+      )}
       <div className={styles.actions}>
         <Button variant="secondary" onClick={onCancel}>
           {t.cancel}
         </Button>
-        <Button type="submit" disabled={busy}>
+        <Button type="submit" disabled={busy || processing}>
           {t.save}
         </Button>
       </div>

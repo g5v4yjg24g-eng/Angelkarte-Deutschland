@@ -68,10 +68,10 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | ID | Testfall | Erwartung |
 |---|---|---|
 | CAT-1 | Fang mit Pflichtfeldern minimal | Speichern mit Typ + Zeit + Position möglich. *Automatisiert (M5.1): `catches.spec.ts`, `catchDraft.test.ts`* |
-| CAT-2 | Fang komplett inkl. Foto im **Flugmodus** | Gespeichert; nach Neustart vorhanden; Foto ohne EXIF-GPS. *Stand M5.1: Erfassen ohne Netz automatisiert (ohne Foto, ohne Neustart); vollständig mit M5.2* |
+| CAT-2 | Fang komplett inkl. Foto im **Flugmodus** | Gespeichert; nach Neustart vorhanden; Foto ohne EXIF-GPS. *Automatisiert (M5.2): `photos.spec.ts` – offline erfassen mit Foto (EXIF mit GPS), offline neu starten, Foto 1600 px ohne EXIF* |
 | CAT-3 | Fehlbiss/Kontakt | Kein Gewichtsfeld „gewogen" anwählbar; Statistik zählt korrekt. *Formularteil automatisiert (M5.1); Statistik folgt mit M6* |
 | CAT-4 | Ungültige Werte (Länge 900 cm) | Feldfehler, Formular bleibt offen, Daten bleiben erhalten. *Automatisiert (M5.1), inkl. Speichern nach Korrektur* |
-| CAT-5 | Speicherfehler (Quota simuliert) | Fehlermeldung mit Option „Ohne Foto speichern"; kein Datenverlust |
+| CAT-5 | Speicherfehler (Quota simuliert) | Fehlermeldung mit Option „Ohne Foto speichern"; kein Datenverlust. *Automatisiert (M5.2): E2E mit simuliertem QuotaExceededError, Unit-Test: Transaktion speichert nichts halb* |
 | SES-1 | Session starten → 3 Fänge → beenden | Fänge zugeordnet; Dauer korrekt |
 | SES-2 | Zweite Session starten, während eine läuft | Nicht möglich, Hinweis |
 | SES-3 | Session > 24 h | Korrekturdialog |
