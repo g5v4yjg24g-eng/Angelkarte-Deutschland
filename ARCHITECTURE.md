@@ -146,6 +146,14 @@ Ein langer Druck öffnet direkt „Neu an dieser Stelle" (auch über Gewässerfl
 
 **Datenstand-Rhythmus:** monatlich [A], manuell ausgelöst in CI. Die App lädt das neue Manifest im Hintergrund und wechselt beim nächsten Start.
 
+### 6.1a Umsetzung (M4)
+- **Profilfelder stecken in den Kacheln** (`wid`, `t`, `n`, `mz`, `ha`, `s`, `k`, `g`); eine separate Metadaten-Datei entfällt. Das Gewässerprofil liest die Eigenschaften des angetippten Objekts. Nachteil: Fließgewässer zeigen nur den angetippten Abschnitt (Hinweis im Profil); ein „ganzer Fluss" braucht später die `type=waterway`-Relationen.
+- Pipeline in zwei Durchläufen (erst Verwaltungsgrenzen und Orte, dann Gewässer streamen), damit der Deutschland-Auszug nicht im Speicher liegt.
+- `water-manifest.json` (Format, Datenstand aus dem PBF-Kopf, Lizenz, Abdeckung nach Bundesland) – die App zeigt Datenstand und Abdeckung an.
+- App-Seite: Port `WaterDataProvider` (`app/src/ports/waterData.ts`), Adapter `staticWaterData(baseUrl)`; Basis-URL über `VITE_WATER_BASE_URL` austauschbar.
+- Gewässerebenen sind unsichtbar (die Basiskarte zeichnet das Wasser) und dienen dem Antippen; das gewählte Gewässer wird über `feature-state` hervorgehoben.
+- **Hosting (Entscheidung M4, ersetzt E4 vorerst):** Datenpaket `wasserdaten.tar.gz` als Anhang eines GitHub-Releases `wasserdaten-<datum>`; der Pages-Workflow lädt es beim Bauen und liefert es mit der App aus. GitHub Pages beantwortet Range-Anfragen (HTTP 206) und sendet `Access-Control-Allow-Origin: *` [V 2026-10-21]. Kein zusätzliches Konto, keine Kosten. Cloudflare R2 bleibt Option für Offline-Regionen (M10) oder falls Pages-Grenzen erreicht werden.
+
 ### 6.2 Stabile IDs
 `wid = "osm:" + type[0] + id` (z. B. `osm:w35044256`). OSM-IDs können sich bei Bearbeitungen ändern (z. B. Way → Multipolygon). Deshalb speichert jede Nutzerreferenz zusätzlich `waterSnapshot {name, centroid}`. Wird eine `wid` nach einem Datenupdate nicht mehr gefunden, sucht die App per Name und Nähe einen Nachfolger und fragt die Nutzerin oder den Nutzer, bevor sie neu zuordnet.
 
