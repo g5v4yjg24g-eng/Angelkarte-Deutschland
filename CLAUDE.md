@@ -4,11 +4,12 @@ Deutschlandweite Angel-App als PWA namens **„Fangpunkt"** (Arbeitsname, E5). N
 Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`, `DATA_MODEL.md`, `TEST_PLAN.md`. **Vor jeder größeren Änderung lesen.** Bei Abweichungen das Dokument im selben PR aktualisieren.
 
 ## Projektstatus
-- Phase: **M3 abgeschlossen** (PLAN.md §4). Nächster Schritt M4 nach Freigabe.
+- Phase: **M5 in Arbeit** (PLAN.md §4): M5.1 Erfassung und M5.3 Fangbuch erledigt; weiter mit M5.2 Fotos.
+- Fangbuch: `app/src/features/catches`, Formularlogik rein in `app/src/domain/catchDraft.ts`. IDs immer über `domain/id.ts` (`crypto.randomUUID` fehlt außerhalb sicherer Kontexte).
 - Karte: `app/src/features/map`. E2E-Tests dürfen OpenFreeMap nicht abrufen (`page.route` auf lokalen Teststil). Auf eigene Symbole erst tippen, wenn sie gerendert sind (Symbolplatzierung ist verzögert).
 - Datenschicht: `app/src/data` (Dexie), Fachlogik `app/src/domain` (rein, ohne DB). Tests der Datenschicht laufen mit `// @vitest-environment node` + fake-indexeddb (jsdom-Blob ist unvollständig).
 - App liegt in `app/` (pnpm-Workspace mit `tools/*`). Marken-Master: `app/src/design/brand/fish.json` → nach Änderungen `pnpm icons`.
-- Gewässer-Pipeline: `tools/water-pipeline` (Doku dort). Nur tippecanoe ≥ 2.55 (2.49 aus Ubuntu verliert Objekte und vertauscht IDs, DATA_SOURCES §10.4). Die Prüfung in Schritt 5 (`src/verify.ts`) nie entfernen oder lockern.
+- Gewässer-Pipeline: `tools/water-pipeline` (Doku dort); Deutschland-Lauf nur über den Actions-Workflow „Gewässerdaten erzeugen“ (Overpass und Geofabrik sind in der Cloud-Umgebung gesperrt). Nur tippecanoe ≥ 2.55 (2.49 aus Ubuntu verliert Objekte und vertauscht IDs, DATA_SOURCES §10.4). Die Prüfung in Schritt 5 (`src/verify.ts`) nie entfernen oder lockern.
 - Rechtsinhalte zuerst nur für **NRW** (E7).
 - Altprojekte `g5v4yjg24g-eng/angelkarte` und `g5v4yjg24g-eng/angelkarte-hohendeicher-see` sind **nur Referenz**. Nie verändern, nie Code oder Daten 1:1 kopieren (insbesondere nicht `tiefen.js`/`zonen.js`, Lizenz ungeklärt).
 

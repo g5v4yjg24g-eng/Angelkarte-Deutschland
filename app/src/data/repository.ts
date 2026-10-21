@@ -3,6 +3,7 @@ import { ENTITY_SCHEMAS, type EntityMap, type EntityTable } from '../domain/sche
 import { nowIso } from '../domain/time';
 import { getDb, type FangpunktDB } from './db';
 import { ValidationError } from './errors';
+import { newId } from '../domain/id';
 
 export type NewEntity<T> = Omit<T, 'id' | 'createdAt' | 'updatedAt' | 'rev' | 'deletedAt'> & { id?: string };
 export const TRASH_DAYS = 30;
@@ -29,7 +30,7 @@ export function repo<K extends EntityTable>(table: K, db: FangpunktDB = getDb())
       const now = nowIso();
       const row = validate({
         ...input,
-        id: input.id ?? crypto.randomUUID(),
+        id: input.id ?? newId(),
         createdAt: now,
         updatedAt: now,
         rev: 0,

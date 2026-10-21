@@ -21,8 +21,6 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 150
-    env:
-      EXTRACT_URL: https://download.openstreetmap.fr/extracts/europe/germany.osm.pbf
     steps:
       - uses: actions/checkout@v4
       - run: echo "WORK=$RUNNER_TEMP/wasser" >> "$GITHUB_ENV"
@@ -43,14 +41,28 @@ jobs:
           "$RUNNER_TEMP/tippecanoe/tippecanoe" --version
           df -h "$RUNNER_TEMP"
 
-      - name: Deutschland-Auszug laden (≈ 6 GB, MD5 geprüft)
+      - name: Deutschland-Auszug laden (MD5 geprüft)
         run: |
           mkdir -p "$WORK"
           cd "$WORK"
-          curl -sS --fail --retry 5 --retry-delay 30 -o germany.osm.pbf "$EXTRACT_URL"
-          curl -sS --fail --retry 5 -o germany.osm.pbf.md5 "$EXTRACT_URL.md5"
-          md5sum -c germany.osm.pbf.md5
-          ls -la germany.osm.pbf
+          # Geofabrik zuerst, openstreetmap.fr als Ersatz. Ein Abruf ohne Datenfluss (< 100 KB/s über 2 min)
+          # bricht ab, statt bis zum Job-Zeitlimit zu hängen.
+          for url in https://download.geofabrik.de/europe/germany-latest.osm.pbf \
+                     https://download.openstreetmap.fr/extracts/europe/germany.osm.pbf; do
+            name=$(basename "$url")
+            if curl -sS --fail --retry 3 --retry-delay 30 --connect-timeout 60 \
+                 --speed-limit 100000 --speed-time 120 -o "$name" "$url" \
+               && curl -sS --fail --retry 3 --connect-timeout 60 --max-time 120 -o "$name.md5" "$url.md5" \
+               && md5sum -c "$name.md5"; then
+              [ "$name" = germany.osm.pbf ] || mv "$name" germany.osm.pbf
+              echo "EXTRACT_URL=$url" >> "$GITHUB_ENV"
+              ls -la germany.osm.pbf
+              exit 0
+            fi
+            echo "::warning::Abruf von $url fehlgeschlagen"
+            rm -f "$name" "$name.md5"
+          done
+          exit 1
 
       - name: Pipeline (inkl. Grenzgewässer über Overpass und Prüfung jedes Objekts)
         working-directory: tools/water-pipeline

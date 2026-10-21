@@ -26,10 +26,10 @@ bash run.sh <auszug.osm.pbf> <ausgabeordner>
 ```
 
 ## Grenzgewässer (Schritt 1b)
-Gewässer-Relationen, die über den Rand des Auszugs reichen (Bodensee, Stettiner Haff …), sind im Auszug unvollständig. `run.sh` ermittelt sie mit `osmium check-refs` und lädt **genau diese** mit einer einzigen Overpass-Abfrage vollständig nach (`OVERPASS_URL`, Standard `overpass-api.de`). Nur beim Bauen, nie zur Laufzeit. `BORDER_WATERS=skip` überspringt den Schritt ausdrücklich (z. B. für Testdaten ohne Netz). Liefert Overpass nicht alle Relationen, bricht der Lauf ab.
+Gewässer-Relationen, die über den Rand des Auszugs reichen (Bodensee, Stettiner Haff …), sind im Auszug unvollständig. `run.sh` ermittelt sie mit `osmium check-refs` und lädt **genau diese** mit einer einzigen Overpass-Abfrage vollständig nach; mehrere öffentliche Overpass-Server werden der Reihe nach probiert (`OVERPASS_URL` überschreibt die Liste; `overpass-api.de` war am 2026-10-21 aus GitHub Actions nicht erreichbar). Nur beim Bauen, nie zur Laufzeit. `BORDER_WATERS=skip` überspringt den Schritt ausdrücklich (z. B. für Testdaten ohne Netz). Liefert Overpass nicht alle Relationen, bricht der Lauf ab.
 
 ## Lauf in GitHub Actions
-`.github/workflows/wasserdaten.yml` (manuell oder per Push auf einen Branch `datenlauf/<datum>`): lädt den Deutschland-Auszug, baut tippecanoe 2.79.0, führt `run.sh` und die Stichprobe `src/sample.ts` aus und veröffentlicht `wasserdaten.tar.gz` als Release `wasserdaten-<datenstand>-<lauf>`. Der Pages-Workflow nimmt das neueste Release.
+`.github/workflows/wasserdaten.yml` (manuell oder per Push auf einen Branch `datenlauf/<datum>`): lädt den Deutschland-Auszug (Geofabrik, ersatzweise openstreetmap.fr; MD5 geprüft, hängende Downloads brechen nach 2 min ohne Datenfluss ab), baut tippecanoe 2.79.0, führt `run.sh` und die Stichprobe `src/sample.ts` aus und veröffentlicht `wasserdaten.tar.gz` als Release `wasserdaten-<datenstand>-<lauf>`. Der Pages-Workflow nimmt das neueste Release.
 
 ## Bezugsquellen für Auszüge
 - Geofabrik (`download.geofabrik.de`), alle Bundesländer. War in der Cloud-Umgebung durch die Netzwerkrichtlinie gesperrt (2026-10-21).

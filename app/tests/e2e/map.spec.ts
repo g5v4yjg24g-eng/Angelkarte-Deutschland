@@ -4,7 +4,7 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { legacyExport } from '../../src/test/fixtures/legacy-angelkarte-v2';
-import { collectErrors, serveWaterFixture, waitForApp } from './helpers';
+import { collectErrors, screenPoint, serveWaterFixture, tapRendered, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -76,35 +76,6 @@ async function openMap(page: Page, at?: { lat: number; lng: number; zoom: number
   await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'), null, { timeout: 30_000 });
 }
 
-/** Bildschirmposition einer Koordinate (Seite, nicht Kartencontainer). */
-async function screenPoint(page: Page, lng: number, lat: number) {
-  return page.evaluate(
-    ([lng, lat]) => {
-      const map = window.__fangpunktMap;
-      if (!map) throw new Error('Karte fehlt');
-      const p = map.project([lng, lat]);
-      const r = map.getContainer().getBoundingClientRect();
-      return { x: r.left + p.x, y: r.top + p.y };
-    },
-    [lng, lat] as const,
-  );
-}
-
-/** Wartet, bis ein eigenes Symbol an der Stelle gezeichnet ist (Platzierung läuft verzögert), und tippt es an. */
-async function tapRendered(page: Page, layer: string, lng: number, lat: number, dy = 0) {
-  const p = await screenPoint(page, lng, lat);
-  await page.waitForFunction(
-    ([layer, x, y]) => {
-      const map = window.__fangpunktMap;
-      if (!map) return false;
-      const r = map.getContainer().getBoundingClientRect();
-      return map.queryRenderedFeatures([x - r.left, y - r.top], { layers: [layer] }).length > 0;
-    },
-    [layer, p.x, p.y + dy] as const,
-  );
-  await page.mouse.click(p.x, p.y + dy);
-}
-
 // Eindeutige IDs zählen: ein Objekt an einer Kachelgrenze kommt mehrfach vor
 const placeCount = (page: Page) =>
   page.evaluate(
@@ -125,7 +96,7 @@ test('MAP-3/MRK-1: Tipp auf die Karte legt einen Steg an; bearbeiten, löschen, 
   await page.mouse.click(p.x, p.y);
   const sheet = page.getByRole('dialog', { name: 'Neu an dieser Stelle' });
   await expect(sheet).toBeVisible();
-  await expect(sheet.getByText('Folgt mit dem Fangbuch (Meilenstein M5).')).toBeVisible();
+  await expect(sheet.getByRole('button', { name: 'Fang oder Kontakt erfassen' })).toBeVisible();
   expect(
     (await new AxeBuilder({ page }).include('dialog').analyze()).violations.filter((v) =>
       ['serious', 'critical'].includes(v.impact ?? ''),

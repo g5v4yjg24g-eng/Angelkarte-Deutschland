@@ -14,6 +14,7 @@ import type { Photo, PhotoMeta } from '../domain/schemas';
 import { nowIso } from '../domain/time';
 import { getDb, SCHEMA_VERSION, type FangpunktDB, type SnapshotRow } from './db';
 import { setSetting } from './settings';
+import { newId } from '../domain/id';
 
 const SNAPSHOTS_KEPT = 2;
 
@@ -194,7 +195,7 @@ export async function createSnapshot(
     schemaVersion: SCHEMA_VERSION,
     withPhotos: true,
   });
-  const id = crypto.randomUUID();
+  const id = newId();
   await db.transaction('rw', db.snapshots, async () => {
     await db.snapshots.add({ id, createdAt, reason, backup, photoBlobs: blobs });
     const all = await db.snapshots.orderBy('createdAt').toArray();

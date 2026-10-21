@@ -27,7 +27,7 @@ Netzwerk in E2E: Externe Dienste (Karte, Wetter) werden per `page.route` **gemoc
   - `sessions-invalid.json`: Ende vor Start, 30-h-Session.
   - `timezone-edge.json`: Fang um 23:30 und 00:30 rund um die Sommerzeitumstellung.
   - `import-*.json`: gültig, falsches Format, manipulierte Prüfsumme, Teilfehler, 10 000 Einträge, Altprojekt-Export.
-- Gewässer-Mini-Paket (Bremen-Ausschnitt aus Spike S1) als Fixture für Karte und Suche.
+- Gewässer-Testpaket `app/tests/fixtures/water/` (Nettetal, Ausschnitt aus NRW, mit der geprüften Pipeline erzeugt) für Karte, Profil und Suche in E2E-Tests; ausgeliefert mit Range-Unterstützung (`serveWaterFixture`).
 
 ## 3. Funktionale Testfälle und Abnahmekriterien
 
@@ -52,10 +52,10 @@ Netzwerk in E2E: Externe Dienste (Karte, Wetter) werden per `page.route` **gemoc
 | WAT-1 | Suche „De Wittsee" (umlaut-/schreibweise-tolerant) | Treffer, Karte zoomt hin |
 | WAT-2 | Stichprobe 20 Gewässer (Liste unten) | Alle gefunden, Land korrekt |
 | WAT-3 | Profil eines unbenannten Teichs | „Unbenanntes Gewässer", Felder „unbekannt", Quelle OSM + Stand |
-| WAT-4 | Datenpaket-Update, `wid` entfällt | Nachfolger-Vorschlag, keine stille Neuzuordnung |
+| WAT-4 | Datenpaket-Update, `wid` entfällt | Nachfolger-Vorschlag, keine stille Neuzuordnung. *Stand M4: noch nicht umgesetzt [O]; wird mit dem ersten Datenpaket-Update fällig (zweiter Datenstand nötig).* |
 | WAT-5 | Tiefenkarte bei `status !== 'available'` | **Kein** Button; Text „nicht verfügbar" |
 
-Stichprobe WAT-2 (wird in S1/M4 bestätigt): Bodensee, Chiemsee, Müritz, Steinhuder Meer, Edersee, Großer Plöner See, Starnberger See, Ammersee, Schweriner See, Großer Müggelsee, Kemnader See, Baldeneysee, Möhnesee, Großer De Wittsee, Hohendeicher See, Elbe, Rhein, Mittellandkanal, Dümmer, Senftenberger See.
+Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in jedem Datenlauf; „Großer De Wittsee" heißt in OSM „De Wittsee", „Möhnesee" ist dort `name:de` der Möhnetalsperre): Bodensee, Chiemsee, Müritz, Steinhuder Meer, Edersee, Großer Plöner See, Starnberger See, Ammersee, Schweriner See, Großer Müggelsee, Kemnader See, Baldeneysee, Möhnesee, Großer De Wittsee, Hohendeicher See, Elbe, Rhein, Mittellandkanal, Dümmer, Senftenberger See.
 
 ### 3.3 Markierungen
 | ID | Testfall | Erwartung |
@@ -67,10 +67,10 @@ Stichprobe WAT-2 (wird in S1/M4 bestätigt): Bodensee, Chiemsee, Müritz, Steinh
 ### 3.4 Fangbuch und Sessions
 | ID | Testfall | Erwartung |
 |---|---|---|
-| CAT-1 | Fang mit Pflichtfeldern minimal | Speichern mit Typ + Zeit + Position möglich |
-| CAT-2 | Fang komplett inkl. Foto im **Flugmodus** | Gespeichert; nach Neustart vorhanden; Foto ohne EXIF-GPS |
-| CAT-3 | Fehlbiss/Kontakt | Kein Gewichtsfeld „gewogen" anwählbar; Statistik zählt korrekt |
-| CAT-4 | Ungültige Werte (Länge 900 cm) | Feldfehler, Formular bleibt offen, Daten bleiben erhalten |
+| CAT-1 | Fang mit Pflichtfeldern minimal | Speichern mit Typ + Zeit + Position möglich. *Automatisiert (M5.1): `catches.spec.ts`, `catchDraft.test.ts`* |
+| CAT-2 | Fang komplett inkl. Foto im **Flugmodus** | Gespeichert; nach Neustart vorhanden; Foto ohne EXIF-GPS. *Stand M5.1: Erfassen ohne Netz automatisiert (ohne Foto, ohne Neustart); vollständig mit M5.2* |
+| CAT-3 | Fehlbiss/Kontakt | Kein Gewichtsfeld „gewogen" anwählbar; Statistik zählt korrekt. *Formularteil automatisiert (M5.1); Statistik folgt mit M6* |
+| CAT-4 | Ungültige Werte (Länge 900 cm) | Feldfehler, Formular bleibt offen, Daten bleiben erhalten. *Automatisiert (M5.1), inkl. Speichern nach Korrektur* |
 | CAT-5 | Speicherfehler (Quota simuliert) | Fehlermeldung mit Option „Ohne Foto speichern"; kein Datenverlust |
 | SES-1 | Session starten → 3 Fänge → beenden | Fänge zugeordnet; Dauer korrekt |
 | SES-2 | Zweite Session starten, während eine läuft | Nicht möglich, Hinweis |

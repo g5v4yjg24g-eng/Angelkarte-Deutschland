@@ -7,7 +7,7 @@ import { TextArea, TextField } from '../../design/components/Field';
 import { userMessage } from '../../data/errors';
 import { repo } from '../../data/repository';
 import type { Catch, Place, PlaceType } from '../../domain/schemas';
-import { speciesById } from '../../domain/species';
+import { CatchFacts, CatchHead } from '../catches/CatchFacts';
 import { formatDateTime } from '../../lib/storage';
 import { CATCH_OUTCOMES, markerDataUrl, PLACE_TYPES } from './markerIcons';
 import styles from './MapView.module.css';
@@ -21,11 +21,13 @@ export function NewHere({
   lng,
   waterName,
   onPick,
+  onCatch,
 }: {
   lat: number;
   lng: number;
   waterName?: string;
   onPick: (t: PlaceType) => void;
+  onCatch: () => void;
 }) {
   return (
     <>
@@ -41,13 +43,10 @@ export function NewHere({
           </button>
         ))}
       </div>
-      <div className={[styles.typeButton, styles.typeDisabled].join(' ')} aria-disabled="true">
+      <button type="button" className={[styles.typeButton, styles.catchButton].join(' ')} onClick={onCatch}>
         <Icon kind="catch-caught" />
-        <span>
-          {de.map.addCatchSoon}
-          <small className="muted">{de.map.addCatchSoonHint}</small>
-        </span>
-      </div>
+        <span>{de.map.addCatch}</span>
+      </button>
     </>
   );
 }
@@ -145,10 +144,12 @@ export function PlaceDetails({
   place,
   onEdit,
   onDelete,
+  onAddCatch,
 }: {
   place: Place;
   onEdit: () => void;
   onDelete: () => void;
+  onAddCatch: () => void;
 }) {
   return (
     <>
@@ -162,6 +163,9 @@ export function PlaceDetails({
       {place.notes && <p className={styles.notes}>{place.notes}</p>}
       <p className="muted tabular">{de.map.coords(place.position.lat, place.position.lng)}</p>
       <p className="muted">{de.map.createdAt(formatDateTime(place.createdAt))}</p>
+      <Button variant="secondary" onClick={onAddCatch}>
+        {de.map.addCatchHere}
+      </Button>
       <div className={styles.formActions}>
         <Button variant="danger" onClick={onDelete}>
           {de.map.delete}
@@ -172,37 +176,26 @@ export function PlaceDetails({
   );
 }
 
-export function CatchDetails({ item }: { item: Catch }) {
-  const species = speciesById(item.speciesId);
+export function CatchDetails({
+  item,
+  onEdit,
+  onDelete,
+}: {
+  item: Catch;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   return (
-    <>
-      <div className={styles.detailHead}>
-        <Icon kind={`catch-${item.outcome}`} />
-        <div>
-          <p className={styles.detailTitle}>
-            {de.map.outcomes[item.outcome]}
-            {species ? ` · ${species.de}` : ''}
-          </p>
-          <p className="muted">{de.map.catchAt(formatDateTime(item.at))}</p>
-        </div>
+    <div className={styles.form}>
+      <CatchHead item={item} />
+      <CatchFacts item={item} />
+      <div className={styles.formActions}>
+        <Button variant="danger" onClick={onDelete}>
+          {de.map.delete}
+        </Button>
+        <Button onClick={onEdit}>{de.map.edit}</Button>
       </div>
-      <dl className={styles.facts}>
-        {item.lengthCm !== undefined && (
-          <>
-            <dt>{de.map.length}</dt>
-            <dd className="tabular">{de.map.lengthValue(item.lengthCm, item.lengthMethod === 'measured')}</dd>
-          </>
-        )}
-        {item.waterSnapshot?.name && (
-          <>
-            <dt>{de.map.water}</dt>
-            <dd>{item.waterSnapshot.name}</dd>
-          </>
-        )}
-      </dl>
-      {item.notes && <p className={styles.notes}>{item.notes}</p>}
-      <Notice>{de.map.catchEditSoon}</Notice>
-    </>
+    </div>
   );
 }
 

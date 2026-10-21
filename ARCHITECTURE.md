@@ -134,7 +134,7 @@ Ein langer Druck öffnet direkt „Neu an dieser Stelle" (auch über Gewässerfl
 ## 6. Gewässerdaten-Architektur
 
 ### 6.1 Pipeline (`tools/water-pipeline`)
-1. Download Geofabrik `germany-latest.osm.pbf` (~4,5 GB, täglich aktualisiert) [V] oder Länderauszüge.
+1. Download Geofabrik `germany-latest.osm.pbf` (~4,5 GB, täglich aktualisiert) [V] oder Länderauszüge; Umsetzung und Abweichungen in §6.1a.
 2. `osmium tags-filter`: `natural=water`, `water=*`, `waterway=river|canal|stream`(nur benannte), `landuse=reservoir|basin`, `leisure=fishing`; Relationen mit Multipolygon auflösen.
 3. Normalisieren → `WaterBody`-Datensätze (DATA_MODEL §3): `wid`, Name, Typ, Fläche, Bounding Box, Repräsentativpunkt, Land/Kreis/Gemeinde (Spatial Join mit Verwaltungsgrenzen aus OSM `admin_level` 4/6/8), OSM-Tags-Auszug.
 4. Ausgaben:
@@ -152,6 +152,9 @@ Ein langer Druck öffnet direkt „Neu an dieser Stelle" (auch über Gewässerfl
 - `water-manifest.json` (Format, Datenstand aus dem PBF-Kopf, Lizenz, Abdeckung nach Bundesland) – die App zeigt Datenstand und Abdeckung an.
 - App-Seite: Port `WaterDataProvider` (`app/src/ports/waterData.ts`), Adapter `staticWaterData(baseUrl)`; Basis-URL über `VITE_WATER_BASE_URL` austauschbar.
 - Gewässerebenen sind unsichtbar (die Basiskarte zeichnet das Wasser) und dienen dem Antippen; das gewählte Gewässer wird über `feature-state` hervorgehoben.
+- **Datenlauf in CI:** `.github/workflows/wasserdaten.yml` (manuell oder per Push auf `datenlauf/*`): Auszug von Geofabrik (Ersatz openstreetmap.fr, MD5), tippecanoe 2.79.0 aus dem Quellcode, `run.sh`, Stichprobe WAT-2, Release `wasserdaten-<datenstand>-<lauf>`, danach Neubau der Vorschau.
+- **Prüfung:** Schritt 5 (`src/verify.ts`) vergleicht jedes Objekt der z14-Kacheln mit der Eingabe (vorhanden, Eigenschaften gleich). Der Lauf bricht sonst ab. Grund: tippecanoe 2.49 verlor Objekte und vertauschte IDs (DATA_SOURCES §10.4).
+- **Grenzgewässer:** Schritt 1b lädt unvollständige Gewässer-Relationen mit einer Overpass-Abfrage nach (nur beim Bauen) und fügt sie per `osmium apply-changes` ein; das Manifest vermerkt das in `source.supplement`.
 - **Hosting (Entscheidung M4, ersetzt E4 vorerst):** Datenpaket `wasserdaten.tar.gz` als Anhang eines GitHub-Releases `wasserdaten-<datum>`; der Pages-Workflow lädt es beim Bauen und liefert es mit der App aus. GitHub Pages beantwortet Range-Anfragen (HTTP 206) und sendet `Access-Control-Allow-Origin: *` [V 2026-10-21]. Kein zusätzliches Konto, keine Kosten. Cloudflare R2 bleibt Option für Offline-Regionen (M10) oder falls Pages-Grenzen erreicht werden.
 
 ### 6.2 Stabile IDs

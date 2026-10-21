@@ -4,6 +4,7 @@ import { RouteError } from './RouteError';
 import { NotFound } from './NotFound';
 import { MapPage } from '../features/map/MapPage';
 import { CatchesPage } from '../features/catches/CatchesPage';
+import { CatchDetailPage } from '../features/catches/CatchDetailPage';
 import { StatsPage } from '../features/stats/StatsPage';
 import { MorePage } from '../features/more/MorePage';
 import { SettingsPage } from '../features/settings/SettingsPage';
@@ -21,6 +22,7 @@ export const routes = [
         children: [
           { index: true, element: <MapPage /> },
           { path: 'fangbuch', element: <CatchesPage /> },
+          { path: 'fangbuch/:id', element: <CatchDetailPage /> },
           { path: 'statistik', element: <StatsPage /> },
           { path: 'mehr', element: <MorePage /> },
           { path: 'mehr/einstellungen', element: <SettingsPage /> },
