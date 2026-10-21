@@ -26,6 +26,41 @@ osmium tags-filter "$IN" \
   r/boundary=administrative n/place=city,town,village,suburb \
   -o "$OUT/filtered.osm.pbf" --overwrite
 
+echo "1b/5 Grenzgewässer vervollständigen"
+# Gewässer-Relationen, die über den Rand des Auszugs reichen (z. B. Bodensee, Stettiner Haff), sind im Auszug
+# unvollständig und würden ganz wegfallen. Sie werden mit EINER Overpass-Abfrage vollständig nachgeladen
+# (nur beim Bauen, nie zur Laufzeit der App). BORDER_WATERS=skip überspringt den Schritt ausdrücklich.
+osmium tags-filter "$OUT/filtered.osm.pbf" r/natural=water r/water r/landuse=reservoir,basin -R -f opl -o - \
+  | awk '/^r/{print $1}' | sort -u > "$OUT/water-relations.txt"
+# Relationen mit fehlenden Mitgliedern (check-refs endet mit Fehlercode, sobald irgendetwas fehlt)
+incomplete_relations() { { osmium check-refs -r -i "$1" 2>/dev/null || true; } | awk '$2=="in"{print $3}' | sort -u; }
+incomplete_relations "$OUT/filtered.osm.pbf" | comm -12 - "$OUT/water-relations.txt" > "$OUT/border-relations.txt"
+n_border=$(wc -l < "$OUT/border-relations.txt")
+BORDER_SUPPLEMENT=""
+if [ "$n_border" -eq 0 ]; then
+  echo "  keine unvollständigen Gewässer-Relationen"
+elif [ "${BORDER_WATERS:-fetch}" = skip ]; then
+  echo "  $n_border unvollständige Gewässer-Relationen werden ausgelassen (BORDER_WATERS=skip)"
+else
+  ids=$(sed 's/^r//' "$OUT/border-relations.txt" | paste -sd,)
+  echo "  $n_border unvollständige Gewässer-Relationen, Abfrage bei ${OVERPASS_URL:=https://overpass-api.de/api/interpreter}"
+  curl -sS --fail --retry 3 --retry-delay 30 --max-time 600 \
+    -A "Fangpunkt-Gewaesserpipeline/1 (nicht kommerziell; https://github.com/g5v4yjg24g-eng/Angelkarte-Deutschland)" \
+    --data-urlencode "data=[out:xml][timeout:300];rel(id:$ids);(._;>;);out meta;" \
+    "$OVERPASS_URL" -o "$OUT/border-waters.osm"
+  got=$(grep -c '<relation ' "$OUT/border-waters.osm" || true)
+  if [ "$got" -ne "$n_border" ]; then
+    echo "FEHLER: Overpass lieferte $got von $n_border Relationen" >&2; exit 1
+  fi
+  # Neuere Versionen aus Overpass ersetzen die Objekte des Auszugs (keine doppelten Versionen)
+  osmium apply-changes "$OUT/filtered.osm.pbf" "$OUT/border-waters.osm" -o "$OUT/filtered-full.osm.pbf" --overwrite
+  mv "$OUT/filtered-full.osm.pbf" "$OUT/filtered.osm.pbf"
+  left=$(incomplete_relations "$OUT/filtered.osm.pbf" | comm -12 - "$OUT/border-relations.txt" | wc -l)
+  if [ "$left" -ne 0 ]; then echo "FEHLER: $left Relationen bleiben unvollständig" >&2; exit 1; fi
+  BORDER_SUPPLEMENT="$n_border Relationen über Overpass API ergänzt, Abruf $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  echo "  $BORDER_SUPPLEMENT"
+fi
+
 echo "2/5 Export als GeoJSON-Sequenz (osmium export)"
 osmium export "$OUT/filtered.osm.pbf" -c "$HERE/export-config.json" \
   --add-unique-id=type_id -f geojsonseq -o "$OUT/export.geojsonseq" --overwrite
@@ -34,7 +69,7 @@ echo "3/5 Klassifizieren, Verwaltungszuordnung, Suchindex (Node)"
 # Datenstand aus dem PBF-Kopf (Replikationszeitpunkt des Auszugs)
 # (Zugeschnittene Auszüge verlieren ihn – dann DATA_DATE von außen übergeben.)
 DATA_DATE=${DATA_DATE:-$(osmium fileinfo -g header.option.osmosis_replication_timestamp "$IN" 2>/dev/null || true)}
-DATA_DATE="$DATA_DATE" SOURCE_NAME="$(basename "$IN")" \
+DATA_DATE="$DATA_DATE" SOURCE_NAME="$(basename "$IN")" SOURCE_SUPPLEMENT="$BORDER_SUPPLEMENT" \
   node --max-old-space-size=6144 --import tsx "$HERE/src/process.ts" "$OUT/export.geojsonseq" "$OUT"
 
 echo "4/5 Vektorkacheln (tippecanoe → PMTiles)"

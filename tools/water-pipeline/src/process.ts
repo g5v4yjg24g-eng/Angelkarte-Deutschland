@@ -269,6 +269,8 @@ async function main(): Promise<void> {
       license: 'ODbL-1.0',
       attribution: '© OpenStreetMap-Mitwirkende',
       url: 'https://www.openstreetmap.org/copyright',
+      // Grenzgewässer, die über den Auszug hinausreichen (run.sh Schritt 1b); Daten ebenfalls OSM/ODbL
+      ...(process.env.SOURCE_SUPPLEMENT ? { supplement: process.env.SOURCE_SUPPLEMENT } : {}),
     },
     coverage: Object.keys(byState).sort(),
     tiles: 'water.pmtiles',

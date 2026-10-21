@@ -166,11 +166,12 @@ Wetterwerte werden als **Modell- bzw. Stationswerte** gekennzeichnet („nicht a
 ## 9. Offene Prüfungen (Checkliste)
 
 - [x] S1: Pipeline-Messung (NRW) → Hochrechnung DE, siehe §10.1
-- [ ] S1b: Hochrechnung durch einen vollen Deutschland-Lauf bestätigen (vor M4; braucht Zugriff auf `download.geofabrik.de`, siehe §10.3)
+- [x] S1b: Deutschland-Lauf, Hochrechnung bestätigt (157 MB), siehe §10.4
 - [x] S2: OpenFreeMap-Styles headless gemessen, siehe §10.2
 - [ ] S2b: Test auf echten Geräten (Checkliste `tools/map-spike/README.md`, durch dich)
 - [ ] Photon-Originalbedingungen (nur falls Fallback nötig)
-- [ ] Hosting-Konditionen Cloudflare R2 / Range-Support GitHub Pages (vor M4)
+- [x] Range-Support GitHub Pages [V 2026-10-21]; Hosting über Release + Pages (ARCHITECTURE §6.1a)
+- [ ] Liefert GitHub Pages die 157-MB-Datei aus? Die Doku nennt nur 1 GB je Site, keine Dateigrenze [V: docs.github.com, 2026-10-21] → mit dem ersten Deployment prüfen
 - [ ] Metadatensatz M-V Tiefenkarten erneut abrufen; Vertragskonditionen anfragen (vor M9)
 - [ ] Garmin Navionics Web API: Konditionen „Enhanced" anfragen (vor M9)
 - [ ] Anglerverband Hamburg: Erlaubnis Tiefen/Zonen anfragen (vor M9)
@@ -238,6 +239,26 @@ Aufbau: MapLibre GL JS 6.15.0 (BSD-3-Clause) und pmtiles 4.5.0 (BSD-3-Clause) [V
 - **Nach Gerätetest S2b (2026-10-21):** `positron` war zu grau, `dark` zu dunkel, `fiord` gefiel ebenfalls nicht. **Jetzt beide Themes auf `liberty`**; im dunklen Theme färbt die App die Ebenen selbst um (petrolgrünes Land, sattblaues Wasser, dezente Straßen; Farben in `app/src/adapters/openfreemap.ts`). Vorlage war ein Kartenbild des Nutzers als Farbreferenz; übernommen wurden keine Daten oder Stildateien.
 - **Umgesetzt in M3 (überholt):** `positron`/`dark`; die Stile beschriften standardmäßig international/englisch, die App stellt auf `name:de` um [V: Bildvergleich 2026-10-21].
 - **Empfehlung für M3 (ursprünglich):** `positron` (hell) und `dark` (dunkel) als Basis. Sie sind ruhiger und leichter als `liberty`, und das eigene Gewässer-Overlay hebt sich besser ab. Die endgültige Wahl folgt nach S2b auf deinen Geräten.
+
+### 10.4 S1b – Deutschland-Lauf (2026-10-21)
+
+Eingabe: `germany.osm.pbf` von download.openstreetmap.fr (`/extracts/europe/`), 5 911 927 632 Byte, MD5 geprüft, Datenstand 2026-10-21T02:06:20Z [V]. Werkzeuge: osmium-tool 1.16.0, **tippecanoe 2.79.0** (aus dem Quellcode) [V].
+
+| Messgröße | Deutschland [V] | Hochrechnung aus S1 [A] |
+|---|---|---|
+| Laufzeit gesamt (Cloud-Umgebung, 8 Kerne) | 27 min | 10–25 min |
+| Gewässerobjekte | 894 968 (Flächen 424 010, Linien 470 958) | 0,7–1,7 Mio. |
+| `water.pmtiles` (z8–14) | **157 MB** | 85–220 MB |
+| Suchindex | 135 500 Einträge, 4,6 MB gzip, 466 Shards, größter 188 KB gzip | 2–5 MB gzip |
+| Zuordnung Land / Kreis / Gemeinde | 98,0 % / 97,3 % / 91,0 % | |
+| Stichprobe WAT-2 (20 Gewässer) | 19/20; Bodensee fehlte (siehe unten) | |
+
+**Befunde und Folgen:**
+1. **tippecanoe 2.49 (Ubuntu-Paket) ist für diese Datenmenge unbrauchbar.** Der erste Lauf verlor 30 Objekte, und 61 Kachelobjekte trugen die `wid` eines anderen Gewässers (Beispiel: Abschnitte des Drakesbachs in Thüringen mit der ID eines Moritzbachs in Zwickau). Ursachen laut Changelog [V: github.com/felt/tippecanoe CHANGELOG.md, 2026-10-21]: „Fix accidental loss … of features that specify an explicit minzoom" (2.52.0) und „Fix hash collisions in the string pool" (2.55.0). `run.sh` verlangt jetzt ≥ 2.55; Schritt 5 (`src/verify.ts`) vergleicht jedes Objekt der z14-Kacheln mit seiner Eingabe (Vorhandensein **und** Eigenschaften).
+2. Kleinstflächen wurden bei z14 zusammengefasst (`tiny polygon reduction`); jetzt `--no-tiny-polygon-reduction-at-maximum-zoom`. Streifen mit mittlerer Breite < 0,5 m gelten als Splitter.
+3. **Grenzgewässer:** 41 Gewässer-Relationen reichen über den Auszug hinaus (u. a. Bodensee, Stettiner Haff, Sauer) und fielen ganz weg. Entscheidung des Nutzers (2026-10-21, Option A): Schritt 1b lädt genau diese Relationen **beim Bauen** mit einer einzigen Overpass-Abfrage vollständig nach (gleiche Daten und Lizenz, ODbL). Nicht zur Laufzeit der App. Die OSM-Editier-API scheidet aus, da sie laut Nutzungsrichtlinie nicht für Lesezugriffe gedacht ist [V: operations.osmfoundation.org/policies/api, 2026-10-21]. Das Manifest vermerkt die Ergänzung (`source.supplement`).
+4. Overpass ist aus der Cloud-Entwicklungsumgebung gesperrt [V]. Der Datenlauf läuft deshalb in GitHub Actions (`.github/workflows/wasserdaten.yml`) und veröffentlicht das Ergebnis als Release `wasserdaten-*`.
+5. Suche: OSM-Zusatznamen (`name:de`, `alt_name`, `official_name`) werden indiziert (Möhnetalsperre ↔ Möhnesee); ein Klammerzusatz („Schweriner See (Außensee)") zählt als genauer Treffer.
 
 ### 10.3 Umgebung
 - `download.geofabrik.de` wird in der Cloud-Umgebung von der Netzwerkrichtlinie gesperrt (Verbindungsabbruch) [V]. Ausweichquelle `download.openstreetmap.fr` bietet nur NRW und dessen Regierungsbezirke [V]. Für den vollen Deutschland-Lauf (S1b) muss entweder Geofabrik in den Netzwerkeinstellungen der Umgebung freigegeben oder `planet.openstreetmap.org` (erreichbar [V]) mit eigenem Zuschnitt genutzt werden. Der Planet ist um ein Vielfaches größer als der Deutschland-Auszug.
