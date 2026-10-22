@@ -13,6 +13,15 @@ body,
 #root {
   height: 100%;
 }
+/* iOS 26, Homescreen-App mit durchscheinender Statusleiste: Die Anzeigefläche ist um die Statusleiste zu kurz
+   (dunkler Streifen unten), solange die Seite nicht mindestens bildschirmhoch ist (WebKit 301108). Die Seite um
+   die obere Einbuchtung verlängern; min() mit 100lvh verhindert Scrollen, wo iOS die Fläche schon voll meldet
+   (WebKit 316008). Lösung nach frappe-ui #1284/#1289. */
+@media (display-mode: standalone) {
+  html {
+    min-height: min(100lvh, calc(100% + env(safe-area-inset-top)));
+  }
+}
 body {
   margin: 0;
   background: var(--color-bg);

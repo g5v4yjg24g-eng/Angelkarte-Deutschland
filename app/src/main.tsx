@@ -7,9 +7,6 @@ import './design/base.css';
 import { createAppRouter } from './app/router';
 import { providers } from './app/providers';
 import { ProvidersProvider } from './ports/providers';
-import { installIosViewportFix } from './lib/iosViewport';
-
-installIosViewportFix();
 
 const root = document.getElementById('root');
 if (!root) throw new Error('#root fehlt in index.html');

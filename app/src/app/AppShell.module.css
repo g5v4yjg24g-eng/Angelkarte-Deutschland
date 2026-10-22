@@ -6,7 +6,9 @@
   display: grid;
   grid-template-rows: auto 1fr;
   grid-template-areas: 'header' 'main';
-  height: 100dvh;
+  /* An die Anzeigefläche geheftet statt 100dvh: folgt ihr auch, wenn iOS sie nachträglich vergrößert */
+  position: fixed;
+  inset: 0;
 }
 .header {
   grid-area: header;
