@@ -205,6 +205,10 @@ Getrennt gespeichert. So bleiben Listen und Statistik schnell, und der Export oh
 ### 5.5 BaitPreset (Köder-Favorit)
 ```ts
 interface BaitPreset extends Meta { label: string; bait: Catch['bait']; method?: MethodId; }
+// umgesetzt (P1, 2026-10-22): label = bait.name, Namen eindeutig (ohne Groß-/Kleinschreibung).
+// Im Fang: baitPresetId gilt, solange der Ködername zum Favoriten passt; dann werden Farbe, Größe, Gewicht
+// und Haken in catch.bait übernommen (Kopie, spätere Änderungen am Favoriten ändern alte Fänge nicht).
+// Alt-App: Favoriten lagen nur im Browser-Speicher und sind nicht im Export – kein Import möglich.
 ```
 
 ### 5.6 Settings / AppMeta (Key-Value)

@@ -204,6 +204,21 @@ export const de = {
     bait: 'Köder',
     baitPlaceholder: 'z. B. Gummifisch 10 cm',
     baitRecent: 'Zuletzt benutzt',
+    baitFavorites: 'Köder-Favoriten',
+    saveFavorite: 'Als Favorit merken',
+    manageFavorites: 'Favoriten verwalten',
+    baitDetails: (p: {
+      sizeCm?: number | undefined;
+      weightG?: number | undefined;
+      hookSize?: string | undefined;
+    }) =>
+      [
+        p.sizeCm !== undefined && `${p.sizeCm.toLocaleString('de-DE')} cm`,
+        p.weightG !== undefined && `${p.weightG.toLocaleString('de-DE')} g`,
+        p.hookSize && `Haken ${p.hookSize}`,
+      ]
+        .filter(Boolean)
+        .join(' · '),
     baitType: 'Köderart',
     baitTypes: {
       softbait: 'Gummiköder',
@@ -399,10 +414,44 @@ export const de = {
     regulationsHint: 'Schonzeiten, Mindestmaße, Erlaubnisse',
     backup: 'Daten & Sicherung',
     backupHint: 'Export, Import, Speicher',
+    baits: 'Köder-Favoriten',
+    baitsHint: 'Köder mit einem Tipp übernehmen',
     settings: 'Einstellungen',
     settingsHint: 'Darstellung, Standort, Wetter',
     about: 'Über Fangpunkt & Quellen',
     aboutHint: 'Version, Datenquellen, Lizenzen',
+  },
+  baits: {
+    title: 'Köder-Favoriten',
+    intro:
+      'Gespeicherte Köder erscheinen im Fangformular unter „Köder und Methode“ und werden mit einem Tipp übernommen – samt Farbe, Größe, Gewicht, Haken und Methode.',
+    loading: 'Favoriten werden geladen …',
+    emptyTitle: 'Noch keine Favoriten',
+    emptyText: 'Lege deine Lieblingsköder an oder speichere einen Köder direkt im Fangformular als Favorit.',
+    add: 'Favorit anlegen',
+    newTitle: 'Neuer Favorit',
+    editTitle: 'Favorit bearbeiten',
+    name: 'Name',
+    namePlaceholder: 'z. B. Shad 12 cm Motoroil',
+    color: 'Farbe',
+    sizeCm: 'Größe (cm)',
+    weightG: 'Gewicht (g)',
+    hookSize: 'Hakengröße',
+    hookPlaceholder: 'z. B. 2/0',
+    save: 'Speichern',
+    cancel: 'Abbrechen',
+    edit: 'Bearbeiten',
+    delete: 'Löschen',
+    deleted: (name: string) => `„${name}“ gelöscht`,
+    restored: 'Wiederhergestellt',
+    undo: 'Rückgängig',
+    used: (n: number) => (n === 1 ? '1 Eintrag' : `${n} Einträge`),
+    errors: {
+      required: 'Bitte einen Namen eingeben.',
+      duplicate: 'Diesen Favoriten gibt es schon.',
+      number: 'Bitte eine Zahl eingeben, z. B. 12,5.',
+      range: 'Dieser Wert ist zu groß.',
+    },
   },
   law: {
     title: 'Angelrecht der Länder',

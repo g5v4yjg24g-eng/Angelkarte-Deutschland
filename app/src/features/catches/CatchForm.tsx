@@ -9,6 +9,7 @@ import { SegmentedControl } from '../../design/components/SegmentedControl';
 import { SelectField, TextArea, TextField } from '../../design/components/Field';
 import { getDb } from '../../data/db';
 import { saveCatch } from '../../data/catchService';
+import { repo } from '../../data/repository';
 import { isQuotaError, userMessage } from '../../data/errors';
 import { MAX_PHOTOS_PER_CATCH } from '../../domain/photo';
 import { newId } from '../../domain/id';
@@ -25,7 +26,9 @@ import {
 } from '../../domain/schemas';
 import { SPECIES, speciesById } from '../../domain/species';
 import type { WaterType } from '../../domain/water';
+import { normName, presetByName, sortPresets } from '../../domain/baitPreset';
 import {
+  applyPreset,
   draftFromCatch,
   draftToFields,
   emptyDraft,
@@ -128,7 +131,25 @@ export function CatchForm({
 
   const all = useLiveQuery(() => getDb().catches.toArray(), []);
   const recent = useMemo(() => recentSpecies(all ?? []), [all]);
-  const baits = useMemo(() => recentBaits(all ?? []), [all]);
+  const presets = useLiveQuery(() => getDb().baitPresets.toArray(), []);
+  const favorites = useMemo(() => sortPresets(presets ?? []), [presets]);
+  // Zuletzt benutzte Köder, die schon Favoriten sind, nicht doppelt zeigen
+  const baits = useMemo(
+    () => recentBaits(all ?? []).filter((b) => !presetByName(favorites, b.name)),
+    [all, favorites],
+  );
+  const chosenPreset = favorites.find((p) => p.id === draft.baitPresetId);
+  const canSaveFavorite = !!draft.baitName.trim() && !presetByName(favorites, draft.baitName);
+
+  async function saveFavorite() {
+    const name = draft.baitName.trim().replace(/\s+/g, ' ');
+    const p = await repo('baitPresets').create({
+      label: name,
+      bait: { name, ...(draft.baitType ? { type: draft.baitType } : {}) },
+      ...(draft.method ? { method: draft.method } : {}),
+    });
+    setDraft((d) => ({ ...d, baitPresetId: p.id }));
+  }
 
   const set = <K extends DraftField>(k: K, v: CatchDraft[K]) => {
     setDraft((d) => ({ ...d, [k]: v }));
@@ -162,7 +183,10 @@ export function CatchForm({
     e?.preventDefault();
     setSaveError(undefined);
     setQuotaFull(false);
-    const { fields, errors: errs } = draftToFields(draft, initial ? { base: initial } : {});
+    const { fields, errors: errs } = draftToFields(draft, {
+      ...(initial ? { base: initial } : {}),
+      ...(chosenPreset ? { preset: chosenPreset } : {}),
+    });
     if (!fields) {
       setErrors(errs);
       if (details.current && DETAIL_FIELDS.some((f) => errs[f])) details.current.open = true;
@@ -407,6 +431,24 @@ export function CatchForm({
               value={draft.method}
               onChange={(e) => set('method', e.target.value as CatchDraft['method'])}
             />
+            {favorites.length > 0 && (
+              <div className={styles.chips} role="group" aria-label={t.baitFavorites}>
+                {favorites.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    className={styles.chip}
+                    aria-pressed={
+                      draft.baitPresetId === p.id &&
+                      normName(draft.baitName) === normName(p.bait.name ?? p.label)
+                    }
+                    onClick={() => setDraft((d) => applyPreset(d, p))}
+                  >
+                    <span aria-hidden="true">★</span> {p.label}
+                  </button>
+                ))}
+              </div>
+            )}
             {baits.length > 0 && (
               <div className={styles.chips} role="group" aria-label={t.baitRecent}>
                 {baits.map((b) => (
@@ -439,6 +481,11 @@ export function CatchForm({
               value={draft.baitType}
               onChange={(e) => set('baitType', e.target.value as CatchDraft['baitType'])}
             />
+            {canSaveFavorite && (
+              <Button type="button" variant="secondary" onClick={() => void saveFavorite()}>
+                {t.saveFavorite}
+              </Button>
+            )}
           </fieldset>
 
           <fieldset className={styles.group}>

@@ -1,6 +1,8 @@
 // Fangformular ↔ Fangbuch-Eintrag (M5). Das Formular arbeitet mit Texten (Zahlen mit Komma, leere Felder);
 // gespeichert wird nur, was CatchSchema akzeptiert – dasselbe Schema wie bei Import und Datenbank.
-import type { Catch, CatchOutcome, Method, BaitType } from './schemas';
+import type { BaitPreset, Catch, CatchOutcome, Method, BaitType } from './schemas';
+import { parseDecimal } from './decimal';
+import { normName, presetDetails } from './baitPreset';
 import { CatchSchema } from './schemas';
 import { localToZonedIso, toZonedIso, DEFAULT_TZ } from './time';
 
@@ -22,6 +24,8 @@ export interface CatchDraft {
   method: '' | Method;
   baitName: string;
   baitType: '' | BaitType;
+  /** gewählter Köder-Favorit; gilt nur, solange der Ködername dazu passt */
+  baitPresetId: string;
   sky: '' | Sky;
   airTempC: string;
   waterTempC: string;
@@ -48,6 +52,7 @@ export type CatchFormFields = Pick<
   | 'contactDetail'
   | 'method'
   | 'bait'
+  | 'baitPresetId'
   | 'conditions'
   | 'notes'
 >;
@@ -71,6 +76,7 @@ export function emptyDraft(nowMs: number, tz: string = DEFAULT_TZ): CatchDraft {
     method: '',
     baitName: '',
     baitType: '',
+    baitPresetId: '',
     sky: '',
     airTempC: '',
     waterTempC: '',
@@ -95,6 +101,7 @@ export function draftFromCatch(c: Catch): CatchDraft {
     method: c.method ?? '',
     baitName: c.bait?.name ?? '',
     baitType: c.bait?.type ?? '',
+    baitPresetId: c.baitPresetId ?? '',
     sky: c.conditions?.sky ?? '',
     airTempC: num(c.conditions?.airTempC),
     waterTempC: num(c.conditions?.waterTempC),
@@ -103,12 +110,7 @@ export function draftFromCatch(c: Catch): CatchDraft {
   };
 }
 
-/** "12,5" → 12.5; leer → undefined; sonst NaN (Eingabefehler). */
-export function parseDecimal(s: string): number | undefined {
-  const t = s.trim().replace(/\s/g, '').replace(',', '.');
-  if (!t) return undefined;
-  return /^-?\d+(\.\d+)?$/.test(t) ? Number(t) : NaN;
-}
+export { parseDecimal };
 
 const opt = <T extends string>(v: '' | T): T | undefined => (v === '' ? undefined : v);
 
@@ -136,7 +138,7 @@ const ISSUE_FIELD: Record<string, DraftField> = {
  */
 export function draftToFields(
   d: CatchDraft,
-  { tz = DEFAULT_TZ, base }: { tz?: string; base?: Catch } = {},
+  { tz = DEFAULT_TZ, base, preset }: { tz?: string; base?: Catch; preset?: BaitPreset } = {},
 ): { fields?: CatchFormFields; errors: DraftErrors } {
   const errors: DraftErrors = {};
   const number = (field: DraftField, scale = 1) => {
@@ -181,11 +183,7 @@ export function draftToFields(
     released: caught ? opt(d.released) : undefined,
     contactDetail: d.outcome === 'contact' ? opt(d.contactDetail) : undefined,
     method: opt(d.method),
-    bait: compact({
-      ...base?.bait,
-      name: d.baitName.trim() || undefined,
-      type: opt(d.baitType),
-    }),
+    ...baitFields(d, base, preset),
     conditions: compact({
       ...base?.conditions,
       sky: opt(d.sky),
@@ -212,6 +210,51 @@ export function draftToFields(
     }
 
   return Object.keys(errors).length ? { errors } : { fields, errors };
+}
+
+const PRESET_DETAIL_KEYS = ['color', 'sizeCm', 'weightG', 'hookSize'] as const;
+
+/**
+ * Köder und Favoriten-Bezug. Ein Favorit gilt, solange der Ködername zu ihm passt; dann kommen seine Details
+ * (Farbe, Größe, Gewicht, Haken) mit. Wird er abgewählt, fallen seine Details aus dem bestehenden Eintrag weg.
+ */
+function baitFields(
+  d: CatchDraft,
+  base?: Catch,
+  preset?: BaitPreset,
+): Pick<CatchFormFields, 'bait' | 'baitPresetId'> {
+  const name = d.baitName.trim() || undefined;
+  const matches = (n?: string) => !!name && !!n && normName(n) === normName(name);
+  const fromPreset = !!preset && d.baitPresetId === preset.id && matches(preset.bait.name ?? preset.label);
+  // Favorit inzwischen gelöscht, Eintrag unverändert: Bezug und Details bleiben
+  const kept =
+    !fromPreset && !!d.baitPresetId && d.baitPresetId === base?.baitPresetId && matches(base.bait?.name);
+  let rest = base?.bait;
+  if (base?.baitPresetId && !kept && rest) {
+    rest = Object.fromEntries(
+      Object.entries(rest).filter(([k]) => !(PRESET_DETAIL_KEYS as readonly string[]).includes(k)),
+    ) as NonNullable<Catch['bait']>;
+  }
+  return {
+    bait: compact({
+      ...rest,
+      ...(fromPreset ? presetDetails(preset.bait) : {}),
+      name,
+      type: opt(d.baitType),
+    }),
+    baitPresetId: fromPreset ? preset.id : kept ? d.baitPresetId : undefined,
+  };
+}
+
+/** Favorit übernehmen: Ködername, -art und (falls hinterlegt) Methode. */
+export function applyPreset(d: CatchDraft, p: BaitPreset): CatchDraft {
+  return {
+    ...d,
+    baitPresetId: p.id,
+    baitName: p.bait.name ?? p.label,
+    baitType: p.bait.type ?? '',
+    method: p.method ?? d.method,
+  };
 }
 
 // ---------- Fangbuch-Liste ----------

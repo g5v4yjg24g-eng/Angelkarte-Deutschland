@@ -99,7 +99,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Statistik-Basis (Kennzahlen, Arten, Gewässer, Köder, Verlauf, Filter) | P0 | Im Auftrag als besonders wichtig markiert |
 | Recht: Struktur + Landesrecht für die ersten 2–3 Länder | P0 | Struktur jetzt; Inhalte wachsen pro Land |
 | Wetter am Fang (online, automatisch nachgeladen) | P1 | Open-Meteo Free (nicht kommerziell, E3). ✅ umgesetzt 2026-10-22 (Einstellung, Standard aus) |
-| Köder-Favoriten, Schnellerfassung „Hier" | P1 | |
+| Köder-Favoriten, Schnellerfassung „Hier" | P1 | ✅ Köder-Favoriten umgesetzt 2026-10-22 (Mehr → Köder-Favoriten, Tipp im Fangformular, „Als Favorit merken“). „Hier“ = „Am eigenen Standort“ im Fangformular (M5.1) |
 | Recht: restliche Bundesländer | P1 | Redaktioneller Aufwand, siehe §5 M8 |
 | Session-Vergleich, Rekorde | P1 | |
 | Fischarten pro Gewässer (Monitoring-Nachweise, Stufe 2) | P2 | Datenaufbereitung nötig (DATA_SOURCES §4) |
