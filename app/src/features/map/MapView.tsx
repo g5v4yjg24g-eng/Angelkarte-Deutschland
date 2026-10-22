@@ -67,6 +67,8 @@ const GERMANY = { center: [10.4, 51.2] as [number, number], zoom: 5.2 };
 const LOC_HINT_KEY = 'fangpunkt.locHintSeen';
 const HEAT_KEY = 'fangpunkt.heatmap';
 const HEAT_MIN = 30;
+/** OSMF: Vermerk darf nach Interaktion oder 5 s einklappen, muss aber auffindbar bleiben */
+const ATTRIBUTION_COLLAPSE_MS = 5000;
 
 function readHeat(): boolean {
   try {
@@ -270,7 +272,15 @@ export default function MapView() {
       locale: { 'NavigationControl.ZoomIn': de.map.zoomIn, 'NavigationControl.ZoomOut': de.map.zoomOut },
     });
     map.touchZoomRotate.disableRotation();
-    map.addControl(new AttributionControl({ compact: false }), 'bottom-right');
+    // OSM-Vermerk (Pflicht laut OSMF-Richtlinie): beim Start sichtbar, klappt nach dem ersten Verschieben
+    // (MapLibre) oder nach 5 s zum ⓘ-Knopf ein; ein Tipp darauf zeigt ihn wieder. Zusätzlich unter Mehr → Über.
+    const attribution = new AttributionControl({ compact: true });
+    map.addControl(attribution, 'bottom-right');
+    const collapseTimer = window.setTimeout(() => {
+      container.current
+        ?.querySelector('.maplibregl-ctrl-attrib.maplibregl-compact-show')
+        ?.classList.remove('maplibregl-compact-show');
+    }, ATTRIBUTION_COLLAPSE_MS);
     mapRef.current = map;
     window.__fangpunktMap = map;
 
@@ -376,6 +386,7 @@ export default function MapView() {
       setSheet({ kind: 'new', lat: e.lngLat.lat, lng: e.lngLat.lng });
     });
     return () => {
+      window.clearTimeout(collapseTimer);
       map.remove();
       mapRef.current = null;
       delete window.__fangpunktMap;

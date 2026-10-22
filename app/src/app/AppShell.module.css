@@ -61,9 +61,11 @@
 }
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .nav {
-    background: color-mix(in srgb, var(--color-surface) 72%, transparent);
-    -webkit-backdrop-filter: blur(22px) saturate(1.6);
-    backdrop-filter: blur(22px) saturate(1.6);
+    /* Deutlich durchsichtig (Wunsch Nutzer 2026-10-22): die Karte soll durchscheinen */
+    background: color-mix(in srgb, var(--color-surface) 38%, transparent);
+    -webkit-backdrop-filter: blur(10px) saturate(1.8);
+    backdrop-filter: blur(10px) saturate(1.8);
+    border-color: color-mix(in srgb, var(--color-text) 14%, transparent);
   }
 }
 @media (prefers-reduced-transparency: reduce) {
@@ -84,7 +86,16 @@
   text-decoration: none;
   font-size: var(--text-xs);
   font-weight: 600;
-  transition: background-color var(--dur-fast) var(--ease-out);
+  /* Lesbar auch über unruhiger Karte */
+  text-shadow: 0 0 6px color-mix(in srgb, var(--color-surface) 90%, transparent);
+  position: relative;
+  z-index: 1;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .navIcon {
   display: grid;
@@ -97,6 +108,64 @@
 }
 .active .navIcon {
   color: var(--color-primary);
+}
+
+/* Glas-Linse beim Drücken und Wischen (Vorlage: Video des Nutzers): folgt dem Finger, vergrößert den Punkt
+   darunter, Rand mit leichtem Farbsaum wie bei echtem Glas */
+.nav {
+  touch-action: none;
+}
+.lens {
+  position: absolute;
+  z-index: 0;
+  top: -7px;
+  bottom: -7px;
+  left: 0;
+  width: var(--lens-w);
+  border-radius: var(--radius-full);
+  transform: translateX(calc(var(--lens-x) - var(--lens-w) / 2));
+  pointer-events: none;
+  background: color-mix(in srgb, var(--color-surface) 22%, transparent);
+  -webkit-backdrop-filter: blur(2px) saturate(1.9) brightness(1.06);
+  backdrop-filter: blur(2px) saturate(1.9) brightness(1.06);
+  box-shadow:
+    inset 2px 0 1px -1px rgb(255 60 120 / 0.45),
+    inset -2px 0 1px -1px rgb(40 170 255 / 0.5),
+    inset 0 2px 1px -1px rgb(255 255 255 / 0.7),
+    inset 0 -2px 2px -1px rgb(255 210 80 / 0.35),
+    0 0 0 1px rgb(255 255 255 / 0.28),
+    0 6px 20px rgb(0 0 0 / 0.22);
+  animation: lens-in var(--dur-fast) var(--ease-out);
+}
+.lensSnap {
+  transition: transform 200ms cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+.lensed {
+  transform: scale(1.16);
+}
+@keyframes lens-in {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lens,
+  .lensSnap,
+  .navItem {
+    animation: none;
+    transition: none;
+  }
+  .lensed {
+    transform: none;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .lens {
+    background: var(--color-surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 @media (min-width: 900px) {
@@ -127,6 +196,13 @@
   }
   .navItem {
     border-radius: var(--radius-lg);
+    text-shadow: none;
+  }
+  .nav {
+    touch-action: auto;
+  }
+  .lens {
+    display: none;
   }
 }
 

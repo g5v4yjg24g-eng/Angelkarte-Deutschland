@@ -18,7 +18,7 @@ Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`,
 - Statistik: Logik rein in `app/src/domain/stats.ts` (Mindestmengen, DATA_MODEL §9), Ansicht `app/src/features/stats`.
 - Fotos: `lib/processPhoto.ts` (Neu-Kodierung entfernt EXIF), Speichern nur über `data/catchService.ts` (eine Transaktion mit dem Fang).
 - Fangbuch: `app/src/features/catches`, Formularlogik rein in `app/src/domain/catchDraft.ts`. IDs immer über `domain/id.ts` (`crypto.randomUUID` fehlt außerhalb sicherer Kontexte).
-- Untere Leiste: schwebende Kapsel (mobil, `app/src/app/AppShell.module.css`); der Inhalt läuft darunter. Alles, was unten fest oder klebend sitzt, rechnet `var(--nav-clearance)` ein (in Dialogen 0).
+- Untere Leiste: schwebende, durchsichtige Kapsel (mobil, `app/src/app/AppShell.module.css`); der Inhalt läuft darunter. Glas-Linse beim Wischen: Geometrie `app/src/app/navLens.ts`, Zeiger in `AppShell.tsx` (nur Touch/Stift; ein Tipp bleibt ein Link-Klick). OSM-Vermerk an der Karte klappt nach 5 s/Verschieben ein, darf aber nie ganz weg (OSMF). Alles, was unten fest oder klebend sitzt, rechnet `var(--nav-clearance)` ein (in Dialogen 0).
 - Karte: `app/src/features/map`. E2E-Tests dürfen OpenFreeMap nicht abrufen (`page.route` auf lokalen Teststil). Auf eigene Symbole erst tippen, wenn sie gerendert sind (Symbolplatzierung ist verzögert).
 - Datenschicht: `app/src/data` (Dexie), Fachlogik `app/src/domain` (rein, ohne DB). Tests der Datenschicht laufen mit `// @vitest-environment node` + fake-indexeddb (jsdom-Blob ist unvollständig).
 - App liegt in `app/` (pnpm-Workspace mit `tools/*`). Marken-Master: `app/src/design/brand/fish.json` → nach Änderungen `pnpm icons`.
