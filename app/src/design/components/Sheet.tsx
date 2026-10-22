@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode, type RefObject } from 'react';
 import { de } from '../../i18n/de';
 import { CloseIcon } from '../icons';
 import { IconButton } from './Button';
@@ -14,28 +14,38 @@ export function Sheet({
   onClose,
   children,
   footer,
+  returnFocus,
 }: {
   open: boolean;
   title: string;
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
+  /** Ziel für den Fokus nach dem Schließen, falls der Auslöser inzwischen verschwunden ist */
+  returnFocus?: RefObject<HTMLElement | null>;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   // Das „close"-Ereignis kommt zeitversetzt. Schließt die App selbst und öffnet gleich ein neues Sheet,
   // darf das verspätete Ereignis dieses nicht wieder schließen: selbst ausgelöste Schließungen zählen.
   const ownCloses = useRef(0);
+  // Der Browser gibt den Fokus beim Schließen an den Auslöser zurück – nur wenn es ihn noch gibt
+  const opener = useRef<HTMLElement | null>(null);
+  const lostOpener = () => !opener.current || !opener.current.isConnected || opener.current === document.body;
 
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
-    if (open && !d.open) d.showModal();
+    if (open && !d.open) {
+      opener.current = document.activeElement as HTMLElement | null;
+      d.showModal();
+    }
     if (!open && d.open) {
       ownCloses.current++;
       d.close();
+      if (lostOpener()) returnFocus?.current?.focus();
     }
-  }, [open]);
+  }, [open, returnFocus]);
 
   return (
     <dialog
@@ -45,6 +55,7 @@ export function Sheet({
       onClose={() => {
         if (ownCloses.current > 0) ownCloses.current--;
         else onClose();
+        if (lostOpener()) returnFocus?.current?.focus();
       }}
       onCancel={(e) => {
         e.preventDefault();

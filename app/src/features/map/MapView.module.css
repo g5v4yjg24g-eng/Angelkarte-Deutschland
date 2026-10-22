@@ -374,6 +374,7 @@
   right: var(--space-3);
   z-index: 3;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
   max-width: 30rem;
@@ -384,7 +385,7 @@
   box-shadow: var(--shadow-2);
 }
 .pickBar p {
-  flex: 1;
+  flex: 1 1 12rem;
   margin: 0;
   font-size: var(--text-sm);
   font-weight: 600;
@@ -392,6 +393,22 @@
 }
 .pickActions {
   display: flex;
-  flex: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: var(--space-1);
+}
+/* Fadenkreuz in der Kartenmitte während der Stellenwahl („Kartenmitte"-Knopf, Tastatur) */
+.crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--color-accent), var(--color-accent)) center / 2px 100% no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) center / 100% 2px no-repeat;
+  filter: drop-shadow(0 0 1px var(--color-surface));
 }
