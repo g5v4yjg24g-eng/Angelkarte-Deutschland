@@ -14,6 +14,9 @@ import {
   type StorageStatus,
 } from '../../lib/storage';
 import { ImportPanel } from './ImportPanel';
+import { catchesCsv } from './catchCsv';
+import { getDb } from '../../data/db';
+import { toZonedIso } from '../../domain/time';
 import { useBackupState } from './useBackupState';
 import styles from './BackupPage.module.css';
 
@@ -22,6 +25,8 @@ export function BackupPage() {
   const [storage, setStorage] = useState<StorageStatus>();
   const [message, setMessage] = useState<{ tone: 'success' | 'error' | 'warning'; text: string }>();
   const [busy, setBusy] = useState(false);
+  // Rückmeldung direkt am CSV-Knopf (weit unten auf der Seite)
+  const [csvMessage, setCsvMessage] = useState<{ tone: 'success' | 'error' | 'warning'; text: string }>();
 
   useEffect(() => {
     void storageStatus().then(setStorage);
@@ -38,6 +43,20 @@ export function BackupPage() {
       setMessage({ tone: 'error', text: userMessage(e) });
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function onCsv() {
+    setCsvMessage(undefined);
+    try {
+      const db = getDb();
+      const { csv, count } = catchesCsv(await db.catches.toArray(), await db.sessions.toArray());
+      if (!count) return setCsvMessage({ tone: 'warning', text: de.backup.csvEmpty });
+      const name = `fangpunkt-fangbuch-${toZonedIso(Date.now()).slice(0, 10)}.csv`;
+      downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8' }), name);
+      setCsvMessage({ tone: 'success', text: de.backup.csvDone(name, count) });
+    } catch (e) {
+      setCsvMessage({ tone: 'error', text: userMessage(e) });
     }
   }
 
@@ -107,6 +126,16 @@ export function BackupPage() {
           </Button>
         </div>
         <p className="muted">{de.backup.exportHint}</p>
+      </Section>
+
+      <Section title={de.backup.csvTitle}>
+        <div className={styles.actions}>
+          <Button variant="secondary" onClick={() => void onCsv()} disabled={busy}>
+            {de.backup.csvAction}
+          </Button>
+        </div>
+        <p className="muted">{de.backup.csvHint}</p>
+        {csvMessage && <Notice tone={csvMessage.tone}>{csvMessage.text}</Notice>}
       </Section>
 
       <Section title={de.backup.importTitle}>
