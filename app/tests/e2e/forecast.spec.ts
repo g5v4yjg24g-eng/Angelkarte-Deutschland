@@ -16,7 +16,7 @@ function berlinMidnight(ms: number): number {
   throw new Error('Zeitzone');
 }
 
-/** Simulierte Forecast-API: 9 Tage ab gestern, Luftdruck fällt 0,5 hPa/h. Anfragen werden mitgeschrieben. */
+/** Simulierte Forecast-API: 9 Tage ab gestern, Luftdruck fällt 0,1 hPa/h (3 h = −0,3 hPa, ohne Rundungsgrenze). Anfragen werden mitgeschrieben. */
 async function fakeForecast(page: Page) {
   const requests: URL[] = [];
   let fail = false;
@@ -31,7 +31,7 @@ async function fakeForecast(page: Page) {
       json: {
         hourly: {
           time: hours.map((t) => t / 1000),
-          pressure_msl: hours.map((_, i) => 1025 - i * 0.05),
+          pressure_msl: hours.map((_, i) => 1025 - i * 0.1),
           temperature_2m: hours.map(() => 9),
           wind_speed_10m: hours.map(() => 4),
           wind_direction_10m: hours.map(() => 270),
@@ -121,7 +121,7 @@ test('FC-1: Wetter-Bereich mit Vorhersage, Luftdruck-Verlauf, Ortswahl, Zwischen
   const now = page.getByRole('region', { name: 'Jetzt' });
   await expect(now).toContainText('9 °C');
   await expect(now).toContainText('Bedeckt');
-  await expect(now).toContainText('−0,2 hPa in 3 h');
+  await expect(now).toContainText('−0,3 hPa in 3 h');
   await expect(page.getByRole('img', { name: /Luftdruck-Verlauf von/ })).toBeVisible();
   await expect(page.getByText('Heute', { exact: true })).toBeVisible();
   await expect(page.getByText('Morgen', { exact: true })).toBeVisible();
