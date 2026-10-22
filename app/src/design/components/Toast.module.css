@@ -2,7 +2,7 @@
   position: fixed;
   z-index: 50;
   left: 50%;
-  bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--space-3));
+  bottom: calc(var(--nav-clearance) + var(--space-3));
   transform: translateX(-50%);
   width: min(calc(100% - 2 * var(--space-4)), 30rem);
   display: grid;

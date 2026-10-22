@@ -1,4 +1,6 @@
 .sheet {
+  /* Dialoge liegen über der Leiste */
+  --nav-clearance: 0px;
   margin: auto auto 0;
   width: 100%;
   max-width: 34rem;
