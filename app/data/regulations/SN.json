@@ -1,18 +1,22 @@
 {
   "stateCode": "SN",
-  "status": "partial",
-  "missing": [
-    "Fischereischein und Erlaubnisse (SächsFischG, §§ 15 ff. SächsFischVO)",
-    "Allgemeinverfügungen der Fischereibehörde (§ 2 Abs. 3, 4, 6)"
-  ],
+  "status": "draft",
+  "missing": ["Allgemeinverfügungen der Fischereibehörde (§ 2 Abs. 3, 4, 6)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "SächsFischVO",
       "title": "Sächsische Fischereiverordnung",
       "version": "vom 22. April 2022 (SächsGVBl. S. 318), Fassung gültig ab 1. Juni 2022",
       "url": "https://revosax.sachsen.de/vorschrift/19620",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "SächsFischG",
+      "title": "Sächsisches Fischereigesetz",
+      "version": "vom 9. Juli 2007 (SächsGVBl. S. 310), zuletzt geändert durch Gesetz vom 29. April 2012 (SächsGVBl. S. 254); Fassung gültig ab 26. Mai 2012",
+      "url": "https://revosax.sachsen.de/vorschrift/9553",
       "retrievedAt": "2026-10-22"
     }
   ],
@@ -716,7 +720,44 @@
       "basisRef": "Anlage Nr. 45 (zu § 2 Abs. 1)"
     }
   ],
-  "licences": [],
+  "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Wer die Fischerei ausübt, muss einen gültigen Fischereischein besitzen, diesen bei sich führen und auf Verlangen der Fischereiaufsicht zur Einsichtnahme vorzeigen. Personen mit Hauptwohnsitz im Freistaat Sachsen bedürfen eines Fischereischeins der Fischereibehörde. Wird der Hauptwohnsitz nach Sachsen verlegt, bleiben in anderen Bundesländern ausgestellte Fischereischeine im bisherigen Umfang gültig.",
+      "basisId": "SächsFischG",
+      "basisRef": "§ 20 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Der Fischereischein wird nur erteilt, wenn der Antragsteller das vierzehnte Lebensjahr vollendet hat, die erforderliche Sachkunde besitzt (in der Regel durch die Fischereiprüfung) und keine Versagungsgründe entgegenstehen. Er wird unbefristet erteilt.",
+      "basisId": "SächsFischG",
+      "basisRef": "§ 21 Abs. 1 und 2, § 20 Abs. 2"
+    },
+    {
+      "kind": "youth",
+      "text": "Zusammengefasst: Personen, die das neunte, aber noch nicht das sechzehnte Lebensjahr vollendet haben, kann ein Jugendfischereischein ohne Fischereiprüfung erteilt werden (bis zu sieben Jahre gültig, ungültig mit 16). Sie dürfen nur in Begleitung eines volljährigen Fischereischeininhabers fischen, es sei denn, sie sind seit mindestens einem Jahr Mitglied in einem Anglerverein.",
+      "basisId": "SächsFischG",
+      "basisRef": "§ 22 Abs. 1, § 20 Abs. 2"
+    },
+    {
+      "kind": "youth",
+      "text": "Eine Fischereischeinpflicht besteht nicht für Personen unter sechzehn Jahren, wenn sie an einer Veranstaltung der Anglervereine teilnehmen und von sachkundigen Vertretern der Anglervereine beaufsichtigt werden.",
+      "basisId": "SächsFischG",
+      "basisRef": "§ 20 Abs. 3 Satz 1"
+    },
+    {
+      "kind": "tourist",
+      "text": "Zusammengefasst: Personen mit Hauptwohnsitz außerhalb Deutschlands kann ohne Fischereiprüfung ein Gastfischereischein ausgestellt werden, auch über die Anglerverbände. Er gilt nur mit amtlichem Lichtbildausweis und grundsätzlich einen Monat (in begründeten Einzelfällen bis zu sechs Monate); Voraussetzung ist ein Sachkundenachweis zum Umgang mit gefangenen Fischen.",
+      "basisId": "SächsFischG",
+      "basisRef": "§ 22 Abs. 3; § 32 SächsFischVO"
+    },
+    {
+      "kind": "permit",
+      "text": "Zusammengefasst: Der Fischereiausübungsberechtigte kann mit Personen, die einen gültigen Fischereischein besitzen, einen Erlaubnisvertrag schließen und stellt einen Erlaubnisschein aus. Diesen hat der Erlaubnisberechtigte bei der Ausübung der Fischerei bei sich zu führen und auf Verlangen vorzuzeigen.",
+      "basisId": "SächsFischG",
+      "basisRef": "§ 19"
+    }
+  ],
   "otherRules": [
     {
       "topic": "Messen",
