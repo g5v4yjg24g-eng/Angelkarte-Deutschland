@@ -36,7 +36,7 @@
   top: var(--space-3);
 }
 .zoom {
-  bottom: calc(var(--space-6) + var(--space-2));
+  bottom: calc(var(--nav-clearance) + var(--space-6) + var(--space-2));
   display: none;
 }
 @media (min-width: 900px) and (hover: hover) {
@@ -65,7 +65,7 @@
 .accuracy {
   position: absolute;
   left: var(--space-3);
-  bottom: calc(var(--space-6) + var(--space-3) + var(--touch) + 40px + var(--space-4));
+  bottom: calc(var(--nav-clearance) + var(--space-6) + var(--space-3) + var(--touch) + 40px + var(--space-4));
   margin: 0;
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
@@ -76,6 +76,10 @@
 }
 
 /* MapLibre-Attribution: sichtbar (OSM-Pflicht), aber kompakt und im Design */
+.wrap :global(.maplibregl-ctrl-bottom-right),
+.wrap :global(.maplibregl-ctrl-bottom-left) {
+  bottom: var(--nav-clearance);
+}
 .wrap :global(.maplibregl-ctrl-attrib) {
   font-size: 11px;
   background: color-mix(in srgb, var(--color-surface) 85%, transparent);
@@ -316,7 +320,7 @@
 .fab {
   position: absolute;
   left: var(--space-3);
-  bottom: calc(var(--space-6) + var(--space-3));
+  bottom: calc(var(--nav-clearance) + var(--space-6) + var(--space-3));
   z-index: 2;
   display: inline-flex;
   align-items: center;
@@ -339,7 +343,7 @@
 .sessionFab {
   position: absolute;
   left: var(--space-3);
-  bottom: calc(var(--space-6) + var(--space-3) + var(--touch) + var(--space-2));
+  bottom: calc(var(--nav-clearance) + var(--space-6) + var(--space-3) + var(--touch) + var(--space-2));
   z-index: 2;
   display: inline-flex;
   align-items: center;

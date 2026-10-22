@@ -123,7 +123,7 @@
 .actions {
   /* Bleibt am unteren Rand sichtbar; reicht über den Innenabstand des Sheets, damit nichts darunter durchscheint */
   position: sticky;
-  bottom: calc(-1 * var(--space-4));
+  bottom: calc(var(--nav-clearance) - var(--space-4));
   display: flex;
   justify-content: flex-end;
   gap: var(--space-2);

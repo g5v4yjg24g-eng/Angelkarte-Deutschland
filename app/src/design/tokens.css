@@ -53,6 +53,8 @@
 
   --touch: 44px;
   --nav-height: 64px;
+  /* Platz, den die schwebende Leiste unten belegt (nur mobil; AppShell setzt ihn) */
+  --nav-clearance: 0px;
   --header-height: 56px;
   --rail-width: 88px;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
