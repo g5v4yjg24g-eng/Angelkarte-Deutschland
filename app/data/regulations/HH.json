@@ -1,13 +1,9 @@
 {
   "stateCode": "HH",
-  "status": "partial",
-  "missing": [
-    "HmbFAnGDVO: Schon- und Sperrgebiete (§ 9)",
-    "HmbFAnGDVO: Ausnahmen (§ 10)",
-    "Änderungen des HmbFAnG nach der Verkündung am 31.05.2019 nicht geprüft"
-  ],
+  "status": "draft",
+  "missing": ["HmbFAnGDVO: Schon- und Sperrgebiete (§ 9)", "HmbFAnGDVO: Ausnahmen (§ 10)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Quelle HmbFAnG mit Gesamtausgabe abgeglichen (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "HmbFAnGDVO",
@@ -19,7 +15,7 @@
     {
       "id": "HmbFAnG",
       "title": "Hamburgisches Fischerei- und Angelgesetz",
-      "version": "vom 28. Mai 2019, verkündet im HmbGVBl. Nr. 17 vom 31. Mai 2019 (Erstfassung; spätere Änderungen nicht berücksichtigt)",
+      "version": "vom 28. Mai 2019 (HmbGVBl. S. 142); Gesamtausgabe Stand 22.10.2026 ohne spätere Änderung",
       "url": "https://dokumente.hamburg.de/resource/blob/179404/9cf58e1e665528939a543a9bc87529b6/hamburgisches-fischerei-und-angelgesetz-data.pdf",
       "retrievedAt": "2026-10-22"
     }

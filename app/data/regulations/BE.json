@@ -1,17 +1,24 @@
 {
   "stateCode": "BE",
-  "status": "partial",
+  "status": "draft",
   "missing": [
-    "Fischereischein und Erlaubnisse (LFischG, LFischO)",
+    "Fischereischein (Landesfischereischeingesetz vom 21. April 1995)",
     "Anordnungen der unteren Fischereibehörde (§ 8 Abs. 2 und 3)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "LFischO",
       "title": "Berliner Landesfischereiordnung",
       "version": "vom 12. Dezember 2001 (GVBl. S. 700), zuletzt geändert durch Verordnung vom 27.10.2025 (GVBl. S. 551); Gesamtausgabe Stand 22.10.2026",
+      "url": "https://gesetze.berlin.de/",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "LFischG BE",
+      "title": "Landesfischereigesetz Berlin",
+      "version": "zuletzt geändert durch Artikel 28 des Gesetzes vom 02.02.2018 (GVBl. S. 160); Gesamtausgabe Stand 22.10.2026",
       "url": "https://gesetze.berlin.de/",
       "retrievedAt": "2026-10-22"
     }
@@ -664,7 +671,14 @@
       "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
     }
   ],
-  "licences": [],
+  "licences": [
+    {
+      "kind": "permit",
+      "text": "Wer in einem Gewässer, in dem er nicht Fischereiberechtigter oder Fischereipächter ist, den Fischfang mit der Handangel oder einem Senknetz ausübt, muß einen Fischereierlaubnisvertrag (Angelkarte) des Fischereiberechtigten oder Fischereipächters bei sich führen und diesen auf Verlangen aushändigen. Einen Fischereierlaubnisvertrag können nur Personen abschließen, die Inhaber eines Fischereischeins sind. Angelkarten gelten höchstens ein Jahr.",
+      "basisId": "LFischG BE",
+      "basisRef": "§ 14 Abs. 1, 2 und 5"
+    }
+  ],
   "otherRules": [
     {
       "topic": "Messen",

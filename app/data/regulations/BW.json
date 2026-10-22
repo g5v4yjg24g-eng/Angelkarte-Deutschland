@@ -1,17 +1,21 @@
 {
   "stateCode": "BW",
-  "status": "partial",
-  "missing": [
-    "Fischereischein und Erlaubnisse (FischG)",
-    "Allgemeinverfügungen der Fischereibehörde (§ 1 Abs. 5)"
-  ],
+  "status": "draft",
+  "missing": ["Allgemeinverfügungen der Fischereibehörde (§ 1 Abs. 5)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "LFischVO",
       "title": "Landesfischereiverordnung Baden-Württemberg",
       "version": "vom 3. April 1998 (GBl. S. 252), zuletzt geändert durch Artikel 32 des Gesetzes vom 10. Februar 2026 (GBl. 2026 Nr. 20); Gesamtausgabe Stand 22.10.2026, § 1 gültig ab 04.02.2022",
+      "url": "https://www.landesrecht-bw.de/",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "FischG BW",
+      "title": "Fischereigesetz für Baden-Württemberg",
+      "version": "vom 14. November 1979 (GBl. S. 466), zuletzt geändert durch Artikel 1 des Gesetzes vom 15. Oktober 2024 (GBl. 2024 Nr. 85); Gesamtausgabe Stand 22.10.2026",
       "url": "https://www.landesrecht-bw.de/",
       "retrievedAt": "2026-10-22"
     }
@@ -809,6 +813,36 @@
       "text": "Die Fischereiabgabe beträgt für jedes Kalenderjahr 12 Euro; sie kann für ein, fünf oder zehn aufeinanderfolgende Kalenderjahre gezahlt werden.",
       "basisId": "LFischVO",
       "basisRef": "§ 12 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Wer die Fischerei ausübt, muss einen gültigen Fischereischein besitzen und diesen bei sich führen. Auf Verlangen ist der Fischereischein auch dem Fischereiberechtigten und dem Pächter zur Einsichtnahme auszuhändigen. Der Fischereischein ist nur gültig, wenn der Nachweis über die Entrichtung der Fischereiabgabe erbracht ist.",
+      "basisId": "FischG BW",
+      "basisRef": "§ 31 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Der Fischereischein wird nur bei nachgewiesener Sachkunde (Fischerprüfung) erteilt und regelmäßig auf Lebenszeit ausgestellt; wird auf den Sachkundenachweis verzichtet, gilt er für ein Kalenderjahr (Jahresfischereischein). Versagt wird er Personen unter sieben Jahren.",
+      "basisId": "FischG BW",
+      "basisRef": "§ 31 Abs. 2 und 6, § 33 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Gültige Fischereischeine anderer Bundesländer gelten auch in Baden-Württemberg, es sei denn der Inhaber hat hier seine Hauptwohnung. Wird die Hauptwohnung nach Baden-Württemberg verlegt, gelten sie längstens bis zum Ende des folgenden Kalenderjahres.",
+      "basisId": "FischG BW",
+      "basisRef": "§ 31 Abs. 5 Satz 1 und 2"
+    },
+    {
+      "kind": "youth",
+      "text": "Personen, die das siebte, aber noch nicht das sechzehnte Lebensjahr vollendet haben, kann ein Jugendfischereischein erteilt werden. Er gilt bis zum Ende des Kalenderjahres, in dem der Jugendliche sechzehn wird, und berechtigt nur zur Fischerei unter Aufsicht einer mindestens achtzehn Jahre alten Person mit gültigem Fischereischein. Inhaber von Jugendfischereischeinen zahlen keine Fischereiabgabe.",
+      "basisId": "FischG BW",
+      "basisRef": "§ 32, § 36 Abs. 1 Satz 4"
+    },
+    {
+      "kind": "permit",
+      "text": "Dem auf Grund eines Erlaubnisvertrags zur Fischerei Berechtigten hat der andere Vertragsteil einen Erlaubnisschein zu erteilen (mit Gewässer, Gültigkeitsdauer, zugelassenen Fanggeräten sowie Angaben über Mengenbeschränkungen und Abweichungen von Schonmaßen).",
+      "basisId": "FischG BW",
+      "basisRef": "§ 37 Abs. 1"
     }
   ],
   "otherRules": [

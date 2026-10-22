@@ -1,19 +1,26 @@
 {
   "stateCode": "SH",
-  "status": "partial",
+  "status": "draft",
   "missing": [
-    "Fischereischein (Landesfischereigesetz)",
     "Küstengewässer (Küstenfischereiverordnung)",
     "Gewässerliste der Winterschonzeit (Anlage 3)",
-    "befristete Allgemeinverfügungen"
+    "befristete Allgemeinverfügungen",
+    "Urlauberfischereischein und Höhe der Fischereiabgabe (Verordnungen nach § 26 Abs. 5 und § 29 Abs. 6 LFischG)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "BiFVO",
       "title": "Landesverordnung über die Ausübung der Fischerei in den Binnengewässern (Binnenfischereiverordnung)",
       "version": "vom 29. Juni 2016 (GVOBl. S. 557), mehrfach geändert, zuletzt Anlage 1 und 3 neu gefasst durch LVO vom 26.05.2021 (GVOBl. S. 733); Gesamtausgabe Stand 22.10.2026",
+      "url": "https://www.gesetze-rechtsprechung.sh.juris.de/",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "LFischG SH",
+      "title": "Landesfischereigesetz Schleswig-Holstein",
+      "version": "§ 35 zuletzt geändert durch Art. 8 Ges. v. 11.12.2025 (GVOBl. 2025 Nr. 165); §§ 14, 26–29 gültig ab 01.10.2025; Gesamtausgabe Stand 22.10.2026",
       "url": "https://www.gesetze-rechtsprechung.sh.juris.de/",
       "retrievedAt": "2026-10-22"
     }
@@ -548,7 +555,50 @@
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)"
     }
   ],
-  "licences": [],
+  "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Wer den Fischfang ausübt, muss einen auf seinen Namen lautenden gültigen Fischereischein mit sich führen; ab dem vollendeten 16. Lebensjahr zusätzlich einen amtlichen Lichtbildausweis. Beides ist auf Verlangen vorzuzeigen.",
+      "basisId": "LFischG SH",
+      "basisRef": "§ 26 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Der Fischereischein ist auf Antrag zu erteilen, wenn die antragstellende Person das zwölfte Lebensjahr vollendet und die Fischereischeinprüfung bestanden hat; er wird auf Lebenszeit erteilt. Der Antrag kann auch online gestellt werden.",
+      "basisId": "LFischG SH",
+      "basisRef": "§ 26 Abs. 3"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Fischereischeine anderer Bundesländer gelten auch in Schleswig-Holstein. Nach Umzug mit Haupt- oder alleiniger Wohnung nach Schleswig-Holstein muss der Fischereischein vergleichbare Sicherheitsmerkmale wie ein schleswig-holsteinischer aufweisen.",
+      "basisId": "LFischG SH",
+      "basisRef": "§ 26 Abs. 4"
+    },
+    {
+      "kind": "youth",
+      "text": "Ein Fischereischein ist nicht erforderlich für Personen, die das 14. Lebensjahr noch nicht vollendet haben und die Fischerei mit der Handangel unter Aufsicht einer volljährigen Person mit gültigem Fischereischein ausüben. Ebenfalls nicht in Teichwirtschaften und privaten Kleingewässern.",
+      "basisId": "LFischG SH",
+      "basisRef": "§ 26 Abs. 2 Nr. 1, 3 und 6"
+    },
+    {
+      "kind": "tourist",
+      "text": "Ausnahmen von der Fischereischeinpflicht regelt eine Verordnung; dazu zählen befristete Ausnahmegenehmigungen (Urlauberfischereischeine), deren Gültigkeit auf 28 hintereinander liegende Tage zu begrenzen ist.",
+      "basisId": "LFischG SH",
+      "basisRef": "§ 26 Abs. 5"
+    },
+    {
+      "kind": "levy",
+      "text": "Wer die Fischerei ausüben will und das zwölfte Lebensjahr vollendet hat, hat pro Kalenderjahr eine Fischereiabgabe zu entrichten (bis zu vier Jahre im Voraus möglich); der Nachweis ist beim Fischfang mitzuführen. Befreit ist, wer keinen Fischereischein benötigt. Die Höhe regelt eine Verordnung (hier nicht erfasst).",
+      "basisId": "LFischG SH",
+      "basisRef": "§ 29 Abs. 1, 2 und 6"
+    },
+    {
+      "kind": "permit",
+      "text": "Wer in einem Gewässer, ohne fischereiberechtigt oder fischereiausübungsberechtigt zu sein, den Fischfang ausübt, muß einen gültigen Fischereierlaubnisschein bei sich führen. Er darf nur an Personen mit gültigem Fischereischein oder Befreiung ausgegeben werden; nicht erforderlich in Gegenwart der ausstellungsbefugten Person und in geschlossenen Gewässern.",
+      "basisId": "LFischG SH",
+      "basisRef": "§ 14 Abs. 1, 2 und 4"
+    }
+  ],
   "otherRules": [
     {
       "topic": "Geltung",

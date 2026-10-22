@@ -1,19 +1,25 @@
 {
   "stateCode": "RP",
-  "status": "partial",
+  "status": "draft",
   "missing": [
-    "Fischereischein und Erlaubnisse (Landesfischereigesetz)",
     "Gewässerliste der Frühjahrsschonzeit im Detail (§ 18 Abs. 1, Anlage 3)",
     "Allgemeinverfügungen der oberen Fischereibehörde (§§ 21, 22)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "LFischO RP",
       "title": "Landesverordnung zur Durchführung des Landesfischereigesetzes (Landesfischereiordnung)",
       "version": "vom 14. Oktober 1985 (GVBl. S. 241), zuletzt geändert durch Artikel 2 der Verordnung vom 11.02.2026 (GVBl. S. 44, 50); Gesamtausgabe Stand 22.10.2026",
       "url": "https://landesrecht.rlp.de/bsrp/document/jlr-NNLRP00005A7E",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "LFischG RP",
+      "title": "Landesfischereigesetz Rheinland-Pfalz",
+      "version": "zuletzt geändert durch Artikel 1 des Gesetzes vom 11.02.2026 (GVBl. S. 44), §§ 33–38, 41 neu gefasst, gültig ab 19.02.2026; Gesamtausgabe Stand 22.10.2026",
+      "url": "https://landesrecht.rlp.de/",
       "retrievedAt": "2026-10-22"
     }
   ],
@@ -522,7 +528,50 @@
       "basisRef": "§ 20 Abs. 2"
     }
   ],
-  "licences": [],
+  "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Wer den Fischfang ausübt, muss einen gültigen Fischereischein und – soweit Pflicht – den Nachweis über die Fischereiabgabe besitzen, in zulässigem Format (auch digital) bei sich führen und auf Verlangen vorzeigen. Beide sind nur in Verbindung mit einem amtlichen Lichtbildausweis gültig.",
+      "basisId": "LFischG RP",
+      "basisRef": "§ 33 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Personen mit Hauptwohnsitz in Rheinland-Pfalz bedürfen eines Fischereischeines der zuständigen Fischereibehörde. Im Übrigen werden die in anderen Ländern ausgestellten gültigen Fischereischeine anerkannt; bei Umzug nach Rheinland-Pfalz gelten sie bis zum Ablauf ihrer Gültigkeitsdauer weiter.",
+      "basisId": "LFischG RP",
+      "basisRef": "§ 33 Abs. 2"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Der Fischereischein wird erteilt, wenn die antragstellende Person das 13. Lebensjahr vollendet hat, die Sachkunde (Fischerprüfung) besitzt und keine Versagungsgründe entgegenstehen; er wird unbefristet erteilt.",
+      "basisId": "LFischG RP",
+      "basisRef": "§ 34 Abs. 1 und 2, § 37 Abs. 1 Nr. 3"
+    },
+    {
+      "kind": "youth",
+      "text": "Ein Fischereischein ist nicht erforderlich für Personen, die das siebte, aber noch nicht das 18. Lebensjahr vollendet haben, soweit sie die Fischerei in Begleitung eines mindestens 18-jährigen Fischereischeininhabers ausüben, der stets unmittelbar eingreifen kann. Vor Vollendung des zehnten Lebensjahres ist das Abködern lebender Fische sowie das Betäuben und Töten von Fischen nicht erlaubt.",
+      "basisId": "LFischG RP",
+      "basisRef": "§ 33 Abs. 4"
+    },
+    {
+      "kind": "tourist",
+      "text": "Personen ohne Wohnsitz in Deutschland kann ein Gästeschein erteilt werden, höchstens zweimal im Kalenderjahr für jeweils bis zu 30 aufeinanderfolgende Tage; für Gästescheine wird keine Fischereiabgabe erhoben.",
+      "basisId": "LFischG RP",
+      "basisRef": "§ 36 Abs. 2, § 37 Abs. 1 Nr. 2, § 40 Abs. 2"
+    },
+    {
+      "kind": "levy",
+      "text": "Zusammengefasst: Von Fischereischeininhabern mit Hauptwohnsitz in Rheinland-Pfalz (auch von begleiteten Jugendlichen nach § 33 Abs. 4) wird pro Kalenderjahr eine Fischereiabgabe erhoben; Personen ohne Hauptwohnsitz in Rheinland-Pfalz zahlen nur, wenn sie keinen Nachweis über die Abgabe in einem anderen Land erbringen. Die Höhe regelt eine Rechtsverordnung (hier nicht erfasst).",
+      "basisId": "LFischG RP",
+      "basisRef": "§ 40 Abs. 2"
+    },
+    {
+      "kind": "permit",
+      "text": "Wer in einem Gewässer, in dem er nicht Fischereiberechtigter oder Fischereipächter ist, den Fischfang ausübt, muss unbeschadet des § 33 einen Erlaubnisschein des Fischereiberechtigten oder des Fischereipächters digital oder in Papierform bei sich führen, den Fischfang nach Maßgabe des Erlaubnisscheines ausüben und ihn auf Verlangen vorzeigen.",
+      "basisId": "LFischG RP",
+      "basisRef": "§ 41 Abs. 1"
+    }
+  ],
   "otherRules": [
     {
       "topic": "Frühjahrsschonzeit",
