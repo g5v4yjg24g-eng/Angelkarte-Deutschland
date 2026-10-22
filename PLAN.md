@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-22 · Status: **M5 in Arbeit** (M5.1–M5.4 erledigt) · weiter mit M5.5 Gewässerzuordnung
+Stand: 2026-10-22 · Status: **M5 umgesetzt** (M5.1–M5.5, PRs #11–#13 zur Freigabe) · danach M6 Statistik nach Freigabe
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -182,15 +182,15 @@ Abhängig von: M3, Spike S1
 - *Abnahme (Ergebnisse):* Stichprobe WAT-2 automatisiert (`src/sample.ts`): **20/20** im Release-Lauf (Bodensee dank Grenzgewässer-Ergänzung). Release `wasserdaten-2026-10-21-5` live auf GitHub Pages, Range-Abrufe und Suche/Profil dort geprüft. 103 Unit-Tests und 51 E2E-Tests grün (ein Intro-Zeittest kippt gelegentlich unter Volllast, einzeln stabil). Datenstand im Profil sichtbar, Abdeckung in der Suche; fehlende Angaben als „unbekannt"/„keine geprüften Angaben".
 - *Offen:* WAT-4 (Nachfolger bei weggefallener `wid`) wird mit dem ersten Datenpaket-Update fällig [O]. Fließgewässer zeigen nur den angetippten Abschnitt.
 
-### M5 – Fangbuch und Sessions — in Arbeit (Branch `m5/fangbuch`)
+### M5 – Fangbuch und Sessions — ✅ umgesetzt 2026-10-22 (M5.1/M5.3 gemergt, M5.2/M5.4/M5.5 als PRs #11–#13)
 Abhängig von: M2, M4
 Freigegeben 2026-10-21 mit drei Entscheidungen: **kein automatisches Wetter in M5** (braucht Netz und schickt einen gerundeten Standort an Dritte; eigener Schritt nach M6), **GPS nur auf ausdrücklichen Wunsch** (sonst angetippte Stelle bzw. Kartenmitte), **Reihenfolge** M5.1 + M5.3 → M5.2 → M5.4 → M5.5.
 - ✅ **M5.1 Schnellerfassung:** Fang / Fischkontakt / Fehlbiss / Beobachtung mit einem Tipp; Art (zuletzt genutzte zuerst), Datum, Uhrzeit vorbelegt; „Mehr Details" für Länge/Gewicht (gemessen/gewogen nur bei gelandetem Fisch), Verbleib, Kontaktdetail, Methode, Köder (zuletzt benutzte als Schnellauswahl), Bedingungen; Notizen. Einstiege: Tipp auf die Karte, gespeicherter Ort („Fang hier erfassen"), Knopf „Fang erfassen" (Kartenmitte bzw. eigener Standort, wenn die Standortanzeige an ist). Gewässer wird übernommen, wenn es an der Stelle bekannt ist. Prüfung über dasselbe Zod-Schema wie Import/Datenbank, Fehler am Feld. Funktioniert ohne Netz.
 - ✅ **M5.3 Fangbuch:** Liste nach Tagen, Suche (Art, Gewässer, Köder, Notiz), Filter (Ergebnis, Zeitraum, Art, Gewässer), Detailseite, Bearbeiten (Angaben, die das Formular nicht zeigt, bleiben erhalten), Löschen mit „Rückgängig", „Auf der Karte zeigen"; auf der Karte Fang ansehen, bearbeiten, löschen.
 - ✅ **M5.2 Fotos:** „Foto aufnehmen" (Kamera) und „Aus Galerie" (mehrere), bis 6 Fotos je Eintrag; Neu-Kodierung als JPEG ≤ 1600 px mit Vorschaubild 320 px, Ausrichtung aus EXIF übernommen, **EXIF inkl. GPS entfernt**; Fang und Fotos in einer Transaktion; bei vollem Speicher Meldung und „Ohne Foto speichern"; Fotos in Detail, Liste und Großansicht; beim Bearbeiten hinzufügen/entfernen. *Abnahme M5 erfüllt:* Fang mit Foto im Flugmodus erfasst, App offline neu gestartet, Eintrag und Foto vorhanden, Foto 1600×1067 ohne EXIF (E2E CAT-2). Hinweis „ohne Internet startbar" blendet sich nach 8 s aus (verdeckte auf dem Handy „Fang erfassen").
 - ✅ **M5.4 Sessions:** „Session starten" auf der Karte und unter Fangbuch → Sessions; laufende Session mit Laufzeit in der Kopfzeile (auf jeder Seite); neue Einträge werden zugeordnet, wenn ihr Zeitpunkt in die Session fällt (minutengenau); nur eine Session gleichzeitig (Prüfung in einer Transaktion); beenden; Liste und Detailseite mit Einträgen (außerhalb der Zeit markiert), Titel, Notizen, löschen (Einträge bleiben). > 24 h: Hinweis in der Kopfzeile und Korrektur mit Vorschlag (letzter Eintrag bzw. Beginn + 4 h) oder „Läuft noch". Kopfzeile bei 390 px kompakt (nur Laufzeit bzw. Offline-Symbol).
-- ☐ **M5.5 Gewässerzuordnung:** Auswahl bei mehreren nahen Gewässern, „später zuordnen", wenn offline unbekannt.
-- *Abnahme (Ziel):* Erfassung komplett offline (Flugmodus) inklusive Foto; nach Neustart vorhanden.
+- ✅ **M5.5 Gewässerzuordnung:** Gewässer im Umkreis von 40 px um die Stelle: eins → zugeordnet; mehrere → Auswahl im Formular (Fläche unter dem Finger vorgewählt, „Kein Gewässer / unbekannt" möglich); keins → „unbekannt, später zuordnen". Im Fangbuch „Gewässer zuordnen/ändern": die Karte springt zur Stelle und bietet die Gewässer dort an, „Zuordnung entfernen". Ohne geladene Gewässerdaten wird nichts geraten.
+- *Abnahme:* Erfassung komplett offline (Flugmodus) inklusive Foto; nach Neustart vorhanden – **erfüllt** (E2E CAT-2, M5.2).
 - *Stand M5.1/M5.3:* 117 Unit-Tests, 62 E2E-Tests grün (Fangbuch-Tests 40/40 bei 4 parallelen Läufen). Gefunden und behoben: `crypto.randomUUID` fehlt außerhalb von HTTPS/localhost (z. B. Test im Heimnetz über IP) → eigene ID-Funktion mit Ersatz.
 
 ### M6 – Statistik
@@ -287,4 +287,5 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 4. ~~M2~~ erledigt.
 5. ~~M3~~ erledigt.
 6. ~~M4~~ erledigt.
-7. **M5** (Fangbuch und Sessions): M5.1–M5.4 erledigt, weiter mit M5.5.
+7. ~~M5~~ umgesetzt (PRs #11–#13 zur Freigabe).
+8. **M6** (Statistik), nach deiner Freigabe.
