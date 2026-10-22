@@ -1,0 +1,62 @@
+{
+  "stateCode": "MV",
+  "status": "draft",
+  "missing": [
+    "Schonzeiten, Mindestmaße und Fangverbote in Binnengewässern (Binnenfischereiverordnung)",
+    "Regeln für Küstengewässer (Küstenfischereiverordnung)",
+    "zeitlich befristeter Fischereischein (Verordnung)"
+  ],
+  "checkedAt": "2026-10-22",
+  "checkedBy": "Aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); Gegenprüfung durch den Nutzer ausstehend",
+  "legalBasis": [
+    {
+      "id": "LFischG M-V",
+      "title": "Fischereigesetz für das Land Mecklenburg-Vorpommern (Landesfischereigesetz)",
+      "version": "in der Fassung der Bekanntmachung vom 6. Januar 2025 (GVOBl. M-V 2025 S. 10), zuletzt geändert durch Artikel 38 des Gesetzes vom 8. Juli 2026 (GVOBl. M-V S. 719, 739); Gesamtausgabe Stand 22.10.2026",
+      "url": "https://www.landesrecht-mv.de/",
+      "retrievedAt": "2026-10-22"
+    }
+  ],
+  "closedSeasons": [],
+  "minSizes": [],
+  "protectedSpecies": [],
+  "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Eine Person, die die Fischerei ausübt und das 14. Lebensjahr vollendet hat, bedarf der behördlichen Erlaubnis (Fischereischein). Der Fischereischein ist bei der Ausübung der Fischerei neben einem Personalausweis oder Identifikationsnachweis, bei Jugendlichen unter 16 Jahren neben einem amtlichen Lichtbildausweis oder Schülerausweis mitzuführen.",
+      "basisId": "LFischG M-V",
+      "basisRef": "§ 7 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Der Fischereischein wird, sofern er nicht ausdrücklich zeitlich befristet ist, auf Lebenszeit erteilt. Er ist auf Antrag zu erteilen, wenn die antragstellende Person das zehnte Lebensjahr vollendet hat, eine Fischereischeinprüfung abgelegt hat oder von dieser befreit ist und keine Versagungsgründe vorliegen.",
+      "basisId": "LFischG M-V",
+      "basisRef": "§ 7 Abs. 2 und 3"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Fischereischeine, die in einem anderen Bundesland oder im Ausland von einer staatlichen Stelle erteilt oder staatlich anerkannt sind, stehen dem Fischereischein nach diesem Gesetz gleich, solange sie gültig sind und die berechtigte Person ihren Hauptwohnsitz nicht in Mecklenburg-Vorpommern hat.",
+      "basisId": "LFischG M-V",
+      "basisRef": "§ 7 Abs. 8"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Schwerbehinderte oder Menschen, die per amtsärztlichem Attest am Ablegen der Prüfung gehindert sind, sind von der Fischereischeinpflicht befreit, wenn sie unter Aufsicht einer volljährigen Person mit Fischereischein angeln; der Nachweis ist beim Angeln mitzuführen.",
+      "basisId": "LFischG M-V",
+      "basisRef": "§ 7 Abs. 7"
+    },
+    {
+      "kind": "levy",
+      "text": "Wer die Fischerei ausüben will, hat eine Fischereiabgabe zu entrichten. Sie wird für das Kalenderjahr erhoben und beträgt mindestens sechs und höchstens 25 Euro. Der Nachweis über die Entrichtung muss bei der Ausübung der Fischerei mitgeführt werden.",
+      "basisId": "LFischG M-V",
+      "basisRef": "§ 9 Abs. 1 und 2"
+    },
+    {
+      "kind": "permit",
+      "text": "Eine Person, die in einem Gewässer, in dem sie nicht fischereiberechtigt ist, die Fischerei ausübt, muss eine auf sie vom Fischereiberechtigten ausgestellte Fischereierlaubnis besitzen und hat diese bei der Fischereiausübung mit sich zu führen. Die Fischereierlaubnis kann auch elektronisch ausgestellt werden.",
+      "basisId": "LFischG M-V",
+      "basisRef": "§ 6"
+    }
+  ],
+  "otherRules": []
+}
