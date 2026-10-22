@@ -1,0 +1,106 @@
+.figure {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.chart {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.grid {
+  stroke: var(--color-border);
+  stroke-width: 1;
+}
+.tick {
+  fill: var(--color-text-muted);
+  font-size: 10px;
+}
+.line {
+  fill: none;
+  stroke: var(--color-chart);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.now {
+  stroke: var(--color-accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+.nowLabel {
+  fill: var(--color-accent);
+  font-size: 10px;
+  font-weight: 650;
+}
+.tableToggle summary {
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  min-height: var(--touch);
+  line-height: var(--touch);
+}
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.dataTable th,
+.dataTable td {
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+.nowCard {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.nowTemp {
+  font-size: var(--text-3xl);
+  font-weight: 650;
+  line-height: 1;
+}
+.facts {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+}
+.facts > div {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: var(--space-2);
+}
+.facts dt {
+  color: var(--color-text-muted);
+}
+.facts dd {
+  margin: 0;
+}
+.days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.day {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.dayHead {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-weight: 650;
+}
+.day p {
+  margin: 0;
+}

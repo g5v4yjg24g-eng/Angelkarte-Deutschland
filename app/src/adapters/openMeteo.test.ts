@@ -31,3 +31,15 @@ describe('Open-Meteo-Adapter', () => {
     await expect(openMeteo().fetchHour(q)).rejects.toThrow('HTTP 429');
   });
 });
+
+describe('Open-Meteo-Vorhersage', () => {
+  it('sendet nur gerundete Koordinaten, Zeiten als Unix-Zeit, deutsche Zeitzone', async () => {
+    const { openMeteoForecastUrl } = await import('./openMeteo');
+    const u = new URL(openMeteoForecastUrl({ lat: 51.325, lng: 6.243 }));
+    expect(u.host).toBe('api.open-meteo.com');
+    expect(u.searchParams.get('latitude')).toBe('51.325');
+    expect(u.searchParams.get('timeformat')).toBe('unixtime');
+    expect(u.searchParams.get('timezone')).toBe('Europe/Berlin');
+    expect(u.searchParams.get('hourly')).toContain('pressure_msl');
+  });
+});

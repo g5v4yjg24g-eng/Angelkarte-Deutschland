@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router';
 import { de } from '../i18n/de';
-import { BookIcon, ChartIcon, FishMark, MapIcon, MoreIcon, OfflineIcon } from '../design/icons';
+import { BookIcon, ChartIcon, FishMark, MapIcon, MoreIcon, OfflineIcon, WeatherIcon } from '../design/icons';
 import { Badge } from '../design/components/Badge';
 import { useOnline } from '../lib/useOnline';
 import { UpdatePrompt } from './UpdatePrompt';
@@ -13,6 +13,7 @@ import styles from './AppShell.module.css';
 const NAV = [
   { to: '/', label: de.nav.map, icon: MapIcon, end: true },
   { to: '/fangbuch', label: de.nav.catches, icon: BookIcon, end: false },
+  { to: '/wetter', label: de.nav.weather, icon: WeatherIcon, end: false },
   { to: '/statistik', label: de.nav.stats, icon: ChartIcon, end: false },
   { to: '/mehr', label: de.nav.more, icon: MoreIcon, end: false },
 ] as const;

@@ -5,12 +5,17 @@ import { useLocalExternals, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
-const ALLOWED_EXTERNAL = ['tiles.openfreemap.org', 'historical-forecast-api.open-meteo.com'];
+const ALLOWED_EXTERNAL = [
+  'tiles.openfreemap.org',
+  'historical-forecast-api.open-meteo.com',
+  'api.open-meteo.com',
+];
 const ROUTES = [
   '/',
   '/fangbuch',
   '/fangbuch/priv-1',
   '/fangbuch/sessions',
+  '/wetter',
   '/statistik',
   '/mehr',
   '/mehr/einstellungen',
