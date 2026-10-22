@@ -101,5 +101,18 @@ export const legacyExport = {
     },
     { id: 'p-2', type: 'platz', lat: 51.3201, lng: 6.2433, name: '', desc: '', created, updated: created },
   ],
-  plans: [{ id: 'plan-1', date: '2026-06-20', start: '06:00', title: 'Hecht' }],
+  plans: [
+    { id: 'plan-1', date: '2026-06-20', start: '06:00', title: 'Hecht' },
+    {
+      id: 'plan-2',
+      date: '2026-06-27',
+      start: '20:00',
+      end: '02:00',
+      lake: 'other',
+      place: 'Baggersee Süd',
+      notes: 'Nachtangeln',
+      status: 'planned',
+    },
+    { id: 'plan-3', date: '2026-07-04', start: '06:00', status: 'cancelled' },
+  ],
 };

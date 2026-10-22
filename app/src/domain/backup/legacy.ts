@@ -1,6 +1,15 @@
 // Import von Sicherungen der Alt-App „Angelkarte" (Export {app:'angelkarte', version:2, entries, sessions, places, plans}).
 // Abbildung laut DATA_MODEL §8. Grundsatz: nichts verlieren – jedes Original bleibt unter legacy.raw erhalten.
-import { CatchSchema, PlaceSchema, SessionSchema, type Catch, type Place, type Session } from '../schemas';
+import {
+  CatchSchema,
+  PlaceSchema,
+  SessionSchema,
+  TripSchema,
+  type Catch,
+  type Place,
+  type Session,
+  type Trip,
+} from '../schemas';
 import { speciesIdFromName } from '../species';
 import { DEFAULT_TZ, localToZonedIso, toZonedIso } from '../time';
 import type { InvalidRecord } from './parse';
@@ -19,6 +28,7 @@ export interface LegacyResult {
   catches: Catch[];
   sessions: Session[];
   places: Place[];
+  trips: Trip[];
   photos: LegacyPhoto[];
   invalid: InvalidRecord[];
   notes: string[];
@@ -189,7 +199,15 @@ function convertEntry(e: Raw, newId: () => string): { c: Catch; photo?: LegacyPh
 }
 
 export function convertLegacy(json: unknown, newId: () => string = newUuid): LegacyResult {
-  const out: LegacyResult = { catches: [], sessions: [], places: [], photos: [], invalid: [], notes: [] };
+  const out: LegacyResult = {
+    catches: [],
+    sessions: [],
+    places: [],
+    trips: [],
+    photos: [],
+    invalid: [],
+    notes: [],
+  };
   const root: Raw = Array.isArray(json) ? { entries: json } : isObj(json) ? json : {};
   const list = (k: string) => (Array.isArray(root[k]) ? (root[k] as unknown[]) : []);
 
@@ -273,10 +291,55 @@ export function convertLegacy(json: unknown, newId: () => string = newUuid): Leg
     }
   });
 
-  const plans = list('plans').length;
-  if (plans)
+  // Termine aus dem Angelkalender: Tag, Uhrzeit, Titel, Notiz und Gewässername. Abgesagte entfallen.
+  // Ohne Koordinaten gibt es zu übernommenen Terminen kein Wetter, bis ein Gewässer gewählt wird.
+  let cancelled = 0;
+  list('plans').forEach((p, index) => {
+    try {
+      if (!isObj(p)) throw new Error('Kein Objekt');
+      if (p.status === 'cancelled') return void cancelled++;
+      const date = str(p.date);
+      if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Tag fehlt');
+      const time = (v: unknown) => (typeof v === 'string' && /^\d{2}:\d{2}$/.test(v) ? v : undefined);
+      const from = time(p.start);
+      const end = time(p.end);
+      const createdAt = msToIso(p.created) ?? localToZonedIso(date, from ?? '00:00');
+      const lake = str(p.lake);
+      const water = lake && lake !== 'other' ? lake : str(p.place);
+      const trip = clean({
+        id: str(p.id) ?? newId(),
+        createdAt,
+        updatedAt: msToIso(p.updated) ?? createdAt,
+        rev: 0,
+        date,
+        from,
+        // Über Mitternacht (Ende vor Beginn) kennt der Kalender nicht: dann ohne Ende
+        to: end && (!from || end > from) ? end : undefined,
+        tz: DEFAULT_TZ,
+        waterSnapshot: water ? { name: water.slice(0, 200) } : undefined,
+        title: str(p.title)?.slice(0, 120),
+        notes: str(p.notes)?.slice(0, 2000),
+        legacy: { source: 'angelkarte-v2' as const, raw: p },
+      } as Trip);
+      const r = TripSchema.safeParse(trip);
+      if (!r.success) throw new Error(r.error.issues.map((i) => i.message).join('; '));
+      out.trips.push(r.data);
+    } catch (err) {
+      out.invalid.push({
+        table: 'trips',
+        index,
+        id: isObj(p) ? str(p.id) : undefined,
+        reason: (err as Error).message,
+      });
+    }
+  });
+  if (out.trips.length)
     out.notes.push(
-      `${plans === 1 ? '1 geplanter Termin' : `${plans} geplante Termine`} aus dem Angelkalender ${plans === 1 ? 'wird' : 'werden'} nicht übernommen (Kalender folgt später).`,
+      `${out.trips.length === 1 ? '1 Termin' : `${out.trips.length} Termine`} aus dem Angelkalender: ohne Koordinaten, für Wetter bitte ein Gewässer wählen.`,
+    );
+  if (cancelled)
+    out.notes.push(
+      `${cancelled === 1 ? '1 abgesagter Termin wird' : `${cancelled} abgesagte Termine werden`} nicht übernommen.`,
     );
   if (out.catches.some((c) => c.legacy?.raw.wx))
     out.notes.push(

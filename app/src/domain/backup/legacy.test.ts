@@ -91,7 +91,15 @@ describe('BAK-7: Import der Alt-App', () => {
       ['p-1', 'jetty', 'Steg Nord'],
       ['p-2', 'spot', undefined],
     ]);
-    expect(r.notes.join(' ')).toMatch(/1 geplanter Termin aus dem Angelkalender wird nicht übernommen/);
+    expect(r.trips.map((t) => [t.id, t.date, t.from, t.to, t.title, t.waterSnapshot?.name, t.notes])).toEqual(
+      [
+        ['plan-1', '2026-06-20', '06:00', undefined, 'Hecht', undefined, undefined],
+        // über Mitternacht: ohne Ende
+        ['plan-2', '2026-06-27', '20:00', undefined, undefined, 'Baggersee Süd', 'Nachtangeln'],
+      ],
+    );
+    expect(r.notes.join(' ')).toMatch(/2 Termine aus dem Angelkalender/);
+    expect(r.notes.join(' ')).toMatch(/1 abgesagter Termin wird nicht übernommen/);
   });
 
   it('dekodiert das Foto', () => {

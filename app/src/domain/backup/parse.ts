@@ -43,6 +43,7 @@ export const emptyRecords = (): Records => ({
   sessions: [],
   places: [],
   baitPresets: [],
+  trips: [],
   catches: [],
   photos: [],
 });
@@ -64,7 +65,13 @@ export async function parseBackupText(text: string): Promise<ParsedBackup> {
     return {
       kind: 'legacy',
       photosIncluded: l.photos.length > 0,
-      records: { ...emptyRecords(), catches: l.catches, sessions: l.sessions, places: l.places },
+      records: {
+        ...emptyRecords(),
+        catches: l.catches,
+        sessions: l.sessions,
+        places: l.places,
+        trips: l.trips,
+      },
       legacyPhotos: l.photos,
       invalid: l.invalid,
       notes: ['Sicherung der bisherigen Angelkarte-App erkannt.', ...l.notes],
@@ -83,7 +90,8 @@ export async function parseBackupText(text: string): Promise<ParsedBackup> {
     throw new BackupError(
       'Diese Sicherung stammt aus einer neueren Fangpunkt-Version. Bitte aktualisiere die App zuerst.',
     );
-  if ((await checksumOf(env.data.data)) !== env.data.checksum)
+  // Prüfsumme über den Datenteil, so wie er in der Datei steht (nicht über die geprüfte Fassung mit Vorgaben)
+  if ((await checksumOf((json as { data: unknown }).data)) !== env.data.checksum)
     throw new BackupError(
       'Die Prüfsumme stimmt nicht. Die Datei wurde verändert oder ist beschädigt; es wurde nichts importiert.',
     );

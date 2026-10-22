@@ -214,6 +214,19 @@ interface BaitPreset extends Meta { label: string; bait: Catch['bait']; method?:
 // Alt-App: Favoriten lagen nur im Browser-Speicher und sind nicht im Export – kein Import möglich.
 ```
 
+### 5.5a Trip (Angeltermin, DB v2)
+```ts
+interface Trip extends Meta {
+  date: string;            // lokaler Tag „JJJJ-MM-TT" in tz
+  from?: string; to?: string; // „HH:MM", to > from (über Mitternacht: ohne Ende)
+  tz: string;
+  waterId?: string; waterSnapshot?: { name?; place?; centroid? }; // centroid = Ort für das Wetter
+  title?: string; notes?: string; legacy?: Legacy;
+}
+// umgesetzt (P1, 2026-10-22): Ansicht /wetter/kalender. Wetter nur aus der Vorhersage (7 Tage im Voraus),
+// nicht gespeichert. Alt-App-Termine (`plans`) werden übernommen, abgesagte nicht.
+```
+
 ### 5.6 Settings / AppMeta (Key-Value)
 `theme`, `units`, `lastBackupAt`, `changesSinceBackup`, `backupReminderSnoozedUntil`, `dataPackVersion`, `persistGranted`, `introSeenVersion` (nur für „Was ist neu").
 
@@ -282,8 +295,8 @@ Anzeige-Logik: Landesrecht und Gewässerregeln werden **getrennt** dargestellt. 
   "appVersion": "1.0.0",
   "exportedAt": "2026-10-21T12:00:00+02:00",
   "schemaVersion": 1,
-  "counts": { "catches": 12, "places": 4, "sessions": 3, "photos": 5, "baitPresets": 2 },
-  "data": { "catches": [...], "places": [...], "sessions": [...], "baitPresets": [...], "settings": {...} },
+  "counts": { "catches": 12, "places": 4, "sessions": 3, "photos": 5, "baitPresets": 2, "trips": 1 },
+  "data": { "catches": [...], "places": [...], "sessions": [...], "baitPresets": [...], "trips": [...] }, // trips seit DB v2, fehlt in älteren Dateien
   "photos": "inline-base64" | "zip-sidecar" | "omitted",
   "checksum": "sha256:…"               // über data
 }
@@ -299,7 +312,7 @@ Anzeige-Logik: Landesrecht und Gewässerregeln werden **getrennt** dargestellt. 
   7. Strategie wählen: „Neuere behalten" (Standard), „Datei gewinnt", „Nur neue hinzufügen".
   8. Vor dem Schreiben automatischer Sicherungs-Snapshot.
   9. Eine Transaktion; bei Fehler Rollback.
-- Kompatibilität Altprojekt (**beschlossen, E9, M2**): Importer für `{app:'angelkarte',version:2}` mit Mapping `result→outcome` (`caught→caught`, `bite→missed_bite`, `lost_hooked→contact/lost_on_hook_set`, `lost_drill→contact/lost_in_fight`, `seen→observation`) und `places.type` (`platz→spot`, `steg→jetty`). Fotos (JPEG-DataURL im Feld `photo`) werden zu `Photo`-Blobs; `lake`-Namen werden nach dem Import per Name/Position einem `wid` zugeordnet (mit Bestätigung). Sessions (`start`/`end` in ms), Köder-Favoriten (`meta.favs`) und Angelplätze (`places`) werden mit übernommen; Termine (`plans`) werden ignoriert, da der Kalender P3 ist.
+- Kompatibilität Altprojekt (**beschlossen, E9, M2**): Importer für `{app:'angelkarte',version:2}` mit Mapping `result→outcome` (`caught→caught`, `bite→missed_bite`, `lost_hooked→contact/lost_on_hook_set`, `lost_drill→contact/lost_in_fight`, `seen→observation`) und `places.type` (`platz→spot`, `steg→jetty`). Fotos (JPEG-DataURL im Feld `photo`) werden zu `Photo`-Blobs; `lake`-Namen werden nach dem Import per Name/Position einem `wid` zugeordnet (mit Bestätigung). Sessions (`start`/`end` in ms), Köder-Favoriten (`meta.favs`) und Angelplätze (`places`) werden mit übernommen; Termine (`plans`) werden seit DB v2 als `Trip` übernommen (Tag, Uhrzeit, Titel, Notiz, Gewässername; abgesagte nicht).
 
 ## 9. Statistik-Definitionen (domain/stats)
 
@@ -336,4 +349,5 @@ Umsetzung (M6, 2026-10-22):
 ## 10. Migrationen
 
 - Dexie `version(n).stores({...}).upgrade(tx => …)`. Jede Migration hat einen Test mit Fixture der Vorversion.
+- **v2 (2026-10-22):** neue Tabelle `trips` (Angelkalender), keine Umwandlung bestehender Daten; Test `db.test.ts`. Die Prüfsumme wird über den Datenteil der Datei gebildet, wie er dort steht – ältere Sicherungen ohne `trips` bleiben gültig.
 - Exportformat und DB-Schema sind **getrennt versioniert** (`formatVersion` ≠ `schemaVersion`).

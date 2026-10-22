@@ -21,6 +21,7 @@ import { useForecast } from './useForecast';
 import { useCurrentPosition, useForecastChoice, useWaterOptions } from './useForecastPlace';
 import { PressureChart } from './PressureChart';
 import { BiteWindows } from './BiteWindows';
+import { WeatherTabs } from './WeatherTabs';
 import styles from './Weather.module.css';
 
 const t = de.forecast;
@@ -193,6 +194,7 @@ export function WeatherPage() {
 
   return (
     <Page title={t.title}>
+      <WeatherTabs />
       {enabled && (
         <>
           <SelectField

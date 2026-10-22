@@ -142,3 +142,26 @@
 .windows .major {
   border-left-color: var(--color-accent);
 }
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+}
+.tab {
+  display: grid;
+  place-items: center;
+  min-height: var(--touch);
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+.tabActive {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-1);
+  color: var(--color-primary);
+}

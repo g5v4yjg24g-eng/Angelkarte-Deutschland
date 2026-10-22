@@ -16,6 +16,7 @@ import {
 } from './backupService';
 import { summarize } from '../domain/backup/plan';
 import { BackupError } from '../domain/backup/parse';
+import { checksumOf } from '../domain/backup/format';
 import { getSetting } from './settings';
 
 const at = '2026-06-14T07:10:00+02:00';
@@ -59,6 +60,12 @@ async function seed(db: FangpunktDB) {
     blob: new Blob([jpeg], { type: 'image/jpeg' }),
   });
   await repo('catches', db).update(c.id, { photoIds: ['foto-1'] });
+  await repo('trips', db).create({
+    date: '2026-06-20',
+    from: '05:30',
+    tz: 'Europe/Berlin',
+    waterSnapshot: { name: 'De Wittsee', place: 'Nettetal', centroid: { lat: 51.32, lng: 6.25 } },
+  });
   return { session, place, preset, c };
 }
 
@@ -74,6 +81,7 @@ async function dump(db: FangpunktDB) {
     places: await db.places.toArray(),
     sessions: await db.sessions.toArray(),
     baitPresets: await db.baitPresets.toArray(),
+    trips: await db.trips.toArray(),
     photos,
   };
 }
@@ -98,7 +106,7 @@ describe('BAK-1: Export → leeres Gerät → Import ergibt dieselben Daten', ()
 
     const b = freshDb();
     const { plan } = await importFile(exp.blob, b);
-    expect(summarize(plan)).toMatchObject({ added: 5, conflicts: 0 });
+    expect(summarize(plan)).toMatchObject({ added: 6, conflicts: 0 });
     expect(await dump(b)).toEqual(await dump(a));
   });
 
@@ -114,12 +122,30 @@ describe('BAK-1: Export → leeres Gerät → Import ergibt dieselben Daten', ()
     expect(read.parsed.photosIncluded).toBe(false);
   });
 
+  it('Sicherung aus der Zeit vor dem Angelkalender (ohne Termine) lässt sich importieren', async () => {
+    const a = freshDb();
+    await seed(a);
+    const exp = await exportBackup({ withPhotos: false }, a);
+    const file = JSON.parse(await exp.blob.text()) as {
+      data: Record<string, unknown>;
+      counts: Record<string, number>;
+      checksum: string;
+    };
+    delete file.data.trips;
+    delete file.counts.trips;
+    file.checksum = await checksumOf(file.data);
+    const b = freshDb();
+    const { plan } = await importFile(new Blob([JSON.stringify(file)]), b);
+    expect(plan.trips.added).toEqual([]);
+    expect(await b.catches.count()).toBe(1);
+  });
+
   it('zweiter Import derselben Datei ändert nichts', async () => {
     const a = freshDb();
     await seed(a);
     const exp = await exportBackup({ withPhotos: true }, a);
     const { plan } = await importFile(exp.blob, a);
-    expect(summarize(plan)).toMatchObject({ added: 0, identical: 5, conflicts: 0 });
+    expect(summarize(plan)).toMatchObject({ added: 0, identical: 6, conflicts: 0 });
   });
 });
 
@@ -207,7 +233,7 @@ describe('BAK-3: Konflikte und Strategien', () => {
     const plan = await prepareImport(await readBackupFile(file), device);
     expect(summarize(plan)).toEqual({
       added: 1,
-      identical: 3,
+      identical: 4,
       incomingNewer: 1,
       existingNewer: 1,
       conflicts: 2,
@@ -313,15 +339,16 @@ describe('BAK-5: Große Sicherungen', () => {
 });
 
 describe('BAK-7: Alt-App-Sicherung über den normalen Import', () => {
-  it('importiert Fänge, Fotos, Sessions und Orte und meldet Ungültiges', async () => {
+  it('importiert Fänge, Fotos, Sessions, Orte und Termine und meldet Ungültiges', async () => {
     const db = freshDb();
     const { read, plan } = await importFile(new Blob([JSON.stringify(legacyExport)]), db);
     expect(read.parsed.kind).toBe('legacy');
     expect(read.parsed.invalid).toHaveLength(2);
-    expect(summarize(plan).added).toBe(3 + 1 + 2 + 1);
+    expect(summarize(plan).added).toBe(3 + 1 + 2 + 2 + 1);
     expect(await db.catches.count()).toBe(3);
     expect(await db.places.count()).toBe(2);
     expect(await db.sessions.count()).toBe(1);
+    expect(await db.trips.count()).toBe(2);
     const photo = await db.photos.get('6f1d3c1e-0a6b-4b51-9a2b-111111111111-photo');
     expect(photo?.mime).toBe('image/jpeg');
     expect(photo?.blob.size).toBeGreaterThan(100);
@@ -332,7 +359,7 @@ describe('Änderungen seit der letzten Sicherung', () => {
   it('zählt neue und geänderte Datensätze', async () => {
     const db = freshDb();
     await seed(db);
-    expect((await changesSince(undefined, db)).count).toBe(4);
+    expect((await changesSince(undefined, db)).count).toBe(5);
     const exp = await exportBackup({ withPhotos: false }, db);
     expect((await changesSince(exp.backup.exportedAt, db)).count).toBe(0);
   });

@@ -187,6 +187,24 @@ export const BaitPresetSchema = MetaSchema.extend({
   method: MethodSchema.optional(),
 });
 
+/** Angeltermin im Kalender (Wunsch Nutzer 2026-10-22): geplanter Tag, optional Uhrzeit und Gewässer (für das Wetter). */
+const localDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Datum im Format JJJJ-MM-TT');
+const localTime = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Uhrzeit im Format HH:MM');
+export const TripSchema = MetaSchema.extend({
+  /** Tag in der Ortszeit `tz` */
+  date: localDate,
+  from: localTime.optional(),
+  to: localTime.optional(),
+  tz: text(60),
+  ...WaterRefSchema,
+  title: text(120).optional(),
+  notes: text(2000).optional(),
+  legacy: LegacySchema.optional(),
+}).refine((t) => !t.from || !t.to || t.to > t.from, {
+  message: 'Das Ende liegt vor dem Beginn.',
+  path: ['to'],
+});
+
 export type LatLng = z.infer<typeof LatLngSchema>;
 export type Meta = z.infer<typeof MetaSchema>;
 export type Place = z.infer<typeof PlaceSchema>;
@@ -199,6 +217,7 @@ export type Session = z.infer<typeof SessionSchema>;
 export type Photo = z.infer<typeof PhotoSchema>;
 export type PhotoMeta = z.infer<typeof PhotoMetaSchema>;
 export type BaitPreset = z.infer<typeof BaitPresetSchema>;
+export type Trip = z.infer<typeof TripSchema>;
 
 /** Alle Entitäten mit eigener Tabelle; Reihenfolge = Import-Reihenfolge (Bezüge zuerst). */
 export const ENTITY_SCHEMAS = {
@@ -206,6 +225,7 @@ export const ENTITY_SCHEMAS = {
   places: PlaceSchema,
   baitPresets: BaitPresetSchema,
   catches: CatchSchema,
+  trips: TripSchema,
 } as const;
 export type EntityTable = keyof typeof ENTITY_SCHEMAS;
 export interface EntityMap {
@@ -213,4 +233,5 @@ export interface EntityMap {
   places: Place;
   baitPresets: BaitPreset;
   catches: Catch;
+  trips: Trip;
 }
