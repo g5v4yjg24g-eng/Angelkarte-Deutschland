@@ -45,6 +45,8 @@ export const de = {
     heatmapOn: 'Heatmap der Fänge zeigen',
     heatmapOff: 'Heatmap ausblenden',
     heatmapEmpty: 'Noch keine gelandeten Fische mit Fangort – die Heatmap bleibt leer.',
+    heatmapFew: (n: number, min: number) =>
+      `Erst ${n} ${n === 1 ? 'Fang' : 'Fänge'} mit Fangort – unter ${min} sind Häufungen oft Zufall.`,
     legendHeat: 'Heatmap',
     legendHeatHint:
       'Zeigt, wo du die meisten Fische gelandet hast: von Gelb (wenige) bis Rot (viele). Nur deine eigenen Fänge mit Fangort; Kontakte und Fehlbisse zählen nicht.',
@@ -149,6 +151,21 @@ export const de = {
     backToList: 'Zum Fangbuch',
     showOnMap: 'Auf der Karte zeigen',
     deleted: 'Eintrag gelöscht.',
+    waters: 'Gewässer',
+    allTab: 'Alle',
+    unknownWater: 'Unbekanntes Gewässer',
+    placeUnknown: 'Ort unbekannt',
+    waterSearch: 'Gewässer oder Ort suchen',
+    waterSearchNone: 'Kein Gewässer oder Ort gefunden.',
+    allWatersCount: (n: number) => (n === 1 ? '1 Gewässer' : `${n} Gewässer`),
+    rename: 'Namen ändern',
+    renameLabel: 'Eigener Name (gilt nur im Fangbuch)',
+    renameSave: 'Speichern',
+    renameCancel: 'Abbrechen',
+    renameHint:
+      'Fänge im Umkreis von 200 m ohne bekanntes Gewässer sind hier zusammengefasst. Leer lassen setzt „Unbekanntes Gewässer“ zurück.',
+    knownName: 'Name aus den Gewässerdaten (© OpenStreetMap-Mitwirkende) – nicht änderbar.',
+    customNameValue: (name: string) => `${name} (eigener Name)`,
   },
   catchForm: {
     newTitle: 'Fang oder Kontakt erfassen',

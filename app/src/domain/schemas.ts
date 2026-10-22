@@ -25,7 +25,16 @@ export const MetaSchema = z.object({
 /** Gewässerbezug. waterId folgt ab M4 (Pipeline); bis dahin ggf. nur der Name (z. B. aus der Alt-App). */
 const WaterRefSchema = {
   waterId: id.optional(),
-  waterSnapshot: z.object({ name: text(200).optional(), centroid: LatLngSchema.optional() }).optional(),
+  waterSnapshot: z
+    .object({
+      name: text(200).optional(),
+      centroid: LatLngSchema.optional(),
+      /** Ort des Gewässers (Gemeinde, sonst Kreis) aus den Gewässerdaten */
+      place: text(120).optional(),
+      /** eigener Name für ein unbekanntes Gewässer – gilt nur im Fangbuch */
+      customName: text(80).optional(),
+    })
+    .optional(),
 };
 
 /** Unveränderte Originaldaten aus einem Fremdformat, damit beim Import nichts verloren geht. */

@@ -50,6 +50,8 @@ const t = de.catchForm;
 export interface WaterChoice {
   wid: string;
   name?: string;
+  /** Gemeinde, sonst Kreis */
+  place?: string | undefined;
   type?: WaterType;
 }
 export interface CatchContext {
@@ -227,7 +229,10 @@ export function CatchForm({
               ...(chosenWater
                 ? {
                     waterId: chosenWater.wid,
-                    waterSnapshot: chosenWater.name ? { name: chosenWater.name } : {},
+                    waterSnapshot: {
+                      ...(chosenWater.name ? { name: chosenWater.name } : {}),
+                      ...(chosenWater.place ? { place: chosenWater.place } : {}),
+                    },
                   }
                 : {}),
               ...(context?.placeId ? { placeId: context.placeId } : {}),

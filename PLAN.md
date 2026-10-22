@@ -33,7 +33,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Köder-Favoriten | In `meta` gespeichert | **Übernehmen** als eigene Entität `BaitPreset` (P1). |
 | Foto | Als JPEG-DataURL (1024 px) **im Fang-Datensatz** | **Ändern:** Blob in eigener Tabelle; DataURLs blähen Datensätze und Exporte auf. |
 | Ausflug/Session | Start/Stopp, Einträge erhalten `sessionId` | **Übernehmen.** |
-| Heatmap | Eigene Kontakte, Warnung bei < 30 Punkten | **Später (P2)**; die Warnung vor Scheinmustern ist gut und bleibt. |
+| Heatmap | Eigene Kontakte, Warnung bei < 30 Punkten | **Übernommen 2026-10-22 (P2)** inklusive Warnung vor Scheinmustern unter 30 Fängen. |
 | Statistik | KPIs, Fischarten, Fangentwicklung, Effizienz (Fänge/h), Rekorde, Mindestdatenmengen | **Fachlogik übernehmen** (Mindestmengen, keine Raten bei < 1 h). Darstellung neu. |
 | Wetter/Beißfenster | Open-Meteo, Wetter je Eintrag/Session, „persönliche Beißfenster" | Wetter je Eintrag: **P1**. Beißfenster-Auswertung: **P3**, wegen Irreführungsgefahr bei wenigen Daten. |
 | Angelkalender | Termine planen, Jahres- und Tagesübersicht | **Später (P3).** Nicht im Auftrag genannt. |
@@ -103,10 +103,10 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Recht: restliche Bundesländer | P1 | Redaktioneller Aufwand, siehe §5 M8 |
 | Session-Vergleich, Rekorde | P1 | ✅ in M6. Session-Pausen (aktive Angelzeit) umgesetzt 2026-10-22 |
 | Fischarten pro Gewässer (Monitoring-Nachweise, Stufe 2) | P2 | Datenaufbereitung nötig (DATA_SOURCES §4) |
-| Tiefenkarten (erste lizenzierte Quelle) | P2 | Lizenzklärung nötig |
+| Tiefenkarten (erste lizenzierte Quelle) | P2 | **Zurückgestellt (Entscheidung Nutzer 2026-10-22):** kein Einbau ohne Lizenz – Repo und Vorschau sind öffentlich; auch der vorgeschlagene private Import wird nicht umgesetzt |
 | Offline-Kartenregionen | P2 | Eigene PMTiles-Hosting-Infrastruktur nötig |
 | **Rechts-Warnung beim Erfassen** (Schonzeit, Mindestmaß, Entnahmefenster im Fang-Bundesland) | P1 | ✅ umgesetzt 2026-10-22 (siehe unten); echte Landesgrenzen erst nach dem nächsten Lauf „Gewässerdaten erzeugen“ |
-| **Fangbuch nach Gewässern** (Reiter je Gewässer, Name + Ort, unbekannte Gewässer selbst benennen, Suche nach Gewässer und Ort) | P1 | Wunsch Nutzer 2026-10-22, vorgemerkt – siehe „Vorgemerkt: Fangbuch nach Gewässern“ unten |
+| **Fangbuch nach Gewässern** (Reiter je Gewässer, Name + Ort, unbekannte Gewässer selbst benennen, Suche nach Gewässer und Ort) | P1 | ✅ umgesetzt 2026-10-22 – siehe „Fangbuch nach Gewässern“ unten |
 | Heatmap, CSV-Export | P2 | ✅ CSV-Export umgesetzt 2026-10-22 (Daten & Sicherung → „Fangbuch als Tabelle“). Heatmap umgesetzt 2026-10-22 (Kartenknopf, nur gelandete Fische, pro Gerät gemerkt) |
 | Gewässerbezogene Regeln / Angelzonen (Stufe 4) | P3 | Kaum offene Daten; Kooperationen nötig |
 | Angelkalender, Beißfenster-Analyse | P3 | |
@@ -115,7 +115,9 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 
 ---
 
-### Vorgemerkt: Fangbuch nach Gewässern (Wunsch Nutzer 2026-10-22)
+### Fangbuch nach Gewässern (Wunsch Nutzer 2026-10-22, ✅ umgesetzt)
+**Entschieden (Nutzer 2026-10-22):** unbekannte Gewässer im Umkreis von 200 m zusammenführen; Reiter ergänzen die Tagesliste, „Alle“ ist Standard. **Umsetzung:** `domain/waterGroups.ts` (bekannte nach Name + Ort, unbekannte über eine 200-m-Kette, Schlüssel aus dem ältesten Eintrag), Reiter `features/catches/WaterTabs.tsx` (umbrechend statt waagerecht scrollend, damit bei 390 px alle sichtbar sind), eigener Name als `waterSnapshot.customName` an den Einträgen der Gruppe (keine neue Tabelle, keine Migration), Ort als `waterSnapshot.place` (Flächen: Gemeinde, Fließgewässer: Kreis – wie im Suchindex); Bestandsfänge bekommen den Ort aus dem eigenen Suchindex (gleiche Gewässer-ID). Der bisherige Gewässer-Filter im Fangbuch entfällt (ersetzt durch die Reiter).
+
 **Wunsch:**
 1. Sobald an einem Gewässer ein Eintrag entsteht (Fang, Biss, Kontakt, Beobachtung …), bekommt das Fangbuch einen **Reiter mit dem Namen dieses Gewässers**. Antippen zeigt dessen Einträge.
 2. Jeder Reiter zeigt den **Gewässernamen und darunter kleiner den Ort**, z. B. „De Wittsee“ / „Nettetal“.
@@ -254,6 +256,7 @@ Abhängig von: M7 · Aufwand redaktionell (≈ 0,5–1 Tag pro Land [A])
 - *Abnahme:* 16 Landesdateien mit Status `verified` oder ausdrücklich `partial` und Liste fehlender Teile.
 
 ### M9 – Tiefenkarten-Spike und erste Quelle
+- ⏸ **Zurückgestellt (Nutzer 2026-10-22):** Tiefenkarten bleiben weg. Hintergrund: Repository und Vorschau sind öffentlich, ein fester Einbau der Hamburger Tiefenlinien aus dem Altprojekt wäre eine Veröffentlichung ohne Erlaubnis. Den alternativ angebotenen Import nur auf das eigene Gerät hat der Nutzer ebenfalls nicht gewünscht. Das Gewässerprofil zeigt weiter „Tiefenkarte nicht verfügbar“.
 Abhängig von: M4 und Klärung von R4/E6
 - Provider-Schnittstelle `DepthProvider`; Status pro Gewässer `available | none | unknown`.
 - Erste Quelle nur mit schriftlich geklärter Nutzung (siehe DATA_SOURCES §3).

@@ -12,7 +12,7 @@ import { useProviders } from '../../ports/providersContext';
 import { getDb } from '../../data/db';
 import { repo } from '../../data/repository';
 import type { PlaceType } from '../../domain/schemas';
-import { waterFromTile, type WaterInfo, type WaterManifest } from '../../domain/water';
+import { waterFromTile, waterPlace, type WaterInfo, type WaterManifest } from '../../domain/water';
 import type { SearchResult } from '../../domain/search';
 import { IconButton, Button } from '../../design/components/Button';
 import { Sheet } from '../../design/components/Sheet';
@@ -66,6 +66,7 @@ const VIEW_KEY = 'fangpunkt.mapView';
 const GERMANY = { center: [10.4, 51.2] as [number, number], zoom: 5.2 };
 const LOC_HINT_KEY = 'fangpunkt.locHintSeen';
 const HEAT_KEY = 'fangpunkt.heatmap';
+const HEAT_MIN = 30;
 
 function readHeat(): boolean {
   try {
@@ -147,6 +148,7 @@ const toChoice = (w: WaterInfo): WaterChoice => ({
   wid: w.wid,
   type: w.type,
   ...(w.name ? { name: w.name } : {}),
+  ...(waterPlace(w) ? { place: waterPlace(w) } : {}),
 });
 
 /** Kontext für ein neues Formular: genau ein Gewässer → zugeordnet; mehrere → Auswahl, vorbelegt mit dem unter dem Punkt. */
@@ -223,8 +225,13 @@ export default function MapView() {
   // Heatmap der gelandeten Fische (P2); Wahl wird pro Gerät gemerkt
   const [heat, setHeat] = useState(readHeat);
   const heatRef = useRef(heat);
-  const heatEmpty =
-    heat && !!catches && !catches.some((c) => !c.deletedAt && c.outcome === 'caught' && c.position);
+  const heatCount = useMemo(
+    () => (catches ?? []).filter((c) => !c.deletedAt && c.outcome === 'caught' && c.position).length,
+    [catches],
+  );
+  const heatEmpty = heat && !!catches && heatCount === 0;
+  // Aus der Alt-App übernommen (PLAN §1.2): unter 30 Punkten sind Häufungen oft Zufall
+  const heatFew = heat && heatCount > 0 && heatCount < HEAT_MIN;
   const meFc = useMemo<OverlayData['me']>(
     () =>
       geo.fix
@@ -603,7 +610,12 @@ export default function MapView() {
   async function assignWater(id: string, w?: WaterInfo) {
     await repo('catches').update(id, {
       waterId: w?.wid,
-      waterSnapshot: w ? (w.name ? { name: w.name } : {}) : undefined,
+      waterSnapshot: w
+        ? {
+            ...(w.name ? { name: w.name } : {}),
+            ...(waterPlace(w) ? { place: waterPlace(w) } : {}),
+          }
+        : undefined,
     });
     setSheet(null);
     setToast({ text: w ? de.catchForm.assigned(w.name ?? de.water.unnamed) : de.catchForm.assignRemoved });
@@ -838,6 +850,7 @@ export default function MapView() {
         {locating && geo.error && <Notice tone="error">{de.map.locErrors[geo.error]}</Notice>}
         {locating && !geo.error && !geo.fix && <Notice>{de.map.locating}</Notice>}
         {ready && heatEmpty && <Notice>{de.map.heatmapEmpty}</Notice>}
+        {ready && heatFew && <Notice>{de.map.heatmapFew(heatCount, HEAT_MIN)}</Notice>}
       </div>
       <div className={styles.controls}>
         <IconButton
