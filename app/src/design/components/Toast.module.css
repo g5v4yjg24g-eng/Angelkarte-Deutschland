@@ -1,24 +1,60 @@
+/* Kompakt in einer Zeile: Text links, Aktion rechts (wie die Leiste als Glas-Kapsel) */
 .toast {
   position: fixed;
   z-index: 50;
   left: 50%;
-  bottom: calc(var(--nav-clearance) + var(--space-3));
+  bottom: calc(var(--nav-clearance) + var(--space-2));
   transform: translateX(-50%);
-  width: min(calc(100% - 2 * var(--space-4)), 30rem);
-  display: grid;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border-radius: var(--radius-lg);
+  width: max-content;
+  max-width: min(calc(100% - 2 * var(--space-4)), 30rem);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 52px;
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
+  border-radius: 26px;
   background: var(--color-surface);
+  color: var(--color-text);
   border: 1px solid var(--color-border);
   box-shadow: var(--shadow-2);
+  font-size: var(--text-sm);
   animation: toast-in var(--dur-med) var(--ease-out);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .toast {
+    background: color-mix(in srgb, var(--color-surface) 82%, transparent);
+    border-color: color-mix(in srgb, var(--color-text) 14%, transparent);
+    -webkit-backdrop-filter: blur(16px) saturate(1.6);
+    backdrop-filter: blur(16px) saturate(1.6);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .toast {
+    background: var(--color-surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+.text {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--space-2) 0;
+  font-weight: 550;
+}
+/* Ohne Aktion rechts genauso viel Luft wie links */
+.text:last-child {
+  padding-right: var(--space-3);
 }
 .actions {
   display: flex;
-  gap: var(--space-2);
-  justify-content: flex-end;
-  flex-wrap: wrap;
+  flex: 0 0 auto;
+  gap: var(--space-1);
+}
+.actions > * {
+  min-height: var(--touch);
+  padding-inline: var(--space-3);
+  border-radius: 22px;
 }
 @media (min-width: 900px) {
   .toast {
@@ -30,5 +66,10 @@
   from {
     opacity: 0;
     transform: translate(-50%, 12px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
   }
 }
