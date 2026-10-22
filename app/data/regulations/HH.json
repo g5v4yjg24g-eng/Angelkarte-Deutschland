@@ -1,9 +1,9 @@
 {
   "stateCode": "HH",
-  "status": "draft",
+  "status": "partial",
   "missing": ["Fischereischein (HmbFAnG)", "Schon- und Sperrgebiete (§ 9)", "Ausnahmen (§ 10)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); Gegenprüfung durch den Nutzer ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "HmbFAnGDVO",

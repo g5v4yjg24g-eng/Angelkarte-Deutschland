@@ -1,12 +1,12 @@
 {
   "stateCode": "SN",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "Fischereischein und Erlaubnisse (SächsFischG, §§ 15 ff. SächsFischVO)",
     "Allgemeinverfügungen der Fischereibehörde (§ 2 Abs. 3, 4, 6)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); Gegenprüfung durch den Nutzer ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "SächsFischVO",

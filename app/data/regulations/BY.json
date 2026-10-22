@@ -1,9 +1,9 @@
 {
   "stateCode": "BY",
-  "status": "draft",
+  "status": "partial",
   "missing": ["Fischereischein und Erlaubnisse (BayFiG)", "Bezirksverordnungen nach § 11 Abs. 5"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); Gegenprüfung durch den Nutzer ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "AVBayFiG",
