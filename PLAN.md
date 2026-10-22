@@ -109,7 +109,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | **Fangbuch nach Gewässern** (Reiter je Gewässer, Name + Ort, unbekannte Gewässer selbst benennen, Suche nach Gewässer und Ort) | P1 | ✅ umgesetzt 2026-10-22 – siehe „Fangbuch nach Gewässern“ unten |
 | Heatmap, CSV-Export | P2 | ✅ CSV-Export umgesetzt 2026-10-22 (Daten & Sicherung → „Fangbuch als Tabelle“). Heatmap umgesetzt 2026-10-22 (Kartenknopf, nur gelandete Fische, pro Gerät gemerkt) |
 | Gewässerbezogene Regeln / Angelzonen (Stufe 4) | P3 | Kaum offene Daten; Kooperationen nötig |
-| Angelkalender, Beißfenster-Analyse | P3 | |
+| **Wetter-Bereich, Beißfenster, Angelkalender** | P1 (vorgezogen) | Wunsch Nutzer 2026-10-22. Entschieden: 5. Leistenpunkt „Wetter“; Vorhersage für Standort (Standard) oder ein Gewässer aus dem Fangbuch; Beißfenster aus eigenen Fängen **und** Solunar-Zeiten, klar getrennt, Solunar mit Hinweis „Theorie, wissenschaftlich nicht belegt“. ✅ Teil 1 Vorhersage + Luftdruck-Verlauf (2026-10-22). Offen: Teil 2 Beißfenster, Teil 3 Angelkalender mit Wetter je Termin. |
 | Fischbestimmung per Foto | P3 | Nur Schnittstelle vorbereiten |
 | Konten und Cloud-Sync | P3 | Erst bei Bedarf (siehe ARCHITECTURE §9) |
 

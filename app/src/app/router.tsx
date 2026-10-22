@@ -10,6 +10,7 @@ import { SessionDetailPage } from '../features/sessions/SessionDetailPage';
 import { StatsPage } from '../features/stats/StatsPage';
 import { MorePage } from '../features/more/MorePage';
 import { SettingsPage } from '../features/settings/SettingsPage';
+import { WeatherPage } from '../features/weather/WeatherPage';
 import { PrivacyPage } from '../features/about/PrivacyPage';
 import { BaitPresetsPage } from '../features/baits/BaitPresetsPage';
 import { AboutPage } from '../features/about/AboutPage';
@@ -31,6 +32,7 @@ export const routes = [
           { path: 'fangbuch/sessions', element: <SessionsPage /> },
           { path: 'fangbuch/sessions/:id', element: <SessionDetailPage /> },
           { path: 'fangbuch/:id', element: <CatchDetailPage /> },
+          { path: 'wetter', element: <WeatherPage /> },
           { path: 'statistik', element: <StatsPage /> },
           { path: 'mehr', element: <MorePage /> },
           { path: 'mehr/einstellungen', element: <SettingsPage /> },

@@ -22,10 +22,10 @@ function renderAt(path: string) {
 }
 
 describe('AppShell', () => {
-  it('hat vier Hauptbereiche in der Navigation und markiert den aktiven', () => {
+  it('hat fünf Hauptbereiche in der Navigation und markiert den aktiven', () => {
     renderAt('/fangbuch');
     const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' });
-    const links = ['Karte', 'Fangbuch', 'Statistik', 'Mehr'].map((n) =>
+    const links = ['Karte', 'Fangbuch', 'Wetter', 'Statistik', 'Mehr'].map((n) =>
       screen.getByRole('link', { name: n }),
     );
     links.forEach((l) => expect(nav).toContainElement(l));

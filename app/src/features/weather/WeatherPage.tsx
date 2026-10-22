@@ -1,0 +1,200 @@
+// Bereich „Wetter" (Wunsch Nutzer 2026-10-22): Vorhersage für Standort oder ein Gewässer aus dem Fangbuch,
+// Luftdruck-Verlauf und die nächsten Tage. Modellwerte von Open-Meteo, nur gerundete Koordinaten.
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router';
+import { de } from '../../i18n/de';
+import { Page, Section } from '../../design/components/Page';
+import { Notice } from '../../design/components/Notice';
+import { Button } from '../../design/components/Button';
+import { SelectField } from '../../design/components/Field';
+import { compassIndex } from '../../domain/weather';
+import {
+  daySummaries,
+  forecastQuery,
+  hourAt,
+  pressureChange,
+  PRESSURE_SPAN_H,
+  type Forecast,
+} from '../../domain/forecast';
+import { useWeatherEnabled } from './useWeatherEnabled';
+import { useForecast } from './useForecast';
+import { useCurrentPosition, useForecastChoice, useWaterOptions } from './useForecastPlace';
+import { PressureChart } from './PressureChart';
+import styles from './Weather.module.css';
+
+const t = de.forecast;
+const w = de.weather;
+const time = (ms: number) =>
+  new Date(ms).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' });
+const stamp = (ms: number) =>
+  new Date(ms).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Berlin' });
+const berlinDate = (ms: number) => new Date(ms).toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' });
+const codeText = (c?: number) => (c === undefined ? undefined : (w.codes[c] ?? w.codeUnknown(c)));
+
+function dayTitle(ms: number, nowMs: number): string {
+  const d = berlinDate(ms);
+  if (d === berlinDate(nowMs)) return t.today;
+  if (d === berlinDate(nowMs + 86_400_000)) return t.tomorrow;
+  return new Date(ms).toLocaleDateString('de-DE', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'numeric',
+    timeZone: 'Europe/Berlin',
+  });
+}
+
+function ForecastView({ f, nowMs, stale }: { f: Forecast; nowMs: number; stale: boolean }) {
+  const now = hourAt(f, nowMs);
+  const change = now ? pressureChange(f, now.t) : undefined;
+  // Vergangene Tage (past_days) und Stunden vor heute 0 Uhr ausblenden
+  const todayStart = f.days.find((d) => berlinDate(d.t) === berlinDate(nowMs))?.t ?? f.days[0]?.t ?? 0;
+  const days = useMemo(() => daySummaries(f).filter((d) => d.t >= todayStart), [f, todayStart]);
+  const chartHours = f.hours.filter((h) => h.t >= nowMs - 12 * 3_600_000);
+  return (
+    <>
+      {stale && <Notice tone="warning">{t.offlineCached(stamp(f.fetchedAt))}</Notice>}
+      {now && (
+        <section className={styles.nowCard} aria-label={t.now}>
+          <span className="muted">{t.now}</span>
+          {now.tempC !== undefined && <span className={styles.nowTemp}>{w.tempValue(now.tempC)}</span>}
+          <dl className={styles.facts}>
+            {codeText(now.code) && (
+              <div>
+                <dt>{w.sky}</dt>
+                <dd>{codeText(now.code)}</dd>
+              </div>
+            )}
+            {now.pressureHpa !== undefined && (
+              <div>
+                <dt>{t.pressure}</dt>
+                <dd>
+                  {w.pressureValue(now.pressureHpa)}
+                  {change !== undefined && ` · ${t.pressureChange(change, PRESSURE_SPAN_H)}`}
+                </dd>
+              </div>
+            )}
+            {now.windMs !== undefined && (
+              <div>
+                <dt>{w.wind}</dt>
+                <dd>
+                  {w.windValue(
+                    now.windMs,
+                    now.windDirDeg === undefined ? undefined : w.compass[compassIndex(now.windDirDeg)],
+                    now.gustMs,
+                  )}
+                </dd>
+              </div>
+            )}
+          </dl>
+        </section>
+      )}
+      <Section title={t.pressureChart}>
+        <PressureChart hours={chartHours} days={days} nowMs={nowMs} />
+      </Section>
+      <Section title={t.days}>
+        <ul className={styles.days}>
+          {days.map((d) => (
+            <li key={d.t} className={styles.day}>
+              <div className={styles.dayHead}>
+                <span>{dayTitle(d.t, nowMs)}</span>
+                {d.day.tMin !== undefined && d.day.tMax !== undefined && (
+                  <span className="tabular">{t.tempRange(d.day.tMin, d.day.tMax)}</span>
+                )}
+              </div>
+              <p className="muted">
+                {[
+                  codeText(d.day.code),
+                  d.day.precipSum !== undefined && t.precip(d.day.precipSum),
+                  d.windMaxMs !== undefined && t.wind(d.windMaxMs, d.gustMaxMs),
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
+              <p className="muted tabular">
+                {[
+                  d.pressureMin !== undefined &&
+                    d.pressureMax !== undefined &&
+                    `${t.pressure} ${t.pressureRange(d.pressureMin, d.pressureMax)}`,
+                  d.pressureDelta !== undefined && t.signedHpa(d.pressureDelta),
+                  d.day.sunrise !== undefined &&
+                    d.day.sunset !== undefined &&
+                    t.sun(time(d.day.sunrise), time(d.day.sunset)),
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Section>
+      <p className="muted">
+        {t.note} {t.source(stamp(f.fetchedAt))}
+      </p>
+    </>
+  );
+}
+
+export function WeatherPage() {
+  const enabled = useWeatherEnabled();
+  const waters = useWaterOptions();
+  const [choice, setChoice] = useForecastChoice();
+  const water = waters?.find((o) => o.key === choice);
+  const useMe = choice === 'me' || (waters !== undefined && !water);
+  const geo = useCurrentPosition(!!enabled && useMe);
+  const pos = useMe ? (geo.status === 'ok' ? geo : undefined) : water;
+  const lat = pos?.lat;
+  const lng = pos?.lng;
+  const q = useMemo(
+    () => (lat !== undefined && lng !== undefined ? forecastQuery({ lat, lng }) : undefined),
+    [lat, lng],
+  );
+  const { state, reload } = useForecast(enabled ? q : undefined);
+  const [nowMs] = useState(() => Date.now());
+
+  const options = [
+    { value: 'me', label: t.myLocationRounded },
+    ...(waters ?? []).map((o) => ({ value: o.key, label: o.sub ? `${o.label} (${o.sub})` : o.label })),
+  ];
+
+  let body: React.ReactNode;
+  if (enabled === undefined) body = <Notice>{t.loading}</Notice>;
+  else if (!enabled)
+    body = (
+      <Notice>
+        <Link to="/mehr/einstellungen">{t.off}</Link>
+      </Notice>
+    );
+  else if (useMe && geo.status === 'denied') body = <Notice tone="warning">{t.locationDenied}</Notice>;
+  else if (useMe && geo.status !== 'ok') body = <Notice>{t.locating}</Notice>;
+  else if (state.status === 'ok')
+    body = <ForecastView f={state.forecast} nowMs={nowMs} stale={state.stale} />;
+  else if (state.status === 'error')
+    body = (
+      <Notice tone="error">
+        {state.offline ? t.offlineNone : t.error}{' '}
+        <Button variant="ghost" onClick={reload}>
+          {t.retry}
+        </Button>
+      </Notice>
+    );
+  else if (state.status === 'loading' && state.cached)
+    body = <ForecastView f={state.cached} nowMs={nowMs} stale={false} />;
+  else body = <Notice>{t.loading}</Notice>;
+
+  return (
+    <Page title={t.title}>
+      {enabled && (
+        <>
+          <SelectField
+            label={t.place}
+            options={options}
+            value={useMe ? 'me' : choice}
+            onChange={(e) => setChoice(e.target.value)}
+          />
+          {waters?.length === 0 && <p className="muted">{t.noPlaces}</p>}
+        </>
+      )}
+      {body}
+    </Page>
+  );
+}

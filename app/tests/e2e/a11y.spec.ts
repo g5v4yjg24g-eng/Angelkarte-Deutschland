@@ -82,6 +82,7 @@ const ROUTES: (string | [string, (p: Page) => Promise<void>])[] = [
   '/fangbuch/sessions',
   '/fangbuch/sessions/a11y-s',
   ['/fangbuch/sessions/a11y-s', (p) => p.getByText('Pause nachtragen', { exact: true }).first().click()],
+  '/wetter',
   '/statistik',
   '/mehr',
   '/mehr/einstellungen',
