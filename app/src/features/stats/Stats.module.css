@@ -133,7 +133,8 @@
   cursor: pointer;
   font-size: var(--text-sm);
   color: var(--color-primary);
-  min-height: 32px;
+  min-height: var(--touch);
+  line-height: var(--touch);
 }
 .dataTable {
   width: 100%;

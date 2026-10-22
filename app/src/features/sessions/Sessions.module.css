@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 36px;
+  min-height: var(--touch);
   padding: 0 var(--space-3);
   border-radius: var(--radius-full);
   background: color-mix(in srgb, var(--color-success) 16%, var(--color-surface));
