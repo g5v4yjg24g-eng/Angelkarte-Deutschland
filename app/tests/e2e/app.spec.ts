@@ -91,3 +91,82 @@ test('Touch-Ziele der Navigation sind mindestens 44 × 44 px groß', async ({ pa
     expect(box?.height).toBeGreaterThanOrEqual(44);
   }
 });
+
+/** Finger-Geste auf der Leiste nachstellen (Pointer Events wie auf dem Handy) */
+async function swipeNav(
+  page: import('./fixtures').Page,
+  from: string,
+  to: string,
+  hold?: () => Promise<void>,
+) {
+  const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
+  const a = await nav.getByRole('link', { name: from }).boundingBox();
+  const b = await nav.getByRole('link', { name: to }).boundingBox();
+  if (!a || !b) throw new Error('Leiste nicht sichtbar');
+  const y = a.y + a.height / 2;
+  const fire = (type: string, x: number) =>
+    nav.evaluate(
+      (el, { type, x, y }) => {
+        const target = document.elementFromPoint(x, y) ?? el;
+        target.dispatchEvent(
+          new PointerEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            pointerId: 7,
+            pointerType: 'touch',
+            isPrimary: true,
+            clientX: x,
+            clientY: y,
+          }),
+        );
+      },
+      { type, x, y },
+    );
+  const x0 = a.x + a.width / 2;
+  const x1 = b.x + b.width / 2;
+  await fire('pointerdown', x0);
+  for (let i = 1; i <= 6; i++) await fire('pointermove', x0 + ((x1 - x0) * i) / 6);
+  await hold?.();
+  await fire('pointerup', x1);
+}
+
+test('NAV-1: Gedrückt über die Leiste wischen – Glas-Linse folgt, Loslassen wählt; Tipp bleibt Tipp', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, 'Nur die mobile Leiste hat die Linse');
+  const errors = collectErrors(page);
+  await page.goto('/fangbuch');
+  await waitForApp(page);
+  const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
+  await swipeNav(page, 'Fangbuch', 'Statistik', async () => {
+    // Während des Wischens: Linse sichtbar, Punkt darunter vergrößert, Seite noch nicht gewechselt
+    await expect(nav.locator('[class*="lens_"], [class*="_lens"]').first()).toBeVisible();
+    await expect(nav.getByRole('link', { name: 'Statistik' })).toHaveClass(/lensed/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Fangbuch' })).toBeVisible();
+  });
+  await expect(page.getByRole('heading', { level: 1, name: 'Statistik' })).toBeVisible();
+  await expect(nav.getByRole('link', { name: 'Statistik' })).toHaveAttribute('aria-current', 'page');
+  // Linse verschwindet nach dem Einrasten
+  await expect(nav.locator('[aria-hidden="true"][style*="--lens-x"]')).toHaveCount(0);
+  // Normaler Tipp funktioniert weiter
+  await nav.getByRole('link', { name: 'Wetter' }).tap();
+  await expect(page.getByRole('heading', { level: 1, name: 'Wetter' })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('NAV-2: Leiste ist durchsichtig (Inhalt scheint durch), bei „Transparenz reduzieren" deckend', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, 'Nur die mobile Leiste schwebt');
+  await page.goto('/fangbuch');
+  await waitForApp(page);
+  const alpha = () =>
+    page.getByRole('navigation', { name: 'Hauptnavigation' }).evaluate((el) => {
+      const m = /rgba?\(([^)]+)\)|color\(srgb ([^)]+)\)/.exec(getComputedStyle(el).backgroundColor);
+      const parts = (m?.[1] ?? m?.[2] ?? '').split(/[\s,/]+/).filter(Boolean);
+      return parts.length === 4 ? Number(parts[3]) : 1;
+    });
+  expect(await alpha()).toBeLessThan(0.5);
+});

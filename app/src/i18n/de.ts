@@ -36,6 +36,7 @@ export const de = {
     loading: 'Karte wird geladen …',
     offline: 'Offline: Die Karte selbst ist nicht verfügbar. Deine Markierungen siehst du trotzdem.',
     loadError: 'Die Karte konnte nicht geladen werden. Deine Markierungen siehst du trotzdem.',
+    toggleAttribution: 'Quellenangaben ein- oder ausblenden',
     zoomIn: 'Hineinzoomen',
     zoomOut: 'Herauszoomen',
     legend: 'Legende',

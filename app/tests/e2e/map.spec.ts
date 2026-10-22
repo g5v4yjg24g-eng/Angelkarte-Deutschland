@@ -325,3 +325,38 @@ test('Karte nutzt OpenFreeMap „liberty" und färbt sie im dunklen Theme um', a
   await expect.poll(bg).toBe('#f8f4f0');
   await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'));
 });
+
+test('MAP-6: OSM-Vermerk beim Start sichtbar, klappt nach 5 s zum ⓘ ein und lässt sich wieder öffnen', async ({
+  page,
+}) => {
+  await serveWaterFixture(page, { missing: true });
+  await page.route('https://tiles.openfreemap.org/**', (route) =>
+    route.fulfill({
+      json: {
+        ...TEST_STYLE,
+        sources: {
+          osm: {
+            type: 'geojson',
+            data: { type: 'FeatureCollection', features: [] },
+            attribution: '© OpenStreetMap-Mitwirkende',
+          },
+        },
+        layers: [...TEST_STYLE.layers, { id: 'osm-fill', type: 'fill', source: 'osm' }],
+      },
+    }),
+  );
+  await page.goto('/');
+  await waitForApp(page);
+  const attrib = page.locator('.maplibregl-ctrl-attrib');
+  await expect(attrib.getByText('© OpenStreetMap-Mitwirkende')).toBeVisible();
+  await expect(attrib).toHaveClass(/maplibregl-compact-show/);
+  // Nach 5 s eingeklappt: nur noch der ⓘ-Knopf
+  await expect(attrib).not.toHaveClass(/maplibregl-compact-show/, { timeout: 8000 });
+  await expect(attrib.getByText('© OpenStreetMap-Mitwirkende')).toBeHidden();
+  await attrib.locator('.maplibregl-ctrl-attrib-button').click();
+  await expect(attrib.getByText('© OpenStreetMap-Mitwirkende')).toBeVisible();
+  // Zusätzlich dauerhaft unter Mehr → Über
+  await page.goto('/mehr/info');
+  await waitForApp(page);
+  await expect(page.getByText(/© OpenStreetMap-Mitwirkende/).first()).toBeVisible();
+});
