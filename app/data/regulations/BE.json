@@ -1,0 +1,700 @@
+{
+  "stateCode": "BE",
+  "status": "draft",
+  "missing": [
+    "Fischereischein und Erlaubnisse (LFischG, LFischO)",
+    "Anordnungen der unteren Fischereibehörde (§ 8 Abs. 2 und 3)"
+  ],
+  "checkedAt": "2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); Gegenprüfung durch den Nutzer ausstehend",
+  "legalBasis": [
+    {
+      "id": "LFischO",
+      "title": "Berliner Landesfischereiordnung",
+      "version": "vom 12. Dezember 2001 (GVBl. S. 700), zuletzt geändert durch Verordnung vom 27.10.2025 (GVBl. S. 551); Gesamtausgabe Stand 22.10.2026",
+      "url": "https://gesetze.berlin.de/",
+      "retrievedAt": "2026-10-22"
+    }
+  ],
+  "closedSeasons": [
+    {
+      "taxon": {
+        "de": "Äsche",
+        "sci": "Thymallus thymallus"
+      },
+      "speciesId": "grayling",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 12,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      }
+    },
+    {
+      "taxon": {
+        "de": "Bachforelle",
+        "sci": "Salmo trutta f. fario"
+      },
+      "speciesId": "brown_trout",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Bachsaibling",
+        "sci": "Salvelinus fontinalis"
+      },
+      "speciesId": "brook_trout",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Flussstint",
+        "sci": "Osmerus eperlanus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 2,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Große Maräne",
+        "sci": "Coregonus nasus und C. lavaretus"
+      },
+      "scope": "als Satzfisch eingebracht",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 12,
+        "day": 31
+      }
+    },
+    {
+      "taxon": {
+        "de": "Hecht",
+        "sci": "Esox lucius"
+      },
+      "speciesId": "pike",
+      "note": "soweit mit der Handangel nachgestellt",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 1,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Rapfen",
+        "sci": "Aspius aspius"
+      },
+      "speciesId": "asp",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 4,
+        "day": 1
+      },
+      "to": {
+        "month": 6,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Regenbogenforelle",
+        "sci": "Onchorhynchus mykiss"
+      },
+      "speciesId": "rainbow_trout",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Seeforelle",
+        "sci": "Salmo trutta f.lacustris"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      }
+    },
+    {
+      "taxon": {
+        "de": "Zander",
+        "sci": "Stizostedion lucioperca"
+      },
+      "speciesId": "zander",
+      "note": "soweit mit der Handangel nachgestellt",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 1,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      }
+    },
+    {
+      "taxon": {
+        "de": "Zope",
+        "sci": "Abramis ballerus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "from": {
+        "month": 3,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      }
+    }
+  ],
+  "minSizes": [
+    {
+      "taxon": {
+        "de": "Aal",
+        "sci": "Anguilla anguilla"
+      },
+      "speciesId": "eel",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 50
+    },
+    {
+      "taxon": {
+        "de": "Aland",
+        "sci": "Leuciscus idus"
+      },
+      "speciesId": "ide",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 30
+    },
+    {
+      "taxon": {
+        "de": "Äsche",
+        "sci": "Thymallus thymallus"
+      },
+      "speciesId": "grayling",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 30
+    },
+    {
+      "taxon": {
+        "de": "Bachforelle",
+        "sci": "Salmo trutta f. fario"
+      },
+      "speciesId": "brown_trout",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 30
+    },
+    {
+      "taxon": {
+        "de": "Bachsaibling",
+        "sci": "Salvelinus fontinalis"
+      },
+      "speciesId": "brook_trout",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 25
+    },
+    {
+      "taxon": {
+        "de": "Döbel",
+        "sci": "Leuciscus cephalus"
+      },
+      "speciesId": "chub",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 30
+    },
+    {
+      "taxon": {
+        "de": "Große Maräne",
+        "sci": "Coregonus nasus und C. lavaretus"
+      },
+      "scope": "als Satzfisch eingebracht",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 30
+    },
+    {
+      "taxon": {
+        "de": "Hasel",
+        "sci": "Leuciscus leuciscus"
+      },
+      "speciesId": "dace",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 15
+    },
+    {
+      "taxon": {
+        "de": "Hecht",
+        "sci": "Esox lucius"
+      },
+      "speciesId": "pike",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 45
+    },
+    {
+      "taxon": {
+        "de": "Karpfen",
+        "sci": "Cyprinus carpio"
+      },
+      "speciesId": "carp",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 35
+    },
+    {
+      "taxon": {
+        "de": "Kleine Maräne",
+        "sci": "Coregonus albula"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 15
+    },
+    {
+      "taxon": {
+        "de": "Quappe",
+        "sci": "Lota lota"
+      },
+      "speciesId": "burbot",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 30
+    },
+    {
+      "taxon": {
+        "de": "Rapfen",
+        "sci": "Aspius aspius"
+      },
+      "speciesId": "asp",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 40
+    },
+    {
+      "taxon": {
+        "de": "Regenbogenforelle",
+        "sci": "Onchorhynchus mykiss"
+      },
+      "speciesId": "rainbow_trout",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 25
+    },
+    {
+      "taxon": {
+        "de": "Schleie",
+        "sci": "Tinca tinca"
+      },
+      "speciesId": "tench",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 25
+    },
+    {
+      "taxon": {
+        "de": "Seeforelle",
+        "sci": "Salmo trutta f.lacustris"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 60
+    },
+    {
+      "taxon": {
+        "de": "Wels",
+        "sci": "Silurus glanis"
+      },
+      "speciesId": "wels",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 75
+    },
+    {
+      "taxon": {
+        "de": "Zander",
+        "sci": "Stizostedion lucioperca"
+      },
+      "speciesId": "zander",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 45
+    },
+    {
+      "taxon": {
+        "de": "Zope",
+        "sci": "Abramis ballerus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)",
+      "minCm": 20
+    }
+  ],
+  "protectedSpecies": [
+    {
+      "taxon": {
+        "de": "Atlantischer Stör",
+        "sci": "Acipenser sturio"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Bachneunauge",
+        "sci": "Lampetra planeri"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Barbe",
+        "sci": "Barbus barbus"
+      },
+      "speciesId": "barbel",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Bitterling",
+        "sci": "Rhodeus sericeus amarus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Elritze",
+        "sci": "Phoxinus phoxinus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Finte",
+        "sci": "Alosa fallax"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Flussneunauge",
+        "sci": "Lampetra fluviatilis"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Große Maräne",
+        "sci": "Coregonus nasus und C. lavaretus"
+      },
+      "scope": "in Fließgewässern",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Gründling",
+        "sci": "Gobio gobio"
+      },
+      "speciesId": "gudgeon",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Karausche",
+        "sci": "Carassius carassius"
+      },
+      "speciesId": "crucian_carp",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Lachs",
+        "sci": "Salmo salar"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Maifisch",
+        "sci": "Alosa alosa"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Meerforelle",
+        "sci": "Salmo trutta"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Meerneunauge",
+        "sci": "Petromyzon marinus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Moderlieschen",
+        "sci": "Leucaspius delineatus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Nase",
+        "sci": "Chondrostoma nasus"
+      },
+      "speciesId": "nase",
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Ostgroppe",
+        "sci": "Cottus poecilopus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Schlammpeitzger",
+        "sci": "Misgurnus fossilis"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Schmerle",
+        "sci": "Neomacheilus barbatulus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Schneider",
+        "sci": "Alburnoides bipunctatus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Steinbeißer",
+        "sci": "Cobitis taenia"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Weißflossengründling",
+        "sci": "Gobio albipinnatus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Westgroppe",
+        "sci": "Cottus gobio"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Zährte",
+        "sci": "Vimba vimba"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Ziege",
+        "sci": "Pelecus cultratus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Zwergstichling",
+        "sci": "Pungitius pungitius"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Abgeplattete Teichmuschel",
+        "sci": "Pseudanodonta complanata"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Edelkrebs",
+        "sci": "Astacus astacus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Flache Teichmuschel",
+        "sci": "Anodonta anatina"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Gemeine Teichmuschel",
+        "sci": "Anodonta cygnea"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Große Flussperlmuschel",
+        "sci": "Unio tumidus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Kleine Fluss- oder Bachmuschel",
+        "sci": "Unio crassus"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Malermuschel",
+        "sci": "Unio pictorum"
+      },
+      "basisId": "LFischO",
+      "basisRef": "Anlage 1 (zu § 8 Abs. 1)"
+    }
+  ],
+  "licences": [],
+  "otherRules": [
+    {
+      "topic": "Messen",
+      "text": "Als Mindestmaß gilt bei Fischen der Abstand von der Kopfspitze bis zum Ende der natürlich ausgebreiteten Schwanzflosse, bei Krebsen von der vorderen Spitze des Kopfpanzers bis zum Ende des Schwanzes bei flach ausgelegtem Hinterleib.",
+      "basisId": "LFischO",
+      "basisRef": "§ 8 Abs. 1 Satz 2"
+    },
+    {
+      "topic": "Nach Besatz",
+      "text": "Innerhalb von acht Wochen nach einer Besatzmaßnahme mit Fischen, die das in der Anlage 1 festgesetzte Schonmaß erreicht haben, ist das Angeln auf die eingesetzte Fischart verboten.",
+      "basisId": "LFischO",
+      "basisRef": "§ 8 Abs. 5"
+    },
+    {
+      "topic": "Zurücksetzen",
+      "text": "Untermaßige Fische oder während der Schonzeit gefangene Fische sind unverzüglich schonend in das Fanggewässer zurückzusetzen. Nicht überlebensfähige sind sofort zu töten und in das Fanggewässer zurückzusetzen; deren Mitsichführen oder Verwertung ist unzulässig.",
+      "basisId": "LFischO",
+      "basisRef": "§ 9 Abs. 1 und 2"
+    },
+    {
+      "topic": "Fangen nur zum Dokumentieren",
+      "text": "Das Fangen und Zurücksetzen von Fischen mit dem ausschließlichen Ziel, ihre Maße oder äußeren Merkmale zu dokumentieren, ist verboten.",
+      "basisId": "LFischO",
+      "basisRef": "§ 9 Abs. 3 Satz 1"
+    },
+    {
+      "topic": "Nicht heimische Arten",
+      "text": "Nicht heimische Fische und gebietsfremde Arten dürfen nach dem Fang nicht in das Fanggewässer zurückgesetzt werden.",
+      "basisId": "LFischO",
+      "basisRef": "§ 9 Abs. 4"
+    }
+  ]
+}
