@@ -125,7 +125,7 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 |---|---|
 | Performance | Lighthouse mobil: Performance ≥ 90, LCP ≤ 2,5 s (Shell); JS-Initial-Bundle ≤ 250 KB gzip ohne MapLibre, MapLibre lazy geladen |
 | Barrierefreiheit | axe: 0 „serious/critical"; Kontrast AA; Tastatur bedienbar (Desktop); Touch-Ziele ≥ 44 × 44 px; Fokus-Rückgabe nach Dialogen. *Automatisiert (M11, 2026-10-22): `a11y.spec.ts` – axe (WCAG 2.1 A/AA) auf allen 14 Hauptansichten plus geöffneten Formularen, hell und dunkel, desktop und mobil (Stand: 0 Befunde jeder Stufe); Touch-Ziele ≥ 44 px auf dem Handy-Profil (Links im Fließtext und in Tabellen ausgenommen, WCAG 2.5.8). Tastatur (`keyboard.spec.ts`, Desktop): KEY-1 Navigation per Tab/Enter mit sichtbarem Fokus, Segment-Schalter per Pfeiltaste; KEY-2 Dialog: Fokus darin, Escape/Schließen, Fokus zurück zum Auslöser; KEY-3 Fang ganz ohne Maus („Kartenmitte“), Fokus danach auf „Fang erfassen“. Offen: Screenreader-Stichprobe (manuell).* |
-| Datenschutz | Kein Netzwerkaufruf mit Standort, außer Wetter (gerundet); keine Drittanbieter-Cookies; geprüft per Playwright-Netzwerkprotokoll |
+| Datenschutz | Kein Netzwerkaufruf mit Standort, außer Wetter (gerundet); keine Drittanbieter-Cookies; geprüft per Playwright-Netzwerkprotokoll. *Automatisiert (M11, 2026-10-22): PRIV-1 `privacy.spec.ts` – alle Hauptansichten, nur App-Server, OpenFreeMap und Open-Meteo; Wetteranfrage nur mit gerundeter Position, ohne Notizen/IDs; die Datenschutzseite nennt genau diese Server.* |
 | Robustheit | Kein unbehandelter Promise-Fehler in E2E (`pageerror` = Testfehler) |
 | Lizenzen | Attribution sichtbar für jede angezeigte Quelle; Quellenseite listet alle Lizenzen |
 

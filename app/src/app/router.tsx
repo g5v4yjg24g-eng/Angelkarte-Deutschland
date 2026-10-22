@@ -10,6 +10,7 @@ import { SessionDetailPage } from '../features/sessions/SessionDetailPage';
 import { StatsPage } from '../features/stats/StatsPage';
 import { MorePage } from '../features/more/MorePage';
 import { SettingsPage } from '../features/settings/SettingsPage';
+import { PrivacyPage } from '../features/about/PrivacyPage';
 import { BaitPresetsPage } from '../features/baits/BaitPresetsPage';
 import { AboutPage } from '../features/about/AboutPage';
 import { LazyBackupPage } from '../features/backup/LazyBackupPage';
@@ -35,6 +36,7 @@ export const routes = [
           { path: 'mehr/einstellungen', element: <SettingsPage /> },
           { path: 'mehr/koeder', element: <BaitPresetsPage /> },
           { path: 'mehr/info', element: <AboutPage /> },
+          { path: 'mehr/datenschutz', element: <PrivacyPage /> },
           { path: 'mehr/daten', element: <LazyBackupPage /> },
           { path: 'mehr/recht', element: <LawPage /> },
           { path: 'mehr/recht/:state', element: <StateLawPage /> },

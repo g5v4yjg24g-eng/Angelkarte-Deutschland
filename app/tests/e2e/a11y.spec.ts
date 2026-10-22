@@ -88,6 +88,7 @@ const ROUTES: (string | [string, (p: Page) => Promise<void>])[] = [
   '/mehr/koeder',
   ['/mehr/koeder', (p) => p.getByRole('button', { name: 'Favorit anlegen' }).click()],
   '/mehr/info',
+  '/mehr/datenschutz',
   '/mehr/daten',
   '/mehr/recht',
   '/mehr/recht/BY',

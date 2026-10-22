@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page, Section } from '../../design/components/Page';
 import { FishMark } from '../../design/icons';
@@ -16,6 +17,9 @@ export function AboutPage() {
       <p>{de.app.tagline}</p>
       <Section title={de.about.privacyTitle}>
         <p>{de.about.privacyText}</p>
+        <p>
+          <Link to="/mehr/datenschutz">{de.about.privacyLink}</Link>
+        </p>
       </Section>
       <Section title={de.about.sourcesTitle}>
         <ul className={styles.sources}>
