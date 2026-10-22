@@ -294,9 +294,14 @@ export function filterCatches(
     .filter(
       (c) =>
         !q ||
-        [speciesName(c.speciesId), c.waterSnapshot?.name, c.bait?.name, c.notes].some(
-          (s) => s !== undefined && norm(s).includes(q),
-        ),
+        [
+          speciesName(c.speciesId),
+          c.waterSnapshot?.name,
+          c.waterSnapshot?.customName,
+          c.waterSnapshot?.place,
+          c.bait?.name,
+          c.notes,
+        ].some((s) => s !== undefined && norm(s).includes(q)),
     )
     .sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
 }

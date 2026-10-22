@@ -174,6 +174,7 @@ interface WeatherSnapshot {           // umgesetzt (P1): domain/weather.ts
 ```
 Wetter wird verworfen und neu geladen, wenn sich beim Bearbeiten die Stunde oder der gerundete Ort ändert (`data/catchService.ts`). `pressureTrend3h` = Druck der Fangstunde minus Druck 3 h vorher; `gustMs` und `precipMm` beziehen sich auf die Stunde davor (Open-Meteo-Definition).
 Indizes: `id, at, outcome, speciesId, waterId, sessionId, placeId, method, updatedAt, deletedAt`.
+Zusätzlich (P1, 2026-10-22): `waterSnapshot.place?` (Ort des Gewässers: Flächen Gemeinde, Fließgewässer Kreis) und `waterSnapshot.customName?` (eigener Name eines unbekannten Gewässers, nur im Fangbuch, nie bei bekanntem Namen) für „Fangbuch nach Gewässern“.
 Zusätzlich (P1, 2026-10-22): `stateCode?: StateCode` – Bundesland des Fangorts für die Rechts-Warnung (aus den Landesgrenzen ermittelt oder in Grenznähe vom Nutzer gewählt; wird beim Speichern aus der aktuellen Position neu bestimmt).
 Zusätzlich (M2): `contactIntensity?: 1–5` (Stärke des Kontakts, aus der Alt-App) und `legacy?: { source: 'angelkarte-v2'; raw }` (unveränderte Originaldaten eines Imports, damit nichts verloren geht).
 Validierung: `lengthCm` 1–250, `weightG` 1–100 000, `depthFishedM` 0–300; bei `outcome !== 'caught'` sind Länge und Gewicht nur als „geschätzt" erlaubt.

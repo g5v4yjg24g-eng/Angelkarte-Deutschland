@@ -70,7 +70,11 @@ export function CatchFacts({ item }: { item: Catch }) {
     [t.fields.method, item.method && t.methods[item.method]],
     [t.fields.bait, bait || undefined],
     [t.fields.conditions, conditions || undefined],
-    [t.fields.water, item.waterSnapshot?.name],
+    [
+      t.fields.water,
+      item.waterSnapshot?.name ??
+        (item.waterSnapshot?.customName && de.catches.customNameValue(item.waterSnapshot.customName)),
+    ],
     [t.fields.session, sessionLabel],
     [
       t.fields.position,

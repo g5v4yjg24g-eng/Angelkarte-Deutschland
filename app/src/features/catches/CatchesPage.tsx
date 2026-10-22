@@ -1,4 +1,4 @@
-// Fangbuch: alle Einträge nach Tagen, mit Suche und Filtern (M5.3).
+// Fangbuch: alle Einträge nach Tagen, mit Suche und Filtern (M5.3); Reiter je Gewässer (P1, 2026-10-22).
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -14,7 +14,10 @@ import { getDb } from '../../data/db';
 import { repo } from '../../data/repository';
 import { CatchOutcomeSchema, type Catch } from '../../domain/schemas';
 import { SPECIES, speciesById } from '../../domain/species';
-import { filterCatches, groupByDay, NO_FILTER, waterNames, type CatchFilter } from '../../domain/catchDraft';
+import { filterCatches, groupByDay, NO_FILTER, type CatchFilter } from '../../domain/catchDraft';
+import { groupByWater } from '../../domain/waterGroups';
+import { WaterHeader, WaterTabs } from './WaterTabs';
+import { useWaterPlaces } from './useWaterPlaces';
 import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
 import { PhotoThumb } from './CatchPhotos';
@@ -66,7 +69,7 @@ function RowPhoto({ id }: { id: string }) {
 function CatchRow({ item }: { item: Catch }) {
   const details = [
     item.at.slice(11, 16),
-    item.waterSnapshot?.name,
+    item.waterSnapshot?.name ?? item.waterSnapshot?.customName,
     item.lengthCm !== undefined && de.map.lengthValue(item.lengthCm, item.lengthMethod === 'measured'),
   ]
     .filter(Boolean)
@@ -117,8 +120,16 @@ export function CatchesPage() {
     () => filterCatches(active, filter, { nowMs, speciesName: (id) => speciesById(id)?.de }),
     [active, filter, nowMs],
   );
-  const groups = useMemo(() => groupByDay(list), [list]);
-  const waters = useMemo(() => waterNames(active), [active]);
+  useWaterPlaces();
+  const waterGroups = useMemo(() => groupByWater(active), [active]);
+  // '' = Reiter „Alle" (Standard)
+  const [waterKey, setWaterKey] = useState('');
+  const selectedWater = waterGroups.find((g) => g.key === waterKey);
+  const inWater = useMemo(
+    () => (selectedWater ? list.filter((c) => selectedWater.ids.includes(c.id)) : list),
+    [list, selectedWater],
+  );
+  const groups = useMemo(() => groupByDay(inWater), [inWater]);
   const usedSpecies = useMemo(() => {
     const ids = new Set(active.map((c) => c.speciesId).filter(Boolean));
     return SPECIES.filter((s) => ids.has(s.id)).sort((a, b) => a.de.localeCompare(b.de, 'de'));
@@ -177,6 +188,8 @@ export function CatchesPage() {
   return (
     <Page title={t.title}>
       <SessionsLink />
+      <WaterTabs groups={waterGroups} selected={selectedWater ? waterKey : ''} onSelect={setWaterKey} />
+      {selectedWater && <WaterHeader key={selectedWater.key} group={selectedWater} />}
       <div className={styles.filters}>
         <TextField
           label={t.search}
@@ -215,17 +228,11 @@ export function CatchesPage() {
               onChange={(e) => set('speciesId', e.target.value)}
             />
           )}
-          {waters.length > 0 && (
-            <SelectField
-              label={t.filterWater}
-              options={[{ value: '', label: t.allWaters }, ...waters.map((w) => ({ value: w, label: w }))]}
-              value={filter.water}
-              onChange={(e) => set('water', e.target.value)}
-            />
-          )}
         </div>
         <p className="muted" aria-live="polite">
-          {filtered ? t.filteredCount(list.length, active.length) : t.count(active.length)}
+          {filtered || selectedWater
+            ? t.filteredCount(inWater.length, active.length)
+            : t.count(active.length)}
         </p>
       </div>
 
@@ -234,7 +241,13 @@ export function CatchesPage() {
           icon={<BookIcon size={32} />}
           title={t.noMatchTitle}
           action={
-            <Button variant="secondary" onClick={() => setFilter(NO_FILTER)}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setFilter(NO_FILTER);
+                setWaterKey('');
+              }}
+            >
               {t.resetFilters}
             </Button>
           }

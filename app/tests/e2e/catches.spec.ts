@@ -218,14 +218,35 @@ test('„Fang erfassen" am Gewässer ordnet den See zu; Filter im Fangbuch', asy
 
   await page.goto('/fangbuch');
   await expect(page.getByText('2 Einträge', { exact: true })).toBeVisible();
-  await page.getByLabel('Gewässer').selectOption('De Wittsee');
+  // Reiter je Gewässer: Name und Ort; „Alle" ist Standard
+  const tabs = page.getByRole('group', { name: 'Gewässer' });
+  await expect(tabs.getByRole('button', { name: /^Alle/ })).toHaveAttribute('aria-pressed', 'true');
+  const wittsee = tabs.getByRole('button', { name: /De Wittsee/ });
+  await expect(wittsee).toContainText('Nettetal');
+  await wittsee.click();
   await expect(page.getByText('1 von 2 Einträgen')).toBeVisible();
   await expect(page.getByRole('link', { name: /Fehlbiss/ })).toBeVisible();
-  await page.getByLabel('Gewässer').selectOption('');
-  await page.getByLabel('Suchen').fill('hecht');
+  await expect(page.getByRole('heading', { level: 2, name: 'De Wittsee' })).toBeVisible();
+  await expect(page.getByText('nicht änderbar', { exact: false })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Namen ändern' })).toHaveCount(0);
+  // Unbekanntes Gewässer: eigener Name, gilt nur im Fangbuch
+  await tabs.getByRole('button', { name: /Unbekanntes Gewässer/ }).click();
+  await expect(page.getByRole('link', { name: /Fang · Hecht/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Namen ändern' }).click();
+  await page.getByLabel('Eigener Name (gilt nur im Fangbuch)').fill('Mein Platz am Wald');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await expect(tabs.getByRole('button', { name: /Mein Platz am Wald/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Mein Platz am Wald' })).toBeVisible();
+  // Suche nach Gewässer und Ort
+  await page.getByLabel('Gewässer oder Ort suchen').fill('nettetal');
+  await expect(tabs.getByRole('button')).toHaveCount(1);
+  await expect(tabs.getByRole('button', { name: /De Wittsee/ })).toBeVisible();
+  await page.getByLabel('Gewässer oder Ort suchen').fill('');
+  await tabs.getByRole('button', { name: /^Alle/ }).click();
+  await page.getByLabel('Suchen', { exact: true }).fill('hecht');
   await expect(page.getByRole('link', { name: /Fang · Hecht/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /Fehlbiss/ })).toHaveCount(0);
-  await page.getByLabel('Suchen').fill('gibt es nicht');
+  await page.getByLabel('Suchen', { exact: true }).fill('gibt es nicht');
   await expect(page.getByRole('heading', { name: 'Keine passenden Einträge' })).toBeVisible();
   await page.getByRole('button', { name: 'Filter zurücksetzen' }).click();
   await expect(page.getByText('2 Einträge', { exact: true })).toBeVisible();

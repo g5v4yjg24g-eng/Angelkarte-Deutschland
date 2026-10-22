@@ -106,7 +106,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Tiefenkarten (erste lizenzierte Quelle) | P2 | Lizenzklärung nötig |
 | Offline-Kartenregionen | P2 | Eigene PMTiles-Hosting-Infrastruktur nötig |
 | **Rechts-Warnung beim Erfassen** (Schonzeit, Mindestmaß, Entnahmefenster im Fang-Bundesland) | P1 | ✅ umgesetzt 2026-10-22 (siehe unten); echte Landesgrenzen erst nach dem nächsten Lauf „Gewässerdaten erzeugen“ |
-| **Fangbuch nach Gewässern** (Reiter je Gewässer, Name + Ort, unbekannte Gewässer selbst benennen, Suche nach Gewässer und Ort) | P1 | Wunsch Nutzer 2026-10-22, vorgemerkt – siehe „Vorgemerkt: Fangbuch nach Gewässern“ unten |
+| **Fangbuch nach Gewässern** (Reiter je Gewässer, Name + Ort, unbekannte Gewässer selbst benennen, Suche nach Gewässer und Ort) | P1 | ✅ umgesetzt 2026-10-22 – siehe „Fangbuch nach Gewässern“ unten |
 | Heatmap, CSV-Export | P2 | ✅ CSV-Export umgesetzt 2026-10-22 (Daten & Sicherung → „Fangbuch als Tabelle“). Heatmap offen |
 | Gewässerbezogene Regeln / Angelzonen (Stufe 4) | P3 | Kaum offene Daten; Kooperationen nötig |
 | Angelkalender, Beißfenster-Analyse | P3 | |
@@ -115,7 +115,9 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 
 ---
 
-### Vorgemerkt: Fangbuch nach Gewässern (Wunsch Nutzer 2026-10-22)
+### Fangbuch nach Gewässern (Wunsch Nutzer 2026-10-22, ✅ umgesetzt)
+**Entschieden (Nutzer 2026-10-22):** unbekannte Gewässer im Umkreis von 200 m zusammenführen; Reiter ergänzen die Tagesliste, „Alle“ ist Standard. **Umsetzung:** `domain/waterGroups.ts` (bekannte nach Name + Ort, unbekannte über eine 200-m-Kette, Schlüssel aus dem ältesten Eintrag), Reiter `features/catches/WaterTabs.tsx` (umbrechend statt waagerecht scrollend, damit bei 390 px alle sichtbar sind), eigener Name als `waterSnapshot.customName` an den Einträgen der Gruppe (keine neue Tabelle, keine Migration), Ort als `waterSnapshot.place` (Flächen: Gemeinde, Fließgewässer: Kreis – wie im Suchindex); Bestandsfänge bekommen den Ort aus dem eigenen Suchindex (gleiche Gewässer-ID). Der bisherige Gewässer-Filter im Fangbuch entfällt (ersetzt durch die Reiter).
+
 **Wunsch:**
 1. Sobald an einem Gewässer ein Eintrag entsteht (Fang, Biss, Kontakt, Beobachtung …), bekommt das Fangbuch einen **Reiter mit dem Namen dieses Gewässers**. Antippen zeigt dessen Einträge.
 2. Jeder Reiter zeigt den **Gewässernamen und darunter kleiner den Ort**, z. B. „De Wittsee“ / „Nettetal“.

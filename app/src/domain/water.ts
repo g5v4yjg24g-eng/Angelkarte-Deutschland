@@ -75,6 +75,11 @@ export function waterFromTile(props: Record<string, unknown>, isLine: boolean): 
   ) as unknown as WaterInfo;
 }
 
+/** Ort eines Gewässers wie im Suchindex: Flächen nach Gemeinde, Fließgewässer nach Kreis (jeweils sonst das andere). */
+export function waterPlace(w: Pick<WaterInfo, 'isLine' | 'municipality' | 'district'>): string | undefined {
+  return w.isLine ? (w.district ?? w.municipality) : (w.municipality ?? w.district);
+}
+
 /** Link zum OSM-Objekt (Quelle zeigen, Fehler in OSM selbst melden). */
 export function osmUrl(wid: string): string | undefined {
   const m = /^osm:([wr])(\d+)$/.exec(wid);

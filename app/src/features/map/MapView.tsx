@@ -12,7 +12,7 @@ import { useProviders } from '../../ports/providersContext';
 import { getDb } from '../../data/db';
 import { repo } from '../../data/repository';
 import type { PlaceType } from '../../domain/schemas';
-import { waterFromTile, type WaterInfo, type WaterManifest } from '../../domain/water';
+import { waterFromTile, waterPlace, type WaterInfo, type WaterManifest } from '../../domain/water';
 import type { SearchResult } from '../../domain/search';
 import { IconButton, Button } from '../../design/components/Button';
 import { Sheet } from '../../design/components/Sheet';
@@ -137,6 +137,7 @@ const toChoice = (w: WaterInfo): WaterChoice => ({
   wid: w.wid,
   type: w.type,
   ...(w.name ? { name: w.name } : {}),
+  ...(waterPlace(w) ? { place: waterPlace(w) } : {}),
 });
 
 /** Kontext für ein neues Formular: genau ein Gewässer → zugeordnet; mehrere → Auswahl, vorbelegt mit dem unter dem Punkt. */
@@ -576,7 +577,12 @@ export default function MapView() {
   async function assignWater(id: string, w?: WaterInfo) {
     await repo('catches').update(id, {
       waterId: w?.wid,
-      waterSnapshot: w ? (w.name ? { name: w.name } : {}) : undefined,
+      waterSnapshot: w
+        ? {
+            ...(w.name ? { name: w.name } : {}),
+            ...(waterPlace(w) ? { place: waterPlace(w) } : {}),
+          }
+        : undefined,
     });
     setSheet(null);
     setToast({ text: w ? de.catchForm.assigned(w.name ?? de.water.unnamed) : de.catchForm.assignRemoved });
