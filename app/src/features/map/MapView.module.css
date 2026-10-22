@@ -462,3 +462,52 @@
     linear-gradient(var(--color-accent), var(--color-accent)) center / 100% 2px no-repeat;
   filter: drop-shadow(0 0 1px var(--color-surface));
 }
+
+/* Glas wie die untere Leiste (Wunsch Nutzer 2026-10-22): Knöpfe auf der Karte lassen sie durchscheinen.
+   Die Suchleiste bleibt bewusst deckend. Ohne Unterstützung bzw. bei „Transparenz reduzieren" deckend. */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .control,
+  .sessionFab,
+  .accuracy,
+  .wrap :global(.maplibregl-ctrl-attrib) {
+    background: color-mix(in srgb, var(--color-surface) 38%, transparent);
+    border-color: color-mix(in srgb, var(--color-text) 14%, transparent);
+    -webkit-backdrop-filter: blur(10px) saturate(1.8);
+    backdrop-filter: blur(10px) saturate(1.8);
+    text-shadow: 0 0 6px color-mix(in srgb, var(--color-surface) 90%, transparent);
+  }
+  .control:hover {
+    background: color-mix(in srgb, var(--color-surface) 55%, transparent);
+  }
+  /* Farbige Knöpfe behalten ihre Farbe, nur etwas durchscheinend, damit Schrift und Symbol lesbar bleiben */
+  .controlOn,
+  .controlOn:hover {
+    background: color-mix(in srgb, var(--color-primary) 70%, transparent);
+    text-shadow: none;
+  }
+  .fab {
+    background: color-mix(in srgb, var(--color-accent) 72%, transparent);
+    -webkit-backdrop-filter: blur(10px) saturate(1.8);
+    backdrop-filter: blur(10px) saturate(1.8);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .control,
+  .sessionFab,
+  .accuracy,
+  .wrap :global(.maplibregl-ctrl-attrib) {
+    background: var(--color-surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    text-shadow: none;
+  }
+  .controlOn,
+  .controlOn:hover {
+    background: var(--color-primary);
+  }
+  .fab {
+    background: var(--color-accent);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
