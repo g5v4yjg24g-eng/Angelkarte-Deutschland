@@ -8,6 +8,10 @@ import {
   tripDraftToFields,
   emptyTripDraft,
   upcomingTrips,
+  weekStart,
+  weekDays,
+  isoWeek,
+  shiftDate,
 } from './trip';
 
 const meta = { createdAt: '2026-10-22T10:00:00+02:00', updatedAt: '2026-10-22T10:00:00+02:00', rev: 0 };
@@ -87,5 +91,37 @@ describe('Angelkalender', () => {
       title: 'Hecht',
       notes: undefined,
     });
+  });
+});
+
+describe('Angelkalender: Woche und Blättern', () => {
+  it('Woche beginnt am Montag, auch über den Monatswechsel', () => {
+    expect(weekStart('2026-10-22')).toBe('2026-10-19');
+    expect(weekStart('2026-10-19')).toBe('2026-10-19');
+    expect(weekStart('2026-10-25')).toBe('2026-10-19');
+    expect(weekDays('2026-11-01')).toEqual([
+      '2026-10-26',
+      '2026-10-27',
+      '2026-10-28',
+      '2026-10-29',
+      '2026-10-30',
+      '2026-10-31',
+      '2026-11-01',
+    ]);
+  });
+
+  it('Kalenderwoche nach ISO 8601, auch am Jahreswechsel', () => {
+    expect(isoWeek('2026-10-22')).toBe(43);
+    expect(isoWeek('2026-01-01')).toBe(1);
+    expect(isoWeek('2027-01-01')).toBe(53); // Freitag gehört noch zu KW 53/2026
+    expect(isoWeek('2026-12-28')).toBe(53);
+    expect(isoWeek('2025-12-29')).toBe(1); // Montag gehört schon zu KW 1/2026
+  });
+
+  it('Blättern je nach Ansicht', () => {
+    expect(shiftDate('2026-10-22', 'day', 1)).toBe('2026-10-23');
+    expect(shiftDate('2026-10-22', 'week', -1)).toBe('2026-10-15');
+    expect(shiftDate('2026-10-22', 'month', 1)).toBe('2026-11-01');
+    expect(shiftDate('2026-01-31', 'month', -1)).toBe('2025-12-01');
   });
 });
