@@ -1,12 +1,12 @@
 {
   "stateCode": "MV",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "zeitlich befristeter Fischereischein (Verordnung)",
     "Fisch- und Laichschonbezirke (§§ 11, 12 KüFVO, Anlage 1)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Fischereigesetz vom Nutzer gegengeprüft am 2026-10-22; Binnen- und Küstenfischereiverordnung maschinell übertragen (Claude), Gegenprüfung ausstehend",
+  "checkedBy": "Fischereigesetz vom Nutzer gegengeprüft am 2026-10-22; Binnen- und Küstenfischereiverordnung maschinell übertragen (Claude), vom Nutzer gegengeprüft am 2026-10-22",
   "legalBasis": [
     {
       "id": "LFischG M-V",
