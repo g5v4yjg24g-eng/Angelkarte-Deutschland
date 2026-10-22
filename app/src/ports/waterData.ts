@@ -1,5 +1,6 @@
 import type { SearchEntry } from '../domain/search';
 import type { WaterManifest } from '../domain/water';
+import type { StatesFile } from '../domain/states';
 
 // Port für die Gewässerdaten aus der Pipeline (ARCHITECTURE §6). Wo die Dateien liegen, weiß nur der Adapter.
 export interface WaterDataProvider {
@@ -10,4 +11,6 @@ export interface WaterDataProvider {
   tilesUrl(m: WaterManifest): string;
   /** Einträge eines Suchindex-Teils; [] wenn es den Teil nicht gibt. Wirft bei Netzfehlern. */
   loadSearchShard(m: WaterManifest, key: string): Promise<SearchEntry[]>;
+  /** Landesgrenzen; null, wenn die Daten keine enthalten oder sie nicht erreichbar sind. */
+  loadStates(m: WaterManifest): Promise<StatesFile | null>;
 }

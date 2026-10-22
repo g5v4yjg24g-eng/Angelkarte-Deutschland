@@ -1,6 +1,7 @@
 // Verarbeitet den osmium-Export (GeoJSON-Sequenz) zu:
 //  - tiles-areas.geojsonseq / tiles-lines.geojsonseq  (Eingabe für tippecanoe; Profilfelder stecken in den Kacheln)
 //  - search/<xx>.json + search/index.json             (Suchindex, nach Wort-Präfix geteilt)
+//  - states.json                                      (vereinfachte Landesgrenzen: Bundesland am Fangort, offline)
 //  - water-manifest.json                              (Datenstand, Lizenz, Abdeckung)
 //  - report.json                                      (Mengen und Größen, Grundlage für DATA_SOURCES.md)
 // Zwei Durchläufe über die Exportdatei, damit auch der Deutschland-Auszug nicht komplett im Speicher liegt.
@@ -15,6 +16,13 @@ import length from '@turf/length';
 import pointOnFeature from '@turf/point-on-feature';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import Flatbush from 'flatbush';
+// Dieselbe Geometrie wie in der App, damit Pipeline-Prüfung und App gleich rechnen
+import { simplifyRing, stateAt, type PolygonRings, type Ring, type StateShape } from '../../../app/src/domain/geo.ts';
+
+// Landesgrenzen: Vereinfachung (m) und Sicherheitsabstand, ab dem die App nicht rät (m). Der Abstand muss die
+// Vereinfachung deutlich übersteigen; die Prüfung unten belegt es für jedes Gewässer.
+const STATE_TOLERANCE_M = 50;
+const STATE_MARGIN_M = 150;
 
 type Tags = Record<string, string>;
 type WaterType = 'lake' | 'pond' | 'reservoir' | 'river' | 'canal' | 'stream' | 'oxbow' | 'harbour' | 'other';
@@ -161,6 +169,43 @@ async function main(): Promise<void> {
   };
   for (const p of places) p.adm = adminAt(p.c[1], p.c[0]);
 
+  // ---------- Landesgrenzen (vereinfacht) ----------
+  const r5 = (x: number) => Math.round(x * 1e5) / 1e5;
+  const shapes = new Map<string, StateShape>();
+  let statePoints = 0;
+  for (const a of admins) {
+    const code = a.level === 4 ? stateCode(a.name) : undefined;
+    if (!code) continue;
+    const polys = a.geom.type === 'Polygon' ? [a.geom.coordinates] : a.geom.coordinates;
+    const shape = shapes.get(code) ?? { code, bbox: [Infinity, Infinity, -Infinity, -Infinity], polygons: [] };
+    for (const poly of polys) {
+      const rings: PolygonRings = [];
+      for (const [i, raw] of poly.entries()) {
+        const ring = raw.map((p) => [r5(p[0] ?? 0), r5(p[1] ?? 0)] as [number, number]);
+        // Kleine Ringe (Inseln) unvereinfacht behalten, damit kein Land Fläche verliert
+        const s: Ring | null = simplifyRing(ring, STATE_TOLERANCE_M) ?? (ring.length >= 4 ? ring : null);
+        if (!s) { if (i === 0) break; continue; }
+        rings.push(s);
+        statePoints += s.length;
+      }
+      if (rings.length) shape.polygons.push(rings);
+    }
+    shape.bbox = [Math.min(shape.bbox[0], a.bbox[0]), Math.min(shape.bbox[1], a.bbox[1]),
+      Math.max(shape.bbox[2], a.bbox[2]), Math.max(shape.bbox[3], a.bbox[3])];
+    shapes.set(code, shape);
+  }
+  const stateList = [...shapes.values()].sort((x, y) => x.code.localeCompare(y.code));
+  // Prüfung: Jedes Gewässer mit Bundesland muss über die vereinfachten Grenzen dasselbe Land ergeben
+  // (oder „Grenznähe" – dann fragt die App nach). Ein falsches eindeutiges Land bricht den Lauf ab.
+  const stateCheck = { checked: 0, border: 0, wrong: [] as string[] };
+  const checkState = (wid: string, lng: number, lat: number, code?: string) => {
+    if (!code) return;
+    stateCheck.checked++;
+    const hit = stateAt(lng, lat, stateList, STATE_MARGIN_M);
+    if (hit.kind === 'border' && hit.codes.includes(code)) stateCheck.border++;
+    else if (hit.kind !== 'state' || hit.code !== code) stateCheck.wrong.push(`${wid} ${lng},${lat} erwartet ${code}, ergibt ${JSON.stringify(hit)}`);
+  };
+
   // ---------- Durchlauf 2: Gewässer ----------
   const counts = { degenerate: 0, excludedAreas: 0, unnamedAreas: 0, unnamedLinesSkipped: 0, tinyAreasUnder01ha: 0 };
   const byType: Record<string, { count: number; named: number }> = {};
@@ -199,6 +244,7 @@ async function main(): Promise<void> {
       const [lng, lat] = lngLat(pointOnFeature(f).geometry.coordinates);
       const adm = adminAt(lng, lat);
       account(t, !!tags.name, adm);
+      checkState(wid, lng, lat, adm.s);
       areasHa.push(ha);
       if (tags.name) {
         const rank = Math.round(Math.log10(1 + ha) * 100), ctx = adm.g ?? adm.k ?? '';
@@ -220,6 +266,7 @@ async function main(): Promise<void> {
       const [lng, lat] = lngLat(coords[Math.floor(coords.length / 2)] ?? [0, 0]);
       const adm = adminAt(lng, lat);
       account(t, !!tags.name, adm);
+      checkState(wid, lng, lat, adm.s);
       lines++;
       // Fließgewässer bestehen aus vielen Abschnitten: für die Suche je Name + Kreis zusammenfassen
       if (tags.name) {
@@ -256,8 +303,26 @@ async function main(): Promise<void> {
   }
   writeFileSync(join(outDir, 'search', 'index.json'), JSON.stringify([...shards.keys()].sort()));
 
-  // ---------- Manifest ----------
+  // ---------- Landesgrenzen schreiben und prüfen ----------
   const dataDate = process.env.DATA_DATE ?? '';
+  const statesJson = JSON.stringify({
+    format: 'fangpunkt-states',
+    formatVersion: 1,
+    dataDate,
+    toleranceM: STATE_TOLERANCE_M,
+    marginM: STATE_MARGIN_M,
+    states: stateList,
+  });
+  writeFileSync(join(outDir, 'states.json'), statesJson);
+  const missingStates = Object.keys(byState).filter((c) => !shapes.has(c));
+  if (stateCheck.wrong.length || missingStates.length) {
+    writeFileSync(join(outDir, 'states-errors.txt'),
+      [...missingStates.map((c) => `Grenze fehlt ${c}`), ...stateCheck.wrong].join('\n') + '\n');
+    console.error(`FEHLER: Landesgrenzen ergeben ${stateCheck.wrong.length}× ein falsches Land, fehlend: ${missingStates.join(', ') || '–'} (Liste: states-errors.txt)`);
+    process.exit(1);
+  }
+
+  // ---------- Manifest ----------
   writeFileSync(join(outDir, 'water-manifest.json'), JSON.stringify({
     format: 'fangpunkt-water',
     formatVersion: 1,
@@ -275,6 +340,7 @@ async function main(): Promise<void> {
     coverage: Object.keys(byState).sort(),
     tiles: 'water.pmtiles',
     search: 'search/',
+    states: 'states.json',
   }, null, 2));
 
   areasHa.sort((a, b) => a - b);
@@ -287,6 +353,8 @@ async function main(): Promise<void> {
     waters: { total, areas: areasHa.length, lines, byType, byState, ...counts },
     areaHaQuantiles: { p10: q(0.1), p50: q(0.5), p90: q(0.9), p99: q(0.99), max: q(1) },
     adminCoverage: { land: withState / Math.max(total, 1), kreis: withKreis / Math.max(total, 1), gemeinde: withGemeinde / Math.max(total, 1) },
+    states: { codes: stateList.map((s) => s.code), points: statePoints, rawBytes: statesJson.length,
+      gzipBytes: gzipSync(statesJson).length, checked: stateCheck.checked, nearBorder: stateCheck.border },
     search: { entries: entries.length, shards: shards.size, rawBytes: searchRaw, gzipBytes: searchGz, maxShard, maxShardGzipBytes: maxShardGz },
   };
   writeFileSync(join(outDir, 'report.json'), JSON.stringify(report, null, 2));

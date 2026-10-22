@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { WeatherSnapshotSchema } from './weather';
 import { pauseIssue } from './session';
+import { STATE_CODES } from './water';
 
 const isoDateTime = z.iso.datetime({ offset: true });
 const id = z.string().min(1).max(100);
@@ -104,6 +105,8 @@ export const CatchSchema = MetaSchema.extend({
   ...WaterRefSchema,
   placeId: id.optional(),
   sessionId: id.optional(),
+  /** Bundesland des Fangorts (aus den Landesgrenzen oder vom Nutzer gewählt) für die Rechts-Warnung */
+  stateCode: z.enum(STATE_CODES).optional(),
   speciesId: id.optional(),
   speciesCertainty: z.enum(['certain', 'likely', 'guess']).optional(),
   speciesSource: z.enum(['user', 'ai-suggestion']).optional(),

@@ -9,6 +9,7 @@ Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`,
 - Wetter am Fang: Fachlogik `domain/weather.ts`, Port `ports/weather.ts`, Adapter `adapters/openMeteo.ts` (Historical-Forecast-API, ab 2022), Nachladen `data/weatherService.ts` + `features/weather/WeatherSync.tsx`. Einstellung `weatherEnabled` standardmäßig an (Entscheidung Nutzer 2026-10-22); Koordinaten nur gerundet (3 Stellen). E2E mockt `historical-forecast-api.open-meteo.com` (`weather.spec.ts`).
 - Köder-Favoriten: Logik rein in `domain/baitPreset.ts` + `applyPreset`/`baitFields` in `domain/catchDraft.ts`, Verwaltung `features/baits` (`/mehr/koeder`).
 - Session-Pausen: Logik `domain/session.ts` (`activeMs`, `pauseIssue` – auch im SessionSchema), Dienst `data/sessionService.ts` (pause/resume/addPause/removePause), Ansicht `features/sessions`.
+- Rechts-Warnung: Landesgrenzen `states.json` aus der Pipeline (Geometrie gemeinsam `app/src/domain/geo.ts`), Prüfung `domain/regulationCheck.ts`, Anzeige `features/law/LawCheckPanel.tsx` (Formular + Eintrag). Warnt nur, blockiert nie (Entscheidung Nutzer 2026-10-22).
 - Statistik: Logik rein in `app/src/domain/stats.ts` (Mindestmengen, DATA_MODEL §9), Ansicht `app/src/features/stats`.
 - Fotos: `lib/processPhoto.ts` (Neu-Kodierung entfernt EXIF), Speichern nur über `data/catchService.ts` (eine Transaktion mit dem Fang).
 - Fangbuch: `app/src/features/catches`, Formularlogik rein in `app/src/domain/catchDraft.ts`. IDs immer über `domain/id.ts` (`crypto.randomUUID` fehlt außerhalb sicherer Kontexte).
