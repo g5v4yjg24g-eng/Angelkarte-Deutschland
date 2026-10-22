@@ -1,15 +1,26 @@
 {
   "stateCode": "HH",
-  "status": "partial",
-  "missing": ["Fischereischein (HmbFAnG)", "Schon- und Sperrgebiete (§ 9)", "Ausnahmen (§ 10)"],
+  "status": "draft",
+  "missing": [
+    "HmbFAnGDVO: Schon- und Sperrgebiete (§ 9)",
+    "HmbFAnGDVO: Ausnahmen (§ 10)",
+    "Änderungen des HmbFAnG nach der Verkündung am 31.05.2019 nicht geprüft"
+  ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "HmbFAnGDVO",
       "title": "Verordnung zur Durchführung des Hamburgischen Fischerei- und Angelgesetzes",
       "version": "vom 4. Juni 2019 (HmbGVBl. S. 169), geändert durch Verordnung vom 1. Februar 2022 (HmbGVBl. S. 88); Gesamtausgabe Stand 25.09.2023",
       "url": "https://dokumente.hamburg.de/resource/blob/179406/1c1045f6e901b54e7ffc68ecfc432444/verordnung-zur-durchfuehrung-des-hamburgischen-fischerei-und-angelgesetzes-data.pdf",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "HmbFAnG",
+      "title": "Hamburgisches Fischerei- und Angelgesetz",
+      "version": "vom 28. Mai 2019, verkündet im HmbGVBl. Nr. 17 vom 31. Mai 2019 (Erstfassung; spätere Änderungen nicht berücksichtigt)",
+      "url": "https://dokumente.hamburg.de/resource/blob/179404/9cf58e1e665528939a543a9bc87529b6/hamburgisches-fischerei-und-angelgesetz-data.pdf",
       "retrievedAt": "2026-10-22"
     }
   ],
@@ -403,10 +414,52 @@
   ],
   "licences": [
     {
+      "kind": "fishing_licence",
+      "text": "Wer den Fischfang ausübt, muss im Besitz eines Fischereischeins mit fest eingefügtem Nachweis über die Entrichtung der Fischereiabgabe sein. Der Fischereischein ist beim Fischfang im Original mitzuführen und auf Verlangen vorzuzeigen.",
+      "basisId": "HmbFAnG",
+      "basisRef": "§ 9 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Der Fischereischein wird auf Lebenszeit erteilt, wenn die antragstellende Person das zwölfte Lebensjahr vollendet und die Angelprüfung abgelegt hat. Außerhalb Hamburgs abgelegte Prüfungen werden nur anerkannt, sofern zum Zeitpunkt der Prüfung kein Wohnsitz in Hamburg bestand.",
+      "basisId": "HmbFAnG",
+      "basisRef": "§ 10 Abs. 1 und 2"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "In anderen Bundesländern ausgestellte Fischereischeine stehen dem Hamburger gleich, wenn die Hauptwohnung nicht in Hamburg liegt und für die Erteilung eine gleichwertige Fischereiprüfung erforderlich war. Prüfungsfreie Fischereischeine werden nicht anerkannt.",
+      "basisId": "HmbFAnG",
+      "basisRef": "§ 9 Abs. 4"
+    },
+    {
+      "kind": "youth",
+      "text": "Personen, die noch nicht das 15. Lebensjahr vollendet haben, dürfen die Fischerei mit einer Handangel auch ohne Fischereischein unter Aufsicht einer volljährigen Fischereischeininhaberin oder eines volljährigen Fischereischeininhabers ausüben.",
+      "basisId": "HmbFAnG",
+      "basisRef": "§ 9 Abs. 2"
+    },
+    {
+      "kind": "tourist",
+      "text": "Personen, die im Inland keinen Wohnsitz haben und eine Fischereiberechtigung ihres Heimatlandes besitzen, kann ein bis zum jeweiligen Jahresende befristeter Fischereischein erteilt werden.",
+      "basisId": "HmbFAnG",
+      "basisRef": "§ 10 Abs. 3"
+    },
+    {
+      "kind": "levy",
+      "text": "Alle Anglerinnen und Angler haben eine Fischereiabgabe in Hamburg zu entrichten, solange sie den Fischfang ausüben; sie kann für ein Kalenderjahr oder bis zu drei aufeinanderfolgende Kalenderjahre entrichtet werden.",
+      "basisId": "HmbFAnG",
+      "basisRef": "§ 12 Abs. 1"
+    },
+    {
       "kind": "levy",
       "text": "Die Fischereiabgabe für Anglerinnen und Angler beträgt 10 Euro je Kalenderjahr.",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 1 Abs. 1 Satz 1"
+    },
+    {
+      "kind": "permit",
+      "text": "Zusammengefasst: In Freien Gewässern ist der Fischfang erlaubt. Mit Ausnahme der Freien Gewässer ist die Erlaubnis der Fischereirechtsinhaberin oder des Fischereirechtsinhabers (Fischereierlaubnis) einzuholen, mitzuführen und auf Verlangen vorzuzeigen.",
+      "basisId": "HmbFAnG",
+      "basisRef": "§ 9 Abs. 3, § 7 Abs. 3"
     }
   ],
   "otherRules": [
@@ -427,6 +480,12 @@
       "text": "Zusammengefasst: Während der Zanderschonzeit ist die Fischerei mit toten Köderfischen, Fischfetzen und Kunstködern jeglicher Art untersagt. Ausgenommen sind die Bille oberhalb des Bergedorfer Hallenbades, die Alster oberhalb der Ohlsdorfer Schleuse und der unmittelbare Strömungsbereich des Elbe-Hauptstroms; Kunstköder dürfen nur in strömenden Bereichen der Elbe verwendet werden. Das Kunstköderverbot gilt nicht für das Fliegenfischen.",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 8 Abs. 2"
+    },
+    {
+      "topic": "Geführte Angeltouren",
+      "text": "Bei geführten Angeltouren oder Veranstaltungen von Ausbildungsvereinen an ihren eigenen oder Pachtgewässern besteht keine Fischereischeinpflicht, sofern bis zu drei Teilnehmende ohne Fischereischein von mindestens einer Person mit Fischereischein unmittelbar betreut werden und eine Ausbilderin oder ein Ausbilder anwesend ist.",
+      "basisId": "HmbFAnG",
+      "basisRef": "§ 9 Abs. 5"
     }
   ]
 }

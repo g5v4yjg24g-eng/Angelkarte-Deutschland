@@ -20,7 +20,7 @@ test('M7: Übersicht der Länder, Land ohne geprüfte Angaben (LAW-4), Hinweis �
   await expect(states.first()).toHaveText(/Baden-Württemberg/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
-  await expect(states.filter({ hasText: 'Bayern' })).toContainText('Teilweise geprüft');
+  await expect(states.filter({ hasText: 'Baden-Württemberg' })).toContainText('Teilweise geprüft');
   await expect(states.filter({ hasText: 'Berlin' })).toContainText('Teilweise geprüft');
   // LAW-4: erstes Land ohne Datei → erklärender Zustand mit Link zum Landesrechtsportal
   const empty = states.filter({ hasText: 'Noch keine Angaben' }).first();

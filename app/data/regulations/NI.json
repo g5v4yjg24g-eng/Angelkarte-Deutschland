@@ -1,15 +1,22 @@
 {
   "stateCode": "NI",
-  "status": "partial",
-  "missing": ["Fischereischein und Erlaubnisse (Nds. FischG)", "Küstenfischerei (eigene Verordnung)"],
+  "status": "draft",
+  "missing": ["Küstenfischerei (eigene Verordnung)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "BiFischO",
       "title": "Verordnung über die Fischerei in Binnengewässern (Binnenfischereiordnung)",
       "version": "vom 6. Juli 1989 (Nds. GVBl. S. 289), zuletzt geändert durch Artikel 5 der Verordnung vom 22. Dezember 2005 (Nds. GVBl. S. 475); §§ 2–5 in der Fassung ab 01.08.1989",
       "url": "https://voris.wolterskluwer-online.de/browse/document/751daf31-eede-3fb0-a0fe-25e309897a50",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "Nds. FischG",
+      "title": "Niedersächsisches Fischereigesetz",
+      "version": "vom 1. Februar 1978, zuletzt geändert durch Artikel 8 des Gesetzes vom 22. September 2022 (Nds. GVBl. S. 593); § 57 in der Fassung ab 01.03.1978, § 59 ab 01.01.2023",
+      "url": "https://voris.wolterskluwer-online.de/browse/document/55a09733-9b3f-312e-9d2a-1100c2ade51a",
       "retrievedAt": "2026-10-22"
     }
   ],
@@ -424,7 +431,20 @@
       "basisRef": "§ 2 Abs. 1"
     }
   ],
-  "licences": [],
+  "licences": [
+    {
+      "kind": "permit",
+      "text": "Zusammengefasst: Wer in einem Gewässer, in dem er nicht Fischereiberechtigter oder Fischereipächter ist, den Fischfang ausübt, hat einen Fischereischein oder einen Personalausweis sowie eine von dem Berechtigten ausgestellte Bescheinigung über seine Befugnis bei sich zu führen (Fischereierlaubnisschein) und diese auf Verlangen vorzulegen. Nicht erforderlich bei Anwesenheit des Berechtigten oder seines Beauftragten sowie bei Fischereiwettbewerben und Prüfungen anerkannter Vereinigungen.",
+      "basisId": "Nds. FischG",
+      "basisRef": "§ 57"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Personen mit Hauptwohnsitz in Niedersachsen, die das vierzehnte Lebensjahr vollendet und eine Fischerprüfung bei einem anerkannten Landesfischereiverband, die vorgeschriebene Fischerprüfung in einem anderen Bundesland oder die Prüfung als Berufsfischer abgelegt haben, stellt die Gemeinde ihres Wohnsitzes auf Antrag einen Fischereischein als Lichtbildausweis aus. Der Fischereischein gilt für unbeschränkte Zeit.",
+      "basisId": "Nds. FischG",
+      "basisRef": "§ 59 Abs. 1"
+    }
+  ],
   "otherRules": [
     {
       "topic": "Messen",

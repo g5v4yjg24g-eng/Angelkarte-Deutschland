@@ -1,15 +1,22 @@
 {
   "stateCode": "BY",
-  "status": "partial",
-  "missing": ["Fischereischein und Erlaubnisse (BayFiG)", "Bezirksverordnungen nach § 11 Abs. 5"],
+  "status": "draft",
+  "missing": ["Bezirksverordnungen nach § 11 Abs. 5"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "AVBayFiG",
       "title": "Verordnung zur Ausführung des Bayerischen Fischereigesetzes",
       "version": "Fassung der Bekanntmachung vom 10. Mai 2004 (GVBl. S. 177, 270), zuletzt geändert durch Verordnung vom 10. April 2025 (GVBl. S. 126)",
       "url": "https://www.gesetze-bayern.de/Content/Document/BayAVFiG/true",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "BayFiG",
+      "title": "Bayerisches Fischereigesetz",
+      "version": "in der Fassung der Bekanntmachung vom 10. Oktober 2008 (GVBl. S. 840), zuletzt geändert durch § 11 des Gesetzes vom 23. Dezember 2024 (GVBl. S. 619)",
+      "url": "https://www.gesetze-bayern.de/Content/Document/BayFischG/true",
       "retrievedAt": "2026-10-22"
     }
   ],
@@ -904,7 +911,50 @@
       "basisRef": "Anlage Nr. 4.7 (ganzjährige Schonzeit)"
     }
   ],
-  "licences": [],
+  "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Wer den Fischfang ausübt, muss einen auf seine Person ausgestellten gültigen Fischereischein und den Nachweis über die Entrichtung der Fischereiabgabe bei sich führen und diese auf Verlangen den Polizeibeamten, den Fischereiaufsehern, den Fischereiberechtigten und den Fischereipächtern zur Prüfung aushändigen.",
+      "basisId": "BayFiG",
+      "basisRef": "Art. 46 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Personen, die das vierzehnte Lebensjahr vollendet und die Fischerprüfung oder eine gleichgestellte Prüfung bestanden haben, erhalten den Fischereischein auf Lebenszeit. An der Fischerprüfung können Personen ab dem vollendeten zwölften Lebensjahr teilnehmen.",
+      "basisId": "BayFiG",
+      "basisRef": "Art. 47 Abs. 3, Art. 48 Satz 2"
+    },
+    {
+      "kind": "youth",
+      "text": "Personen, die das siebte, nicht aber das 18. Lebensjahr vollendet haben, sind zur Ausübung des Fischfangs nur in verantwortlicher Begleitung eines volljährigen Inhabers eines Fischereischeins berechtigt.",
+      "basisId": "BayFiG",
+      "basisRef": "Art. 47 Abs. 2 Satz 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: In anderen Ländern ausgestellte Fischereischeine gelten auch in Bayern, soweit die Inhaber bei der Erteilung ihre Hauptwohnung nicht in Bayern hatten – ausgenommen Fischereischeine, die ohne die landesgesetzlich vorgeschriebene Fischerprüfung oder befristet ohne Prüfung an Personen mit Wohnsitz in Deutschland erteilt wurden.",
+      "basisId": "AVBayFiG",
+      "basisRef": "§ 2 Abs. 1"
+    },
+    {
+      "kind": "tourist",
+      "text": "Zusammengefasst: Volljährige Personen, die sich nur vorübergehend in Deutschland aufhalten, ohne hier einen Wohnsitz zu begründen, können einen Fischereischein ohne Fischerprüfung erhalten; Geltungsdauer ein Jahr, beschränkt auf höchstens drei selbst bestimmte Monate (Jahresfischereischein).",
+      "basisId": "AVBayFiG",
+      "basisRef": "§ 3 Satz 1 Nr. 1, Satz 2 Nr. 1"
+    },
+    {
+      "kind": "levy",
+      "text": "Zusammengefasst: Fischereiabgabe: 40 € für fünf aufeinanderfolgende Jahre oder einmalig für die Lebenszeit (nach Alter berechnet); 15 € für den Jahresfischereischein; 50 % Ermäßigung u. a. für Jugendliche mit bestandener Fischerprüfung bei Zahlung für fünf Jahre.",
+      "basisId": "AVBayFiG",
+      "basisRef": "§ 9"
+    },
+    {
+      "kind": "permit",
+      "text": "Zusammengefasst: Wer den Fischfang ausübt, ohne selbst der Fischereiberechtigte oder Fischereipächter zu sein, muss einen gültigen Erlaubnisschein bei sich führen und auf Verlangen aushändigen; bei elektronischen Erlaubnisscheinen genügt ein vergleichbarer Nachweis.",
+      "basisId": "BayFiG",
+      "basisRef": "Art. 26 Abs. 4"
+    }
+  ],
   "otherRules": [
     {
       "topic": "Messen",
