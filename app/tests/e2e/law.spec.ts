@@ -50,24 +50,22 @@ test('M7: Übersicht der Länder, Land ohne geprüfte Angaben (LAW-4), Hinweis �
   expect(errors).toEqual([]);
 });
 
-test('Gegengeprüftes Land (Hamburg): Status, fehlende Teile, Entnahmefenster mit Fundstelle', async ({
+test('Gegengeprüftes Land (Hessen): Status, fehlende Teile, Entnahmefenster mit Fundstelle', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/mehr/recht/HH');
+  await page.goto('/mehr/recht/HE');
   await waitForApp(page);
   await expect(page.getByText(/^Keine Rechtsauskunft\./)).toBeVisible();
   await expect(page.getByText('Teilweise geprüft')).toBeVisible();
   await expect(page.getByText(/^Noch nicht erfasst: Fischereischein/)).toBeVisible();
   await expect(page.getByRole('alert')).toHaveCount(0); // kein Entwurfsbanner
-  const zander = page
+  const hecht = page
     .getByRole('listitem')
-    .filter({ hasText: 'Zander' })
+    .filter({ hasText: 'Hecht' })
     .filter({ hasText: 'Entnahmefenster' });
-  await expect(zander).toContainText('45–75 cm');
-  await expect(zander).toContainText('Anlage 1 Nr. 9 (zu § 7 Abs. 1) HmbFAnGDVO');
-  await expect(
-    page.getByRole('link', { name: /Verordnung zur Durchführung des Hamburgischen/ }),
-  ).toBeVisible();
+  await expect(hecht).toContainText('50–90 cm');
+  await expect(hecht).toContainText('§ 2 Abs. 1 HFischV');
+  await expect(page.getByRole('link', { name: /Hessische Fischereiverordnung/ })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
