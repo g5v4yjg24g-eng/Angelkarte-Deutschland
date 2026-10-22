@@ -18,6 +18,7 @@ const NAV = [
   { to: '/statistik', label: de.nav.stats, icon: ChartIcon, end: false },
   { to: '/mehr', label: de.nav.more, icon: MoreIcon, end: false },
 ] as const;
+const NAV_PATHS = NAV.map((n) => n.to);
 
 /** Linse etwas breiter als ein Punkt, damit sie ihn umschließt */
 const LENS_SCALE = 1.25;
@@ -31,7 +32,8 @@ interface Lens {
 }
 
 /** Drücken und Wischen auf der Leiste (nur Touch/Stift, nur mobile Leiste): Linse folgt dem Finger, Loslassen wählt. */
-function useNavLens(count: number) {
+/** `paths`: Router-Pfade der Punkte (ohne Basis-Pfad der Veröffentlichung) */
+function useNavLens(paths: readonly string[]) {
   const navigate = useNavigate();
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
@@ -43,7 +45,7 @@ function useNavLens(count: number) {
 
   const spans = (): Span[] => {
     const nav = navRef.current?.getBoundingClientRect();
-    return itemRefs.current.slice(0, count).map((el) => {
+    return itemRefs.current.slice(0, paths.length).map((el) => {
       const r = el?.getBoundingClientRect();
       return { left: (r?.left ?? 0) - (nav?.left ?? 0), width: r?.width ?? 0 };
     });
@@ -92,7 +94,8 @@ function useNavLens(count: number) {
     if (select && item) {
       // Einrasten auf dem gewählten Punkt, dann ausblenden
       setLens((l) => l && { ...l, center: item.left + item.width / 2, index, snapping: true });
-      const to = itemRefs.current[index]?.getAttribute('href');
+      // Router-Pfad, nicht das href: Das enthält auf GitHub Pages schon den Basis-Pfad, der Router setzt ihn sonst doppelt
+      const to = paths[index];
       if (to) void navigate(to);
       timer.current = window.setTimeout(() => setLens(null), SNAP_MS);
     } else setLens(null);
@@ -129,7 +132,7 @@ declare global {
 
 export function AppShell() {
   const online = useOnline();
-  const { lens, navRef, itemRef, handlers } = useNavLens(NAV.length);
+  const { lens, navRef, itemRef, handlers } = useNavLens(NAV_PATHS);
   useEffect(() => {
     // Intro ausblenden, sobald die Oberfläche steht (index.html).
     window.__fangpunktAppReady?.();

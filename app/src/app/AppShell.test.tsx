@@ -13,10 +13,12 @@ vi.mock('virtual:pwa-register/react', () => ({
   }),
 }));
 
-function renderAt(path: string) {
+function renderAt(path: string, basename?: string) {
   return render(
     <ProvidersProvider value={providers}>
-      <RouterProvider router={createMemoryRouter(routes, { initialEntries: [path] })} />
+      <RouterProvider
+        router={createMemoryRouter(routes, { initialEntries: [path], ...(basename ? { basename } : {}) })}
+      />
     </ProvidersProvider>,
   );
 }
@@ -54,5 +56,40 @@ describe('AppShell', () => {
   it('zeigt für unbekannte Pfade eine verständliche Seite', () => {
     renderAt('/gibt-es-nicht');
     expect(screen.getByRole('heading', { name: 'Seite nicht gefunden' })).toBeInTheDocument();
+  });
+
+  it('Wischen auf der Leiste öffnet den Bereich auch unter einem Basis-Pfad (GitHub Pages)', async () => {
+    // Fehlerbild 2026-10-22: „Seite nicht gefunden", weil der Basis-Pfad doppelt vorangestellt wurde
+    // jsdom kennt matchMedia nicht: schmaler Bildschirm (mobile Leiste)
+    window.matchMedia = () => ({ matches: false }) as MediaQueryList;
+    renderAt('/basis/fangbuch', '/basis');
+    const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' });
+    const links = ['Karte', 'Fangbuch', 'Wetter', 'Statistik', 'Mehr'].map((n) =>
+      screen.getByRole('link', { name: n }),
+    );
+    expect(links[3]).toHaveAttribute('href', '/basis/statistik');
+    links.forEach((l, i) =>
+      vi.spyOn(l, 'getBoundingClientRect').mockReturnValue({ left: i * 70, width: 68 } as DOMRect),
+    );
+    vi.spyOn(nav, 'getBoundingClientRect').mockReturnValue({ left: 0, width: 350 } as DOMRect);
+    nav.setPointerCapture = () => {};
+    const fire = (type: string, x: number) =>
+      act(() => {
+        const target = type === 'pointerdown' ? (links[1] as HTMLElement) : nav;
+        target.dispatchEvent(
+          new PointerEvent(type, {
+            bubbles: true,
+            pointerId: 3,
+            pointerType: 'touch',
+            isPrimary: true,
+            clientX: x,
+          }),
+        );
+      });
+    fire('pointerdown', 104);
+    for (const x of [140, 180, 220, 245]) fire('pointermove', x);
+    fire('pointerup', 245);
+    expect(await screen.findByRole('heading', { level: 1, name: 'Statistik' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Seite nicht gefunden' })).toBeNull();
   });
 });
