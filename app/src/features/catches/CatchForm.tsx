@@ -39,6 +39,9 @@ import {
   type DraftField,
 } from '../../domain/catchDraft';
 import { markerDataUrl } from '../map/markerIcons';
+import { LawCheckPanel } from '../law/LawCheckPanel';
+import { useLawCheck, useStateResolution } from '../law/useLawCheck';
+import type { StateCode } from '../../domain/water';
 import styles from './CatchForm.module.css';
 
 const t = de.catchForm;
@@ -179,6 +182,19 @@ export function CatchForm({
       : undefined
     : chosenWater;
 
+  // Rechts-Warnung: Bundesland am Fangort (oder in Grenznähe gewählt) und Prüfung der aktuellen Angaben
+  const posKey = (p?: { lat: number; lng: number }) => (p ? `${p.lat},${p.lng}` : '');
+  const [stateChoice, setStateChoice] = useState<{ key: string; code: StateCode } | undefined>(() =>
+    initial?.stateCode ? { key: posKey(initial.position), code: initial.stateCode } : undefined,
+  );
+  const fixedState = stateChoice?.key === posKey(position) ? stateChoice.code : undefined;
+  const resolution = useStateResolution(position, fixedState);
+  const lawInput = useMemo(() => {
+    const { fields } = draftToFields(draft, initial ? { base: initial } : {});
+    return fields ?? { outcome: draft.outcome, at: '' };
+  }, [draft, initial]);
+  const lawCheck = useLawCheck(lawInput, lawInput.at ? resolution : { kind: 'unknown' });
+
   async function save(e?: React.FormEvent, { withPhotos = true } = {}) {
     e?.preventDefault();
     setSaveError(undefined);
@@ -192,13 +208,14 @@ export function CatchForm({
       if (details.current && DETAIL_FIELDS.some((f) => errs[f])) details.current.open = true;
       return;
     }
+    const resolvedState = resolution?.kind === 'state' ? resolution.code : undefined;
     setBusy(true);
     try {
       const addPhotos = withPhotos ? pending.map((p) => p.photo) : [];
       const saved = initial
         ? await saveCatch({
             id: initial.id,
-            changes: { ...fields, position },
+            changes: { ...fields, position, stateCode: resolvedState },
             addPhotos,
             removePhotoIds: removedPhotos,
           })
@@ -206,6 +223,7 @@ export function CatchForm({
             input: {
               ...fields,
               ...(position ? { position } : {}),
+              ...(resolvedState ? { stateCode: resolvedState } : {}),
               ...(chosenWater
                 ? {
                     waterId: chosenWater.wid,
@@ -511,6 +529,12 @@ export function CatchForm({
         value={draft.notes}
         onChange={(e) => set('notes', e.target.value)}
         error={errorText('notes')}
+      />
+
+      <LawCheckPanel
+        check={lawCheck}
+        hasPosition={!!position}
+        onChooseState={(code) => setStateChoice({ key: posKey(position), code })}
       />
 
       {hasErrors && <Notice tone="error">{t.errors.summary}</Notice>}

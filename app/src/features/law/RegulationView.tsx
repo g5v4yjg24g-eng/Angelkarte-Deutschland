@@ -7,16 +7,13 @@ import {
   berlinDay,
   freshness,
   inClosedSeason,
-  type MonthDay,
-  type MinSizeRule,
   type RegulationSet,
   taxonLabel,
 } from '../../domain/regulations';
+import { md, sizeText } from './lawText';
 import styles from './Law.module.css';
 
 const t = de.law;
-const pad = (n: number) => String(n).padStart(2, '0');
-const md = (d: MonthDay) => `${pad(d.day)}.${pad(d.month)}.`;
 const formatCheckedDate = (iso: string) =>
   new Date(`${iso}T12:00:00Z`).toLocaleDateString('de-DE', {
     day: '2-digit',
@@ -34,15 +31,6 @@ function Species({ r }: { r: Taxon }) {
     </>
   );
 }
-
-const sizeText = (r: MinSizeRule) =>
-  r.minCm !== undefined && r.maxCm !== undefined
-    ? t.window(r.minCm, r.maxCm)
-    : r.minCm !== undefined
-      ? t.cm(r.minCm)
-      : r.maxCm !== undefined
-        ? t.maxOnly(r.maxCm)
-        : '–';
 
 export function Disclaimer() {
   return <Notice tone="warning">{t.disclaimer}</Notice>;

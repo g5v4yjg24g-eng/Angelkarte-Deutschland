@@ -105,7 +105,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Fischarten pro Gewässer (Monitoring-Nachweise, Stufe 2) | P2 | Datenaufbereitung nötig (DATA_SOURCES §4) |
 | Tiefenkarten (erste lizenzierte Quelle) | P2 | Lizenzklärung nötig |
 | Offline-Kartenregionen | P2 | Eigene PMTiles-Hosting-Infrastruktur nötig |
-| **Rechts-Warnung beim Erfassen** (Schonzeit, Mindestmaß, Entnahmefenster im Fang-Bundesland) | P1 | Wunsch Nutzer 2026-10-22, vorgemerkt – siehe Abschnitt „Vorgemerkt“ direkt unter dieser Tabelle |
+| **Rechts-Warnung beim Erfassen** (Schonzeit, Mindestmaß, Entnahmefenster im Fang-Bundesland) | P1 | ✅ umgesetzt 2026-10-22 (siehe unten); echte Landesgrenzen erst nach dem nächsten Lauf „Gewässerdaten erzeugen“ |
 | Heatmap, CSV-Export | P2 | |
 | Gewässerbezogene Regeln / Angelzonen (Stufe 4) | P3 | Kaum offene Daten; Kooperationen nötig |
 | Angelkalender, Beißfenster-Analyse | P3 | |
@@ -114,14 +114,16 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 
 ---
 
-### Vorgemerkt: Rechts-Warnung beim Erfassen eines Fangs (Wunsch Nutzer 2026-10-22)
+### Rechts-Warnung beim Erfassen eines Fangs (Wunsch Nutzer 2026-10-22, ✅ umgesetzt)
+**Entschieden (Nutzer 2026-10-22):** warnen, nicht blockieren; Bundesland aus dem Standort über Landesgrenzen; Länder ohne Daten „keine Prüfung möglich“; Regeln mit Geltungsbereich als „bitte prüfen“. Umsetzung: Landesgrenzen aus der Gewässer-Pipeline (`states.json`, OSM `admin_level=4`, ODbL), Prüfung `domain/regulationCheck.ts`, Anzeige `features/law/LawCheckPanel.tsx` im Fangformular (live) und am Eintrag. Geprüft werden zusätzlich ganzjährig geschützte Arten. In Grenznähe (< 150 m) wählt der Nutzer das Land.
+
 Beim Eintragen eines **gelandeten Fischs** prüft die App zwingend:
 1. **In welchem Bundesland** wurde der Fisch gefangen? (aus der Fangposition)
 2. **Darf er entnommen werden?** Gegen die Landesdatei dieses Landes: **Schonzeit** am Fangtag, **unter dem Mindestmaß**, **außerhalb des Entnahmefensters** (zu klein oder zu groß).
 
 Trifft etwas zu → deutliche **Warnung** im Fangformular (vor dem Speichern) und am Eintrag, mit Paragraf und Link zur Quelle, plus Hinweis „keine Rechtsauskunft“.
 
-Vorüberlegungen zur Umsetzung:
+Vorüberlegungen (Stand vor der Umsetzung):
 - Warnen, **nicht blockieren**. Speichern bleibt möglich, z. B. bei zurückgesetztem Fisch („zurückgesetzt“ entschärft die Warnung). Die App rechnet keine „strengere“ Regel aus (`domain/regulations.ts`).
 - Bundesland: Das Gewässer trägt den Landescode bereits (Pipeline, `WaterInfo.state`). Ohne Gewässer braucht es Landesgrenzen als Daten **[O]**: Quelle und Lizenz klären, z. B. BKG VG250 (dl-de/by-2.0) oder OSM-Grenzen aus der Pipeline. An Landesgrenzen nachfragen statt raten.
 - Nur Länder mit sichtbarer Landesdatei (`partial`/`verified`). Ohne Daten (derzeit NRW) heißt es „keine Prüfung möglich“, nie „erlaubt“.

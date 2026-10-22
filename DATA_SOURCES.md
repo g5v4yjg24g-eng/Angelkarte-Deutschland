@@ -89,6 +89,8 @@ Artenliste (Namen, wiss. Namen) wird einmalig redaktionell aus der GBIF-Taxonomi
 
 ## 5. Recht (Fischereirecht der Länder)
 
+**Landesgrenzen für die Rechts-Warnung (2026-10-22):** aus demselben OSM-Auszug wie die Gewässer (`boundary=administrative`, `admin_level=4`; © OpenStreetMap-Mitwirkende, ODbL 1.0), in der Pipeline vereinfacht (Douglas-Peucker 50 m) und als `states.json` mit den Gewässerdaten ausgeliefert. Die Pipeline prüft jedes Gewässer gegen die Originalgrenzen (falsches Land = Abbruch). Näher als 150 m an einer Grenze rät die App nicht, sondern lässt wählen. Alternative amtliche Quelle: BKG VG250 (dl-de/by-2.0) – nicht genutzt, weil OSM schon Quelle der Gewässer-Länderzuordnung ist [A]. **[O]** Größe der Datei für ganz Deutschland erst nach dem nächsten Lauf bekannt (steht dann in `report.json`).
+
 ### 5.1 Befund
 - Es gibt **keine** maschinenlesbare, bundesweite Quelle für Schonzeiten und Mindestmaße [A, keine gefunden]. Rechtsgrundlage sind je Land Fischereigesetz und Fischereiverordnung bzw. Ausführungsverordnung.
 - Amtliche Texte stehen in den Landesrechtsportalen. Gesetzestexte sind nach § 5 UrhG gemeinfrei; ihre Inhalte dürfen strukturiert wiedergegeben werden [A, O: bei Portalen auf Datenbankschutz der Aufbereitung achten → nur Inhalte, nicht Layouts übernehmen].

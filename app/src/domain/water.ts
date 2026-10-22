@@ -89,5 +89,7 @@ export const WaterManifestSchema = z.object({
   coverage: z.array(z.string()),
   tiles: z.string(),
   search: z.string(),
+  /** Landesgrenzen (ab den Daten mit Rechts-Warnung); ältere Releases haben keine */
+  states: z.string().optional(),
 });
 export type WaterManifest = z.infer<typeof WaterManifestSchema>;

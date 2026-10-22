@@ -7,6 +7,7 @@ Erzeugt aus einem OSM-Auszug (`.osm.pbf`) die statischen Gewässerdaten der App:
 | `water.pmtiles` | Vektorkacheln z8–14, Ebenen `areas` (Flächen) und `lines` (Flüsse, Kanäle, benannte Bäche); Attribute `wid`, `t` (Typ), `n` (Name), `mz` (Mindest-Zoom) |
 | `waters.ndjson` | Ein Metadatensatz je OSM-Objekt: `wid`, Name, Typ, Fläche (ha) bzw. Länge (km), repräsentativer Punkt, Bounding Box, Land/Kreis/Gemeinde |
 | `search/<xx>.json` | Suchindex nach den ersten 2 Buchstaben jedes Namensworts; Einträge `[Name, Art, lat, lng, Kontext, Rang]` |
+| `states.json` | Vereinfachte Landesgrenzen (OSM `admin_level=4`, Douglas-Peucker 50 m, Koordinaten auf 5 Stellen) für das Bundesland am Fangort in der App. Schritt 3 prüft jedes Gewässer: Die vereinfachten Grenzen müssen dasselbe Land ergeben wie die Originalgrenzen oder „Grenznähe“ (< 150 m, dann fragt die App nach). Ein falsches Land bricht den Lauf ab (`states-errors.txt`). Geometrie: `app/src/domain/geo.ts` (gemeinsam mit der App). |
 | `report.json` | Mengen, Größen und Abdeckung (Grundlage der Hochrechnung in DATA_SOURCES.md) |
 
 ## Voraussetzungen

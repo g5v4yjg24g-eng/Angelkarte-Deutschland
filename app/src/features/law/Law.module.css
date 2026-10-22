@@ -76,3 +76,36 @@
   color: var(--color-text-muted);
   font-size: var(--text-sm);
 }
+.check {
+  display: grid;
+  gap: var(--space-2);
+}
+.check p {
+  margin: 0;
+}
+.checkTitle {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 650;
+}
+.findings {
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+}
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.choice {
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}

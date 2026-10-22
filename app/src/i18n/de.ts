@@ -477,6 +477,32 @@ export const de = {
       range: 'Dieser Wert ist zu groß.',
     },
   },
+  lawCheck: {
+    title: 'Landesrecht',
+    titleState: (state: string) => `Landesrecht ${state}`,
+    noPosition: 'Ohne Fangort keine Prüfung möglich.',
+    noState: 'Bundesland unbekannt – keine Prüfung möglich.',
+    chooseState: 'Der Fangort liegt nah an einer Landesgrenze. In welchem Bundesland hast du gefangen?',
+    noData: (state: string) =>
+      `${state}: keine Prüfung möglich – für dieses Land sind noch keine Regeln erfasst.`,
+    noFindings: (state: string) =>
+      `Nach den erfassten Regeln für ${state}: keine Schonzeit, kein ganzjähriger Schutz und kein Maß verletzt.`,
+    warnTitle: 'Achtung: Dieser Fisch darf nach Landesrecht vermutlich nicht entnommen werden.',
+    released: 'Du hast ihn zurückgesetzt – nur zur Information.',
+    estimated: 'Die Länge ist nur geschätzt.',
+    closed: (species: string, period: string) => `Schonzeit: ${species} ${period}`,
+    protected: (species: string) => `Ganzjährig geschont: ${species}`,
+    undersize: (species: string, len: string, min: string) =>
+      `Unter dem Mindestmaß: ${species} ${len}, erlaubt ${min}`,
+    oversize: (species: string, len: string, rule: string) =>
+      `Außerhalb des Entnahmefensters: ${species} ${len}, erlaubt ${rule}`,
+    needsLength: (species: string, rule: string) =>
+      `Länge fehlt – Maß für ${species} (${rule}) nicht geprüft.`,
+    scoped: (scope: string) => `Gilt nur: ${scope} – bitte prüfen.`,
+    partial: (missing: string) => `Nicht alle Regeln erfasst (fehlt: ${missing}).`,
+    allRules: (state: string) => `Alle Regeln für ${state}`,
+    lengthValue: (cm: number) => `${cm.toLocaleString('de-DE')} cm`,
+  },
   law: {
     title: 'Angelrecht der Länder',
     disclaimer:

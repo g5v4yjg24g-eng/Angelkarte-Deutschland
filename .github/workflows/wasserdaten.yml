@@ -77,7 +77,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cd "$WORK/out"
-          tar -czf wasserdaten.tar.gz water.pmtiles water-manifest.json search
+          tar -czf wasserdaten.tar.gz water.pmtiles water-manifest.json states.json search
           date=$(jq -r '.dataDate[0:10]' water-manifest.json)
           tag="wasserdaten-$date-$GITHUB_RUN_NUMBER"
           {

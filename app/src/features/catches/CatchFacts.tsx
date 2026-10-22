@@ -8,6 +8,9 @@ import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
 import { CatchPhotos } from './CatchPhotos';
 import { CatchWeather } from '../weather/CatchWeather';
+import { LawCheckPanel } from '../law/LawCheckPanel';
+import { useLawCheck, useStateResolution } from '../law/useLawCheck';
+import { repo } from '../../data/repository';
 import styles from './CatchFacts.module.css';
 
 const t = de.catchForm;
@@ -31,6 +34,7 @@ export function CatchFacts({ item }: { item: Catch }) {
   );
   const sessionLabel =
     session && !session.deletedAt ? de.sessions.inSession(formatDateTime(session.startAt)) : undefined;
+  const lawCheck = useLawCheck(item, useStateResolution(item.position, item.stateCode));
   const c = item.conditions;
   const bait = [
     item.bait?.name,
@@ -90,6 +94,11 @@ export function CatchFacts({ item }: { item: Catch }) {
         </dl>
       )}
       {item.notes && <p className={styles.notes}>{item.notes}</p>}
+      <LawCheckPanel
+        check={lawCheck}
+        hasPosition={!!item.position}
+        onChooseState={(code) => void repo('catches').update(item.id, { stateCode: code })}
+      />
       <CatchWeather item={item} />
     </>
   );
