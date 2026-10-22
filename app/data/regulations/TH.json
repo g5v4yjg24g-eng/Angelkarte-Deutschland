@@ -1,14 +1,21 @@
 {
   "stateCode": "TH",
-  "status": "partial",
-  "missing": ["Fischereischein (Thüringer Fischereigesetz)"],
+  "status": "draft",
+  "missing": ["Höhe von Fischereischeingebühr und Fischereiabgabe (Rechtsverordnung nach § 33 ThürFischG)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "ThürFischAVO",
       "title": "Ausführungsverordnung zum Thüringer Fischereigesetz",
       "version": "vom 11. August 2020 (GVBl. S. 457), geändert durch Artikel 55 des Gesetzes vom 2. Juli 2024 (GVBl. S. 277, 292); Gesamtausgabe Stand 22.10.2026",
+      "url": "https://landesrecht.thueringen.de/",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "ThürFischG",
+      "title": "Thüringer Fischereigesetz",
+      "version": "zuletzt geändert durch Artikel 52 des Gesetzes vom 18. Dezember 2018 (GVBl. S. 731, 768); Gesamtausgabe Stand 22.10.2026",
       "url": "https://landesrecht.thueringen.de/",
       "retrievedAt": "2026-10-22"
     }
@@ -515,7 +522,50 @@
       "basisRef": "§ 1 Abs. 1"
     }
   ],
-  "licences": [],
+  "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Wer den Fischfang ausübt, muss einen auf seinen Namen lautenden, mit Lichtbild versehenen Fischereischein bei sich führen und diesen auf Verlangen vorzeigen. Der Vierteljahresfischereischein ohne Lichtbild ist nur in Verbindung mit einem gültigen amtlichen Personaldokument gültig.",
+      "basisId": "ThürFischG",
+      "basisRef": "§ 26 Abs. 1 und 2"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Ein Fischereischein kann erstmals nach bestandener Fischerprüfung erteilt werden – als Jahres-, Fünfjahres-, Zehnjahres- oder Fischereischein auf Lebenszeit. Ohne Prüfung gibt es den Vierteljahresfischereischein (drei Monate).",
+      "basisId": "ThürFischG",
+      "basisRef": "§ 28, § 29 Abs. 1 und 2"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Fischereischeine anderer Länder und anderer europäischer Staaten, sofern die Erteilung auf der Grundlage einer nachgewiesenen Qualifikation erfolgte, werden dem Thüringer Fischereischein gleichgestellt.",
+      "basisId": "ThürFischG",
+      "basisRef": "§ 26 Abs. 4 Satz 1"
+    },
+    {
+      "kind": "youth",
+      "text": "Personen, die das achte, aber noch nicht das vierzehnte Lebensjahr vollendet haben, darf der Fischereischein nur als Jugendfischereischein erteilt werden (ohne Fischerprüfung). Sie dürfen nur in Begleitung eines volljährigen Fischereischeininhabers (nicht Vierteljahresschein) fischen, es sei denn, sie haben die Fischerprüfung bestanden.",
+      "basisId": "ThürFischG",
+      "basisRef": "§ 27, § 29 Abs. 2 Nr. 2"
+    },
+    {
+      "kind": "tourist",
+      "text": "Personen ohne Wohnsitz in Deutschland oder Angehörigen des diplomatischen Corps mit ausländischem Fischereischein kann ein Fischereischein ohne Fischerprüfung erteilt werden, dann nur als Jahresfischereischein.",
+      "basisId": "ThürFischG",
+      "basisRef": "§ 29 Abs. 3"
+    },
+    {
+      "kind": "levy",
+      "text": "Vor Erteilung des Fischereischeins sind die Fischereischeingebühr sowie die Fischereiabgabe zu entrichten; die Höhe regelt eine Rechtsverordnung (hier nicht erfasst).",
+      "basisId": "ThürFischG",
+      "basisRef": "§ 33 Abs. 1"
+    },
+    {
+      "kind": "permit",
+      "text": "Ein Erlaubnisschein zum Fischfang darf nur an Personen mit gültigem Fischereischein und höchstens für ein Kalenderjahr erteilt werden. Der Inhaber hat ihn bei der Fischereiausübung mit sich zu führen und Aufsichtspersonen zur Einsichtnahme auszuhändigen.",
+      "basisId": "ThürFischG",
+      "basisRef": "§ 14 Abs. 1"
+    }
+  ],
   "otherRules": [
     {
       "topic": "Messen",

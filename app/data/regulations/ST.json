@@ -1,17 +1,24 @@
 {
   "stateCode": "ST",
-  "status": "partial",
+  "status": "draft",
   "missing": [
-    "Fischereischein (Fischereigesetz des Landes Sachsen-Anhalt)",
-    "besonders geschützte Krebse und Muscheln (Verweis auf § 7 Abs. 2 Nr. 13 BNatSchG, nicht einzeln aufgezählt)"
+    "besonders geschützte Krebse und Muscheln (Verweis auf § 7 Abs. 2 Nr. 13 BNatSchG, nicht einzeln aufgezählt)",
+    "Anerkennung von Fischereischeinen anderer Länder und Höhe der Fischereiabgabe (Verordnungen nach § 28 Abs. 4 und § 30 Abs. 4 FischG LSA)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "FischO LSA",
       "title": "Fischereiordnung des Landes Sachsen-Anhalt",
       "version": "vom 11. Januar 1994 (GVBl. LSA S. 16), zuletzt geändert durch § 2 der Verordnung vom 6. März 2013 (GVBl. LSA S. 110); Gesamtausgabe Stand 22.10.2026",
+      "url": "https://www.landesrecht.sachsen-anhalt.de/",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "FischG LSA",
+      "title": "Fischereigesetz des Landes Sachsen-Anhalt",
+      "version": "zuletzt geändert durch § 1 des Gesetzes vom 21. März 2026 (GVBl. LSA S. 103, 104); Gesamtausgabe Stand 22.10.2026",
       "url": "https://www.landesrecht.sachsen-anhalt.de/",
       "retrievedAt": "2026-10-22"
     }
@@ -392,7 +399,38 @@
       "basisRef": "§ 2 Abs. 1 Nr. 22"
     }
   ],
-  "licences": [],
+  "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Wer die Fischerei ausübt, bedarf der behördlichen Erlaubnis; diese wird durch einen Fischereischein erteilt. Der Fischereischein ist bei der Ausübung der Fischerei mit sich zu führen und auf Verlangen vorzuzeigen.",
+      "basisId": "FischG LSA",
+      "basisRef": "§ 28 Abs. 1 Satz 1 und 2, Abs. 3"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Die erste Erteilung setzt eine in Sachsen-Anhalt bestandene Fischerprüfung nach einem Lehrgang mit mindestens 30 Unterrichtsstunden voraus. Der Fischereischein wird für ein bis fünf Kalenderjahre oder auf Lebenszeit erteilt; mit der Gebühr wird die Fischereiabgabe erhoben.",
+      "basisId": "FischG LSA",
+      "basisRef": "§ 31 Abs. 1, § 30 Abs. 1 und 4"
+    },
+    {
+      "kind": "youth",
+      "text": "Personen ab dem vollendeten achten Lebensjahr darf ein Friedfischfischereischein erteilt werden, sofern sie die Friedfischfischerprüfung (unter erleichterten Bedingungen) bestanden haben; bis zum vollendeten zwölften Lebensjahr ausschließlich dieser. Er berechtigt nur zum Friedfischfang.",
+      "basisId": "FischG LSA",
+      "basisRef": "§ 29 Abs. 1 und 4, § 31 Abs. 2"
+    },
+    {
+      "kind": "tourist",
+      "text": "Bei Personen ohne Wohnsitz in Deutschland oder ohne deutsche Staatsangehörigkeit, die ihre Befähigung zur Fischereiausübung nachweisen, können Ausnahmen von der Fischerprüfung gemacht werden; die Ausnahme wird im Fischereischein vermerkt.",
+      "basisId": "FischG LSA",
+      "basisRef": "§ 31 Abs. 4"
+    },
+    {
+      "kind": "permit",
+      "text": "Übt ein Erlaubnisinhaber die Fischerei ohne Anwesenheit des Fischereiausübungsberechtigten aus, hat er eine schriftliche Fischereierlaubnis (Fischereierlaubnisschein/Angelkarte) mit sich zu führen und auf Verlangen vorzuzeigen. Fischereierlaubnisse gelten höchstens ein Jahr.",
+      "basisId": "FischG LSA",
+      "basisRef": "§ 26 Abs. 1 und 4"
+    }
+  ],
   "otherRules": [
     {
       "topic": "Krebse und Muscheln",

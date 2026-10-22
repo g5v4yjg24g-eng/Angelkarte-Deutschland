@@ -1,14 +1,21 @@
 {
   "stateCode": "SL",
-  "status": "partial",
-  "missing": ["Fischereischein (Saarländisches Fischereigesetz, §§ 33 ff. LFO)"],
+  "status": "draft",
+  "missing": ["Ausnahmen des Fischereiverbands Saar (§ 27 Abs. 2 SFischG, § 9 LFO)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, Amtsblatt-PDF vom Nutzer; mit Gesamtausgabe Stand 22.10.2026 abgeglichen); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, Amtsblatt-PDF vom Nutzer; mit Gesamtausgabe Stand 22.10.2026 abgeglichen); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "LFO",
       "title": "Verordnung zur Durchführung des Saarländischen Fischereigesetzes (Landesfischereiordnung)",
       "version": "vom 5. Februar 2020 (Amtsbl. I S. 132), geändert durch Artikel 167 des Gesetzes vom 8. Dezember 2021 (Amtsbl. I S. 2629); Gesamtausgabe Stand 22.10.2026, verwendete Paragrafen unverändert seit 28.02.2020",
+      "url": "https://recht.saarland.de/",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "SFischG",
+      "title": "Saarländisches Fischereigesetz",
+      "version": "zuletzt geändert durch Artikel 166 des Gesetzes vom 8. Dezember 2021 (Amtsbl. I S. 2629); Gesamtausgabe Stand 22.10.2026",
       "url": "https://recht.saarland.de/",
       "retrievedAt": "2026-10-22"
     }
@@ -412,6 +419,36 @@
       "text": "Mit der Gebühr für den Fischereischein wird eine Fischereiabgabe erhoben: Jugendfischereischein 2,50 Euro, Jahresfischereischein 8,00 Euro, Fünfjahresfischereischein 40,00 Euro; für Menschen mit Behinderung 5,00 Euro (Jahr) bzw. 25,00 Euro (fünf Jahre).",
       "basisId": "LFO",
       "basisRef": "§ 46"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Wer den Fischfang ausübt, muss einen auf seinen Namen lautenden Fischereischein bei sich führen und diesen auf Verlangen den Aufsichtspersonen, den Fischereiberechtigten und den Fischereipächtern zur Einsichtnahme aushändigen.",
+      "basisId": "SFischG",
+      "basisRef": "§ 27 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "In anderen Ländern der Bundesrepublik Deutschland ausgestellte Fischereischeine sind dem Fischereischein nach diesem Gesetz gleichgestellt.",
+      "basisId": "SFischG",
+      "basisRef": "§ 27 Abs. 3"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Die erste Erteilung eines Fischereischeins (außer Jugendfischereischein) setzt die bestandene Fischerprüfung voraus. Der Fischereischein wird als Jahresfischereischein für ein Kalenderjahr oder als Fünfjahresfischereischein erteilt und kann verlängert werden.",
+      "basisId": "SFischG",
+      "basisRef": "§ 32 Abs. 1, § 29"
+    },
+    {
+      "kind": "youth",
+      "text": "Personen, die das 16. Lebensjahr noch nicht vollendet haben, darf der Fischereischein nur als Jugendfischereischein erteilt werden, es sei denn, sie haben die Fischerprüfung abgelegt und das 14. Lebensjahr vollendet. Der Jugendfischereischein berechtigt nur zur Ausübung der Fischerei unter Aufsicht eines volljährigen Fischereischeininhabers.",
+      "basisId": "SFischG",
+      "basisRef": "§ 28"
+    },
+    {
+      "kind": "permit",
+      "text": "Wer in einem Gewässer, in dem er nicht Fischereiberechtigter oder Fischereipächter ist, den Fischfang ausübt, muss unbeschadet des § 27 einen Erlaubnisschein des Fischereiberechtigten oder Fischereipächters bei sich führen und diesen auf Verlangen aushändigen. Der Erlaubnisschein gilt höchstens ein Jahr und endet mit dem Kalenderjahr; er kann auch elektronisch erteilt werden.",
+      "basisId": "SFischG",
+      "basisRef": "§ 34 Abs. 1, § 35 Abs. 1"
     }
   ],
   "otherRules": [

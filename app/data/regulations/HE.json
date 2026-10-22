@@ -1,18 +1,22 @@
 {
   "stateCode": "HE",
-  "status": "partial",
-  "missing": [
-    "Fischereischein (Hessisches Fischereigesetz)",
-    "Änderungen nach der Verkündung am 28.04.2023 nicht geprüft (Landesrechtsportal gesperrt)"
-  ],
+  "status": "draft",
+  "missing": ["Änderungen nach der Verkündung am 28.04.2023 nicht geprüft (Landesrechtsportal gesperrt)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, GVBl. Hessen 2023 Nr. 15 von starweb.hessen.de); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, GVBl. Hessen 2023 Nr. 15 von starweb.hessen.de); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "HFischV",
       "title": "Hessische Fischereiverordnung",
       "version": "vom 14. April 2023, verkündet im GVBl. 2023 Nr. 15 vom 28. April 2023 (Erstfassung; spätere Änderungen nicht berücksichtigt)",
       "url": "https://starweb.hessen.de/cache/GVBL/2023/00015.pdf",
+      "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "HFischG",
+      "title": "Hessisches Fischereigesetz",
+      "version": "vom 17. November 2022 (GVBl. S. 576), geändert durch Artikel 36 des Gesetzes vom 16. Dezember 2025; gültig bis 31.12.2029; Gesamtausgabe Stand 22.10.2026",
+      "url": "https://www.rv.hessenrecht.hessen.de/",
       "retrievedAt": "2026-10-22"
     }
   ],
@@ -550,7 +554,56 @@
       "basisRef": "§ 1"
     }
   ],
-  "licences": [],
+  "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Den Fischfang dürfen nur Personen ausüben, die Inhaber eines gültigen Fischereischeins sind.",
+      "basisId": "HFischG",
+      "basisRef": "§ 29 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Der Fischereischein wird erteilt, wenn die antragstellende Person das 14. Lebensjahr vollendet und die Fischerprüfung bestanden hat und keine Versagungsgründe entgegenstehen; er gilt lebenslang. Er ist nur mit amtlichem Lichtbildausweis gültig und in Papierform oder digital mitzuführen.",
+      "basisId": "HFischG",
+      "basisRef": "§ 30 Abs. 1 und 2, § 34 Abs. 1 Nr. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Die oberste Fischereibehörde erkennt einen Fischereischein eines anderen Bundeslandes oder eines anderen EU-Mitgliedstaates an, wenn die Voraussetzungen, unter denen er erteilt wurde, denen nach diesem Gesetz entsprechen; die Anerkennung kann auch durch Allgemeinverfügung erfolgen.",
+      "basisId": "HFischG",
+      "basisRef": "§ 30 Abs. 3"
+    },
+    {
+      "kind": "youth",
+      "text": "Jugendliche, die das zehnte Lebensjahr vollendet und das sechzehnte noch nicht vollendet haben, dürfen den Fischfang mit der Handangel unter Aufsicht einer volljährigen Person mit gültigem Fischereischein ohne Fischereischein ausüben; das Alter ist auf Verlangen durch amtlichen Lichtbildausweis nachzuweisen. Kinder bis zehn Jahre dürfen einen Volljährigen beim Fischfang mit dessen Handangeln unterstützen.",
+      "basisId": "HFischG",
+      "basisRef": "§ 29 Abs. 3 und 4"
+    },
+    {
+      "kind": "tourist",
+      "text": "Personen, die im Inland keinen Wohnsitz haben und ihre Sachkunde (insbesondere durch einen ausländischen Fischereischein oder Fischereierlaubnisschein) nachweisen, kann ohne Fischerprüfung ein Besucherfischereischein für einen Monat in einem Kalenderjahr erteilt werden.",
+      "basisId": "HFischG",
+      "basisRef": "§ 33 Nr. 2, § 34 Abs. 1 Nr. 3"
+    },
+    {
+      "kind": "levy",
+      "text": "Wer die Fischerei ausüben will und einen hessischen Fischereischein besitzt, hat pro Kalenderjahr eine Fischereiabgabe zu entrichten (bis zu vier Jahre im Voraus möglich); der Nachweis ist mitzuführen. Das gilt auch für Jugendliche nach § 29 Abs. 4 mit gewöhnlichem Aufenthalt in Hessen.",
+      "basisId": "HFischG",
+      "basisRef": "§ 35 Abs. 1"
+    },
+    {
+      "kind": "levy",
+      "text": "Die Abgabe beträgt 10,00 Euro je Kalenderjahr für Inhaber eines Fischereischeins, Sonderfischereischeins oder Besucherfischereischeins und 3,50 Euro für Jugendliche nach § 29 Abs. 4 Satz 1 HFischG.",
+      "basisId": "HFischV",
+      "basisRef": "§ 27 Abs. 1"
+    },
+    {
+      "kind": "permit",
+      "text": "Fischereierlaubnisscheine dürfen nur Inhabern eines gültigen Fischereischeins oder Jugendlichen nach § 29 Abs. 4 erteilt werden und höchstens ein Kalenderjahr gelten. Sie sind in Papierform oder digital mitzuführen und auf Verlangen vorzuzeigen.",
+      "basisId": "HFischG",
+      "basisRef": "§ 16 Abs. 1"
+    }
+  ],
   "otherRules": [
     {
       "topic": "Messen",
