@@ -2,6 +2,8 @@
 import { de } from '../../i18n/de';
 import type { Catch } from '../../domain/schemas';
 import { formatDateTime } from '../../lib/storage';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { getDb } from '../../data/db';
 import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
 import { CatchPhotos } from './CatchPhotos';
@@ -22,6 +24,12 @@ export function CatchHead({ item }: { item: Catch }) {
 }
 
 export function CatchFacts({ item }: { item: Catch }) {
+  const session = useLiveQuery(
+    async () => (item.sessionId ? await getDb().sessions.get(item.sessionId) : undefined),
+    [item.sessionId],
+  );
+  const sessionLabel =
+    session && !session.deletedAt ? de.sessions.inSession(formatDateTime(session.startAt)) : undefined;
   const c = item.conditions;
   const bait = [item.bait?.name, item.bait?.type && t.baitTypes[item.bait.type], item.bait?.color]
     .filter(Boolean)
@@ -53,6 +61,7 @@ export function CatchFacts({ item }: { item: Catch }) {
     [t.fields.bait, bait || undefined],
     [t.fields.conditions, conditions || undefined],
     [t.fields.water, item.waterSnapshot?.name],
+    [t.fields.session, sessionLabel],
     [
       t.fields.position,
       item.position

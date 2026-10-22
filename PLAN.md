@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-22 · Status: **M5 in Arbeit** (M5.1, M5.2, M5.3 erledigt) · weiter mit M5.4 Sessions
+Stand: 2026-10-22 · Status: **M5 in Arbeit** (M5.1–M5.4 erledigt) · weiter mit M5.5 Gewässerzuordnung
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -188,7 +188,7 @@ Freigegeben 2026-10-21 mit drei Entscheidungen: **kein automatisches Wetter in M
 - ✅ **M5.1 Schnellerfassung:** Fang / Fischkontakt / Fehlbiss / Beobachtung mit einem Tipp; Art (zuletzt genutzte zuerst), Datum, Uhrzeit vorbelegt; „Mehr Details" für Länge/Gewicht (gemessen/gewogen nur bei gelandetem Fisch), Verbleib, Kontaktdetail, Methode, Köder (zuletzt benutzte als Schnellauswahl), Bedingungen; Notizen. Einstiege: Tipp auf die Karte, gespeicherter Ort („Fang hier erfassen"), Knopf „Fang erfassen" (Kartenmitte bzw. eigener Standort, wenn die Standortanzeige an ist). Gewässer wird übernommen, wenn es an der Stelle bekannt ist. Prüfung über dasselbe Zod-Schema wie Import/Datenbank, Fehler am Feld. Funktioniert ohne Netz.
 - ✅ **M5.3 Fangbuch:** Liste nach Tagen, Suche (Art, Gewässer, Köder, Notiz), Filter (Ergebnis, Zeitraum, Art, Gewässer), Detailseite, Bearbeiten (Angaben, die das Formular nicht zeigt, bleiben erhalten), Löschen mit „Rückgängig", „Auf der Karte zeigen"; auf der Karte Fang ansehen, bearbeiten, löschen.
 - ✅ **M5.2 Fotos:** „Foto aufnehmen" (Kamera) und „Aus Galerie" (mehrere), bis 6 Fotos je Eintrag; Neu-Kodierung als JPEG ≤ 1600 px mit Vorschaubild 320 px, Ausrichtung aus EXIF übernommen, **EXIF inkl. GPS entfernt**; Fang und Fotos in einer Transaktion; bei vollem Speicher Meldung und „Ohne Foto speichern"; Fotos in Detail, Liste und Großansicht; beim Bearbeiten hinzufügen/entfernen. *Abnahme M5 erfüllt:* Fang mit Foto im Flugmodus erfasst, App offline neu gestartet, Eintrag und Foto vorhanden, Foto 1600×1067 ohne EXIF (E2E CAT-2). Hinweis „ohne Internet startbar" blendet sich nach 8 s aus (verdeckte auf dem Handy „Fang erfassen").
-- ☐ **M5.4 Sessions:** Start/Stopp, laufende Session in der Kopfzeile, automatische Zuordnung, Korrektur > 24 h (SES-1..3).
+- ✅ **M5.4 Sessions:** „Session starten" auf der Karte und unter Fangbuch → Sessions; laufende Session mit Laufzeit in der Kopfzeile (auf jeder Seite); neue Einträge werden zugeordnet, wenn ihr Zeitpunkt in die Session fällt (minutengenau); nur eine Session gleichzeitig (Prüfung in einer Transaktion); beenden; Liste und Detailseite mit Einträgen (außerhalb der Zeit markiert), Titel, Notizen, löschen (Einträge bleiben). > 24 h: Hinweis in der Kopfzeile und Korrektur mit Vorschlag (letzter Eintrag bzw. Beginn + 4 h) oder „Läuft noch". Kopfzeile bei 390 px kompakt (nur Laufzeit bzw. Offline-Symbol).
 - ☐ **M5.5 Gewässerzuordnung:** Auswahl bei mehreren nahen Gewässern, „später zuordnen", wenn offline unbekannt.
 - *Abnahme (Ziel):* Erfassung komplett offline (Flugmodus) inklusive Foto; nach Neustart vorhanden.
 - *Stand M5.1/M5.3:* 117 Unit-Tests, 62 E2E-Tests grün (Fangbuch-Tests 40/40 bei 4 parallelen Läufen). Gefunden und behoben: `crypto.randomUUID` fehlt außerhalb von HTTPS/localhost (z. B. Test im Heimnetz über IP) → eigene ID-Funktion mit Ersatz.
@@ -287,4 +287,4 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 4. ~~M2~~ erledigt.
 5. ~~M3~~ erledigt.
 6. ~~M4~~ erledigt.
-7. **M5** (Fangbuch und Sessions): M5.1–M5.3 erledigt, weiter mit M5.4.
+7. **M5** (Fangbuch und Sessions): M5.1–M5.4 erledigt, weiter mit M5.5.
