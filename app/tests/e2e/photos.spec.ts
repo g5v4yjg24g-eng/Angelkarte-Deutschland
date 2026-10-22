@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { useLocalExternals, waitForApp } from './helpers';
+import { startCatchAt, useLocalExternals, waitForApp } from './helpers';
 
 // Mit Service Worker: die Abnahme verlangt Erfassen offline und Neustart offline (CAT-2).
 
@@ -88,7 +88,7 @@ function storedPhotos(page: Page) {
 
 async function openCatchForm(page: Page) {
   await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'), null, { timeout: 30_000 });
-  await page.getByRole('button', { name: 'Fang erfassen' }).click();
+  await startCatchAt(page);
   const form = page.getByRole('dialog', { name: 'Fang oder Kontakt erfassen' });
   await expect(form).toBeVisible();
   return form;

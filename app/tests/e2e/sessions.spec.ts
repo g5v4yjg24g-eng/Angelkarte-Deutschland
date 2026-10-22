@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { useLocalExternals, waitForApp } from './helpers';
+import { startCatchAt, useLocalExternals, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -17,7 +17,7 @@ async function openMap(page: Page) {
 }
 
 async function addCatch(page: Page, species: string) {
-  await page.getByRole('button', { name: 'Fang erfassen' }).click();
+  await startCatchAt(page);
   const form = page.getByRole('dialog', { name: 'Fang oder Kontakt erfassen' });
   await expect(form.getByText(/Wird der laufenden Session/)).toBeVisible();
   await form.getByRole('combobox', { name: 'Fischart' }).selectOption({ label: species });

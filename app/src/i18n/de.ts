@@ -48,6 +48,9 @@ export const de = {
     addCatch: 'Fang oder Kontakt erfassen',
     addCatchHere: 'Fang hier erfassen',
     addCatchFab: 'Fang erfassen',
+    pickHint: 'Tippe auf die Stelle, an der du gefangen hast – auch mitten aufs Wasser.',
+    pickCancel: 'Abbrechen',
+    pickMyLocation: 'Am eigenen Standort',
     placeTypes: {
       spot: 'Angelstelle',
       jetty: 'Angelsteg',
