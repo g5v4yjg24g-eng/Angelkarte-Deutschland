@@ -191,6 +191,7 @@ export default function MapView() {
   const runningSession = useRunningSession();
   // „Fang erfassen": wartet auf den Tipp an die Fangstelle (der nächste Tipp öffnet das Formular dort)
   const [picking, setPicking] = useState(false);
+  const fabRef = useRef<HTMLButtonElement>(null);
   const pickingRef = useRef(false);
   useEffect(() => {
     pickingRef.current = picking;
@@ -521,10 +522,11 @@ export default function MapView() {
   }
 
   /** Im Antipp-Modus: statt zu tippen den eigenen Standort nehmen (nur wenn er gerade angezeigt wird) */
-  function addCatchAtMyLocation() {
+  /** Fangstelle ohne Tippen: eigener Standort oder Kartenmitte (Tastatur, Fadenkreuz). */
+  function addCatchAtMyLocation(where: 'gps' | 'center' = 'gps') {
     setPicking(false);
     const map = mapRef.current;
-    const fix = locating ? geo.fix : undefined;
+    const fix = where === 'gps' && locating ? geo.fix : undefined;
     const c = fix ?? map?.getCenter();
     if (!c) return;
     const near = map ? waterContext(map, map.project([c.lng, c.lat])) : {};
@@ -851,15 +853,19 @@ export default function MapView() {
           <span>{de.sessions.start}</span>
         </button>
       )}
+      {picking && <div className={styles.crosshair} aria-hidden="true" />}
       {picking && (
         <div className={styles.pickBar} role="status">
           <p>{de.map.pickHint}</p>
           <div className={styles.pickActions}>
             {locating && geo.fix && (
-              <Button variant="secondary" onClick={addCatchAtMyLocation}>
+              <Button variant="secondary" onClick={() => addCatchAtMyLocation('gps')}>
                 {de.map.pickMyLocation}
               </Button>
             )}
+            <Button variant="secondary" onClick={() => addCatchAtMyLocation('center')}>
+              {de.map.pickCenter}
+            </Button>
             <Button variant="ghost" onClick={() => setPicking(false)}>
               {de.map.pickCancel}
             </Button>
@@ -867,6 +873,7 @@ export default function MapView() {
         </div>
       )}
       <button
+        ref={fabRef}
         type="button"
         className={[styles.fab, picking ? styles.fabActive : ''].join(' ')}
         aria-pressed={picking}
@@ -876,7 +883,12 @@ export default function MapView() {
         <span>{de.map.addCatchFab}</span>
       </button>
 
-      <Sheet open={!!sheet && !!sheetBody} title={sheetTitle} onClose={() => setSheet(null)}>
+      <Sheet
+        open={!!sheet && !!sheetBody}
+        title={sheetTitle}
+        onClose={() => setSheet(null)}
+        returnFocus={fabRef}
+      >
         {sheetBody}
       </Sheet>
       {toast && (

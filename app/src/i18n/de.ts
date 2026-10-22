@@ -51,6 +51,7 @@ export const de = {
     pickHint: 'Tippe auf die Stelle, an der du gefangen hast – auch mitten aufs Wasser.',
     pickCancel: 'Abbrechen',
     pickMyLocation: 'Am eigenen Standort',
+    pickCenter: 'Kartenmitte (+)',
     placeTypes: {
       spot: 'Angelstelle',
       jetty: 'Angelsteg',
