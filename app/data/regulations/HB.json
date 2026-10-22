@@ -1,9 +1,11 @@
 {
   "stateCode": "HB",
-  "status": "draft",
-  "missing": [],
+  "status": "partial",
+  "missing": [
+    "übrige Regelungen der Binnenfischereiverordnung (§§ 6, 8–16, u. a. Elektrofischerei, Netze, Laichschutz) nicht einzeln erfasst"
+  ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Fischereigesetz vom Nutzer gegengeprüft am 2026-10-22; Binnenfischereiverordnung maschinell übertragen (Claude), Gegenprüfung ausstehend",
+  "checkedBy": "Fischereigesetz vom Nutzer gegengeprüft am 2026-10-22; Binnenfischereiverordnung maschinell übertragen (Claude), vom Nutzer gegengeprüft am 2026-10-22",
   "legalBasis": [
     {
       "id": "BremFiG",
