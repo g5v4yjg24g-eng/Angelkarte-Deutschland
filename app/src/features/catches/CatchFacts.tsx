@@ -7,6 +7,7 @@ import { getDb } from '../../data/db';
 import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
 import { CatchPhotos } from './CatchPhotos';
+import { CatchWeather } from '../weather/CatchWeather';
 import styles from './CatchFacts.module.css';
 
 const t = de.catchForm;
@@ -84,6 +85,7 @@ export function CatchFacts({ item }: { item: Catch }) {
         </dl>
       )}
       {item.notes && <p className={styles.notes}>{item.notes}</p>}
+      <CatchWeather item={item} />
     </>
   );
 }

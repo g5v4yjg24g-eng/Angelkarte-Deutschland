@@ -1,0 +1,134 @@
+import { expect, test, type Page } from './fixtures';
+import type { Catch } from '../../src/domain/schemas';
+import { collectErrors, useLocalExternals, waitForApp } from './helpers';
+
+test.use({ serviceWorkers: 'block' });
+
+const AT = '2026-10-20T15:10:00+02:00';
+const stamp = '2026-10-20T15:12:00+02:00';
+const withPos: Catch = {
+  id: 'wx-1',
+  createdAt: stamp,
+  updatedAt: stamp,
+  rev: 0,
+  outcome: 'caught',
+  at: AT,
+  tz: 'Europe/Berlin',
+  speciesId: 'pike',
+  position: { lat: 51.3123456, lng: 6.2098765, source: 'gps' },
+};
+const noPos: Catch = { ...withPos, id: 'wx-2', position: undefined };
+
+/** Open-Meteo nie wirklich abrufen: Antwort aus den angefragten Stunden bauen, Anfragen mitschreiben. */
+async function fakeOpenMeteo(page: Page) {
+  const requests: URL[] = [];
+  await page.route('https://historical-forecast-api.open-meteo.com/**', async (route) => {
+    const u = new URL(route.request().url());
+    requests.push(u);
+    const start = Date.parse(`${u.searchParams.get('start_hour')}:00Z`);
+    const end = Date.parse(`${u.searchParams.get('end_hour')}:00Z`);
+    const time: string[] = [];
+    for (let t = start; t <= end; t += 3_600_000) time.push(new Date(t).toISOString().slice(0, 16));
+    const n = time.length;
+    await route.fulfill({
+      json: {
+        hourly: {
+          time,
+          temperature_2m: Array(n).fill(9.4),
+          pressure_msl: time.map((_, i) => 1020.7 - i),
+          wind_speed_10m: Array(n).fill(3.77),
+          wind_direction_10m: Array(n).fill(101),
+          wind_gusts_10m: Array(n).fill(7.4),
+          cloud_cover: Array(n).fill(100),
+          precipitation: Array(n).fill(0),
+          weather_code: Array(n).fill(3),
+        },
+      },
+    });
+  });
+  return requests;
+}
+
+/** Direkt in IndexedDB legen (wie nach einem Import); funktioniert auch offline. */
+async function put(page: Page, catches: Catch[]) {
+  await page.evaluate(async (catches) => {
+    const req = indexedDB.open('fangpunkt');
+    const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(['catches'], 'readwrite');
+      for (const c of catches) tx.objectStore('catches').put(c);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error as Error);
+    });
+    db.close();
+  }, catches);
+}
+
+const later: Catch = {
+  ...withPos,
+  id: 'wx-3',
+  at: '2026-10-21T08:00:00+02:00',
+  createdAt: '2026-10-21T08:05:00+02:00',
+  updatedAt: '2026-10-21T08:05:00+02:00',
+  speciesId: 'perch',
+};
+
+test('WX-1: Wetter ist standardmäßig an; offline erfasst, online nachgeladen, gerundet gesendet; abschaltbar', async ({
+  page,
+  context,
+}) => {
+  const errors = collectErrors(page);
+  await useLocalExternals(page);
+  const requests = await fakeOpenMeteo(page);
+  await page.goto('/fangbuch');
+  await waitForApp(page);
+
+  // Offline erfasst → noch kein Abruf, Hinweis „wird geladen"
+  await context.setOffline(true);
+  await put(page, [withPos, noPos]);
+  // Ohne Netz kein page.goto: im Client navigieren
+  await page.evaluate(() => {
+    history.pushState({}, '', '/fangbuch/wx-1');
+    dispatchEvent(new PopStateEvent('popstate'));
+  });
+  const box = page.getByRole('region', { name: 'Wetter (Modellwert)' });
+  await expect(box).toContainText('Wird geladen, sobald eine Verbindung besteht.');
+  expect(requests).toHaveLength(0);
+
+  // Wieder online → Wetter wird nachgeladen und als Modellwert gekennzeichnet
+  await context.setOffline(false);
+  await expect(box).toContainText('Bedeckt');
+  await expect(box).toContainText('9,4 °C');
+  await expect(box).toContainText('3,8 m/s · aus O · Böen 7,4 m/s');
+  await expect(box).toContainText('1018 hPa · −3 hPa in 3 h');
+  await expect(box).toContainText('nicht am Gewässer gemessen');
+  await expect(box).toContainText('Quelle: Open-Meteo.com, CC BY 4.0');
+
+  // Datenschutz: genau ein Abruf (nur der Fang mit Standort), Koordinaten auf 3 Stellen gerundet
+  expect(requests).toHaveLength(1);
+  expect(requests[0]?.searchParams.get('latitude')).toBe('51.312');
+  expect(requests[0]?.searchParams.get('longitude')).toBe('6.210');
+  expect(requests[0]?.href).not.toContain('51.3123');
+
+  // 390 px ohne horizontales Scrollen
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  // Abschalten → neue Fänge werden nicht mehr abgefragt
+  await page.goto('/mehr/einstellungen');
+  await waitForApp(page);
+  const on = page.getByRole('radio', { name: 'Automatisch laden' });
+  await expect(on).toBeChecked();
+  const off = page.getByRole('group', { name: 'Wetter am Fang' }).getByRole('radio', { name: 'Aus' });
+  await off.click();
+  await expect(off).toBeChecked();
+  await put(page, [later]);
+  await page.goto('/fangbuch/wx-3');
+  await waitForApp(page);
+  await expect(box).toContainText('Wetter ist ausgeschaltet.');
+  await page.goto('/fangbuch/wx-2');
+  await waitForApp(page);
+  await expect(page.getByRole('region', { name: 'Wetter (Modellwert)' })).toHaveCount(0);
+  expect(requests).toHaveLength(1);
+  expect(errors).toEqual([]);
+});

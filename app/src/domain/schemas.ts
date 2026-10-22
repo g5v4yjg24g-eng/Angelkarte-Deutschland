@@ -1,6 +1,7 @@
 // Zod-Schemas aller gespeicherten Nutzerdaten (DATA_MODEL §5). Dasselbe Schema dient
 // Datenbank-Schreibzugriffen, Import und (ab M5) Formularen.
 import { z } from 'zod';
+import { WeatherSnapshotSchema } from './weather';
 
 const isoDateTime = z.iso.datetime({ offset: true });
 const id = z.string().min(1).max(100);
@@ -117,6 +118,8 @@ export const CatchSchema = MetaSchema.extend({
   depthFishedM: z.number().min(0).max(300).optional(),
   gear: text(300).optional(),
   conditions: ConditionsSchema.optional(),
+  /** automatisch geholt, Modellwert (domain/weather.ts) */
+  weather: WeatherSnapshotSchema.optional(),
   notes: text(4000).optional(),
   photoIds: z.array(id).optional(),
   legacy: LegacySchema.optional(),

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import type { Catch, Session } from '../../src/domain/schemas';
 import { entry, session, statsBasic } from '../../src/test/fixtures/stats';
 import { useLocalExternals, waitForApp } from './helpers';

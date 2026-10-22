@@ -162,15 +162,17 @@ interface Conditions {          // umgesetzt in M2; Felder der Alt-App abgebilde
   turbidity?: 'clear'|'slightly_turbid'|'turbid'; waterPlants?: 'none'|'few'|'many';
 }
 
-interface WeatherSnapshot {
+interface WeatherSnapshot {           // umgesetzt (P1): domain/weather.ts
   provider: 'open-meteo' | 'bright-sky';
   fetchedAt: string;
   kind: 'model' | 'station';
+  forHour: string;                    // volle Stunde (UTC), deren Werte gespeichert sind (nächste zum Fangzeitpunkt)
   tempC?: number; pressureHpa?: number; pressureTrend3h?: number;
   windMs?: number; windDirDeg?: number; gustMs?: number; cloudPct?: number; precipMm?: number; code?: number;
   attribution: string;
 }
 ```
+Wetter wird verworfen und neu geladen, wenn sich beim Bearbeiten die Stunde oder der gerundete Ort ändert (`data/catchService.ts`). `pressureTrend3h` = Druck der Fangstunde minus Druck 3 h vorher; `gustMs` und `precipMm` beziehen sich auf die Stunde davor (Open-Meteo-Definition).
 Indizes: `id, at, outcome, speciesId, waterId, sessionId, placeId, method, updatedAt, deletedAt`.
 Zusätzlich (M2): `contactIntensity?: 1–5` (Stärke des Kontakts, aus der Alt-App) und `legacy?: { source: 'angelkarte-v2'; raw }` (unveränderte Originaldaten eines Imports, damit nichts verloren geht).
 Validierung: `lengthCm` 1–250, `weightG` 1–100 000, `depthFishedM` 0–300; bei `outcome !== 'caught'` sind Länge und Gewicht nur als „geschätzt" erlaubt.

@@ -39,7 +39,8 @@ import { CatchDetails, Legend, NewHere, PlaceDetails, PlaceForm } from './MapShe
 import { CatchForm, type CatchContext, type WaterChoice } from '../catches/CatchForm';
 import { useRunningSession } from '../sessions/useSessions';
 import { tryStartSession } from '../sessions/sessionActions';
-import { useGeolocation } from './useGeolocation';
+import { geolocationDenied, useGeolocation } from './useGeolocation';
+import { useBoolSetting } from '../settings/useBoolSetting';
 import { germanTextFields } from './germanLabels';
 import styles from './MapView.module.css';
 
@@ -172,7 +173,15 @@ export default function MapView() {
   const [sheet, setSheet] = useState<SheetState | null>(null);
   const [toast, setToast] = useState<{ text: string; undo?: () => Promise<void> }>();
   const [locating, setLocating] = useState(false);
-  const geo = useGeolocation(locating);
+  // Standort beim Kartenstart (Einstellung, Standard an). Verweigert der Browser, bleibt es still aus.
+  const locateOnStart = useBoolSetting('locateOnStart', true);
+  const autoLocated = useRef(false);
+  const autoChecked = useRef(false);
+  const geo = useGeolocation(locating, (e) => {
+    if (!autoLocated.current || e !== 'denied') return;
+    autoLocated.current = false;
+    setLocating(false);
+  });
   const centeredOnFix = useRef(false);
   const [waterManifest, setWaterManifest] = useState<WaterManifest | null>(null);
   const waterRef = useRef<WaterManifest | null>(null);
@@ -455,6 +464,19 @@ export default function MapView() {
     if (map && ready) setOverlayData(map, overlay.current);
   }, [features, meFc, ready]);
 
+  useEffect(() => {
+    if (locateOnStart !== true || autoChecked.current) return;
+    autoChecked.current = true;
+    const st = location.state as MapFocusState | null;
+    // Mit Ziel aus dem Fangbuch nicht vom Ziel wegspringen
+    if (st?.focusCatch || st?.assignWater) centeredOnFix.current = true;
+    void geolocationDenied().then((denied) => {
+      if (denied) return;
+      autoLocated.current = true;
+      setLocating(true);
+    });
+  }, [locateOnStart, location.state]);
+
   // Beim ersten Standort hinzoomen
   useEffect(() => {
     if (!geo.fix || centeredOnFix.current) return;
@@ -466,13 +488,14 @@ export default function MapView() {
   }, [geo.fix]);
 
   function onLocate() {
+    autoLocated.current = false;
     if (locating) {
       setLocating(false);
       geo.reset();
       centeredOnFix.current = false;
       return;
     }
-    if (locHintSeen()) setLocating(true);
+    if (locHintSeen() || locateOnStart) setLocating(true);
     else setSheet({ kind: 'locate' });
   }
 

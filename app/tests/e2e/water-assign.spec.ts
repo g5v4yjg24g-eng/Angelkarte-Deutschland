@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { serveWaterFixture, startCatchAt, useLocalExternals, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
