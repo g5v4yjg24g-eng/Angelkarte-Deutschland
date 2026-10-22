@@ -1,17 +1,14 @@
 {
   "stateCode": "SL",
   "status": "partial",
-  "missing": [
-    "Fischereischein (Saarländisches Fischereigesetz, §§ 33 ff. LFO)",
-    "spätere Änderungen der LFO nach dem 27.02.2020"
-  ],
+  "missing": ["Fischereischein (Saarländisches Fischereigesetz, §§ 33 ff. LFO)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, Amtsblatt-PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, Amtsblatt-PDF vom Nutzer; mit Gesamtausgabe Stand 22.10.2026 abgeglichen); gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "LFO",
       "title": "Verordnung zur Durchführung des Saarländischen Fischereigesetzes (Landesfischereiordnung)",
-      "version": "vom 5. Februar 2020, Erstveröffentlichung Amtsblatt des Saarlandes Teil I Nr. 6 vom 27. Februar 2020, S. 132; spätere Änderungen nicht berücksichtigt",
+      "version": "vom 5. Februar 2020 (Amtsbl. I S. 132), geändert durch Artikel 167 des Gesetzes vom 8. Dezember 2021 (Amtsbl. I S. 2629); Gesamtausgabe Stand 22.10.2026, verwendete Paragrafen unverändert seit 28.02.2020",
       "url": "https://recht.saarland.de/",
       "retrievedAt": "2026-10-22"
     }
