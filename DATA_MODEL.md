@@ -184,7 +184,8 @@ interface Session extends Meta {
   tz: string;
   waterId?: string; waterSnapshot?: {...};
   title?: string; notes?: string;
-  pauses?: { from: string; to: string }[];   // P1: aktive Angelzeit
+  pauses?: { from: string; to?: string }[];  // umgesetzt (P1, 2026-10-22): aktive Angelzeit; `to` fehlt nur bei
+                                             // der laufenden Pause einer laufenden Session; Schema prüft Lage/Überschneidung
   defaults?: { method?: MethodId; baitPresetId?: string };
 }
 ```
@@ -315,7 +316,7 @@ Anzeige-Logik: Landesrecht und Gewässerregeln werden **getrennt** dargestellt. 
 `observation` zählt in keiner Fangkennzahl. Ungültige Sessions (Ende vor Start, > 24 h ohne Bestätigung) werden ausgeschlossen und gezählt angezeigt.
 
 Umsetzung (M6, 2026-10-22):
-- Pausen werden noch nicht erfasst; Angelzeit = Ende − Beginn. Laufende Sessions zählen nicht.
+- Angelzeit = Ende − Beginn − Pausen (`activeMs`, `domain/session.ts`). Laufende Sessions zählen nicht. Beenden schließt eine offene Pause; Pausen nach einem korrigierten Ende entfallen.
 - „> 24 h ohne Bestätigung": jede Session über 24 h gilt als ungültig, bis das Ende korrigiert ist (es gibt kein Bestätigungsfeld).
 - Gewässerfilter bei Fänge/h: nur Sessions mit mindestens einem Eintrag an diesem Gewässer.
 - Verlauf: Tage bei 7/30 Tagen, sonst Monate (höchstens 36), statt Wochen.

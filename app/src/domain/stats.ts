@@ -3,6 +3,7 @@
 import type { Catch, CatchOutcome, Method, Session } from './schemas';
 import type { CatchFilter } from './catchDraft';
 import { localToZonedIso, toZonedIso } from './time';
+import { activeMs } from './session';
 
 export const MIN_LANDING_DENOMINATOR = 5;
 export const MIN_FISHING_HOURS = 1;
@@ -134,8 +135,8 @@ export function computeStats(
   const candidates = sessionsInPeriod.filter((s) => !filter.water || atWater.has(s.id));
   const valid = candidates.filter(sessionValid);
   const validIds = new Set(valid.map((s) => s.id));
-  const hours =
-    valid.reduce((sum, s) => sum + (Date.parse(s.endAt ?? s.startAt) - Date.parse(s.startAt)), 0) / 3600e3;
+  // Angelzeit ohne Pausen (gültige Sessions sind beendet, nowMs spielt keine Rolle)
+  const hours = valid.reduce((sum, s) => sum + activeMs(s, nowMs), 0) / 3600e3;
   const caughtInSessions = catches.filter(
     (c) => c.outcome === 'caught' && c.sessionId && validIds.has(c.sessionId),
   ).length;
@@ -185,7 +186,7 @@ export function computeStats(
   const sessions: SessionRow[] = valid
     .map((s) => {
       const own = catches.filter((c) => c.sessionId === s.id);
-      const durationMs = Date.parse(s.endAt ?? s.startAt) - Date.parse(s.startAt);
+      const durationMs = activeMs(s, nowMs);
       const caught = own.filter((c) => c.outcome === 'caught').length;
       return {
         id: s.id,

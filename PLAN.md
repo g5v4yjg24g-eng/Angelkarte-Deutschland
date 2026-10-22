@@ -101,10 +101,11 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Wetter am Fang (online, automatisch nachgeladen) | P1 | Open-Meteo Free (nicht kommerziell, E3). ✅ umgesetzt 2026-10-22 (Einstellung, Standard aus) |
 | Köder-Favoriten, Schnellerfassung „Hier" | P1 | ✅ Köder-Favoriten umgesetzt 2026-10-22 (Mehr → Köder-Favoriten, Tipp im Fangformular, „Als Favorit merken“). „Hier“ = „Am eigenen Standort“ im Fangformular (M5.1) |
 | Recht: restliche Bundesländer | P1 | Redaktioneller Aufwand, siehe §5 M8 |
-| Session-Vergleich, Rekorde | P1 | |
+| Session-Vergleich, Rekorde | P1 | ✅ in M6. Session-Pausen (aktive Angelzeit) umgesetzt 2026-10-22 |
 | Fischarten pro Gewässer (Monitoring-Nachweise, Stufe 2) | P2 | Datenaufbereitung nötig (DATA_SOURCES §4) |
 | Tiefenkarten (erste lizenzierte Quelle) | P2 | Lizenzklärung nötig |
 | Offline-Kartenregionen | P2 | Eigene PMTiles-Hosting-Infrastruktur nötig |
+| **Rechts-Warnung beim Erfassen** (Schonzeit, Mindestmaß, Entnahmefenster im Fang-Bundesland) | P1 | Wunsch Nutzer 2026-10-22, vorgemerkt – siehe Abschnitt „Vorgemerkt“ direkt unter dieser Tabelle |
 | Heatmap, CSV-Export | P2 | |
 | Gewässerbezogene Regeln / Angelzonen (Stufe 4) | P3 | Kaum offene Daten; Kooperationen nötig |
 | Angelkalender, Beißfenster-Analyse | P3 | |
@@ -112,6 +113,21 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Konten und Cloud-Sync | P3 | Erst bei Bedarf (siehe ARCHITECTURE §9) |
 
 ---
+
+### Vorgemerkt: Rechts-Warnung beim Erfassen eines Fangs (Wunsch Nutzer 2026-10-22)
+Beim Eintragen eines **gelandeten Fischs** prüft die App zwingend:
+1. **In welchem Bundesland** wurde der Fisch gefangen? (aus der Fangposition)
+2. **Darf er entnommen werden?** Gegen die Landesdatei dieses Landes: **Schonzeit** am Fangtag, **unter dem Mindestmaß**, **außerhalb des Entnahmefensters** (zu klein oder zu groß).
+
+Trifft etwas zu → deutliche **Warnung** im Fangformular (vor dem Speichern) und am Eintrag, mit Paragraf und Link zur Quelle, plus Hinweis „keine Rechtsauskunft“.
+
+Vorüberlegungen zur Umsetzung:
+- Warnen, **nicht blockieren**. Speichern bleibt möglich, z. B. bei zurückgesetztem Fisch („zurückgesetzt“ entschärft die Warnung). Die App rechnet keine „strengere“ Regel aus (`domain/regulations.ts`).
+- Bundesland: Das Gewässer trägt den Landescode bereits (Pipeline, `WaterInfo.state`). Ohne Gewässer braucht es Landesgrenzen als Daten **[O]**: Quelle und Lizenz klären, z. B. BKG VG250 (dl-de/by-2.0) oder OSM-Grenzen aus der Pipeline. An Landesgrenzen nachfragen statt raten.
+- Nur Länder mit sichtbarer Landesdatei (`partial`/`verified`). Ohne Daten (derzeit NRW) heißt es „keine Prüfung möglich“, nie „erlaubt“.
+- Art über `speciesId`. Regeln ohne eindeutige Zuordnung oder mit Geltungsbereich (`scope`, z. B. nur bestimmte Gewässer oder Bezirke) als „prüfen“ zeigen, nicht als sicheren Verstoß.
+- Länge nur, wenn erfasst. Bei „geschätzt“ als Hinweis formulieren.
+- Tests: je Land Fälle für Schonzeit (auch über den Jahreswechsel), Mindestmaß, Fenster (unter/über), unbekanntes Land, fehlende Länge.
 
 ## 4. Meilensteine
 

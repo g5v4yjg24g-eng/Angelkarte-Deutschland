@@ -103,3 +103,66 @@ test('SES-3: Session länger als 24 h → Korrekturdialog mit Vorschlag', async 
   await expect(page.getByText('4 h 00 min', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: /Session über 24 h/ })).toHaveCount(0);
 });
+
+test('SES-4: Pause und Weiter, Pause nachtragen; Angelzeit ohne Pausen', async ({ page }) => {
+  // Laufende Session: Pause → Kopfzeile zeigt „Pause“ → Weiter angeln
+  await page.goto('/fangbuch/sessions');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Session starten' }).click();
+  await page.getByRole('link', { name: /Laufende Session/ }).click();
+  await page.getByRole('button', { name: 'Pause' }).click();
+  await expect(page.getByText(/^Pause seit \d\d:\d\d Uhr$/)).toBeVisible();
+  await expect(page.getByRole('link', { name: /Laufende Session in Pause/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Weiter angeln' }).click();
+  await expect(page.getByRole('link', { name: /^Laufende Session, seit/ })).toBeVisible();
+  await expect(page.getByText(/^1 Pause \(/)).toBeVisible();
+  await page.getByRole('button', { name: 'Session beenden' }).click();
+  await expect(page.getByText(/^Session beendet/)).toBeVisible();
+
+  // Beendete Session (06:00–10:00): Pause nachtragen
+  await page.evaluate(async () => {
+    const req = indexedDB.open('fangpunkt');
+    const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(['sessions'], 'readwrite');
+      tx.objectStore('sessions').put({
+        id: 'ses-4',
+        createdAt: '2026-10-20T06:00:00+02:00',
+        updatedAt: '2026-10-20T10:00:00+02:00',
+        rev: 0,
+        startAt: '2026-10-20T06:00:00+02:00',
+        endAt: '2026-10-20T10:00:00+02:00',
+        tz: 'Europe/Berlin',
+      });
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error as Error);
+    });
+    db.close();
+  });
+  await page.goto('/fangbuch/sessions/ses-4');
+  await waitForApp(page);
+  await expect(page.getByText('Keine Pausen erfasst.')).toBeVisible();
+  await page.getByText('Pause nachtragen', { exact: true }).first().click();
+  await page.getByLabel('Pause von').fill('2026-10-20T07:00');
+  await page.getByLabel('Pause bis').fill('2026-10-20T07:30');
+  await page.getByRole('button', { name: 'Pause nachtragen' }).click();
+  await expect(page.getByText('07:00–07:30 (30 min)')).toBeVisible();
+  await expect(page.getByText('1 Pause (30 min)')).toBeVisible();
+  await expect(page.locator('dd', { hasText: '3 h 30 min' })).toBeVisible();
+
+  // Überschneidung und Lage außerhalb werden abgelehnt
+  await page.getByLabel('Pause von').fill('2026-10-20T07:15');
+  await page.getByLabel('Pause bis').fill('2026-10-20T07:45');
+  await page.getByRole('button', { name: 'Pause nachtragen' }).click();
+  await expect(page.getByRole('alert')).toHaveText('Die Pause überschneidet sich mit einer anderen.');
+  await page.getByLabel('Pause von').fill('2026-10-20T09:45');
+  await page.getByLabel('Pause bis').fill('2026-10-20T10:30');
+  await page.getByRole('button', { name: 'Pause nachtragen' }).click();
+  await expect(page.getByRole('alert')).toHaveText('Die Pause muss innerhalb der Session liegen.');
+
+  // Entfernen
+  await page.getByRole('button', { name: 'Pause entfernen 07:00' }).click();
+  await expect(page.getByText('Keine Pausen erfasst.')).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});

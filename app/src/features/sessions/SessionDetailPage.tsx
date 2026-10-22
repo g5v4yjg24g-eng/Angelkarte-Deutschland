@@ -9,16 +9,21 @@ import { Notice } from '../../design/components/Notice';
 import { TextArea, TextField } from '../../design/components/Field';
 import { getDb } from '../../data/db';
 import { repo } from '../../data/repository';
-import { endSession } from '../../data/sessionService';
+import { addPause, endSession, pauseSession, removePause, resumeSession } from '../../data/sessionService';
 import { userMessage } from '../../data/errors';
 import type { Session } from '../../domain/schemas';
 import {
+  activeMs,
   durationMs,
   formatDuration,
   isRunning,
   looksForgotten,
+  openPause,
+  pauseIssue,
+  pauseMs,
   sessionCatches,
   suggestedEnd,
+  withPause,
 } from '../../domain/session';
 import { localToZonedIso, toZonedIso } from '../../domain/time';
 import { formatDateTime } from '../../lib/storage';
@@ -79,6 +84,103 @@ function CorrectEnd({
   );
 }
 
+const clock = (iso: string) => iso.slice(11, 16);
+
+/** Pausen ansehen, entfernen und nachtragen (aktive Angelzeit). */
+function Pauses({ session, now }: { session: Session; now: number }) {
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
+  const [error, setError] = useState<string>();
+  const pauses = session.pauses ?? [];
+
+  async function add(e: React.FormEvent) {
+    e.preventDefault();
+    setError(undefined);
+    let fromMs: number, toMs: number;
+    try {
+      fromMs = Date.parse(localToZonedIso(from.slice(0, 10), from.slice(11, 16), session.tz));
+      toMs = Date.parse(localToZonedIso(to.slice(0, 10), to.slice(11, 16), session.tz));
+    } catch {
+      return setError(t.pauseIssues.date);
+    }
+    const candidate = {
+      ...session,
+      pauses: withPause(pauses, {
+        from: toZonedIso(fromMs, session.tz),
+        to: toZonedIso(toMs, session.tz),
+      }),
+    };
+    // Laufende Session: Pause darf nicht in der Zukunft enden
+    const issue = pauseIssue(candidate) ?? (!session.endAt && toMs > now ? 'outside' : undefined);
+    if (issue) return setError(t.pauseIssues[issue]);
+    try {
+      await addPause(session.id, fromMs, toMs);
+      setFrom('');
+      setTo('');
+    } catch (err) {
+      setError(userMessage(err));
+    }
+  }
+
+  return (
+    <Section title={t.pauses}>
+      {pauses.length === 0 ? (
+        <p className="muted">{t.pausesNone}</p>
+      ) : (
+        <ul className={styles.pauseList}>
+          {pauses.map((p, i) => (
+            <li key={p.from} className={styles.pauseRow}>
+              <span className="tabular">
+                {p.to
+                  ? t.pauseRow(
+                      clock(p.from),
+                      clock(p.to),
+                      formatDuration(pauseMs({ startAt: session.startAt, pauses: [p] }, now)),
+                    )
+                  : t.pauseOpen(clock(p.from))}
+              </span>
+              <Button
+                variant="ghost"
+                aria-label={`${t.removePause} ${clock(p.from)}`}
+                onClick={() =>
+                  void removePause(session.id, i).catch((err: unknown) => setError(userMessage(err)))
+                }
+              >
+                {t.removePause}
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <details className={styles.addPause}>
+        <summary>{t.addPause}</summary>
+        <form className={styles.stack} onSubmit={(e) => void add(e)} noValidate>
+          <div className={styles.stack}>
+            <TextField
+              label={t.pauseFrom}
+              type="datetime-local"
+              value={from}
+              onChange={(e) => setFrom(e.target.value)}
+            />
+            <TextField
+              label={t.pauseTo}
+              type="datetime-local"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+            />
+          </div>
+          {error && <p role="alert">{error}</p>}
+          <div className={styles.actions}>
+            <Button type="submit" variant="secondary">
+              {t.addPause}
+            </Button>
+          </div>
+        </form>
+      </details>
+    </Section>
+  );
+}
+
 export function SessionDetailPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
@@ -112,6 +214,8 @@ export function SessionDetailPage() {
   const running = isRunning(s);
   const forgotten = looksForgotten(s, now) && !keepRunning;
   const duration = formatDuration(durationMs(s, now));
+  const paused = openPause(s);
+  const hasPauses = !!s.pauses?.length;
 
   async function saveMeta(session: Session) {
     setError(undefined);
@@ -156,9 +260,35 @@ export function SessionDetailPage() {
             <dt>{t.duration}</dt>
             <dd className="tabular">{duration}</dd>
           </div>
+          {hasPauses && (
+            <>
+              <div>
+                <dt>{t.pauses}</dt>
+                <dd className="tabular">
+                  {t.pausesSum(s.pauses?.length ?? 0, formatDuration(pauseMs(s, now)))}
+                </dd>
+              </div>
+              <div>
+                <dt>{t.activeTime}</dt>
+                <dd className="tabular">{formatDuration(activeMs(s, now))}</dd>
+              </div>
+            </>
+          )}
         </dl>
+        {hasPauses && <p className="muted">{t.activeHint}</p>}
+        {running && paused && <Notice>{t.pausedSince(clock(paused.from))}</Notice>}
         {running && !forgotten && (
           <div className={styles.actions}>
+            <Button
+              variant="secondary"
+              onClick={() =>
+                void (paused ? resumeSession(s.id) : pauseSession(s.id)).catch((err: unknown) =>
+                  setError(userMessage(err)),
+                )
+              }
+            >
+              {paused ? t.resume : t.pause}
+            </Button>
             <Button
               onClick={() =>
                 void endSession(s.id)
@@ -172,6 +302,8 @@ export function SessionDetailPage() {
         )}
         {message && <Notice tone="success">{message}</Notice>}
         {error && <Notice tone="error">{error}</Notice>}
+
+        <Pauses session={s} now={now} />
 
         <Section title={`${t.entries} (${entries.length})`}>
           {entries.length === 0 ? (

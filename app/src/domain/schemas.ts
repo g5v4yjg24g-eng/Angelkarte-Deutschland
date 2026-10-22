@@ -2,6 +2,7 @@
 // Datenbank-Schreibzugriffen, Import und (ab M5) Formularen.
 import { z } from 'zod';
 import { WeatherSnapshotSchema } from './weather';
+import { pauseIssue } from './session';
 
 const isoDateTime = z.iso.datetime({ offset: true });
 const id = z.string().min(1).max(100);
@@ -141,13 +142,19 @@ export const SessionSchema = MetaSchema.extend({
   ...WaterRefSchema,
   title: text(120).optional(),
   notes: text(4000).optional(),
-  pauses: z.array(z.object({ from: isoDateTime, to: isoDateTime })).optional(),
+  /** Pausen (aktive Angelzeit); `to` fehlt nur bei der laufenden Pause einer laufenden Session */
+  pauses: z.array(z.object({ from: isoDateTime, to: isoDateTime.optional() })).optional(),
   defaults: z.object({ method: MethodSchema.optional(), baitPresetId: id.optional() }).optional(),
   legacy: LegacySchema.optional(),
-}).refine((s) => !s.endAt || Date.parse(s.endAt) >= Date.parse(s.startAt), {
-  message: 'Das Ende einer Session liegt vor ihrem Beginn.',
-  path: ['endAt'],
-});
+})
+  .refine((s) => !s.endAt || Date.parse(s.endAt) >= Date.parse(s.startAt), {
+    message: 'Das Ende einer Session liegt vor ihrem Beginn.',
+    path: ['endAt'],
+  })
+  .refine((s) => pauseIssue(s) === undefined, {
+    message: 'Pausen müssen innerhalb der Session liegen und dürfen sich nicht überschneiden.',
+    path: ['pauses'],
+  });
 
 export const PhotoMetaSchema = MetaSchema.extend({
   mime: z.enum(['image/jpeg', 'image/webp', 'image/png']),
