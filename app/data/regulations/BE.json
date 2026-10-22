@@ -1,12 +1,12 @@
 {
   "stateCode": "BE",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "Fischereischein (Landesfischereischeingesetz vom 21. April 1995)",
     "Anordnungen der unteren Fischereibehörde (§ 8 Abs. 2 und 3)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "LFischO",

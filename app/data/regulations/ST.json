@@ -1,12 +1,12 @@
 {
   "stateCode": "ST",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "besonders geschützte Krebse und Muscheln (Verweis auf § 7 Abs. 2 Nr. 13 BNatSchG, nicht einzeln aufgezählt)",
     "Anerkennung von Fischereischeinen anderer Länder und Höhe der Fischereiabgabe (Verordnungen nach § 28 Abs. 4 und § 30 Abs. 4 FischG LSA)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "FischO LSA",
