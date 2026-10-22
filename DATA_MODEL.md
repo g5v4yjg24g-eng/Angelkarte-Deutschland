@@ -306,6 +306,13 @@ Anzeige-Logik: Landesrecht und Gewässerregeln werden **getrennt** dargestellt. 
 
 `observation` zählt in keiner Fangkennzahl. Ungültige Sessions (Ende vor Start, > 24 h ohne Bestätigung) werden ausgeschlossen und gezählt angezeigt.
 
+Umsetzung (M6, 2026-10-22):
+- Pausen werden noch nicht erfasst; Angelzeit = Ende − Beginn. Laufende Sessions zählen nicht.
+- „> 24 h ohne Bestätigung": jede Session über 24 h gilt als ungültig, bis das Ende korrigiert ist (es gibt kein Bestätigungsfeld).
+- Gewässerfilter bei Fänge/h: nur Sessions mit mindestens einem Eintrag an diesem Gewässer.
+- Verlauf: Tage bei 7/30 Tagen, sonst Monate (höchstens 36), statt Wochen.
+- Köder werden ohne Groß-/Kleinschreibung und Leerzeichen am Rand zusammengefasst; „Angelzeit je Köder" ist nicht bekannt und wird nicht angezeigt.
+
 ## 9a. Umsetzungsstand (M2, 2026-10-21)
 
 - Schemas: `app/src/domain/schemas.ts` (Zod 4). Methoden: spinning, jigging, dropshot, bottom, float, feeder, fly, trolling, other. Ködertypen: softbait, crankbait, spinner, spoon, spinnerbait, chatterbait, jigspinner, natural, other.
