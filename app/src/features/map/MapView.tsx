@@ -223,7 +223,11 @@ export default function MapView() {
   const catches = useLiveQuery(() => getDb().catches.toArray(), []);
   const features = useMemo(() => toFeatures(places ?? [], catches ?? []), [places, catches]);
   // Heatmap der gelandeten Fische (P2); Wahl wird pro Gerät gemerkt
-  const [heat, setHeat] = useState(readHeat);
+  // Mit Ziel aus dem Fangbuch ohne Heatmap starten, sonst wäre das gesuchte Fang-Symbol ausgeblendet
+  const [heat, setHeat] = useState(() => {
+    const st = location.state as MapFocusState | null;
+    return readHeat() && !st?.focusCatch && !st?.assignWater;
+  });
   const heatRef = useRef(heat);
   const heatCount = useMemo(
     () => (catches ?? []).filter((c) => !c.deletedAt && c.outcome === 'caught' && c.position).length,

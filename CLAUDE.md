@@ -12,7 +12,7 @@ Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`,
 - Rechts-Warnung: Landesgrenzen `states.json` aus der Pipeline (Geometrie gemeinsam `app/src/domain/geo.ts`), Prüfung `domain/regulationCheck.ts`, Anzeige `features/law/LawCheckPanel.tsx` (Formular + Eintrag). Warnt nur, blockiert nie (Entscheidung Nutzer 2026-10-22).
 - CSV-Export: Baustein `domain/csv.ts` (Zahlen als Zahl übergeben, Text wird gegen Formeln entschärft), Spalten `features/backup/catchCsv.ts`.
 - Fangbuch nach Gewässern: Gruppierung `domain/waterGroups.ts` (200 m für unbekannte), Reiter `features/catches/WaterTabs.tsx`, Ort-Nachtrag und Umbenennen `data/waterPlaceService.ts`. Eigene Namen nur an unbenannten Gewässern.
-- Heatmap: Ebene `fp-catch-heat` in `features/map/mapLayers.ts` (`setHeatmap`), Umschalter in `MapView.tsx` (localStorage `fangpunkt.heatmap`).
+- Heatmap: Ebene `fp-catch-heat` in `features/map/mapLayers.ts` (`setHeatmap` blendet Fang-Symbole und Zahlenkreise aus; Deckkraft fest, Radius/Intensität wachsen mit dem Zoom), Umschalter in `MapView.tsx` (localStorage `fangpunkt.heatmap`).
 - Datenschutzseite `features/about/PrivacyPage.tsx` (`/mehr/datenschutz`): neue Fremdserver nur zusammen mit Eintrag dort und in `privacy.spec.ts` (ALLOWED_EXTERNAL).
 - Statistik: Logik rein in `app/src/domain/stats.ts` (Mindestmengen, DATA_MODEL §9), Ansicht `app/src/features/stats`.
 - Fotos: `lib/processPhoto.ts` (Neu-Kodierung entfernt EXIF), Speichern nur über `data/catchService.ts` (eine Transaktion mit dem Fang).
