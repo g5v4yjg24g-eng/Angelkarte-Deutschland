@@ -235,6 +235,7 @@ export function BaitPresetsPage() {
       )}
       {toast && (
         <Toast
+          onDismiss={() => setToast(undefined)}
           actions={
             toast.undoId && (
               <Button
@@ -243,10 +244,7 @@ export function BaitPresetsPage() {
                   const id = toast.undoId ?? '';
                   void repo('baitPresets')
                     .restore(id)
-                    .then(() => {
-                      setToast({ text: t.restored });
-                      setTimeout(() => setToast((x) => (x?.undoId ? x : undefined)), 4000);
-                    });
+                    .then(() => setToast({ text: t.restored }));
                 }}
               >
                 {t.undo}

@@ -355,6 +355,7 @@ export function CalendarPage() {
 
       {toast && (
         <Toast
+          onDismiss={() => setToast(undefined)}
           actions={
             toast.undoId && (
               <Button
@@ -363,10 +364,7 @@ export function CalendarPage() {
                   const id = toast.undoId ?? '';
                   void repo('trips')
                     .restore(id)
-                    .then(() => {
-                      setToast({ text: t.restored });
-                      setTimeout(() => setToast((x) => (x?.undoId ? x : undefined)), 4000);
-                    });
+                    .then(() => setToast({ text: t.restored }));
                 }}
               >
                 {t.undo}

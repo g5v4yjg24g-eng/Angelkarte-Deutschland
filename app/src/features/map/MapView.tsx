@@ -640,12 +640,6 @@ export default function MapView() {
     setToast({ text: w ? de.catchForm.assigned(w.name ?? de.water.unnamed) : de.catchForm.assignRemoved });
   }
 
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(() => setToast(undefined), 7000);
-    return () => clearTimeout(t);
-  }, [toast]);
-
   const sheetPlace =
     sheet?.kind === 'place' ? places?.find((p) => p.id === sheet.id && !p.deletedAt) : undefined;
   const sheetCatch = sheet?.kind === 'catch' ? catches?.find((c) => c.id === sheet.id) : undefined;
@@ -960,6 +954,7 @@ export default function MapView() {
       </Sheet>
       {toast && (
         <Toast
+          onDismiss={() => setToast(undefined)}
           actions={
             toast.undo && (
               <Button
