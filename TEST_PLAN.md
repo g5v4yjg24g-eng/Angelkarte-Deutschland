@@ -79,7 +79,7 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | WX-1 | Fang offline, später online | Wetter wird nachgeladen; gekennzeichnet als Modellwert; Standard „an“; offline kein Abruf; Koordinaten gerundet; ausgeschaltet kein Abruf (✅ `weather.spec.ts`) |
 | CSV-1 | Fangbuch als CSV | Excel-tauglich (BOM, Semikolon, Dezimalkomma), älteste zuerst, ohne gelöschte, Wetter als Modellwert, Formel-Einschleusung entschärft; leer → Hinweis (✅ `csv.spec.ts`, `csv.test.ts`, `catchCsv.test.ts`) |
 | BOOK-1 | Fangbuch nach Gewässern | Reiter „Alle“ (Standard) + je Gewässer mit Name und Ort; bekannte Namen fest; unbekannte (≤ 200 m) umbenennbar, nur im Fangbuch; Suche nach Gewässer und Ort; Ort für Altbestand aus dem Suchindex (✅ `catches.spec.ts`, `waterGroups.test.ts`, `waterPlaceService.test.ts`) |
-| HEAT-1 | Heatmap der Fänge | Standard aus; Knopf schaltet um (aria-pressed), Zahlenkreise entfallen solange; nur gelandete Fische; Wahl bleibt nach Neuladen; Leerzustand; Legende erklärt die Farben (✅ `heatmap.spec.ts`) |
+| HEAT-1 | Heatmap der Fänge | Standard aus; Knopf schaltet um (aria-pressed), Zahlenkreise entfallen solange; nur gelandete Fische; Wahl bleibt nach Neuladen; Leerzustand; unter 30 Fängen Hinweis auf Scheinmuster; Legende erklärt die Farben (✅ `heatmap.spec.ts`) |
 | BAIT-1 | Favorit anlegen, im Fang per Tipp übernehmen, im Formular speichern, löschen | Details (Farbe, Größe, Gewicht, Haken, Methode) im Fang; doppelter Name abgelehnt; Rückgängig (✅ `baits.spec.ts`, `baitPreset.test.ts`) |
 
 ### 3.5 Statistik

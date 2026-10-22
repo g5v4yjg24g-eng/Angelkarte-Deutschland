@@ -33,7 +33,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Köder-Favoriten | In `meta` gespeichert | **Übernehmen** als eigene Entität `BaitPreset` (P1). |
 | Foto | Als JPEG-DataURL (1024 px) **im Fang-Datensatz** | **Ändern:** Blob in eigener Tabelle; DataURLs blähen Datensätze und Exporte auf. |
 | Ausflug/Session | Start/Stopp, Einträge erhalten `sessionId` | **Übernehmen.** |
-| Heatmap | Eigene Kontakte, Warnung bei < 30 Punkten | **Später (P2)**; die Warnung vor Scheinmustern ist gut und bleibt. |
+| Heatmap | Eigene Kontakte, Warnung bei < 30 Punkten | **Übernommen 2026-10-22 (P2)** inklusive Warnung vor Scheinmustern unter 30 Fängen. |
 | Statistik | KPIs, Fischarten, Fangentwicklung, Effizienz (Fänge/h), Rekorde, Mindestdatenmengen | **Fachlogik übernehmen** (Mindestmengen, keine Raten bei < 1 h). Darstellung neu. |
 | Wetter/Beißfenster | Open-Meteo, Wetter je Eintrag/Session, „persönliche Beißfenster" | Wetter je Eintrag: **P1**. Beißfenster-Auswertung: **P3**, wegen Irreführungsgefahr bei wenigen Daten. |
 | Angelkalender | Termine planen, Jahres- und Tagesübersicht | **Später (P3).** Nicht im Auftrag genannt. |

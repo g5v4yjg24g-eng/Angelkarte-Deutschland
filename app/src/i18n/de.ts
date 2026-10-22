@@ -45,6 +45,8 @@ export const de = {
     heatmapOn: 'Heatmap der Fänge zeigen',
     heatmapOff: 'Heatmap ausblenden',
     heatmapEmpty: 'Noch keine gelandeten Fische mit Fangort – die Heatmap bleibt leer.',
+    heatmapFew: (n: number, min: number) =>
+      `Erst ${n} ${n === 1 ? 'Fang' : 'Fänge'} mit Fangort – unter ${min} sind Häufungen oft Zufall.`,
     legendHeat: 'Heatmap',
     legendHeatHint:
       'Zeigt, wo du die meisten Fische gelandet hast: von Gelb (wenige) bis Rot (viele). Nur deine eigenen Fänge mit Fangort; Kontakte und Fehlbisse zählen nicht.',
