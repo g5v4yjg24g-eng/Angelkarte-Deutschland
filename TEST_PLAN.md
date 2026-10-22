@@ -78,6 +78,8 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | WX-1 | Fang offline, später online | Wetter wird nachgeladen; gekennzeichnet als Modellwert |
 
 ### 3.5 Statistik
+*Automatisiert (M6): `domain/stats.test.ts` mit Fixture `test/fixtures/stats.ts`, E2E `stats.spec.ts` (STA-1 bis STA-7, hell und dunkel bei 390 px).*
+
 | ID | Testfall | Erwartung |
 |---|---|---|
 | STA-1 | Fixture `stats-basic` | Alle Kennzahlen = Sollwerte |

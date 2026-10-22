@@ -1,0 +1,171 @@
+.stack {
+  display: grid;
+  gap: var(--space-5);
+}
+.filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+@media (max-width: 480px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .filters > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.tile {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  min-width: 0;
+}
+.tileLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.tileValue {
+  font-size: var(--text-xl);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.tileHint {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+.section {
+  display: grid;
+  gap: var(--space-2);
+}
+.section h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.note {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.bars {
+  width: 100%;
+  border-collapse: collapse;
+}
+.bars th,
+.bars td {
+  padding: var(--space-1) 0;
+  vertical-align: middle;
+}
+.bars th {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  font-weight: 400;
+  padding-right: var(--space-3);
+}
+.bars td {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+  font-weight: 600;
+}
+.barLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.barTrack {
+  display: block;
+  height: 10px;
+}
+.bar {
+  display: block;
+  height: 10px;
+  min-width: 2px;
+  border-radius: 0 4px 4px 0;
+  background: var(--color-chart);
+}
+.barExtra {
+  font-weight: 400;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.figure {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.timeline {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.axis {
+  stroke: var(--color-border);
+  stroke-width: 1;
+}
+.colMark {
+  fill: var(--color-chart);
+}
+.col:hover .colMark {
+  opacity: 0.8;
+}
+.valueLabel,
+.tick {
+  fill: var(--color-text-muted);
+  font-size: 10px;
+}
+.valueLabel {
+  fill: var(--color-text);
+  font-weight: 600;
+}
+.tableToggle summary {
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  min-height: 32px;
+}
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.dataTable th,
+.dataTable td {
+  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+.dataTable td.num,
+.dataTable th.num {
+  text-align: right;
+}
+.scroll {
+  overflow-x: auto;
+}
+.dataTable .num {
+  text-align: right;
+  white-space: nowrap;
+}
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+  text-decoration: none;
+}

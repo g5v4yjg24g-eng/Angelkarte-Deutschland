@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-22 · Status: **M5 umgesetzt** (M5.1–M5.5, PRs #11–#13 zur Freigabe) · danach M6 Statistik nach Freigabe
+Stand: 2026-10-22 · Status: **M6 umgesetzt** (M5 in PRs #11–#14, M6 in eigenem PR, alle zur Freigabe) · danach M7 Recht NRW nach Freigabe
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -198,6 +198,7 @@ Abhängig von: M5
 - Kennzahlen, Arten, Gewässer, Köder/Methoden, Verlauf, Session-Vergleich; Filter für Zeitraum, Art und Gewässer.
 - Regeln gegen Irreführung (Mindestmengen, Kontext „n = …", keine Raten bei < 1 h Angelzeit).
 - *Abnahme:* Fixture-Datensätze mit bekannten Soll-Werten; leere und kleine Datenmengen zeigen erklärende Zustände; keine Anzeige von NaN, ∞ oder „undefined".
+- ✅ **Umgesetzt (2026-10-22):** Seite „Statistik" mit Filtern (Zeitraum, Art, Gewässer), Kacheln (Fänge, Kontakte, Landequote, Fänge/h – jeweils mit n bzw. „zu wenige Daten"), Verlauf (Tage bei 7/30 Tagen, sonst Monate, leere Perioden als 0; SVG mit Tabelle zum Umschalten), Arten, Gewässer, Köder (Fänge und Bisse, keine „Bester"-Rangliste), Methoden, größte Fische (gemessen und geschätzt getrennt), Session-Vergleich (Fänge/h erst ab 1 h). Balken sind Tabellen mit Werten als Text; eine Diagrammfarbe für hell/dunkel. Abnahme erfüllt: Fixture `stats-basic` mit Sollwerten (Unit + E2E STA-1..7), Leerzustand, kein NaN/∞/undefined im DOM, 390 px ohne horizontales Scrollen. 135 Unit-, 84 E2E-Tests grün.
 
 ### M7 – Recht: Struktur und erste Länder
 Abhängig von: M4
@@ -288,4 +289,4 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 5. ~~M3~~ erledigt.
 6. ~~M4~~ erledigt.
 7. ~~M5~~ umgesetzt (PRs #11–#13 zur Freigabe).
-8. **M6** (Statistik), nach deiner Freigabe.
+8. **M6** (Statistik) – umgesetzt, PR zur Freigabe.

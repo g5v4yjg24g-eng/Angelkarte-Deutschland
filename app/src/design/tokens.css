@@ -9,6 +9,8 @@
   --color-text: #0e2229;
   --color-text-muted: #4a5f66;
   --color-primary: #0f5c6e;
+  /* Diagramm-Marken: gesättigter als primary, geprüft mit dem Palettenvalidator (Chroma, Kontrast ≥ 3:1) */
+  --color-chart: #0a8aa3;
   --color-primary-hover: #0b4a59;
   --color-on-primary: #ffffff;
   --color-accent: #f2994a;
@@ -68,6 +70,7 @@
     --color-text: #e4eef0;
     --color-text-muted: #9cb2b8;
     --color-primary: #5cc4d6;
+    --color-chart: #18a3bf;
     --color-primary-hover: #7fd3e1;
     --color-on-primary: #06232a;
     --color-accent: #f5a962;
@@ -92,6 +95,7 @@
   --color-text: #e4eef0;
   --color-text-muted: #9cb2b8;
   --color-primary: #5cc4d6;
+  --color-chart: #18a3bf;
   --color-primary-hover: #7fd3e1;
   --color-on-primary: #06232a;
   --color-accent: #f5a962;
