@@ -115,7 +115,7 @@ Artenliste (Namen, wiss. Namen) wird einmalig redaktionell aus der GBIF-Taxonomi
 | Schleswig-Holstein | gesetze-rechtsprechung.sh.juris.de | – |
 | Thüringen | landesrecht.thueringen.de | – |
 
-**Erfassung 2026-10-22 (auf Wunsch vor NRW, Entwürfe zur Gegenprüfung):** Aus der Cloud-Umgebung erreichbar waren nur gesetze-bayern.de, voris.wolterskluwer-online.de, revosax.sachsen.de und dokumente.hamburg.de [V 2026-10-22]. Erfasst als `draft`, maschinell aus den Tabellen des amtlichen Texts gelesen:
+**Erfassung 2026-10-22 (auf Wunsch vor NRW, Entwürfe zur Gegenprüfung):** Aus der Cloud-Umgebung erreichbar waren nur gesetze-bayern.de, voris.wolterskluwer-online.de, revosax.sachsen.de und dokumente.hamburg.de [V 2026-10-22]. Maschinell aus den Tabellen des amtlichen Texts gelesen, vom Nutzer am 2026-10-22 gegengeprüft, Status `partial`:
 - **BY** AVBayFiG, Anlage (zu § 11), zuletzt geändert 10.04.2025 – https://www.gesetze-bayern.de/Content/Document/BayAVFiG/true
 - **NI** BiFischO §§ 2–5 (Fassung ab 01.08.1989, VO zuletzt geändert 22.12.2005) – NI-VORIS. [O] Ob es neuere Änderungen gibt, die VORIS noch nicht zeigt, ist nicht geprüft.
 - **SN** SächsFischVO vom 22.04.2022, Anlage (zu § 2), gültig ab 01.06.2022 – https://revosax.sachsen.de/vorschrift/19620

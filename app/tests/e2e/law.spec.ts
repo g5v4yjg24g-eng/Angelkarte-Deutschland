@@ -20,13 +20,14 @@ test('M7: Übersicht der Länder, Land ohne geprüfte Angaben (LAW-4), Hinweis �
   await expect(states.first()).toHaveText(/Baden-Württemberg/);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
-  // LAW-4: Bayern hat (noch) keine Datei → erklärender Zustand mit Link zum Landesrechtsportal
-  await expect(states.filter({ hasText: 'Bayern' })).toContainText('Noch keine Angaben');
-  await states.filter({ hasText: 'Bayern' }).click();
-  await expect(page.getByRole('heading', { name: 'Für Bayern noch keine geprüften Angaben' })).toBeVisible();
+  await expect(states.filter({ hasText: 'Bayern' })).toContainText('Teilweise geprüft');
+  // LAW-4: Berlin hat (noch) keine Datei → erklärender Zustand mit Link zum Landesrechtsportal
+  await expect(states.filter({ hasText: 'Berlin' })).toContainText('Noch keine Angaben');
+  await states.filter({ hasText: 'Berlin' }).click();
+  await expect(page.getByRole('heading', { name: 'Für Berlin noch keine geprüften Angaben' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Zum Landesrechtsportal' })).toHaveAttribute(
     'href',
-    'https://www.gesetze-bayern.de/',
+    'https://gesetze.berlin.de/',
   );
   await expect(page.getByText(/^Keine Rechtsauskunft\./)).toBeVisible();
   expect(
@@ -46,17 +47,24 @@ test('M7: Übersicht der Länder, Land ohne geprüfte Angaben (LAW-4), Hinweis �
   expect(errors).toEqual([]);
 });
 
-test('Prüfansicht zeigt Entwürfe nur mit ?pruefung und deutlicher Warnung', async ({ page }) => {
+test('Gegengeprüftes Land (Hamburg): Status, fehlende Teile, Entnahmefenster mit Fundstelle', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/mehr/recht/HH');
   await waitForApp(page);
-  await expect(page.getByRole('heading', { name: 'Für Hamburg noch keine geprüften Angaben' })).toBeVisible();
-  await page.goto('/mehr/recht/HH?pruefung=1');
-  await expect(page.getByRole('alert')).toContainText('ungeprüfter Entwurf');
   await expect(page.getByText(/^Keine Rechtsauskunft\./)).toBeVisible();
+  await expect(page.getByText('Teilweise geprüft')).toBeVisible();
+  await expect(page.getByText(/^Noch nicht erfasst: Fischereischein/)).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0); // kein Entwurfsbanner
   const zander = page
     .getByRole('listitem')
     .filter({ hasText: 'Zander' })
     .filter({ hasText: 'Entnahmefenster' });
   await expect(zander).toContainText('45–75 cm');
   await expect(zander).toContainText('Anlage 1 Nr. 9 (zu § 7 Abs. 1) HmbFAnGDVO');
+  await expect(
+    page.getByRole('link', { name: /Verordnung zur Durchführung des Hamburgischen/ }),
+  ).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
