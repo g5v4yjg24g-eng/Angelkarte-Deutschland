@@ -1,0 +1,59 @@
+{
+  "stateCode": "HB",
+  "status": "draft",
+  "missing": ["Schonzeiten, Mindestmaße und Fangverbote (Bremische Binnenfischereiverordnung)"],
+  "checkedAt": "2026-10-22",
+  "checkedBy": "Aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); Gegenprüfung durch den Nutzer ausstehend",
+  "legalBasis": [
+    {
+      "id": "BremFiG",
+      "title": "Bremisches Fischereigesetz",
+      "version": "vom 17. September 1991 (Brem.GBl. S. 309), zuletzt geändert durch Geschäftsverteilung des Senats vom 02.09.2025 (Brem.GBl. S. 674); Fassung in Kraft ab 30.06.2025",
+      "url": "https://www.transparenz.bremen.de/",
+      "retrievedAt": "2026-10-22"
+    }
+  ],
+  "closedSeasons": [],
+  "minSizes": [],
+  "protectedSpecies": [],
+  "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Wer den Fischfang ausübt, muß einen auf seinen Namen lautenden Fischereischein bei sich führen und diesen auf Verlangen den Polizeivollzugsbeamten, dem Bediensteten der Fischereibehörde und dem Fischereiaufseher zur Einsichtnahme aushändigen.",
+      "basisId": "BremFiG",
+      "basisRef": "§ 34 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "In anderen Ländern der Bundesrepublik Deutschland und der Europäischen Union ausgestellte Fischereischeine gelten auch im Geltungsbereich dieses Gesetzes.",
+      "basisId": "BremFiG",
+      "basisRef": "§ 34 Abs. 4"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Die Erteilung eines Fischereischeines ist davon abhängig, daß der Antragsteller das 14. Lebensjahr vollendet und seinen Hauptwohnsitz in Bremen hat, eine Fischereiprüfung vor einem anerkannten Landesfischereiverband oder die vorgeschriebene Prüfung in einem anderen Bundesland abgelegt hat oder als Berufsfischer ausgebildet ist. Der Fischereischein gilt für unbeschränkte Zeit.",
+      "basisId": "BremFiG",
+      "basisRef": "§ 35 Abs. 1 und 3"
+    },
+    {
+      "kind": "youth",
+      "text": "Personen, die das 14. Lebensjahr noch nicht vollendet haben, dürfen nur in Begleitung und unter Aufsicht eines Inhabers eines Fischereischeines fischen.",
+      "basisId": "BremFiG",
+      "basisRef": "§ 36 Abs. 1"
+    },
+    {
+      "kind": "permit",
+      "text": "Wer in einem Gewässer, in dem er nicht Fischereiberechtigter oder Fischereipächter ist, den Fischfang ausübt, muß unbeschadet des § 34 einen Erlaubnisschein des zur Erteilung der Fischereierlaubnis Berechtigten bei sich führen. Nicht erforderlich u. a. für die Stockangelei nach § 9.",
+      "basisId": "BremFiG",
+      "basisRef": "§ 39 Abs. 1 und 2"
+    }
+  ],
+  "otherRules": [
+    {
+      "topic": "Stockangelrecht bremischer Bürger",
+      "text": "Bewohner der Freien Hansestadt Bremen, die eine Fischereiprüfung abgelegt haben, sind berechtigt, für den eigenen Bedarf in der Weser, der Kleinen Weser, in der Lesum flußaufwärts bis zur Burger Straßenbrücke und dem tideabhängigen Teil der Geeste mit höchstens 2 Stockangeln zu fischen. Dies gilt nicht für Gebiete, die Naturschutzgebiete im Sinne des Brem. Naturschutzgesetzes sind. Die Berechtigung ist mit einem Fischereischein nach § 34 Abs. 3 nachzuweisen.",
+      "basisId": "BremFiG",
+      "basisRef": "§ 9 Abs. 1 und 3"
+    }
+  ]
+}
