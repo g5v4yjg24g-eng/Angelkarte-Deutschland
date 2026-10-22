@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router';
 import { de } from '../../i18n/de';
 import { setSetting } from '../../data/settings';
@@ -10,10 +11,27 @@ import styles from './BackupReminder.module.css';
 export function BackupReminder() {
   const state = useBackupState();
   const { pathname } = useLocation();
-  if (!state?.reminderDue || pathname.startsWith('/mehr/daten')) return null;
+  const ref = useRef<HTMLDivElement>(null);
+  const visible = !!state?.reminderDue && !pathname.startsWith('/mehr/daten');
+  const floating = visible && pathname === '/';
+  // Auf der Karte: eigene Höhe als --reminder-h melden, damit die Kartenknöpfe darüber bleiben
+  useEffect(() => {
+    const el = ref.current;
+    const root = document.documentElement;
+    if (!floating || !el) return;
+    const set = () => root.style.setProperty('--reminder-h', `${el.offsetHeight + 8}px`);
+    set();
+    const ro = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(set);
+    ro?.observe(el);
+    return () => {
+      ro?.disconnect();
+      root.style.removeProperty('--reminder-h');
+    };
+  }, [floating]);
+  if (!visible || !state) return null;
   return (
     // Auf der Karte schwebend, damit sie die Karte nicht verschiebt, während man tippt
-    <div className={[styles.bar, pathname === '/' ? styles.floating : ''].join(' ')} role="status">
+    <div ref={ref} className={[styles.bar, floating ? styles.floating : ''].join(' ')} role="status">
       <span>{de.backup.reminder(state.changes)}</span>
       <span className={styles.actions}>
         <button
