@@ -1,12 +1,12 @@
 {
   "stateCode": "BB",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "Fischereischein und Erlaubnisse (Fischereigesetz für das Land Brandenburg)",
     "Anordnungen des Landesamts und Hegepläne (abweichende Schonzeiten und Maße)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, bravors.brandenburg.de abgerufen am 2026-10-22); Gegenprüfung durch den Nutzer ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, bravors.brandenburg.de abgerufen am 2026-10-22); gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "BbgFischO",

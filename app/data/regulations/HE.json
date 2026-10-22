@@ -1,12 +1,12 @@
 {
   "stateCode": "HE",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "Fischereischein (Hessisches Fischereigesetz)",
     "Änderungen nach der Verkündung am 28.04.2023 nicht geprüft (Landesrechtsportal gesperrt)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, GVBl. Hessen 2023 Nr. 15 von starweb.hessen.de); Gegenprüfung durch den Nutzer ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, GVBl. Hessen 2023 Nr. 15 von starweb.hessen.de); gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "HFischV",
