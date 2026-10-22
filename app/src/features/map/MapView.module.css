@@ -240,10 +240,13 @@
   border-radius: var(--radius-full);
   background: linear-gradient(
     90deg,
-    rgb(255 214 102 / 0.55),
-    rgb(244 140 40),
-    rgb(214 60 30),
-    rgb(160 20 40)
+    rgb(30 80 255 / 0.4),
+    rgb(30 80 255),
+    rgb(0 210 255),
+    rgb(40 220 90),
+    rgb(250 230 40),
+    rgb(250 140 30),
+    rgb(225 30 30)
   );
 }
 .legendHead {
