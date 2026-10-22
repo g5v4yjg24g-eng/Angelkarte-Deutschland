@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { serveWaterFixture, useLocalExternals, waitForApp } from './helpers';
+import { serveWaterFixture, startCatchAt, useLocalExternals, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -102,4 +102,44 @@ test('M5.5: Mehrere Gewässer in der Nähe → Auswahl; später zuordnen und än
     .getByRole('button', { name: 'Zuordnung entfernen' })
     .click();
   await expect(page.getByText('Zuordnung entfernt.')).toBeVisible();
+});
+
+test('„Fang erfassen" → Tipp auf den See: Formular öffnet sich, Eintrag liegt genau dort', async ({
+  page,
+}) => {
+  // Abbrechen und Escape beenden den Antipp-Modus
+  const fab = page.getByRole('button', { name: 'Fang erfassen' });
+  await fab.click();
+  await expect(fab).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Abbrechen' }).click();
+  await expect(fab).toHaveAttribute('aria-pressed', 'false');
+  await fab.click();
+  await page.keyboard.press('Escape');
+  await expect(fab).toHaveAttribute('aria-pressed', 'false');
+
+  const lake = { lng: 6.2418, lat: 51.3263 }; // De Wittsee, Seemitte
+  await startCatchAt(page, lake);
+  const form = page.getByRole('dialog', { name: 'Fang oder Kontakt erfassen' });
+  await expect(form).toBeVisible();
+  // Kein Gewässerprofil, sondern direkt das Formular – mit dem See vorgewählt
+  await expect(page.getByRole('dialog', { name: 'De Wittsee' })).toHaveCount(0);
+  await expect(form.getByRole('combobox', { name: 'Gewässer' })).toHaveValue('osm:w35044256');
+  await form.getByRole('combobox', { name: 'Fischart' }).selectOption({ label: 'Hecht' });
+  await form.getByRole('button', { name: 'Speichern' }).click();
+  await expect(page.getByText('Fang gespeichert.')).toBeVisible();
+
+  const saved = await page.evaluate(async () => {
+    const req = indexedDB.open('fangpunkt');
+    const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
+    const all = await new Promise<{ position?: { lat: number; lng: number }; waterId?: string }[]>((r) => {
+      const q = db.transaction('catches').objectStore('catches').getAll();
+      q.onsuccess = () => r(q.result as { position?: { lat: number; lng: number }; waterId?: string }[]);
+    });
+    db.close();
+    return all[0];
+  });
+  expect(saved?.waterId).toBe('osm:w35044256');
+  // Genau die angetippte Stelle: Klicks landen auf ganzen Pixeln (bei Zoom 14,3 ≈ 2 m je Pixel), also < 3 m
+  expect(Math.abs((saved?.position?.lat ?? 0) - lake.lat)).toBeLessThan(3e-5);
+  expect(Math.abs((saved?.position?.lng ?? 0) - lake.lng)).toBeLessThan(4e-5);
 });

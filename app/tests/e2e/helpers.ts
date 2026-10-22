@@ -101,3 +101,20 @@ export async function tapRendered(page: Page, layer: string, lng: number, lat: n
   );
   await page.mouse.click(p.x, p.y + dy);
 }
+
+/**
+ * „Fang erfassen" → Tipp auf die Fangstelle (Standard: Kartenmitte). Das Formular öffnet sich mit genau
+ * diesem Punkt.
+ */
+export async function startCatchAt(page: Page, at?: { lng: number; lat: number }) {
+  await page.getByRole('button', { name: 'Fang erfassen' }).click();
+  await page.getByText('Tippe auf die Stelle, an der du gefangen hast', { exact: false }).waitFor();
+  const p = await page.evaluate((at) => {
+    const map = window.__fangpunktMap;
+    if (!map) throw new Error('Karte fehlt');
+    const pt = map.project(at ? [at.lng, at.lat] : map.getCenter());
+    const r = map.getContainer().getBoundingClientRect();
+    return { x: r.left + pt.x, y: r.top + pt.y };
+  }, at);
+  await page.mouse.click(p.x, p.y);
+}
