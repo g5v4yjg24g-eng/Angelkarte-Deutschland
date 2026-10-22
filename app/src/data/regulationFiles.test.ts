@@ -2,10 +2,14 @@
 import { describe, expect, it } from 'vitest';
 import { freshness, isStateCode, RegulationSetSchema } from '../domain/regulations';
 
-const files = import.meta.glob<unknown>('../../data/regulations/*.json', { import: 'default', eager: true });
+// Ohne Typparameter: mit `glob<…>(` erkennt Vite den Aufruf nicht und liefert {}.
+const files: Record<string, unknown> = import.meta.glob('../../data/regulations/*.json', {
+  import: 'default',
+  eager: true,
+});
 
 describe('Landesdateien app/data/regulations', () => {
-  it('Glob findet die Ablage', () => expect(typeof files).toBe('object'));
+  it('findet die Landesdateien', () => expect(Object.keys(files).length).toBeGreaterThan(0));
 
   for (const [path, data] of Object.entries(files)) {
     const code = (path.split('/').at(-1) ?? '').replace(/\.json$/, '');

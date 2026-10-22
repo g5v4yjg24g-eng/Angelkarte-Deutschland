@@ -1,6 +1,6 @@
 // Landesrecht eines Landes; ohne geprüfte Datei ein erklärender Leerzustand mit Link zum Portal (LAW-4).
 import { useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useSearchParams } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
 import { EmptyState } from '../../design/components/EmptyState';
@@ -17,7 +17,8 @@ const t = de.law;
 export function StateLawPage() {
   const { state = '' } = useParams();
   const code = isStateCode(state) ? state : undefined;
-  const r = useRegulation(code);
+  const [search] = useSearchParams();
+  const r = useRegulation(code, search.has('pruefung'));
   const [nowMs] = useState(() => Date.now());
   if (!code) return <NotFound />;
   const name = de.water.states[code];

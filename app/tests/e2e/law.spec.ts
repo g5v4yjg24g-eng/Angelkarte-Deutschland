@@ -45,3 +45,18 @@ test('M7: Übersicht der Länder, Land ohne geprüfte Angaben (LAW-4), Hinweis �
   await expect(page.getByRole('heading', { name: 'Seite nicht gefunden' })).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('Prüfansicht zeigt Entwürfe nur mit ?pruefung und deutlicher Warnung', async ({ page }) => {
+  await page.goto('/mehr/recht/HH');
+  await waitForApp(page);
+  await expect(page.getByRole('heading', { name: 'Für Hamburg noch keine geprüften Angaben' })).toBeVisible();
+  await page.goto('/mehr/recht/HH?pruefung=1');
+  await expect(page.getByRole('alert')).toContainText('ungeprüfter Entwurf');
+  await expect(page.getByText(/^Keine Rechtsauskunft\./)).toBeVisible();
+  const zander = page
+    .getByRole('listitem')
+    .filter({ hasText: 'Zander' })
+    .filter({ hasText: 'Entnahmefenster' });
+  await expect(zander).toContainText('45–75 cm');
+  await expect(zander).toContainText('Anlage 1 Nr. 9 (zu § 7 Abs. 1) HmbFAnGDVO');
+});

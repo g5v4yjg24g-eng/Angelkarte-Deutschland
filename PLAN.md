@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-22 · Status: **M7.1 umgesetzt** (M5 in PRs #11–#14, M6 in #15, M7.1 in eigenem PR, alle zur Freigabe) · M7.2 NRW-Inhalt wartet auf recht.nrw.de
+Stand: 2026-10-22 · Status: **M7.1 umgesetzt** (PRs #11–#16 am 2026-10-22 nach main gemergt) · M7.2 NRW-Inhalt wartet auf recht.nrw.de
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -206,10 +206,12 @@ Abhängig von: M4
 - Inhalte für **NRW** (E7), neu am amtlichen Text geprüft (Altprojekt-Stand 2026-10-18 nur als Ausgangspunkt).
 - ✅ **M7.1 Struktur (2026-10-22):** Schema mit Prüfregeln (`domain/regulations.ts`), Landesdateien in `app/data/regulations/` (im Build enthalten, also mit der App offline), Prüfung in `pnpm test`/`validate:data`, Übersicht „Angelrecht der Länder" mit Status je Land, Landesseite mit Schonzeiten („heute in Schonzeit"), Mindestmaßen, geschützten Arten, Erlaubnissen, Fundstellen und Quellen, Veraltungsbanner (180/365 Tage), Leerzustand mit Link zum Landesportal, Link im Gewässerprofil. Hinweis „keine Rechtsauskunft" auf jeder Rechtsansicht.
 - ⏳ **M7.2 NRW-Inhalt:** wartet auf den amtlichen Text (recht.nrw.de am 2026-10-22 nachts im Wartungsmodus, DATA_SOURCES §5.2).
+- **Entscheidung 2026-10-22 (Vier-Augen-Prüfung):** Eine Landesdatei wird zuerst als `draft` erfasst (in der App unsichtbar). `verified` bzw. `partial` erst, nachdem du sie gegen den amtlichen Text gegengeprüft hast. Das gilt auch für NRW.
 - *Abnahme:* NRW-Datei mit Status `verified`; jede Regel hat Quelle, Paragraf, Prüfdatum; der Schema-Check in CI schlägt bei fehlender Quelle fehl; der Hinweis „keine Rechtsberatung" ist sichtbar.
 
 ### M8 – Recht: alle 16 Länder
 Abhängig von: M7 · Aufwand redaktionell (≈ 0,5–1 Tag pro Land [A])
+- ⏳ **Begonnen 2026-10-22 auf deinen Wunsch, während recht.nrw.de in Wartung ist (Abweichung von E7 „zuerst NRW"):** Entwürfe für Bayern, Niedersachsen, Sachsen und Hamburg (Schonzeiten, Maße, geschützte Arten, einzelne weitere Regeln). Sichtbar erst nach deiner Gegenprüfung; Prüfansicht `…/mehr/recht/BY?pruefung=1`. Die übrigen elf Portale sind aus der Cloud-Umgebung nicht erreichbar.
 - Quellenrecherche je Land, Erfassung, Vier-Augen-Prüfung (du prüfst jede Landesdatei gegen den verlinkten amtlichen Text).
 - *Abnahme:* 16 Landesdateien mit Status `verified` oder ausdrücklich `partial` und Liste fehlender Teile.
 

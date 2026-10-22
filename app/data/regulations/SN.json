@@ -1,0 +1,734 @@
+{
+  "stateCode": "SN",
+  "status": "draft",
+  "missing": [
+    "Fischereischein und Erlaubnisse (SächsFischG, §§ 15 ff. SächsFischVO)",
+    "Allgemeinverfügungen der Fischereibehörde (§ 2 Abs. 3, 4, 6)"
+  ],
+  "checkedAt": "2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); Gegenprüfung durch den Nutzer ausstehend",
+  "legalBasis": [
+    {
+      "id": "SächsFischVO",
+      "title": "Sächsische Fischereiverordnung",
+      "version": "vom 22. April 2022 (SächsGVBl. S. 318), Fassung gültig ab 1. Juni 2022",
+      "url": "https://revosax.sachsen.de/vorschrift/19620",
+      "retrievedAt": "2026-10-22"
+    }
+  ],
+  "closedSeasons": [
+    {
+      "taxon": {
+        "de": "Äsche",
+        "sci": "Thymallus thymallus"
+      },
+      "speciesId": "grayling",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 4 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 1,
+        "day": 1
+      },
+      "to": {
+        "month": 6,
+        "day": 15
+      }
+    },
+    {
+      "taxon": {
+        "de": "Atlantischer Lachs",
+        "sci": "Salmo salar"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 5 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Bachforelle",
+        "sci": "Salmo trutta fario"
+      },
+      "speciesId": "brown_trout",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 6 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Bachsaibling",
+        "sci": "Salvelinus fontinalis"
+      },
+      "speciesId": "brook_trout",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 8 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Barbe",
+        "sci": "Barbus barbus"
+      },
+      "speciesId": "barbel",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 9 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 4,
+        "day": 15
+      },
+      "to": {
+        "month": 6,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Große Maräne",
+        "sci": "Coregonus lavaretus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 17 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 12,
+        "day": 31
+      }
+    },
+    {
+      "taxon": {
+        "de": "Hecht",
+        "sci": "Esox lucius"
+      },
+      "speciesId": "pike",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 19 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 2,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Karausche",
+        "sci": "Carassius carassius"
+      },
+      "speciesId": "crucian_carp",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 20 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 2,
+        "day": 1
+      },
+      "to": {
+        "month": 6,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Meerforelle",
+        "sci": "Salmo trutta trutta"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 24 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Nase",
+        "sci": "Chondrostoma nasus"
+      },
+      "speciesId": "nase",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 25 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 1,
+        "day": 1
+      },
+      "to": {
+        "month": 6,
+        "day": 15
+      },
+      "scope": "nur in der Elbe",
+      "note": "Wortlaut: „in der Elbe vom 1. Januar bis 15. Juni, ansonsten ganzjährig\""
+    },
+    {
+      "taxon": {
+        "de": "Quappe",
+        "sci": "Lota lota"
+      },
+      "speciesId": "burbot",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 29 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 1,
+        "day": 1
+      },
+      "to": {
+        "month": 3,
+        "day": 31
+      },
+      "scope": "nur in der Elbe, der Vereinigten Mulde und der Weißen Elster",
+      "note": "Wortlaut: „in der Elbe, der Vereinigten Mulde und der Weißen Elster vom 1. Januar bis 31. März, ansonsten ganzjährig\""
+    },
+    {
+      "taxon": {
+        "de": "Rapfen",
+        "sci": "Aspius aspius"
+      },
+      "speciesId": "asp",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 30 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 1,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      }
+    },
+    {
+      "taxon": {
+        "de": "Regenbogenforelle",
+        "sci": "Oncorhynchus mykiss"
+      },
+      "speciesId": "rainbow_trout",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 31 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      },
+      "scope": "nur in Fließgewässern"
+    },
+    {
+      "taxon": {
+        "de": "Seeforelle",
+        "sci": "Salmo trutta lacustris"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 37 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Seesaibling",
+        "sci": "Salvelinus alpinus alpinus"
+      },
+      "speciesId": "arctic_char",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 38 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      }
+    },
+    {
+      "taxon": {
+        "de": "Zander",
+        "sci": "Sander lucioperca"
+      },
+      "speciesId": "zander",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 44 (zu § 2 Abs. 1)",
+      "from": {
+        "month": 2,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      }
+    }
+  ],
+  "minSizes": [
+    {
+      "taxon": {
+        "de": "Aal",
+        "sci": "Anguilla anguilla"
+      },
+      "speciesId": "eel",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 1 (zu § 2 Abs. 1)",
+      "minCm": 50
+    },
+    {
+      "taxon": {
+        "de": "Aland",
+        "sci": "Leuciscus idus"
+      },
+      "speciesId": "ide",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 3 (zu § 2 Abs. 1)",
+      "minCm": 20
+    },
+    {
+      "taxon": {
+        "de": "Äsche",
+        "sci": "Thymallus thymallus"
+      },
+      "speciesId": "grayling",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 4 (zu § 2 Abs. 1)",
+      "minCm": 35
+    },
+    {
+      "taxon": {
+        "de": "Atlantischer Lachs",
+        "sci": "Salmo salar"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 5 (zu § 2 Abs. 1)",
+      "minCm": 60
+    },
+    {
+      "taxon": {
+        "de": "Bachforelle",
+        "sci": "Salmo trutta fario"
+      },
+      "speciesId": "brown_trout",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 6 (zu § 2 Abs. 1)",
+      "minCm": 28
+    },
+    {
+      "taxon": {
+        "de": "Bachsaibling",
+        "sci": "Salvelinus fontinalis"
+      },
+      "speciesId": "brook_trout",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 8 (zu § 2 Abs. 1)",
+      "minCm": 25
+    },
+    {
+      "taxon": {
+        "de": "Barbe",
+        "sci": "Barbus barbus"
+      },
+      "speciesId": "barbel",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 9 (zu § 2 Abs. 1)",
+      "minCm": 50
+    },
+    {
+      "taxon": {
+        "de": "Große Maräne",
+        "sci": "Coregonus lavaretus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 17 (zu § 2 Abs. 1)",
+      "minCm": 30
+    },
+    {
+      "taxon": {
+        "de": "Hecht",
+        "sci": "Esox lucius"
+      },
+      "speciesId": "pike",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 19 (zu § 2 Abs. 1)",
+      "minCm": 50
+    },
+    {
+      "taxon": {
+        "de": "Karausche",
+        "sci": "Carassius carassius"
+      },
+      "speciesId": "crucian_carp",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 20 (zu § 2 Abs. 1)",
+      "minCm": 15
+    },
+    {
+      "taxon": {
+        "de": "Karpfen",
+        "sci": "Cyprinus carpio"
+      },
+      "speciesId": "carp",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 21 (zu § 2 Abs. 1)",
+      "minCm": 40
+    },
+    {
+      "taxon": {
+        "de": "Meerforelle",
+        "sci": "Salmo trutta trutta"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 24 (zu § 2 Abs. 1)",
+      "minCm": 60
+    },
+    {
+      "taxon": {
+        "de": "Nase",
+        "sci": "Chondrostoma nasus"
+      },
+      "speciesId": "nase",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 25 (zu § 2 Abs. 1)",
+      "minCm": 40
+    },
+    {
+      "taxon": {
+        "de": "Quappe",
+        "sci": "Lota lota"
+      },
+      "speciesId": "burbot",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 29 (zu § 2 Abs. 1)",
+      "minCm": 30
+    },
+    {
+      "taxon": {
+        "de": "Rapfen",
+        "sci": "Aspius aspius"
+      },
+      "speciesId": "asp",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 30 (zu § 2 Abs. 1)",
+      "minCm": 40
+    },
+    {
+      "taxon": {
+        "de": "Regenbogenforelle",
+        "sci": "Oncorhynchus mykiss"
+      },
+      "speciesId": "rainbow_trout",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 31 (zu § 2 Abs. 1)",
+      "minCm": 25
+    },
+    {
+      "taxon": {
+        "de": "Rotfeder",
+        "sci": "Scardinius erythrophthalmus"
+      },
+      "speciesId": "rudd",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 32 (zu § 2 Abs. 1)",
+      "minCm": 20,
+      "scope": "nur in Fließgewässern"
+    },
+    {
+      "taxon": {
+        "de": "Schleie",
+        "sci": "Tinca tinca"
+      },
+      "speciesId": "tench",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 34 (zu § 2 Abs. 1)",
+      "minCm": 25
+    },
+    {
+      "taxon": {
+        "de": "Seeforelle",
+        "sci": "Salmo trutta lacustris"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 37 (zu § 2 Abs. 1)",
+      "minCm": 60
+    },
+    {
+      "taxon": {
+        "de": "Seesaibling",
+        "sci": "Salvelinus alpinus alpinus"
+      },
+      "speciesId": "arctic_char",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 38 (zu § 2 Abs. 1)",
+      "minCm": 28
+    },
+    {
+      "taxon": {
+        "de": "Zander",
+        "sci": "Sander lucioperca"
+      },
+      "speciesId": "zander",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 44 (zu § 2 Abs. 1)",
+      "minCm": 50
+    }
+  ],
+  "protectedSpecies": [
+    {
+      "taxon": {
+        "de": "Abgeplattete Teichmuschel",
+        "sci": "Pseudanodonta complanata"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 2 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Bachmuschel, Kleine Flussmuschel",
+        "sci": "Unio crassus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 7 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Bitterling",
+        "sci": "Rhodeus amarus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 10 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Edelkrebs",
+        "sci": "Astacus astacus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 11 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Elritze",
+        "sci": "Phoxinus phoxinus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 12 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Flussperlmuschel",
+        "sci": "Margaritifera margaritifera"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 13 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Gemeine Teichmuschel",
+        "sci": "Anodonta anatina"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 14 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Groppe",
+        "sci": "Cottus gobio"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 15 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Große Flussmuschel",
+        "sci": "Unio tumidus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 16 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Große Teichmuschel",
+        "sci": "Anodonta cygnea"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 18 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Maifisch",
+        "sci": "Alosa spec."
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 22 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Malermuschel",
+        "sci": "Unio pictorum"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 23 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Nase",
+        "sci": "Chondrostoma nasus"
+      },
+      "speciesId": "nase",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 25 (zu § 2 Abs. 1)",
+      "scope": "außer in der Elbe",
+      "note": "Wortlaut: „in der Elbe vom 1. Januar bis 15. Juni, ansonsten ganzjährig\""
+    },
+    {
+      "taxon": {
+        "de": "Neunauge",
+        "sci": "Petromyzontidae spec."
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 26 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Neunstachliger Stichling",
+        "sci": "Gasterosteus pungitius"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 27 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Nordseeschnäpel",
+        "sci": "Coregonus oxyrinchus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 28 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Quappe",
+        "sci": "Lota lota"
+      },
+      "speciesId": "burbot",
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 29 (zu § 2 Abs. 1)",
+      "scope": "außer in der Elbe, der Vereinigten Mulde und der Weißen Elster",
+      "note": "Wortlaut: „in der Elbe, der Vereinigten Mulde und der Weißen Elster vom 1. Januar bis 31. März, ansonsten ganzjährig\""
+    },
+    {
+      "taxon": {
+        "de": "Schlammpeitzger",
+        "sci": "Misgurnus fossilis"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 33 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Schmerle",
+        "sci": "Noemacheilus barbatulus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 35 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Schneider",
+        "sci": "Alburnoides bipunctatus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 36 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Steinbeißer",
+        "sci": "Cobitis spec."
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 39 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Steinkrebs",
+        "sci": "Austropotamobius torrentium"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 40 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Stör",
+        "sci": "Acipenser sturio Acipenser oxyrinchus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 41 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Stromgründling",
+        "sci": "Romanogobio belingi"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 42 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Zährte",
+        "sci": "Vimba vimba"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 43 (zu § 2 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Zope",
+        "sci": "Abramis ballerus"
+      },
+      "basisId": "SächsFischVO",
+      "basisRef": "Anlage Nr. 45 (zu § 2 Abs. 1)"
+    }
+  ],
+  "licences": [],
+  "otherRules": [
+    {
+      "topic": "Messen",
+      "text": "Das Maß bildet der Abstand von der Kopfspitze bis zum Ende der natürlich ausgebreiteten Schwanzflosse.",
+      "basisId": "SächsFischVO",
+      "basisRef": "§ 2 Abs. 2"
+    },
+    {
+      "topic": "Ausnahmen",
+      "text": "Zusammengefasst: Die Fischereibehörde kann zeitlich und räumlich begrenzt Ausnahmen von den Schonzeiten und Mindestmaßen zulassen sowie zum Schutz der Äsche oder zur Umsetzung von Aalbewirtschaftungsplänen Einschränkungen festlegen. Diese sind hier nicht erfasst.",
+      "basisId": "SächsFischVO",
+      "basisRef": "§ 2 Abs. 3, 4 und 6"
+    }
+  ]
+}

@@ -19,9 +19,17 @@ export type MonthDay = z.infer<typeof MonthDaySchema>;
 const Basis = { basisId: z.string().min(1), basisRef: z.string().trim().min(1) };
 const speciesKnown = (id: string) => speciesById(id) !== undefined;
 const SpeciesId = z.string().refine(speciesKnown, { message: 'Art fehlt in domain/species.ts' });
+/**
+ * Art so, wie sie im Rechtstext steht (deutsch, wissenschaftlich). `speciesId` verknüpft mit der Fangbuch-Art,
+ * nur wenn die Zuordnung eindeutig ist (deutscher Name oder dokumentiertes Synonym) – sonst weglassen.
+ */
+const SpeciesRef = {
+  taxon: z.object({ de: z.string().trim().min(1), sci: z.string().trim().min(1).optional() }),
+  speciesId: SpeciesId.optional(),
+};
 
 const ClosedSeasonSchema = z.object({
-  speciesId: SpeciesId,
+  ...SpeciesRef,
   from: MonthDaySchema,
   /** einschließlich; jahresübergreifend erlaubt (from > to) */
   to: MonthDaySchema,
@@ -32,15 +40,30 @@ const ClosedSeasonSchema = z.object({
 export type ClosedSeasonRule = z.infer<typeof ClosedSeasonSchema>;
 
 const MinSizeSchema = z.object({
-  speciesId: SpeciesId,
-  minCm: z.number().positive().max(300),
+  ...SpeciesRef,
+  minCm: z.number().positive().max(300).optional(),
+  /** oberes Maß eines Entnahmefensters */
+  maxCm: z.number().positive().max(400).optional(),
+  /** Tageshöchstfangmenge (Stück) */
+  dailyLimit: z.number().int().positive().optional(),
   scope: z.string().min(1).optional(),
   note: z.string().min(1).optional(),
   ...Basis,
 });
 export type MinSizeRule = z.infer<typeof MinSizeSchema>;
+const MinSizeChecked = MinSizeSchema.refine(
+  (r) => r.minCm !== undefined || r.maxCm !== undefined || r.dailyLimit !== undefined,
+  { message: 'Maß oder Fangmenge fehlt' },
+).refine((r) => r.minCm === undefined || r.maxCm === undefined || r.minCm < r.maxCm, {
+  message: 'unteres Maß muss kleiner als oberes sein',
+});
 
-const ProtectedSchema = z.object({ speciesId: SpeciesId, note: z.string().min(1).optional(), ...Basis });
+const ProtectedSchema = z.object({
+  ...SpeciesRef,
+  scope: z.string().min(1).optional(),
+  note: z.string().min(1).optional(),
+  ...Basis,
+});
 const LicenceSchema = z.object({
   kind: z.enum(['fishing_licence', 'permit', 'levy', 'youth', 'tourist']),
   text: z.string().min(1),
@@ -68,7 +91,7 @@ export const RegulationSetSchema = z
     checkedBy: z.string().min(1),
     legalBasis: z.array(LegalBasisSchema).min(1),
     closedSeasons: z.array(ClosedSeasonSchema),
-    minSizes: z.array(MinSizeSchema),
+    minSizes: z.array(MinSizeChecked),
     protectedSpecies: z.array(ProtectedSchema),
     licences: z.array(LicenceSchema),
     otherRules: z.array(OtherRuleSchema),
@@ -134,6 +157,11 @@ export function freshness(checkedAt: string, nowMs: number): Freshness {
 /** Schonzeiten einer Art, die an diesem Tag gelten (mit Geltungsbereich, falls angegeben). */
 export function closedSeasonsOn(set: RegulationSet, speciesId: string, day: MonthDay): ClosedSeasonRule[] {
   return set.closedSeasons.filter((r) => r.speciesId === speciesId && inClosedSeason(r, day));
+}
+
+/** Anzeigename einer Regel-Art: immer der Name aus dem Rechtstext. */
+export function taxonLabel(r: { taxon: { de: string; sci?: string | undefined } }): string {
+  return r.taxon.de;
 }
 
 export function isStateCode(s: string): s is StateCode {

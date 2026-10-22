@@ -115,6 +115,13 @@ Artenliste (Namen, wiss. Namen) wird einmalig redaktionell aus der GBIF-Taxonomi
 | Schleswig-Holstein | gesetze-rechtsprechung.sh.juris.de | – |
 | Thüringen | landesrecht.thueringen.de | – |
 
+**Erfassung 2026-10-22 (auf Wunsch vor NRW, Entwürfe zur Gegenprüfung):** Aus der Cloud-Umgebung erreichbar waren nur gesetze-bayern.de, voris.wolterskluwer-online.de, revosax.sachsen.de und dokumente.hamburg.de [V 2026-10-22]. Erfasst als `draft`, maschinell aus den Tabellen des amtlichen Texts gelesen:
+- **BY** AVBayFiG, Anlage (zu § 11), zuletzt geändert 10.04.2025 – https://www.gesetze-bayern.de/Content/Document/BayAVFiG/true
+- **NI** BiFischO §§ 2–5 (Fassung ab 01.08.1989, VO zuletzt geändert 22.12.2005) – NI-VORIS. [O] Ob es neuere Änderungen gibt, die VORIS noch nicht zeigt, ist nicht geprüft.
+- **SN** SächsFischVO vom 22.04.2022, Anlage (zu § 2), gültig ab 01.06.2022 – https://revosax.sachsen.de/vorschrift/19620
+- **HH** HmbFAnGDVO, Gesamtausgabe Stand 25.09.2023 (letzte Änderung 01.02.2022) als PDF von hamburg.de. [O] Änderungen nach dem 25.09.2023 nicht geprüft (landesrecht-hamburg.de gesperrt).
+Nicht erreichbar (Verbindungsabbruch bzw. 403/503): BW, BE, BB, HB, HE, MV, RP, SL, ST, SH, TH [V 2026-10-22]. Fischereischein-Regeln der Gesetze sind noch nicht erfasst (`missing`).
+
 **Stand 2026-10-22, 01:22–01:30 UTC:** recht.nrw.de meldet „Dieser Server ist aktuell im Wartungsmodus!"; alle Unterseiten liefern 404 [V]. Die NRW-Inhalte werden erfasst, sobald der amtliche Text erreichbar ist. Zweitquellen (umwelt-online.de, lexaris.de) werden nicht als Quelle verwendet. Laut Suchergebnis wurde die LFischVO zuletzt durch Art. 2 der Verordnung vom 01.07.2026 geändert (gültig ab 03.07.2026) [O: am amtlichen Text bestätigen]. Viele Landesportale sind aus der Cloud-Umgebung nicht erreichbar (Verbindungsabbruch); die Links in der App (`STATE_PORTALS`) sind die Einstiegspunkte dieser Tabelle [O: je Land beim Erfassen prüfen].
 
 Die Altprojekt-Angaben (NRW, HH) gelten als **Ausgangspunkt**, nicht als geprüft für das neue Projekt. Sie werden in M7 erneut am amtlichen Text abgeglichen.
@@ -123,8 +130,9 @@ Die Altprojekt-Angaben (NRW, HH) gelten als **Ausgangspunkt**, nicht als geprüf
 1. Jede Landesdatei `app/data/regulations/<KÜRZEL>.json` (z. B. `NW.json`) enthält `checkedAt`, `checkedBy`, `legalBasis[]` (Titel, Fassung, URL, Abrufdatum) und je Regel den **Paragrafen**.
 2. CI-Check (`pnpm validate:data`, auch Teil von `pnpm test`): Schema gültig; jede Regel hat Quelle und Paragraf, sonst rot. `checkedAt` älter als **180 Tage** erzeugt eine Warnung im Testlauf; ein automatisches Issue gibt es noch nicht [O].
 3. In der App: Banner „Zuletzt geprüft am … – möglicherweise veraltet", sobald 180 Tage überschritten sind; ab 365 Tagen deutlicher Warnhinweis. Status `partial` listet fehlende Teile.
-4. Halbjährlicher Prüftermin (Kalendererinnerung für dich). Änderungen per Pull Request mit Link zur Fundstelle.
-5. Disclaimer in jeder Rechtsansicht: „Keine Rechtsauskunft. Maßgeblich sind der amtliche Text und die Bedingungen deines Erlaubnisscheins."
+4. Erfassung immer zuerst als `draft`; sichtbar (`verified`/`partial`) erst nach Gegenprüfung durch dich am amtlichen Text (Entscheidung 2026-10-22).
+5. Halbjährlicher Prüftermin (Kalendererinnerung für dich). Änderungen per Pull Request mit Link zur Fundstelle.
+6. Disclaimer in jeder Rechtsansicht: „Keine Rechtsauskunft. Maßgeblich sind der amtliche Text und die Bedingungen deines Erlaubnisscheins."
 
 ---
 

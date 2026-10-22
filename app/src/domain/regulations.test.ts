@@ -51,6 +51,15 @@ describe('RegulationSetSchema (LAW-1)', () => {
     expect(issues({ ...fx, closedSeasons: feb30 }).join()).toContain('closedSeasons.0.to');
   });
 
+  it('prüft Entnahmefenster', () => {
+    const base = one(fx.minSizes);
+    expect(issues({ ...fx, minSizes: [{ ...base, minCm: 50, maxCm: 40 }] }).join()).toContain('kleiner');
+    expect(issues({ ...fx, minSizes: [{ ...base, minCm: undefined }] }).join()).toContain(
+      'Maß oder Fangmenge',
+    );
+    expect(issues({ ...fx, minSizes: [{ ...base, minCm: 45, maxCm: 75, dailyLimit: 2 }] })).toEqual([]);
+  });
+
   it('zeigt Entwürfe nie', () => {
     expect(isShown(fx)).toBe(true);
     expect(isShown({ ...fx, status: 'draft' })).toBe(false);
