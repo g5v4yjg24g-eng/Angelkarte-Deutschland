@@ -196,6 +196,17 @@
 .facts dd {
   margin: 0;
 }
+.heatScale {
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    90deg,
+    rgb(255 214 102 / 0.55),
+    rgb(244 140 40),
+    rgb(214 60 30),
+    rgb(160 20 40)
+  );
+}
 .legendHead {
   font-size: var(--text-sm);
   text-transform: uppercase;
