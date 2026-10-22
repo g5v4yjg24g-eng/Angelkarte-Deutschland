@@ -247,6 +247,7 @@ Abhängig von: M3, E2-Variante „Self-Hosting"
 
 ### M11 – Härtung und Release 1.0
 Abhängig von: M1–M7
+- ⏳ **Begonnen 2026-10-22:** axe-Prüfung aller Hauptansichten (0 Befunde) und Touch-Ziele ≥ 44 px automatisiert; dafür Segment-Schalter, Chips, Kartenknöpfe, Session-Chip, Sicherungs-Erinnerung, Tabellen-Umschalter und „Zur Karte“ (404) auf 44 px gebracht.
 - Barrierefreiheit (axe, Tastatur, Screenreader-Stichprobe), Geräte-Matrix, Datenschutzerklärung, Impressum (falls öffentlich), Quellen- und Lizenzseite.
 - *Abnahme:* TEST_PLAN §6 komplett grün.
 
