@@ -230,7 +230,7 @@ interface DepthProvider {
 ## 7. Rechtsdaten
 
 ```ts
-interface RegulationSet {                   // data/regulations/<land>.json
+interface RegulationSet {                   // app/data/regulations/<land>.json, Zod: domain/regulations.ts
   stateCode: StateCode;
   status: 'verified' | 'partial' | 'draft';
   missing?: string[];                      // bei partial: was fehlt
@@ -260,6 +260,8 @@ interface WaterRuleSet {                    // P3: gewässerbezogen, zusätzlich
   source: SourceRef; checkedAt: string;
 }
 ```
+Umsetzung (M7, 2026-10-22): Jede Regel trägt `basisId` (verweist auf `legalBasis[].id`, geprüft) und `basisRef` (Paragraf/Absatz/Anlage, nicht leer). `from`/`to` sind einschließlich; `to < from` heißt über den Jahreswechsel. Arten müssen in `domain/species.ts` stehen (fehlt eine geschützte Art, wird sie dort mit wissenschaftlichem Namen ergänzt, nicht weggelassen). `partial` verlangt `missing`, `verified` verbietet es. `draft` wird nie angezeigt.
+
 Anzeige-Logik: Landesrecht und Gewässerregeln werden **getrennt** dargestellt. Die strengere Regel wird **nicht** automatisch berechnet. Die App zeigt beide nebeneinander. Hinweis im Fangformular (P1): „Laut <Land> Schonzeit für Hecht bis 30.04. (Stand …)". Das ist informativ und blockiert nicht.
 
 ## 8. Export-Format

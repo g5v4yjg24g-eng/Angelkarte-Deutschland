@@ -1,6 +1,6 @@
 # PLAN – Angel-App Deutschland (Neustart als PWA)
 
-Stand: 2026-10-22 · Status: **M6 umgesetzt** (M5 in PRs #11–#14, M6 in eigenem PR, alle zur Freigabe) · danach M7 Recht NRW nach Freigabe
+Stand: 2026-10-22 · Status: **M7.1 umgesetzt** (M5 in PRs #11–#14, M6 in #15, M7.1 in eigenem PR, alle zur Freigabe) · M7.2 NRW-Inhalt wartet auf recht.nrw.de
 
 Verwandte Dokumente: [ARCHITECTURE.md](ARCHITECTURE.md) · [DATA_SOURCES.md](DATA_SOURCES.md) · [DATA_MODEL.md](DATA_MODEL.md) · [TEST_PLAN.md](TEST_PLAN.md) · [CLAUDE.md](CLAUDE.md)
 
@@ -204,6 +204,8 @@ Abhängig von: M5
 Abhängig von: M4
 - Rechtsdaten-Schema, Validierungsskript, Veraltungslogik, Anzeige pro Land und im Gewässerprofil.
 - Inhalte für **NRW** (E7), neu am amtlichen Text geprüft (Altprojekt-Stand 2026-10-18 nur als Ausgangspunkt).
+- ✅ **M7.1 Struktur (2026-10-22):** Schema mit Prüfregeln (`domain/regulations.ts`), Landesdateien in `app/data/regulations/` (im Build enthalten, also mit der App offline), Prüfung in `pnpm test`/`validate:data`, Übersicht „Angelrecht der Länder" mit Status je Land, Landesseite mit Schonzeiten („heute in Schonzeit"), Mindestmaßen, geschützten Arten, Erlaubnissen, Fundstellen und Quellen, Veraltungsbanner (180/365 Tage), Leerzustand mit Link zum Landesportal, Link im Gewässerprofil. Hinweis „keine Rechtsauskunft" auf jeder Rechtsansicht.
+- ⏳ **M7.2 NRW-Inhalt:** wartet auf den amtlichen Text (recht.nrw.de am 2026-10-22 nachts im Wartungsmodus, DATA_SOURCES §5.2).
 - *Abnahme:* NRW-Datei mit Status `verified`; jede Regel hat Quelle, Paragraf, Prüfdatum; der Schema-Check in CI schlägt bei fehlender Quelle fehl; der Hinweis „keine Rechtsberatung" ist sichtbar.
 
 ### M8 – Recht: alle 16 Länder
