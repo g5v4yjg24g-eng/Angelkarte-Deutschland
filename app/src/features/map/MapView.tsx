@@ -180,6 +180,18 @@ export default function MapView() {
   const location = useLocation();
   const navigate = useNavigate();
   const runningSession = useRunningSession();
+  // „Fang erfassen": wartet auf den Tipp an die Fangstelle (der nächste Tipp öffnet das Formular dort)
+  const [picking, setPicking] = useState(false);
+  const pickingRef = useRef(false);
+  useEffect(() => {
+    pickingRef.current = picking;
+    const canvas = mapRef.current?.getCanvasContainer();
+    if (canvas) canvas.style.cursor = picking ? 'crosshair' : '';
+    if (!picking) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setPicking(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [picking]);
   const themeRef = useRef(theme);
   useEffect(() => {
     themeRef.current = theme;
@@ -281,6 +293,17 @@ export default function MapView() {
       }
     });
     map.on('click', (e: MapMouseEvent) => {
+      // Fangstelle wählen: genau der angetippte Punkt, auch auf dem Wasser (statt Gewässerprofil)
+      if (pickingRef.current) {
+        setPicking(false);
+        const near = waterContext(map, e.point);
+        if (near.water) setSelectedWid(near.water.wid);
+        setSheet({
+          kind: 'catchForm',
+          context: { position: { lat: e.lngLat.lat, lng: e.lngLat.lng, source: 'map-tap' }, ...near },
+        });
+        return;
+      }
       const box: [[number, number], [number, number]] = [
         [e.point.x - 10, e.point.y - 10],
         [e.point.x + 10, e.point.y + 10],
@@ -468,7 +491,15 @@ export default function MapView() {
   }
 
   /** „Fang erfassen": am eigenen Standort, falls er gerade angezeigt wird, sonst in der Kartenmitte. */
+  /** Knopf „Fang erfassen": Antipp-Modus an/aus */
   function onAddCatch() {
+    setSheet(null);
+    setPicking((p) => !p);
+  }
+
+  /** Im Antipp-Modus: statt zu tippen den eigenen Standort nehmen (nur wenn er gerade angezeigt wird) */
+  function addCatchAtMyLocation() {
+    setPicking(false);
     const map = mapRef.current;
     const fix = locating ? geo.fix : undefined;
     const c = fix ?? map?.getCenter();
@@ -797,7 +828,27 @@ export default function MapView() {
           <span>{de.sessions.start}</span>
         </button>
       )}
-      <button type="button" className={styles.fab} onClick={onAddCatch}>
+      {picking && (
+        <div className={styles.pickBar} role="status">
+          <p>{de.map.pickHint}</p>
+          <div className={styles.pickActions}>
+            {locating && geo.fix && (
+              <Button variant="secondary" onClick={addCatchAtMyLocation}>
+                {de.map.pickMyLocation}
+              </Button>
+            )}
+            <Button variant="ghost" onClick={() => setPicking(false)}>
+              {de.map.pickCancel}
+            </Button>
+          </div>
+        </div>
+      )}
+      <button
+        type="button"
+        className={[styles.fab, picking ? styles.fabActive : ''].join(' ')}
+        aria-pressed={picking}
+        onClick={onAddCatch}
+      >
         <PlusIcon />
         <span>{de.map.addCatchFab}</span>
       </button>

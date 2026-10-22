@@ -7,6 +7,7 @@ import {
   tapRendered,
   useLocalExternals,
   waitForApp,
+  startCatchAt,
 } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
@@ -198,7 +199,7 @@ test('„Fang erfassen" am Gewässer ordnet den See zu; Filter im Fangbuch', asy
     const c = map.project(map.getCenter());
     return map.queryRenderedFeatures([c.x, c.y], { layers: ['fp-water-fill'] }).length > 0;
   });
-  await page.getByRole('button', { name: 'Fang erfassen' }).click();
+  await startCatchAt(page);
   const form = page.getByRole('dialog', { name: 'Fang oder Kontakt erfassen' });
   // See unter der Kartenmitte ist vorgewählt; der Fluss am Ufer steht zur Auswahl (M5.5)
   await expect(form.getByRole('combobox', { name: 'Gewässer' })).toHaveValue('osm:w35044256');
