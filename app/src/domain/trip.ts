@@ -119,3 +119,28 @@ export function tripDraftToFields(d: TripDraft): { fields?: TripFields; errors: 
     fields: { date: d.date, from: opt(d.from), to: opt(d.to), title: opt(d.title), notes: opt(d.notes) },
   };
 }
+
+export type CalendarView = 'month' | 'week' | 'day';
+
+/** Montag der Woche von `date`. */
+export function weekStart(date: string): string {
+  const weekday = (new Date(toUtc(date)).getUTCDay() + 6) % 7;
+  return addDays(date, -weekday);
+}
+
+/** Die 7 Tage (Mo–So) der Woche von `date`. */
+export const weekDays = (date: string) => Array.from({ length: 7 }, (_, i) => addDays(weekStart(date), i));
+
+/** Kalenderwoche nach ISO 8601 (Woche mit dem ersten Donnerstag ist KW 1). */
+export function isoWeek(date: string): number {
+  const thursday = addDays(weekStart(date), 3);
+  const jan1 = `${thursday.slice(0, 4)}-01-01`;
+  return Math.floor(daysBetween(jan1, thursday) / 7) + 1;
+}
+
+/** Blättern je nach Ansicht: Monat ±1 Monat (Tag 1), Woche ±7 Tage, Tag ±1 Tag. */
+export function shiftDate(date: string, view: CalendarView, n: number): string {
+  if (view === 'day') return addDays(date, n);
+  if (view === 'week') return addDays(date, 7 * n);
+  return `${addMonths(date.slice(0, 7), n)}-01`;
+}

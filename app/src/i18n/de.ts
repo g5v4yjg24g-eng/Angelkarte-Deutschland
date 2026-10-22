@@ -840,6 +840,28 @@ export const de = {
     loading: 'Kalender wird geladen …',
     prevMonth: 'Voriger Monat',
     nextMonth: 'Nächster Monat',
+    prevWeek: 'Vorige Woche',
+    nextWeek: 'Nächste Woche',
+    prevDay: 'Voriger Tag',
+    nextDay: 'Nächster Tag',
+    goToday: 'Heute',
+    goTodayLabel: 'Zum heutigen Tag springen',
+    viewLabel: 'Ansicht',
+    views: { month: 'Monat', week: 'Woche', day: 'Tag' },
+    weekTitle: (kw: number, from: string, to: string) => {
+      const f = new Date(`${from}T12:00:00Z`);
+      const t2 = new Date(`${to}T12:00:00Z`);
+      const sameMonth = from.slice(0, 7) === to.slice(0, 7);
+      const a = f.toLocaleDateString(
+        'de-DE',
+        sameMonth ? { day: 'numeric' } : { day: 'numeric', month: 'short' },
+      );
+      const b = t2.toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' });
+      return `KW ${kw} · ${a.replace(/\.$/, '')}.–${b}`;
+    },
+    weekTrips: 'Termine in dieser Woche',
+    dayTrips: 'Termine an diesem Tag',
+    noTripsWeek: 'In dieser Woche ist nichts eingetragen.',
     monthTitle: (ym: string) =>
       new Date(`${ym}-15T12:00:00Z`).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }),
     weekdays: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
