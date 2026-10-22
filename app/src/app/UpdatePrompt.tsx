@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { de } from '../i18n/de';
 import { Button } from '../design/components/Button';
@@ -10,6 +11,13 @@ export function UpdatePrompt() {
     offlineReady: [offlineReady, setOfflineReady],
     updateServiceWorker,
   } = useRegisterSW();
+
+  // Reine Info: nach kurzer Zeit ausblenden, damit sie auf dem Handy keine Bedienelemente verdeckt
+  useEffect(() => {
+    if (!offlineReady) return;
+    const timer = setTimeout(() => setOfflineReady(false), 8000);
+    return () => clearTimeout(timer);
+  }, [offlineReady, setOfflineReady]);
 
   if (needRefresh) {
     return (

@@ -17,6 +17,7 @@ import { SPECIES, speciesById } from '../../domain/species';
 import { filterCatches, groupByDay, NO_FILTER, waterNames, type CatchFilter } from '../../domain/catchDraft';
 import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
+import { PhotoThumb } from './CatchPhotos';
 import styles from './CatchesPage.module.css';
 
 const t = de.catches;
@@ -35,6 +36,16 @@ const dayLabel = (day: string) =>
     timeZone: 'UTC',
   });
 
+/** Vorschaubild des ersten Fotos in der Liste */
+function RowPhoto({ id }: { id: string }) {
+  const photo = useLiveQuery(() => getDb().photos.get(id), [id]);
+  return (
+    <span className={styles.rowPhoto} aria-hidden="true">
+      <PhotoThumb blob={photo?.thumb ?? photo?.blob} alt="" />
+    </span>
+  );
+}
+
 function CatchRow({ item }: { item: Catch }) {
   const details = [
     item.at.slice(11, 16),
@@ -47,6 +58,7 @@ function CatchRow({ item }: { item: Catch }) {
     <li>
       <Link to={`/fangbuch/${item.id}`} className={styles.row}>
         <img src={markerDataUrl(`catch-${item.outcome}`)} width={28} height={28} alt="" aria-hidden="true" />
+        {item.photoIds?.[0] && <RowPhoto id={item.photoIds[0]} />}
         <span className={styles.rowText}>
           <span className={styles.rowTitle}>{catchTitle(item)}</span>
           <span className="muted tabular">{details}</span>

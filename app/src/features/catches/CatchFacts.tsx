@@ -4,6 +4,7 @@ import type { Catch } from '../../domain/schemas';
 import { formatDateTime } from '../../lib/storage';
 import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
+import { CatchPhotos } from './CatchPhotos';
 import styles from './CatchFacts.module.css';
 
 const t = de.catchForm;
@@ -62,6 +63,7 @@ export function CatchFacts({ item }: { item: Catch }) {
   const shown = rows.filter((r): r is [string, string] => !!r[1]);
   return (
     <>
+      <CatchPhotos ids={item.photoIds} />
       {shown.length > 0 && (
         <dl className={styles.facts}>
           {shown.map(([k, v]) => (
