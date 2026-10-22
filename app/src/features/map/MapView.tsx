@@ -18,7 +18,7 @@ import { IconButton, Button } from '../../design/components/Button';
 import { Sheet } from '../../design/components/Sheet';
 import { Toast } from '../../design/components/Toast';
 import { Notice } from '../../design/components/Notice';
-import { InfoIcon } from '../../design/icons';
+import { HeatIcon, InfoIcon } from '../../design/icons';
 import { useEffectiveTheme } from '../../lib/useEffectiveTheme';
 import { useOnline } from '../../lib/useOnline';
 import { circlePolygon, toFeatures } from './geojson';
@@ -29,6 +29,7 @@ import {
   fallbackStyle,
   INTERACTIVE_LAYERS,
   LAYERS,
+  setHeatmap,
   setOverlayData,
   type OverlayData,
   WATER,
@@ -64,6 +65,15 @@ type SheetState =
 const VIEW_KEY = 'fangpunkt.mapView';
 const GERMANY = { center: [10.4, 51.2] as [number, number], zoom: 5.2 };
 const LOC_HINT_KEY = 'fangpunkt.locHintSeen';
+const HEAT_KEY = 'fangpunkt.heatmap';
+
+function readHeat(): boolean {
+  try {
+    return localStorage.getItem(HEAT_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 function readView() {
   try {
@@ -210,6 +220,11 @@ export default function MapView() {
   const places = useLiveQuery(() => getDb().places.toArray(), []);
   const catches = useLiveQuery(() => getDb().catches.toArray(), []);
   const features = useMemo(() => toFeatures(places ?? [], catches ?? []), [places, catches]);
+  // Heatmap der gelandeten Fische (P2); Wahl wird pro Gerät gemerkt
+  const [heat, setHeat] = useState(readHeat);
+  const heatRef = useRef(heat);
+  const heatEmpty =
+    heat && !!catches && !catches.some((c) => !c.deletedAt && c.outcome === 'caught' && c.position);
   const meFc = useMemo<OverlayData['me']>(
     () =>
       geo.fix
@@ -273,6 +288,7 @@ export default function MapView() {
           if ((typeof match === 'string' ? l.id === match : match.test(l.id)) && fits(l.type, prop))
             map.setPaintProperty(l.id, prop as never, value as never);
       void addOverlays(map, overlay.current, basemap.glyphFont).then(() => {
+        setHeatmap(map, heatRef.current);
         const m = waterRef.current;
         if (m)
           addWaterLayers(
@@ -487,6 +503,17 @@ export default function MapView() {
       zoom: Math.max(mapRef.current.getZoom(), 14),
     });
   }, [geo.fix]);
+
+  useEffect(() => {
+    heatRef.current = heat;
+    const map = mapRef.current;
+    if (map && ready) setHeatmap(map, heat);
+    try {
+      localStorage.setItem(HEAT_KEY, heat ? '1' : '0');
+    } catch {
+      // nur Komfort
+    }
+  }, [heat, ready]);
 
   function onLocate() {
     autoLocated.current = false;
@@ -810,6 +837,7 @@ export default function MapView() {
         )}
         {locating && geo.error && <Notice tone="error">{de.map.locErrors[geo.error]}</Notice>}
         {locating && !geo.error && !geo.fix && <Notice>{de.map.locating}</Notice>}
+        {ready && heatEmpty && <Notice>{de.map.heatmapEmpty}</Notice>}
       </div>
       <div className={styles.controls}>
         <IconButton
@@ -818,6 +846,13 @@ export default function MapView() {
           aria-pressed={locating}
           icon={<LocateIcon />}
           onClick={onLocate}
+        />
+        <IconButton
+          className={[styles.control, heat ? styles.controlOn : ''].join(' ')}
+          label={heat ? de.map.heatmapOff : de.map.heatmapOn}
+          aria-pressed={heat}
+          icon={<HeatIcon />}
+          onClick={() => setHeat((h) => !h)}
         />
         <IconButton
           className={styles.control}

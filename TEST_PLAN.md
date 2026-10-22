@@ -78,6 +78,7 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | SES-3 | Session > 24 h | Korrekturdialog. *Automatisiert: Hinweis in der Kopfzeile, Vorschlag übernehmen, Ende vor Beginn abgelehnt* |
 | WX-1 | Fang offline, später online | Wetter wird nachgeladen; gekennzeichnet als Modellwert; Standard „an“; offline kein Abruf; Koordinaten gerundet; ausgeschaltet kein Abruf (✅ `weather.spec.ts`) |
 | CSV-1 | Fangbuch als CSV | Excel-tauglich (BOM, Semikolon, Dezimalkomma), älteste zuerst, ohne gelöschte, Wetter als Modellwert, Formel-Einschleusung entschärft; leer → Hinweis (✅ `csv.spec.ts`, `csv.test.ts`, `catchCsv.test.ts`) |
+| HEAT-1 | Heatmap der Fänge | Standard aus; Knopf schaltet um (aria-pressed), Zahlenkreise entfallen solange; nur gelandete Fische; Wahl bleibt nach Neuladen; Leerzustand; Legende erklärt die Farben (✅ `heatmap.spec.ts`) |
 | BAIT-1 | Favorit anlegen, im Fang per Tipp übernehmen, im Formular speichern, löschen | Details (Farbe, Größe, Gewicht, Haken, Methode) im Fang; doppelter Name abgelehnt; Rückgängig (✅ `baits.spec.ts`, `baitPreset.test.ts`) |
 
 ### 3.5 Statistik

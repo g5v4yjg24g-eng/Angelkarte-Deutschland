@@ -221,6 +221,9 @@ export function Legend({ clustersLabeled }: { clustersLabeled: boolean }) {
         ))}
       </ul>
       {clustersLabeled && <p className="muted">{de.map.legendClusterHint}</p>}
+      <h3 className={styles.legendHead}>{de.map.legendHeat}</h3>
+      <div className={styles.heatScale} aria-hidden="true" />
+      <p className="muted">{de.map.legendHeatHint}</p>
     </>
   );
 }

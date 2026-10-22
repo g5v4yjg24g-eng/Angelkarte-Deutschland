@@ -91,6 +91,13 @@ export const HookIcon = (p: IconProps) => (
     <path d="M14 6.3V15a4.5 4.5 0 0 1-9 0v-2.5l2.6 2.2" />
   </Icon>
 );
+export const HeatIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="8.5" strokeOpacity="0.45" />
+    <circle cx="12" cy="12" r="5" strokeOpacity="0.75" />
+    <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+  </Icon>
+);
 export const InfoIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="12" cy="12" r="9" />
