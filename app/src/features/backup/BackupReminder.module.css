@@ -41,8 +41,10 @@
   z-index: 3;
   left: var(--space-3);
   right: var(--space-3);
-  bottom: calc(var(--space-6) + var(--space-2));
+  /* direkt über der schwebenden Leiste; die Kartenknöpfe rücken um die Höhe nach oben (--reminder-h) */
+  bottom: calc(var(--nav-clearance) + var(--space-2));
   max-width: 30rem;
-  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border-radius: 20px;
   box-shadow: var(--shadow-2);
 }
