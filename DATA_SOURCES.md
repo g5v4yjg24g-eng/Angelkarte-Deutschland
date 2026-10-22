@@ -133,7 +133,7 @@ Alle vier vom Nutzer am 2026-10-22 bereitgestellt.
 BW, BE, HB, MV, RP, SL, ST, SH, TH: vom Nutzer am 2026-10-22 gegengeprüft, Status `partial`.
 - **BB** Fischereiordnung (zuletzt geändert 24.08.2026), direkt von bravors.brandenburg.de abgerufen am 2026-10-22 [V]: Anlage (54 Zeilen), §§ 2, 2a Abs. 6, 3. Hecht/Zander der Erwerbsfischerei (Schonzeit nach Hegeplan) nur als Hinweis.
 - **HE** Hessische Fischereiverordnung vom 14.04.2023, Verkündung GVBl. 2023 Nr. 15 (starweb.hessen.de, abgerufen am 2026-10-22) [V]: §§ 1, 2 (Entnahmefenster). **[O]** Spätere Änderungen nicht geprüft (rv.hessenrecht.hessen.de gesperrt) – Gesamtausgabe vom Nutzer erbeten.
-Beide Status `draft`.
+Beide vom Nutzer am 2026-10-22 gegengeprüft, Status `partial`.
 Nicht erreichbar (Verbindungsabbruch bzw. 403/503): BB, HB, HE, MV, RP, SL, ST, SH, TH [V 2026-10-22]. Fischereischein-Regeln der Gesetze sind noch nicht erfasst (`missing`).
 
 **Stand 2026-10-22, 01:22–01:30 UTC:** recht.nrw.de meldet „Dieser Server ist aktuell im Wartungsmodus!"; alle Unterseiten liefern 404 [V]. Die NRW-Inhalte werden erfasst, sobald der amtliche Text erreichbar ist. Zweitquellen (umwelt-online.de, lexaris.de) werden nicht als Quelle verwendet. Laut Suchergebnis wurde die LFischVO zuletzt durch Art. 2 der Verordnung vom 01.07.2026 geändert (gültig ab 03.07.2026) [O: am amtlichen Text bestätigen]. Viele Landesportale sind aus der Cloud-Umgebung nicht erreichbar (Verbindungsabbruch); die Links in der App (`STATE_PORTALS`) sind die Einstiegspunkte dieser Tabelle [O: je Land beim Erfassen prüfen].
