@@ -22,11 +22,14 @@
   border-radius: 50%;
   background: var(--color-success);
 }
+.chipPaused .dot {
+  background: var(--color-text-muted);
+}
 .chipWarn .dot {
   background: var(--color-warning-text);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .chip:not(.chipWarn) .dot {
+  .chip:not(.chipWarn, .chipPaused) .dot {
     animation: pulse 2s ease-in-out infinite;
   }
 }
@@ -94,6 +97,24 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+.pauseList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+.pauseRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.addPause summary {
+  cursor: pointer;
+  padding: var(--space-3) 0;
+}
 .outside {
   color: var(--color-warning-text);
   font-size: var(--text-sm);
@@ -113,5 +134,8 @@
   /* Schmale Kopfzeile: nur Punkt und Laufzeit (der volle Text steht im aria-label) */
   .chipPrefix {
     display: none;
+  }
+  .chipPaused .chipPrefix {
+    display: inline;
   }
 }

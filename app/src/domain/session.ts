@@ -15,6 +15,77 @@ export function durationMs(s: Session, nowMs: number): number {
   return Math.max(0, end - Date.parse(s.startAt));
 }
 
+// Eigene Strukturtypen statt Session: SessionSchema nutzt pauseIssue (sonst Typ-Zyklus).
+export interface Pause {
+  from: string;
+  to?: string | undefined;
+}
+interface Timed {
+  startAt: string;
+  endAt?: string | undefined;
+  pauses?: Pause[] | undefined;
+}
+const MIN = 60000;
+
+/** Laufende Pause (nur bei laufender Session). */
+export function openPause(s: Pick<Timed, 'pauses' | 'endAt'>): Pause | undefined {
+  const last = s.pauses?.at(-1);
+  return !s.endAt && last && !last.to ? last : undefined;
+}
+
+/** Summe der Pausen, begrenzt auf Beginn bis Ende (bzw. jetzt). */
+export function pauseMs(s: Timed, nowMs: number): number {
+  const start = Date.parse(s.startAt);
+  const end = s.endAt ? Date.parse(s.endAt) : nowMs;
+  return (s.pauses ?? []).reduce((sum, p) => {
+    const a = Math.max(start, Date.parse(p.from));
+    const b = Math.min(end, p.to ? Date.parse(p.to) : end);
+    return sum + Math.max(0, b - a);
+  }, 0);
+}
+
+/** Aktive Angelzeit = Dauer ohne Pausen (DATA_MODEL §9). */
+export function activeMs(s: Session, nowMs: number): number {
+  return Math.max(0, durationMs(s, nowMs) - pauseMs(s, nowMs));
+}
+
+export type PauseIssue = 'order' | 'outside' | 'overlap' | 'open';
+
+/**
+ * Prüft die Pausen einer Session (minutengenau wie `covers`): Ende nicht vor Beginn, innerhalb der Session,
+ * zeitlich sortiert ohne Überschneidung, offen höchstens die letzte einer laufenden Session.
+ */
+export function pauseIssue(s: Timed): PauseIssue | undefined {
+  const ps = s.pauses ?? [];
+  const start = Math.floor(Date.parse(s.startAt) / MIN) * MIN;
+  const end = s.endAt ? Math.ceil(Date.parse(s.endAt) / MIN) * MIN : Infinity;
+  let prevEnd = -Infinity;
+  for (const [i, p] of ps.entries()) {
+    const from = Date.parse(p.from);
+    const to = p.to ? Date.parse(p.to) : undefined;
+    if (to === undefined && (i !== ps.length - 1 || s.endAt)) return 'open';
+    if (to !== undefined && to < from) return 'order';
+    if (from < start || (to ?? from) > end) return 'outside';
+    if (from < prevEnd) return 'overlap';
+    prevEnd = to ?? Infinity;
+  }
+  return undefined;
+}
+
+/** Pausen nach dem Ende entfallen, überstehende werden gekürzt, eine offene endet mit der Session. */
+export function pausesUntil(pauses: Pause[] | undefined, endIso: string): Pause[] | undefined {
+  const end = Date.parse(endIso);
+  const out = (pauses ?? [])
+    .filter((p) => Date.parse(p.from) < end)
+    .map((p) => (!p.to || Date.parse(p.to) > end ? { from: p.from, to: endIso } : p));
+  return out.length ? out : undefined;
+}
+
+/** Neue Pause einsortieren (nach Beginn). */
+export function withPause(pauses: Pause[] | undefined, p: Pause): Pause[] {
+  return [...(pauses ?? []), p].sort((a, b) => Date.parse(a.from) - Date.parse(b.from));
+}
+
 /** Läuft seit mehr als 24 h → wohl vergessen zu beenden (SES-3). */
 export function looksForgotten(s: Session, nowMs: number): boolean {
   return isRunning(s) && nowMs - Date.parse(s.startAt) > FORGOTTEN_AFTER_MS;
