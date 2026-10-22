@@ -42,6 +42,12 @@ export const de = {
     legendPlaces: 'Deine Orte',
     legendCatches: 'Fangbuch',
     legendClusterHint: 'Zahlen in Kreisen fassen mehrere Fänge zusammen. Antippen zoomt hinein.',
+    heatmapOn: 'Heatmap der Fänge zeigen',
+    heatmapOff: 'Heatmap ausblenden',
+    heatmapEmpty: 'Noch keine gelandeten Fische mit Fangort – die Heatmap bleibt leer.',
+    legendHeat: 'Heatmap',
+    legendHeatHint:
+      'Zeigt, wo du die meisten Fische gelandet hast: von Gelb (wenige) bis Rot (viele). Nur deine eigenen Fänge mit Fangort; Kontakte und Fehlbisse zählen nicht.',
     newHereTitle: 'Neu an dieser Stelle',
     coords: (lat: number, lng: number) =>
       `${lat.toLocaleString('de-DE', { maximumFractionDigits: 5 })}, ${lng.toLocaleString('de-DE', { maximumFractionDigits: 5 })}`,

@@ -8,6 +8,7 @@ export const LAYERS = {
   catches: 'fp-catches',
   clusters: 'fp-catch-clusters',
   clusterCount: 'fp-catch-cluster-count',
+  heat: 'fp-catch-heat',
   meAccuracy: 'fp-me-accuracy',
   me: 'fp-me',
 } as const;
@@ -142,6 +143,38 @@ export async function addOverlays(map: MlMap, data: OverlayData, glyphFont: stri
       clusterMaxZoom: 15,
     });
 
+  // Heatmap: nur gelandete Fische, eigene ungeclusterte Quelle; unter allen Symbolen, standardmäßig aus
+  if (!map.getSource('fp-heat')) map.addSource('fp-heat', { type: 'geojson', data: data.catches });
+  if (!map.getLayer(LAYERS.heat))
+    map.addLayer({
+      id: LAYERS.heat,
+      type: 'heatmap',
+      source: 'fp-heat',
+      filter: ['==', ['get', 'kind'], 'catch-caught'],
+      layout: { visibility: 'none' },
+      paint: {
+        'heatmap-weight': 1,
+        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 5, 0.25, 15, 0.8],
+        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 5, 10, 12, 22, 16, 36],
+        // Von durchsichtig über Gelb nach Rot: auf heller und dunkler Karte erkennbar
+        'heatmap-color': [
+          'interpolate',
+          ['linear'],
+          ['heatmap-density'],
+          0,
+          'rgba(255,214,102,0)',
+          0.2,
+          'rgba(255,214,102,0.55)',
+          0.5,
+          'rgba(244,140,40,0.75)',
+          0.8,
+          'rgba(214,60,30,0.85)',
+          1,
+          'rgba(160,20,40,0.9)',
+        ],
+        'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0.85, 17, 0.35],
+      },
+    });
   if (!map.getLayer(LAYERS.meAccuracy))
     map.addLayer({
       id: LAYERS.meAccuracy,
@@ -219,7 +252,17 @@ export function setOverlayData(map: MlMap, data: Partial<OverlayData>) {
     fc && (map.getSource(id) as GeoJSONSource | undefined)?.setData(fc);
   set('fp-places', data.places);
   set('fp-catches', data.catches);
+  set('fp-heat', data.catches);
   set('fp-me', data.me);
+}
+
+/** Heatmap ein/aus; die Zahlenkreise fassen dasselbe zusammen und entfallen solange. */
+export function setHeatmap(map: MlMap, on: boolean) {
+  const vis = (id: string, v: boolean) =>
+    map.getLayer(id) && map.setLayoutProperty(id, 'visibility', v ? 'visible' : 'none');
+  vis(LAYERS.heat, on);
+  vis(LAYERS.clusters, !on);
+  vis(LAYERS.clusterCount, !on);
 }
 
 export { EMPTY };
