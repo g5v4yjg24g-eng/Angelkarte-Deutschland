@@ -154,46 +154,49 @@ export async function addOverlays(map: MlMap, data: OverlayData, glyphFont: stri
       layout: { visibility: 'none' },
       paint: {
         'heatmap-weight': 1,
-        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 5, 0.25, 15, 0.8, 17, 1.6, 20, 3],
-        // Beim Hineinzoomen mitwachsen (exponentiell), damit Flecken nicht zu Punkten schrumpfen
+        // Rot nur an wirklich dichten Stellen: etwas zurückhaltender als vorher
+        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 5, 0.16, 15, 0.42, 17, 0.85, 20, 1.5],
+        // Große, weich auslaufende Flecken (Vorbild: Bild der Alt-App, Nutzer 2026-10-22); mit dem Zoom
+        // exponentiell wachsen, damit sie beim Hineinzoomen nicht zu Punkten schrumpfen
         'heatmap-radius': [
           'interpolate',
           ['exponential', 2],
           ['zoom'],
           5,
-          10,
+          14,
           12,
-          22,
+          32,
           16,
-          40,
+          60,
           18,
-          110,
+          160,
           20,
-          300,
+          420,
         ],
-        // Von durchsichtig über Gelb nach Rot: auf heller und dunkler Karte erkennbar
+        // Blau = wenige Fänge (zart, durchsichtig) über Türkis, Grün, Gelb bis Rot = sehr viele
         'heatmap-color': [
           'interpolate',
           ['linear'],
           ['heatmap-density'],
-          // Blau = wenige Fänge bis Rot = sehr viele (Wunsch Nutzer 2026-10-22)
           0,
-          'rgba(33,102,172,0)',
-          0.1,
-          'rgba(33,102,172,0.55)',
-          0.3,
-          'rgba(0,170,220,0.7)',
-          0.5,
-          'rgba(40,190,90,0.78)',
-          0.7,
-          'rgba(250,215,40,0.85)',
-          0.85,
-          'rgba(245,130,30,0.9)',
+          'rgba(30,80,255,0)',
+          0.05,
+          'rgba(30,80,255,0.3)',
+          0.25,
+          'rgba(30,80,255,0.65)',
+          0.45,
+          'rgba(0,210,255,0.7)',
+          0.6,
+          'rgba(40,220,90,0.8)',
+          0.75,
+          'rgba(250,230,40,0.85)',
+          0.9,
+          'rgba(250,140,30,0.9)',
           1,
-          'rgba(215,25,28,0.95)',
+          'rgba(225,30,30,0.95)',
         ],
         // Auf allen Zoomstufen gleich kräftig (Wunsch Nutzer 2026-10-22: vorher verblasste sie ab z14)
-        'heatmap-opacity': 0.85,
+        'heatmap-opacity': 0.8,
       },
     });
   if (!map.getLayer(LAYERS.meAccuracy))
