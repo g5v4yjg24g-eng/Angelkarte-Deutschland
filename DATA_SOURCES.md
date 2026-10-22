@@ -129,7 +129,8 @@ Artenliste (Namen, wiss. Namen) wird einmalig redaktionell aus der GBIF-Taxonomi
 - **ST** Fischereiordnung (Gesamtausgabe Stand 22.10.2026, zuletzt geändert 06.03.2013), PDF-Export von landesrecht.sachsen-anhalt.de: §§ 2–5, 7. Krebse/Muscheln nur per Verweis auf das BNatSchG geschützt (nicht einzeln aufgezählt).
 - **SH** Binnenfischereiverordnung (Gesamtausgabe Stand 22.10.2026, Anlage 1 neu gefasst 26.05.2021), PDF-Export von gesetze-rechtsprechung.sh.juris.de: Anlage 1, §§ 2, 5, 8. **[O]** Küstenfischereiverordnung und Anlage 3 (Winterschonzeit-Gewässer) fehlen.
 - **TH** ThürFischAVO (Gesamtausgabe Stand 22.10.2026, zuletzt geändert 02.07.2024), Ausdruck von landesrecht.thueringen.de: § 1 Tabelle, §§ 6, 14, 16, 24.
-Alle vier vom Nutzer am 2026-10-22 bereitgestellt, Status `draft`.
+Alle vier vom Nutzer am 2026-10-22 bereitgestellt.
+BW, BE, HB, MV, RP, SL, ST, SH, TH: vom Nutzer am 2026-10-22 gegengeprüft, Status `partial`.
 Nicht erreichbar (Verbindungsabbruch bzw. 403/503): BB, HB, HE, MV, RP, SL, ST, SH, TH [V 2026-10-22]. Fischereischein-Regeln der Gesetze sind noch nicht erfasst (`missing`).
 
 **Stand 2026-10-22, 01:22–01:30 UTC:** recht.nrw.de meldet „Dieser Server ist aktuell im Wartungsmodus!"; alle Unterseiten liefern 404 [V]. Die NRW-Inhalte werden erfasst, sobald der amtliche Text erreichbar ist. Zweitquellen (umwelt-online.de, lexaris.de) werden nicht als Quelle verwendet. Laut Suchergebnis wurde die LFischVO zuletzt durch Art. 2 der Verordnung vom 01.07.2026 geändert (gültig ab 03.07.2026) [O: am amtlichen Text bestätigen]. Viele Landesportale sind aus der Cloud-Umgebung nicht erreichbar (Verbindungsabbruch); die Links in der App (`STATE_PORTALS`) sind die Einstiegspunkte dieser Tabelle [O: je Land beim Erfassen prüfen].

@@ -1,12 +1,12 @@
 {
   "stateCode": "ST",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "Fischereischein (Fischereigesetz des Landes Sachsen-Anhalt)",
     "besonders geschützte Krebse und Muscheln (Verweis auf § 7 Abs. 2 Nr. 13 BNatSchG, nicht einzeln aufgezählt)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); Gegenprüfung durch den Nutzer ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "FischO LSA",

@@ -1,13 +1,13 @@
 {
   "stateCode": "MV",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "Schonzeiten, Mindestmaße und Fangverbote in Binnengewässern (Binnenfischereiverordnung)",
     "Regeln für Küstengewässer (Küstenfischereiverordnung)",
     "zeitlich befristeter Fischereischein (Verordnung)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); Gegenprüfung durch den Nutzer ausstehend",
+  "checkedBy": "Aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "LFischG M-V",

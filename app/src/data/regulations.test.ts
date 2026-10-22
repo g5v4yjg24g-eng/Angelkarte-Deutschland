@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { loadRegulation } from './regulations';
 
 describe('loadRegulation', () => {
-  it('Land ohne Datei → none', async () => expect(await loadRegulation('BE')).toEqual({ kind: 'none' }));
+  it('Land ohne Datei → none', async () => expect(await loadRegulation('HE')).toEqual({ kind: 'none' }));
 
   it('gegengeprüftes Land wird geladen', async () => {
     const r = await loadRegulation('BY');

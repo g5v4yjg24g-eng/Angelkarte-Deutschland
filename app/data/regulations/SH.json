@@ -1,6 +1,6 @@
 {
   "stateCode": "SH",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "Fischereischein (Landesfischereigesetz)",
     "Küstengewässer (Küstenfischereiverordnung)",
@@ -8,7 +8,7 @@
     "befristete Allgemeinverfügungen"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); Gegenprüfung durch den Nutzer ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "BiFVO",
