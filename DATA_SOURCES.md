@@ -123,8 +123,9 @@ Die Altprojekt-Angaben (NRW, HH) gelten als **Ausgangspunkt**, nicht als geprüf
 1. Jede Landesdatei `app/data/regulations/<KÜRZEL>.json` (z. B. `NW.json`) enthält `checkedAt`, `checkedBy`, `legalBasis[]` (Titel, Fassung, URL, Abrufdatum) und je Regel den **Paragrafen**.
 2. CI-Check (`pnpm validate:data`, auch Teil von `pnpm test`): Schema gültig; jede Regel hat Quelle und Paragraf, sonst rot. `checkedAt` älter als **180 Tage** erzeugt eine Warnung im Testlauf; ein automatisches Issue gibt es noch nicht [O].
 3. In der App: Banner „Zuletzt geprüft am … – möglicherweise veraltet", sobald 180 Tage überschritten sind; ab 365 Tagen deutlicher Warnhinweis. Status `partial` listet fehlende Teile.
-4. Halbjährlicher Prüftermin (Kalendererinnerung für dich). Änderungen per Pull Request mit Link zur Fundstelle.
-5. Disclaimer in jeder Rechtsansicht: „Keine Rechtsauskunft. Maßgeblich sind der amtliche Text und die Bedingungen deines Erlaubnisscheins."
+4. Erfassung immer zuerst als `draft`; sichtbar (`verified`/`partial`) erst nach Gegenprüfung durch dich am amtlichen Text (Entscheidung 2026-10-22).
+5. Halbjährlicher Prüftermin (Kalendererinnerung für dich). Änderungen per Pull Request mit Link zur Fundstelle.
+6. Disclaimer in jeder Rechtsansicht: „Keine Rechtsauskunft. Maßgeblich sind der amtliche Text und die Bedingungen deines Erlaubnisscheins."
 
 ---
 
