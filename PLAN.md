@@ -103,7 +103,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Recht: restliche Bundesländer | P1 | Redaktioneller Aufwand, siehe §5 M8 |
 | Session-Vergleich, Rekorde | P1 | ✅ in M6. Session-Pausen (aktive Angelzeit) umgesetzt 2026-10-22 |
 | Fischarten pro Gewässer (Monitoring-Nachweise, Stufe 2) | P2 | Datenaufbereitung nötig (DATA_SOURCES §4) |
-| Tiefenkarten (erste lizenzierte Quelle) | P2 | Lizenzklärung nötig |
+| Tiefenkarten (erste lizenzierte Quelle) | P2 | **Zurückgestellt (Entscheidung Nutzer 2026-10-22):** kein Einbau ohne Lizenz – Repo und Vorschau sind öffentlich; auch der vorgeschlagene private Import wird nicht umgesetzt |
 | Offline-Kartenregionen | P2 | Eigene PMTiles-Hosting-Infrastruktur nötig |
 | **Rechts-Warnung beim Erfassen** (Schonzeit, Mindestmaß, Entnahmefenster im Fang-Bundesland) | P1 | ✅ umgesetzt 2026-10-22 (siehe unten); echte Landesgrenzen erst nach dem nächsten Lauf „Gewässerdaten erzeugen“ |
 | **Fangbuch nach Gewässern** (Reiter je Gewässer, Name + Ort, unbekannte Gewässer selbst benennen, Suche nach Gewässer und Ort) | P1 | ✅ umgesetzt 2026-10-22 – siehe „Fangbuch nach Gewässern“ unten |
@@ -256,6 +256,7 @@ Abhängig von: M7 · Aufwand redaktionell (≈ 0,5–1 Tag pro Land [A])
 - *Abnahme:* 16 Landesdateien mit Status `verified` oder ausdrücklich `partial` und Liste fehlender Teile.
 
 ### M9 – Tiefenkarten-Spike und erste Quelle
+- ⏸ **Zurückgestellt (Nutzer 2026-10-22):** Tiefenkarten bleiben weg. Hintergrund: Repository und Vorschau sind öffentlich, ein fester Einbau der Hamburger Tiefenlinien aus dem Altprojekt wäre eine Veröffentlichung ohne Erlaubnis. Den alternativ angebotenen Import nur auf das eigene Gerät hat der Nutzer ebenfalls nicht gewünscht. Das Gewässerprofil zeigt weiter „Tiefenkarte nicht verfügbar“.
 Abhängig von: M4 und Klärung von R4/E6
 - Provider-Schnittstelle `DepthProvider`; Status pro Gewässer `available | none | unknown`.
 - Erste Quelle nur mit schriftlich geklärter Nutzung (siehe DATA_SOURCES §3).
