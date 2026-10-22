@@ -22,11 +22,12 @@ async function collect(
   db: FangpunktDB,
   withPhotos: boolean,
 ): Promise<{ data: BackupData; blobs: Record<string, Blob> }> {
-  const [catches, places, sessions, baitPresets, photos] = await Promise.all([
+  const [catches, places, sessions, baitPresets, trips, photos] = await Promise.all([
     db.catches.toArray(),
     db.places.toArray(),
     db.sessions.toArray(),
     db.baitPresets.toArray(),
+    db.trips.toArray(),
     withPhotos ? db.photos.toArray() : Promise.resolve([] as Photo[]),
   ]);
   const blobs: Record<string, Blob> = {};
@@ -35,7 +36,7 @@ async function collect(
     blobs[meta.id] = blob;
     return meta;
   });
-  return { data: { catches, places, sessions, baitPresets, photos: metas }, blobs };
+  return { data: { catches, places, sessions, baitPresets, trips, photos: metas }, blobs };
 }
 
 export interface ExportResult {
@@ -167,18 +168,22 @@ export async function applyImport(
   const writes = selectWrites(plan, strategy);
   const snapshotId = await createSnapshot('before-import', db);
   let written = 0;
-  await db.transaction('rw', [db.sessions, db.places, db.baitPresets, db.catches, db.photos], async () => {
-    for (const table of PLAN_TABLES) {
-      let rows = writes[table] as object[];
-      if (table === 'photos')
-        rows = (rows as PhotoMeta[])
-          .map((m) => ({ ...m, blob: read.photoBlobs.get(m.id) }))
-          .filter((p) => p.blob);
-      await db.table(table).bulkPut(rows);
-      written += rows.length;
-      faultInjection?.();
-    }
-  });
+  await db.transaction(
+    'rw',
+    [db.sessions, db.places, db.baitPresets, db.catches, db.trips, db.photos],
+    async () => {
+      for (const table of PLAN_TABLES) {
+        let rows = writes[table] as object[];
+        if (table === 'photos')
+          rows = (rows as PhotoMeta[])
+            .map((m) => ({ ...m, blob: read.photoBlobs.get(m.id) }))
+            .filter((p) => p.blob);
+        await db.table(table).bulkPut(rows);
+        written += rows.length;
+        faultInjection?.();
+      }
+    },
+  );
   return { written, snapshotId };
 }
 
@@ -213,22 +218,31 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
   const snap = await db.snapshots.get(id);
   if (!snap) throw new BackupError('Diese automatische Sicherung existiert nicht mehr.');
   const d = snap.backup.data;
-  await db.transaction('rw', [db.sessions, db.places, db.baitPresets, db.catches, db.photos], async () => {
-    await Promise.all([
-      db.sessions.clear(),
-      db.places.clear(),
-      db.baitPresets.clear(),
-      db.catches.clear(),
-      db.photos.clear(),
-    ]);
-    await db.sessions.bulkPut(d.sessions);
-    await db.places.bulkPut(d.places);
-    await db.baitPresets.bulkPut(d.baitPresets);
-    await db.catches.bulkPut(d.catches);
-    await db.photos.bulkPut(
-      d.photos.flatMap((m) => (snap.photoBlobs[m.id] ? [{ ...m, blob: snap.photoBlobs[m.id] as Blob }] : [])),
-    );
-  });
+  await db.transaction(
+    'rw',
+    [db.sessions, db.places, db.baitPresets, db.catches, db.trips, db.photos],
+    async () => {
+      await Promise.all([
+        db.sessions.clear(),
+        db.places.clear(),
+        db.baitPresets.clear(),
+        db.catches.clear(),
+        db.trips.clear(),
+        db.photos.clear(),
+      ]);
+      await db.sessions.bulkPut(d.sessions);
+      await db.places.bulkPut(d.places);
+      await db.baitPresets.bulkPut(d.baitPresets);
+      await db.catches.bulkPut(d.catches);
+      // Snapshots vor DB v2 haben keine Termine
+      await db.trips.bulkPut(d.trips ?? []);
+      await db.photos.bulkPut(
+        d.photos.flatMap((m) =>
+          snap.photoBlobs[m.id] ? [{ ...m, blob: snap.photoBlobs[m.id] as Blob }] : [],
+        ),
+      );
+    },
+  );
 }
 
 export { changesSince } from './changes';

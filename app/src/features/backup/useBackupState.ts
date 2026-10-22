@@ -17,6 +17,7 @@ export function useBackupState() {
       catches: await db.catches.filter((c) => !c.deletedAt).count(),
       places: await db.places.filter((p) => !p.deletedAt).count(),
       sessions: await db.sessions.filter((s) => !s.deletedAt).count(),
+      trips: await db.trips.filter((t) => !t.deletedAt).count(),
       photos: await db.photos.count(),
     };
     const snapshot = await db.snapshots.orderBy('createdAt').last();

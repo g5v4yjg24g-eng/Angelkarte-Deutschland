@@ -7,6 +7,7 @@ import {
   type PhotoMeta,
   type Place,
   type Session,
+  type Trip,
 } from '../schemas';
 
 export const BACKUP_FORMAT = 'fangpunkt-backup';
@@ -17,6 +18,7 @@ export interface BackupData {
   places: Place[];
   sessions: Session[];
   baitPresets: BaitPreset[];
+  trips: Trip[];
   /** Nur Metadaten; die Bilddateien liegen im ZIP unter photos/<id>.<ext> oder fehlen (photos: 'omitted'). */
   photos: PhotoMeta[];
 }
@@ -47,6 +49,8 @@ export const BackupEnvelopeSchema = z.object({
     places: z.array(z.unknown()),
     sessions: z.array(z.unknown()),
     baitPresets: z.array(z.unknown()),
+    /** seit DB v2; ältere Sicherungen haben keine Termine */
+    trips: z.array(z.unknown()).default([]),
     photos: z.array(z.unknown()),
   }),
 });
@@ -78,6 +82,7 @@ export async function buildBackup(
       places: data.places.length,
       sessions: data.sessions.length,
       baitPresets: data.baitPresets.length,
+      trips: data.trips.length,
       photos: data.photos.length,
     },
     photos: meta.withPhotos ? 'zip-sidecar' : 'omitted',

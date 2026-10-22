@@ -1,6 +1,6 @@
 // Lokale Datenbank (IndexedDB über Dexie). Schemaänderungen nur als neue Version mit Migration + Test (CLAUDE.md).
 import Dexie, { type EntityTable as DexieTable } from 'dexie';
-import type { BaitPreset, Catch, Photo, Place, Session } from '../domain/schemas';
+import type { BaitPreset, Catch, Photo, Place, Session, Trip } from '../domain/schemas';
 import type { BackupFile } from '../domain/backup/format';
 
 export interface SettingRow {
@@ -37,6 +37,8 @@ export const SCHEMA_VERSIONS: {
       snapshots: 'id, createdAt',
     },
   },
+  // v2 (2026-10-22): Angelkalender; neue Tabelle, vorhandene Daten bleiben unverändert
+  { version: 2, stores: { trips: 'id, date, updatedAt, deletedAt' } },
 ];
 export const SCHEMA_VERSION = SCHEMA_VERSIONS[SCHEMA_VERSIONS.length - 1]?.version ?? 1;
 
@@ -46,6 +48,7 @@ export class FangpunktDB extends Dexie {
   sessions!: DexieTable<Session, 'id'>;
   baitPresets!: DexieTable<BaitPreset, 'id'>;
   photos!: DexieTable<Photo, 'id'>;
+  trips!: DexieTable<Trip, 'id'>;
   settings!: DexieTable<SettingRow, 'key'>;
   snapshots!: DexieTable<SnapshotRow, 'id'>;
 

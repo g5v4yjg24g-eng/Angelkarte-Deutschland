@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { ChevronLeftIcon } from '../icons';
 import { de } from '../../i18n/de';
@@ -22,9 +22,15 @@ export function Page({ title, back, children }: { title: string; back?: string; 
 }
 
 export function Section({ title, children }: { title?: string; children: ReactNode }) {
+  // Mit Überschrift benannt: Screenreader führen den Abschnitt als Bereich
+  const id = useId();
   return (
-    <section className={styles.section}>
-      {title && <h2 className={styles.sectionTitle}>{title}</h2>}
+    <section className={styles.section} aria-labelledby={title ? id : undefined}>
+      {title && (
+        <h2 id={id} className={styles.sectionTitle}>
+          {title}
+        </h2>
+      )}
       {children}
     </section>
   );

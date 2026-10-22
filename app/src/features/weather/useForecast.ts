@@ -4,6 +4,7 @@ import { useProviders } from '../../ports/providersContext';
 import { ForecastSchema, type Forecast, type ForecastQuery } from '../../domain/forecast';
 
 const CACHE_PREFIX = 'fangpunkt.forecast:';
+const CACHE_PLACES = 5;
 const keyOf = (q: ForecastQuery) => `${CACHE_PREFIX}${q.lat.toFixed(3)},${q.lng.toFixed(3)}`;
 
 function readCache(q: ForecastQuery): Forecast | undefined {
@@ -16,12 +17,19 @@ function readCache(q: ForecastQuery): Forecast | undefined {
 }
 function writeCache(f: Forecast) {
   try {
-    // Nur die letzte Vorhersage je Ort; alte Orte entfernen, damit nichts anwächst
-    for (let i = localStorage.length - 1; i >= 0; i--) {
-      const k = localStorage.key(i);
-      if (k?.startsWith(CACHE_PREFIX) && k !== keyOf(f)) localStorage.removeItem(k);
-    }
+    // Letzte Vorhersage je Ort, höchstens CACHE_PLACES Orte (Wetter-Seite + Kalendertermine); älteste fliegen raus
     localStorage.setItem(keyOf(f), JSON.stringify(f));
+    const entries: { k: string; at: number }[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k?.startsWith(CACHE_PREFIX)) continue;
+      const at = (JSON.parse(localStorage.getItem(k) ?? 'null') as { fetchedAt?: number } | null)?.fetchedAt;
+      entries.push({ k, at: at ?? 0 });
+    }
+    entries
+      .sort((a, b) => b.at - a.at)
+      .slice(CACHE_PLACES)
+      .forEach((e) => localStorage.removeItem(e.k));
   } catch {
     // nur Komfort
   }

@@ -233,3 +233,97 @@ test('FC-3: Beißfenster aus dem Fangbuch – Bisse pro Angelstunde, Luftdruck, 
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
+
+test('CAL-1: Angelkalender – Termin eintragen, Wetter am Gewässer, bearbeiten, löschen mit Rückgängig', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await useLocalExternals(page);
+  await stubGeolocation(page);
+  const api = await fakeForecast(page);
+  await page.goto('/fangbuch');
+  await waitForApp(page);
+  await page.evaluate(async (c) => {
+    const req = indexedDB.open('fangpunkt');
+    const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
+    await new Promise<void>((resolve) => {
+      const tx = db.transaction(['catches'], 'readwrite');
+      tx.objectStore('catches').put(c);
+      tx.oncomplete = () => resolve();
+    });
+    db.close();
+  }, wittsee);
+  await page.goto('/wetter');
+  await waitForApp(page);
+  await page
+    .getByRole('navigation', { name: 'Wetter-Ansicht' })
+    .getByRole('link', { name: 'Angelkalender' })
+    .click();
+  await expect(page).toHaveURL(/\/wetter\/kalender$/);
+  await expect(page.getByText('Noch keine Termine')).toBeVisible();
+
+  // Übermorgen wählen und Termin am Wittsee eintragen
+  const inTwo = new Date(Date.now() + 2 * 86_400_000).toLocaleDateString('sv-SE', {
+    timeZone: 'Europe/Berlin',
+  });
+  const dayName = new Date(`${inTwo}T12:00:00Z`).toLocaleDateString('de-DE', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+  if (inTwo.slice(0, 7) !== new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' }).slice(0, 7))
+    await page.getByRole('button', { name: 'Nächster Monat' }).click();
+  await page.getByRole('button', { name: dayName, exact: true }).click();
+  await page.getByRole('button', { name: 'Termin eintragen' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Neuer Angeltermin' });
+  await expect(sheet.getByLabel('Tag')).toHaveValue(inTwo);
+  await sheet.getByLabel('Von').fill('06:00');
+  await sheet.getByLabel('Bis').fill('05:00');
+  await sheet.getByLabel('Gewässer').selectOption({ label: 'De Wittsee (Nettetal)' });
+  await sheet.getByRole('button', { name: 'Speichern' }).click();
+  await expect(sheet.getByText('Das Ende liegt vor dem Beginn.')).toBeVisible();
+  await sheet.getByLabel('Bis').fill('10:00');
+  await sheet.getByLabel('Titel (optional)').fill('Hecht vom Ufer');
+  await sheet.getByRole('button', { name: 'Speichern' }).click();
+  await expect(sheet).toBeHidden();
+
+  // Tag ist markiert; Termin mit Wetter (Vorhersage am Wittsee) und Solunar-Hinweis
+  await expect(page.getByRole('button', { name: `${dayName}, 1 Termin` })).toBeVisible();
+  const upcoming = page.getByRole('region', { name: 'Nächste Termine' });
+  const card = upcoming.getByRole('listitem').filter({ hasText: 'Hecht vom Ufer' });
+  await expect(card).toContainText('06:00–10:00 Uhr');
+  await expect(card).toContainText('De Wittsee (Nettetal)');
+  await expect(card).toContainText('Leichter Regen · 5–12 °C · 1,5 mm');
+  await expect(card).toContainText('Solunar-Hauptzeiten (Theorie)');
+  await expect.poll(() => api.requests.some((u) => u.searchParams.get('latitude') === '51.319')).toBe(true);
+
+  // Bearbeiten: Titel ändern
+  await card.getByRole('button', { name: /Bearbeiten/ }).click();
+  const edit = page.getByRole('dialog', { name: 'Termin bearbeiten' });
+  await expect(edit.getByLabel('Gewässer')).toHaveValue(/^w:/);
+  await edit.getByLabel('Titel (optional)').fill('Zander am Abend');
+  await edit.getByRole('button', { name: 'Speichern' }).click();
+  await expect(upcoming).toContainText('Zander am Abend');
+
+  // Löschen und rückgängig
+  await upcoming.getByRole('button', { name: /Löschen/ }).click();
+  await expect(page.getByText('Termin gelöscht.')).toBeVisible();
+  await expect(page.getByText('Noch keine Termine')).toBeVisible();
+  await page.getByRole('button', { name: 'Rückgängig' }).click();
+  await expect(upcoming).toContainText('Zander am Abend');
+
+  // Termin in drei Wochen: Wetter erst später
+  await page.getByRole('button', { name: 'Termin eintragen' }).click();
+  const far = new Date(Date.now() + 21 * 86_400_000).toLocaleDateString('sv-SE', {
+    timeZone: 'Europe/Berlin',
+  });
+  const s2 = page.getByRole('dialog', { name: 'Neuer Angeltermin' });
+  await s2.getByLabel('Tag').fill(far);
+  await s2.getByLabel('Gewässer').selectOption({ label: 'De Wittsee (Nettetal)' });
+  await s2.getByRole('button', { name: 'Speichern' }).click();
+  await expect(upcoming.getByText(/Wetter ab .* \(7 Tage im Voraus\)\./)).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(errors.filter((e) => !e.includes('Failed to load resource'))).toEqual([]);
+});
