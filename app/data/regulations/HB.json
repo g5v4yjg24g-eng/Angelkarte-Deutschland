@@ -1,9 +1,9 @@
 {
   "stateCode": "HB",
-  "status": "partial",
-  "missing": ["Schonzeiten, Mindestmaße und Fangverbote (Bremische Binnenfischereiverordnung)"],
+  "status": "draft",
+  "missing": [],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Fischereigesetz vom Nutzer gegengeprüft am 2026-10-22; Binnenfischereiverordnung maschinell übertragen (Claude), Gegenprüfung ausstehend",
   "legalBasis": [
     {
       "id": "BremFiG",
@@ -11,11 +11,405 @@
       "version": "vom 17. September 1991 (Brem.GBl. S. 309), zuletzt geändert durch Geschäftsverteilung des Senats vom 02.09.2025 (Brem.GBl. S. 674); Fassung in Kraft ab 30.06.2025",
       "url": "https://www.transparenz.bremen.de/",
       "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "BremBiFischVO",
+      "title": "Bremische Binnenfischereiverordnung",
+      "version": "vom 30. September 2011 (Brem.GBl. S. 410), in Kraft seit 03.11.2011",
+      "url": "https://www.transparenz.bremen.de/",
+      "retrievedAt": "2026-10-22"
     }
   ],
-  "closedSeasons": [],
-  "minSizes": [],
-  "protectedSpecies": [],
+  "closedSeasons": [
+    {
+      "taxon": {
+        "de": "Barsch",
+        "sci": "Perca fluviatilis"
+      },
+      "speciesId": "perch",
+      "from": {
+        "month": 2,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 15
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 4 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Hecht",
+        "sci": "Esox lucius"
+      },
+      "speciesId": "pike",
+      "from": {
+        "month": 2,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 15
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 4 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Zander",
+        "sci": "Stizostedion lucioperca"
+      },
+      "speciesId": "zander",
+      "from": {
+        "month": 2,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 15
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 4 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Äsche",
+        "sci": "Thymallus thymallus"
+      },
+      "speciesId": "grayling",
+      "from": {
+        "month": 3,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 15
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 4 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Bachforelle",
+        "sci": "Salmo trutta f. fario"
+      },
+      "speciesId": "brown_trout",
+      "from": {
+        "month": 10,
+        "day": 15
+      },
+      "to": {
+        "month": 3,
+        "day": 15
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 4 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Lachs",
+        "sci": "Salmo salar"
+      },
+      "from": {
+        "month": 10,
+        "day": 15
+      },
+      "to": {
+        "month": 3,
+        "day": 15
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 4 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Meerforelle",
+        "sci": "Salmo trutta"
+      },
+      "from": {
+        "month": 10,
+        "day": 15
+      },
+      "to": {
+        "month": 3,
+        "day": 15
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 4 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Flusskrebs",
+        "sci": "Astacus astacus"
+      },
+      "from": {
+        "month": 11,
+        "day": 1
+      },
+      "to": {
+        "month": 6,
+        "day": 30
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 4 Abs. 1"
+    }
+  ],
+  "minSizes": [
+    {
+      "taxon": {
+        "de": "Bachforelle",
+        "sci": "Salmo trutta fario"
+      },
+      "speciesId": "brown_trout",
+      "minCm": 30,
+      "note": "nur entnehmen, wenn als Besatz nachweislich eingebracht oder bestandsunterstützende Maßnahmen durchgeführt wurden",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 1 Nr. 1"
+    },
+    {
+      "taxon": {
+        "de": "Lachs",
+        "sci": "Salmo salar"
+      },
+      "minCm": 60,
+      "note": "nur entnehmen, wenn als Besatz nachweislich eingebracht oder bestandsunterstützende Maßnahmen durchgeführt wurden",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 1 Nr. 2"
+    },
+    {
+      "taxon": {
+        "de": "Meerforelle",
+        "sci": "Salmo trutta trutta"
+      },
+      "minCm": 50,
+      "note": "nur entnehmen, wenn als Besatz nachweislich eingebracht oder bestandsunterstützende Maßnahmen durchgeführt wurden",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 1 Nr. 3"
+    },
+    {
+      "taxon": {
+        "de": "Flusskrebs",
+        "sci": "Astacus astacus"
+      },
+      "minCm": 11,
+      "note": "nur entnehmen, wenn als Besatz nachweislich eingebracht oder bestandsunterstützende Maßnahmen durchgeführt wurden",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 1 Nr. 4"
+    },
+    {
+      "taxon": {
+        "de": "Aal",
+        "sci": "Anguilla anguilla"
+      },
+      "speciesId": "eel",
+      "minCm": 45,
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 2 Nr. 1"
+    },
+    {
+      "taxon": {
+        "de": "Äsche",
+        "sci": "Thymallus thymallus"
+      },
+      "speciesId": "grayling",
+      "minCm": 35,
+      "note": "Im amtlichen Text steht „35 m\"; hier als Zentimeter übernommen – bitte prüfen.",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 2 Nr. 2"
+    },
+    {
+      "taxon": {
+        "de": "Barsch",
+        "sci": "Perca fluviatilis"
+      },
+      "speciesId": "perch",
+      "minCm": 15,
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 2 Nr. 3"
+    },
+    {
+      "taxon": {
+        "de": "Döbel",
+        "sci": "Leucisus cephalus"
+      },
+      "speciesId": "chub",
+      "minCm": 30,
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 2 Nr. 4"
+    },
+    {
+      "taxon": {
+        "de": "Flunder",
+        "sci": "Platichthys flesus"
+      },
+      "minCm": 25,
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 2 Nr. 5"
+    },
+    {
+      "taxon": {
+        "de": "Hecht",
+        "sci": "Esox lucius"
+      },
+      "speciesId": "pike",
+      "minCm": 60,
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 2 Nr. 6"
+    },
+    {
+      "taxon": {
+        "de": "Quappe",
+        "sci": "Lota lota"
+      },
+      "speciesId": "burbot",
+      "minCm": 35,
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 2 Nr. 7"
+    },
+    {
+      "taxon": {
+        "de": "Rapfen",
+        "sci": "Aspius aspius"
+      },
+      "speciesId": "asp",
+      "minCm": 40,
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 2 Nr. 8"
+    },
+    {
+      "taxon": {
+        "de": "Zander",
+        "sci": "Stizostedion lucioperca"
+      },
+      "speciesId": "zander",
+      "minCm": 40,
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 3 Abs. 2 Nr. 9"
+    }
+  ],
+  "protectedSpecies": [
+    {
+      "taxon": {
+        "de": "Bachneunauge",
+        "sci": "Lampetra planeri"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 1"
+    },
+    {
+      "taxon": {
+        "de": "Bitterling",
+        "sci": "Rhodeus sericeus amarus"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 2"
+    },
+    {
+      "taxon": {
+        "de": "Flussneunauge",
+        "sci": "Lampreta fluviatilis"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 3"
+    },
+    {
+      "taxon": {
+        "de": "Finte",
+        "sci": "Alosa fallax"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 4"
+    },
+    {
+      "taxon": {
+        "de": "Groppe",
+        "sci": "Cottus gobio"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 5"
+    },
+    {
+      "taxon": {
+        "de": "Maifisch (Alse)",
+        "sci": "Alosa alosa"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 6"
+    },
+    {
+      "taxon": {
+        "de": "Meerneunauge",
+        "sci": "Petromyzon marinus"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 7"
+    },
+    {
+      "taxon": {
+        "de": "Nordseeschnäpel",
+        "sci": "Coregonus oxyrhynchus / maraena"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 8"
+    },
+    {
+      "taxon": {
+        "de": "Schlammpeitzger",
+        "sci": "Misgurnus fossilis"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 9"
+    },
+    {
+      "taxon": {
+        "de": "Schmerle",
+        "sci": "Barbatula barbatula"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 10"
+    },
+    {
+      "taxon": {
+        "de": "Schneider",
+        "sci": "Alburnoides bipunctatus"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 11"
+    },
+    {
+      "taxon": {
+        "de": "Steinbeißer",
+        "sci": "Cobitis taenia"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 12"
+    },
+    {
+      "taxon": {
+        "de": "Stör",
+        "sci": "Acipenser sturio"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 13"
+    },
+    {
+      "taxon": {
+        "de": "Zährte",
+        "sci": "Vimba vimba"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 14"
+    },
+    {
+      "taxon": {
+        "de": "Kleine Flussmuschel",
+        "sci": "Unio crassus"
+      },
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 2 Nr. 15"
+    }
+  ],
   "licences": [
     {
       "kind": "fishing_licence",
@@ -54,6 +448,30 @@
       "text": "Bewohner der Freien Hansestadt Bremen, die eine Fischereiprüfung abgelegt haben, sind berechtigt, für den eigenen Bedarf in der Weser, der Kleinen Weser, in der Lesum flußaufwärts bis zur Burger Straßenbrücke und dem tideabhängigen Teil der Geeste mit höchstens 2 Stockangeln zu fischen. Dies gilt nicht für Gebiete, die Naturschutzgebiete im Sinne des Brem. Naturschutzgesetzes sind. Die Berechtigung ist mit einem Fischereischein nach § 34 Abs. 3 nachzuweisen.",
       "basisId": "BremFiG",
       "basisRef": "§ 9 Abs. 1 und 3"
+    },
+    {
+      "topic": "Raubfischschonzeit",
+      "text": "Während der Raubfischschonzeiten vom 1. Februar bis 15. Mai ist jegliche Spinnfischerei, einschließlich Blinkern und Twistern sowie das Fischen mit Köderfisch oder Köderfischteilen verboten.",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 4 Abs. 2"
+    },
+    {
+      "topic": "Köder",
+      "text": "In offenen Binnengewässern dürfen nur Fische oder Fischteile als Köder verwendet werden, die aus dem Gewässersystem des Fanggewässers stammen oder in Teichwirtschaften oder vergleichbaren Anlagen aus heimischen Arten erzeugt wurden. Fische der in § 2 oder § 3 Absatz 1 aufgeführten Arten dürfen nicht als Köder verwendet werden.",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 4 Abs. 3, § 5 Abs. 5"
+    },
+    {
+      "topic": "Zurücksetzen",
+      "text": "Werden Fische, deren Entnahme verboten ist, lebend gefangen, so sind sie unverzüglich und mit der gebotenen Sorgfalt zurückzusetzen. Nicht mehr lebensfähige Fische sind vorher unverzüglich tierschutzgerecht zu töten und unschädlich zu beseitigen.",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 5 Abs. 1"
+    },
+    {
+      "topic": "Ausrüstung",
+      "text": "Angler haben neben den zugelassenen Fanggeräten einen Unterfangkescher, ein Maß zur Längenbestimmung, einen Schlagstock zum Betäuben, einen Hakenlöser und ein Messer mit sich zu führen. Die Landung der Fische hat, soweit örtlich möglich, mittels Unterfangkescher zu erfolgen. Für die Stockangelei ist nur das Ausbringen von zwei Stockangeln zulässig.",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 7 Abs. 3 und 4"
     }
   ]
 }
