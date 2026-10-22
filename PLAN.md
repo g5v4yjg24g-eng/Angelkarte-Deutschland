@@ -35,7 +35,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Ausflug/Session | Start/Stopp, Einträge erhalten `sessionId` | **Übernehmen.** |
 | Heatmap | Eigene Kontakte, Warnung bei < 30 Punkten | **Übernommen 2026-10-22 (P2)** inklusive Warnung vor Scheinmustern unter 30 Fängen. |
 | Statistik | KPIs, Fischarten, Fangentwicklung, Effizienz (Fänge/h), Rekorde, Mindestdatenmengen | **Fachlogik übernehmen** (Mindestmengen, keine Raten bei < 1 h). Darstellung neu. |
-| Wetter/Beißfenster | Open-Meteo, Wetter je Eintrag/Session, „persönliche Beißfenster" | Wetter je Eintrag: **P1**. Beißfenster-Auswertung: **P3**, wegen Irreführungsgefahr bei wenigen Daten. |
+| Wetter/Beißfenster | Open-Meteo, Wetter je Eintrag/Session, „persönliche Beißfenster" | Wetter je Eintrag: **P1**. Beißfenster-Auswertung: ursprünglich **P3** wegen Irreführungsgefahr bei wenigen Daten; auf Wunsch Nutzer 2026-10-22 vorgezogen, mit Mindestmenge 20 Bisse und ohne „gut/schlecht“-Wertung. |
 | Angelkalender | Termine planen, Jahres- und Tagesübersicht | **Später (P3).** Nicht im Auftrag genannt. |
 | Recht | NRW bzw. Hamburg fest eingebaut, mit Quelle, Prüfdatum und 180-Tage-Veraltungswarnung | **Konzept übernehmen** (Quelle + Prüfstand + Status). Inhalte **neu prüfen**, nicht ungeprüft kopieren. |
 | Tiefenkarte (HH) | Tiefenlinien 1–16 m aus der ArcGIS-Karte des Anglerverbands Hamburg, fest eingebettet | **Nicht übernehmen**, bis die Nutzungsrechte geklärt sind (siehe Risiko R4). |
@@ -109,7 +109,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | **Fangbuch nach Gewässern** (Reiter je Gewässer, Name + Ort, unbekannte Gewässer selbst benennen, Suche nach Gewässer und Ort) | P1 | ✅ umgesetzt 2026-10-22 – siehe „Fangbuch nach Gewässern“ unten |
 | Heatmap, CSV-Export | P2 | ✅ CSV-Export umgesetzt 2026-10-22 (Daten & Sicherung → „Fangbuch als Tabelle“). Heatmap umgesetzt 2026-10-22 (Kartenknopf, nur gelandete Fische, pro Gerät gemerkt) |
 | Gewässerbezogene Regeln / Angelzonen (Stufe 4) | P3 | Kaum offene Daten; Kooperationen nötig |
-| **Wetter-Bereich, Beißfenster, Angelkalender** | P1 (vorgezogen) | Wunsch Nutzer 2026-10-22. Entschieden: 5. Leistenpunkt „Wetter“; Vorhersage für Standort (Standard) oder ein Gewässer aus dem Fangbuch; Beißfenster aus eigenen Fängen **und** Solunar-Zeiten, klar getrennt, Solunar mit Hinweis „Theorie, wissenschaftlich nicht belegt“. ✅ Teil 1 Vorhersage + Luftdruck-Verlauf (2026-10-22). Offen: Teil 2 Beißfenster, Teil 3 Angelkalender mit Wetter je Termin. |
+| **Wetter-Bereich, Beißfenster, Angelkalender** | P1 (vorgezogen) | Wunsch Nutzer 2026-10-22. Entschieden: 5. Leistenpunkt „Wetter“; Vorhersage für Standort (Standard) oder ein Gewässer aus dem Fangbuch; Beißfenster aus eigenen Fängen **und** Solunar-Zeiten, klar getrennt, Solunar mit Hinweis „Theorie, wissenschaftlich nicht belegt“. ✅ Teil 1 Vorhersage + Luftdruck-Verlauf (2026-10-22). ✅ Teil 2 Beißfenster (2026-10-22): eigene Auswertung (Bisse pro Angelstunde je 2-h-Fenster aus Sessions, Häufigkeit nach Luftdruck und Tendenz, ab 20 Bissen, „jetzt“-Abgleich) und Solunar-Zeiten mit Mondphase (offline berechnet). Offen: Teil 3 Angelkalender mit Wetter je Termin. |
 | Fischbestimmung per Foto | P3 | Nur Schnittstelle vorbereiten |
 | Konten und Cloud-Sync | P3 | Erst bei Bedarf (siehe ARCHITECTURE §9) |
 

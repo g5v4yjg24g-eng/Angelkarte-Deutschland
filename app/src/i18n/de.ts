@@ -828,6 +828,59 @@ export const de = {
     note: 'Modellwerte, nicht am Gewässer gemessen.',
     source: (time: string) => `Quelle: Open-Meteo.com (CC BY 4.0) · Stand ${time}`,
   },
+  bite: {
+    title: 'Beißfenster',
+    intro: 'Zwei getrennte Blickwinkel: was deine eigenen Einträge zeigen, und was die Solunar-Theorie sagt.',
+    ownTitle: 'Aus deinem Fangbuch',
+    ownLoading: 'Fangbuch wird ausgewertet …',
+    ownIntro: (n: number) =>
+      `Ausgewertet: ${n === 1 ? '1 Biss' : `${n} Bisse`} (Fänge, Fischkontakte und Fehlbisse). Das zeigt nur, wann und bei welchem Wetter du bisher Bisse hattest – keine Vorhersage.`,
+    tooFew: (n: number, need: number) => `Zu wenige Daten (n = ${n}, ab ${need}).`,
+    nowSlot: (from: number, to: number) => `Jetzt (${from}–${to} Uhr)`,
+    slotRate: (perHour: number, hours: number) =>
+      `${perHour.toLocaleString('de-DE', { maximumFractionDigits: 1 })} Bisse pro Angelstunde (bei ${hours.toLocaleString('de-DE', { maximumFractionDigits: 1 })} h Angelzeit in Sessions)`,
+    slotNoRate: (bites: number) =>
+      `${bites === 1 ? '1 Biss' : `${bites} Bisse`}, aber weniger als 1 h Angelzeit in Sessions – keine Rate.`,
+    nowPressure: (hpa: number, range: string) => `Luftdruck jetzt ${Math.round(hpa)} hPa (Bereich ${range})`,
+    nowTrend: (label: string) => `Tendenz jetzt: ${label}`,
+    share: (count: number, of: number) =>
+      `${count} von ${of} deiner Bisse mit Wetterdaten lagen in diesem Bereich.`,
+    slotsTitle: 'Bisse pro Angelstunde nach Tageszeit',
+    slotsHint:
+      'Nur Bisse in beendeten Sessions, geteilt durch die Angelzeit (ohne Pausen) im jeweiligen Zeitfenster.',
+    slotLabel: (from: number, to: number) => `${from}–${to} Uhr`,
+    slotExtra: (bites: number, hours: number) =>
+      `(${bites} in ${hours.toLocaleString('de-DE', { maximumFractionDigits: 1 })} h)`,
+    pressureTitle: 'Bisse nach Luftdruck',
+    trendTitle: 'Bisse nach Luftdruck-Tendenz (3 h)',
+    weatherHint:
+      'Nur Einträge mit Wetterdaten. Das Wetter der Stunden ohne Biss ist nicht bekannt – Häufigkeiten, keine Raten.',
+    pressureRanges: ['unter 1005 hPa', '1005 bis unter 1015 hPa', '1015 bis unter 1025 hPa', 'ab 1025 hPa'],
+    trends: {
+      falling: 'fallend (mehr als 1 hPa)',
+      steady: 'gleichbleibend (±1 hPa)',
+      rising: 'steigend (mehr als 1 hPa)',
+    },
+    solunarTitle: 'Solunar-Zeiten (Theorie)',
+    solunarDisclaimer:
+      'Die Solunar-Theorie (J. A. Knight, 1926) sagt mehr Aktivität um Mond oben/unten (Hauptzeit, ±1 h) und Mondauf-/-untergang (Nebenzeit, ±30 min) voraus. Sie ist wissenschaftlich nicht belegt. Mondzeiten offline berechnet, Abweichung wenige Minuten.',
+    major: 'Hauptzeit',
+    minor: 'Nebenzeit',
+    events: { upper: 'Mond oben', lower: 'Mond unten', rise: 'Mondaufgang', set: 'Monduntergang' },
+    window: (from: string, to: string) => `${from}–${to}`,
+    none: 'An diesem Tag keine Solunar-Zeiten.',
+    phase: (name: string, pct: number) => `${name}, ${pct} % beleuchtet`,
+    phases: {
+      new: 'Neumond',
+      waxingCrescent: 'Zunehmende Sichel',
+      firstQuarter: 'Erstes Viertel',
+      waxingGibbous: 'Zunehmender Mond',
+      full: 'Vollmond',
+      waningGibbous: 'Abnehmender Mond',
+      lastQuarter: 'Letztes Viertel',
+      waningCrescent: 'Abnehmende Sichel',
+    },
+  },
   weather: {
     title: 'Wetter (Modellwert)',
     modelNote: (hour: string) => `Modellwerte für ${hour}, nicht am Gewässer gemessen.`,
