@@ -123,11 +123,21 @@ test('FC-1: Wetter-Bereich mit Vorhersage, Luftdruck-Verlauf, Ortswahl, Zwischen
   await expect(now).toContainText('Bedeckt');
   await expect(now).toContainText('−0,2 hPa in 3 h');
   await expect(page.getByRole('img', { name: /Luftdruck-Verlauf von/ })).toBeVisible();
-  await expect(page.getByText('Heute', { exact: true })).toBeVisible();
-  await expect(page.getByText('Morgen', { exact: true })).toBeVisible();
+  await expect(page.getByText('Heute', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('Morgen', { exact: true }).first()).toBeVisible();
   await expect(page.getByText(/Quelle: Open-Meteo\.com \(CC BY 4\.0\)/)).toBeVisible();
   expect(api.requests.at(-1)?.searchParams.get('latitude')).toBe('51.326');
   expect(api.requests.at(-1)?.searchParams.get('longitude')).toBe('6.242');
+
+  // Beißfenster: beide Blickwinkel getrennt; mit 1 Eintrag keine Auswertung
+  await expect(page.getByRole('heading', { name: 'Beißfenster' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Aus deinem Fangbuch' })).toContainText(
+    'Zu wenige Daten (n = 1, ab 20).',
+  );
+  const solunar = page.getByRole('region', { name: 'Solunar-Zeiten (Theorie)' });
+  await expect(solunar).toContainText('wissenschaftlich nicht belegt');
+  await expect(solunar.getByText(/Hauptzeit · Mond (oben|unten)/).first()).toBeVisible();
+  await expect(solunar.getByText(/% beleuchtet/).first()).toBeVisible();
 
   // Gewässer aus dem Fangbuch wählen → Vorhersage dort; Wahl bleibt
   await page.getByLabel('Ort').selectOption({ label: 'De Wittsee (Nettetal)' });
@@ -162,4 +172,64 @@ test('FC-2: Wetter ausgeschaltet → keine Abfrage, Hinweis mit Link', async ({ 
   await waitForApp(page);
   await expect(page.getByRole('link', { name: /Wetter ist ausgeschaltet/ })).toBeVisible();
   expect(api.requests).toHaveLength(0);
+});
+
+test('FC-3: Beißfenster aus dem Fangbuch – Bisse pro Angelstunde, Luftdruck, Tendenz', async ({ page }) => {
+  await useLocalExternals(page);
+  await stubGeolocation(page);
+  await fakeForecast(page);
+  await page.goto('/fangbuch');
+  await waitForApp(page);
+  // 20 Bisse in zwei Sessions (6–8 Uhr), Wetter: 1012 hPa, fallend
+  const day = (d: number) => `2026-10-0${d}`;
+  const sessions = [1, 2].map((d) => ({
+    id: `s${d}`,
+    createdAt: t,
+    updatedAt: t,
+    rev: 0,
+    startAt: `${day(d)}T06:00:00+02:00`,
+    endAt: `${day(d)}T08:00:00+02:00`,
+    tz: 'Europe/Berlin',
+  }));
+  const catches = Array.from({ length: 20 }, (_, i) => ({
+    ...wittsee,
+    id: `b${i}`,
+    at: `${day((i % 2) + 1)}T06:${String(10 + i).padStart(2, '0')}:00+02:00`,
+    sessionId: `s${(i % 2) + 1}`,
+    weather: {
+      provider: 'open-meteo',
+      fetchedAt: t,
+      kind: 'model',
+      forHour: '2026-10-01T04:00:00.000Z',
+      pressureHpa: 1012,
+      pressureTrend3h: -2,
+      attribution: 'Open-Meteo.com, CC BY 4.0',
+    },
+  }));
+  await page.evaluate(
+    async ({ catches, sessions }) => {
+      const req = indexedDB.open('fangpunkt');
+      const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
+      await new Promise<void>((resolve) => {
+        const tx = db.transaction(['catches', 'sessions'], 'readwrite');
+        for (const c of catches) tx.objectStore('catches').put(c);
+        for (const s of sessions) tx.objectStore('sessions').put(s);
+        tx.oncomplete = () => resolve();
+      });
+      db.close();
+    },
+    { catches, sessions },
+  );
+  await page.goto('/wetter');
+  await waitForApp(page);
+  const own = page.getByRole('region', { name: 'Aus deinem Fangbuch' });
+  await expect(own).toContainText('Ausgewertet: 20 Bisse');
+  // 20 Bisse in 4 h Angelzeit → 5 pro Stunde im Fenster 6–8 Uhr
+  await expect(own.getByRole('row', { name: /6–8 Uhr/ })).toContainText('5 (20 in 4 h)');
+  await expect(own.getByRole('row', { name: /1005 bis unter 1015 hPa/ })).toContainText('20');
+  await expect(own.getByRole('row', { name: /fallend/ })).toContainText('20');
+  // Jetzt: Luftdruck aus der Vorhersage und Anteil deiner Bisse in diesem Bereich
+  await expect(own).toContainText(/Luftdruck jetzt \d+ hPa/);
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });

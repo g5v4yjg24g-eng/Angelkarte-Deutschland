@@ -20,6 +20,7 @@ import { useWeatherEnabled } from './useWeatherEnabled';
 import { useForecast } from './useForecast';
 import { useCurrentPosition, useForecastChoice, useWaterOptions } from './useForecastPlace';
 import { PressureChart } from './PressureChart';
+import { BiteWindows } from './BiteWindows';
 import styles from './Weather.module.css';
 
 const t = de.forecast;
@@ -127,6 +128,15 @@ function ForecastView({ f, nowMs, stale }: { f: Forecast; nowMs: number; stale: 
           ))}
         </ul>
       </Section>
+      <BiteWindows
+        days={days}
+        lat={f.lat}
+        lng={f.lng}
+        nowMs={nowMs}
+        now={now}
+        change={change}
+        dayTitle={(ms) => dayTitle(ms, nowMs)}
+      />
       <p className="muted">
         {t.note} {t.source(stamp(f.fetchedAt))}
       </p>
