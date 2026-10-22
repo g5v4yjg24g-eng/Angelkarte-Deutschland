@@ -18,7 +18,8 @@ export function WeatherSync() {
   const [round, setRound] = useState(0);
 
   useEffect(() => {
-    if (!enabled || !online || !pending || running.current) return;
+    // pending ist nur Auslöser; der Lauf liest selbst nach (auch beim Wechsel auf online).
+    if (!enabled || !online || pending === undefined || running.current) return;
     running.current = true;
     void fillMissingWeather(weather, { skip: noData.current })
       .then((r) => {

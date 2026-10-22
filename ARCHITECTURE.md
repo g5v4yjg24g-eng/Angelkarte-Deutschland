@@ -127,7 +127,7 @@ Ein langer Druck öffnet direkt „Neu an dieser Stelle" (auch über Gewässerfl
 - Gewässer: Farbe nach Datenstufe ist **nicht** geplant. Stattdessen zeigt das Profil die Stufe als Badge, damit die Karte ruhig bleibt.
 
 ### 5.4 Standort
-- Abfrage erst nach Tipp auf den Standort-Button; vorher ein kurzer Erklärtext.
+- Standort startet standardmäßig beim Öffnen der Karte (Entscheidung 2026-10-22, Einstellung „Standort: Beim Kartenstart“); der Browser fragt einmal um Erlaubnis. Ist der Zugriff verweigert, bleibt es beim Start still. Mit „Nur auf Knopfdruck“ erst nach Tipp auf den Button, beim ersten Mal mit Erklärtext.
 - `watchPosition` nur, solange die Karte sichtbar ist. Bei `visibilitychange` wird gestoppt.
 - Kein Hintergrund-Tracking. In Browsern ist das ohne aktive Seite nicht zuverlässig möglich [A, plattformbekannt]. Der Auftrag fordert es auch nicht.
 
@@ -230,7 +230,7 @@ interface SpeciesIdResult {
 - Keine Tracker und kein Analytics im MVP. Falls doch gewünscht: nur ein cookieloses, selbst gehostetes Werkzeug nach gesonderter Entscheidung.
 - Content-Security-Policy: `default-src 'self'`, erlaubte Hosts explizit (Kartenanbieter, Wetter).
 - Fremddaten (Import, Rechts-JSON, Gewässer-JSON) werden per Zod validiert und **nie** als HTML gerendert (kein `innerHTML`).
-- Standort wird nicht übertragen. Ausnahme: gerundete Koordinaten (3 Nachkommastellen ≈ 100 m) an den Wetteranbieter, wenn Wetter aktiv ist. Das steht in der Datenschutzerklärung.
+- Standort wird nicht übertragen. Ausnahme: gerundete Koordinaten (3 Nachkommastellen ≈ 100 m) an den Wetteranbieter, wenn Wetter aktiv ist (Standard: an, abschaltbar). Das steht in der Datenschutzerklärung.
 - EXIF-Daten (GPS) aus Fotos werden beim Speichern entfernt (Re-Encoding über Canvas), die Position steht ja im Fang.
 
 ## 12. Fehlerbehandlung

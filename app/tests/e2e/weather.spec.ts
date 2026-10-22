@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import type { Catch } from '../../src/domain/schemas';
 import { collectErrors, useLocalExternals, waitForApp } from './helpers';
 
@@ -49,9 +49,8 @@ async function fakeOpenMeteo(page: Page) {
   return requests;
 }
 
-async function seed(page: Page, catches: Catch[]) {
-  await page.goto('/fangbuch');
-  await waitForApp(page);
+/** Direkt in IndexedDB legen (wie nach einem Import); funktioniert auch offline. */
+async function put(page: Page, catches: Catch[]) {
   await page.evaluate(async (catches) => {
     const req = indexedDB.open('fangpunkt');
     const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
@@ -65,30 +64,34 @@ async function seed(page: Page, catches: Catch[]) {
   }, catches);
 }
 
-test('WX-1: Wetter ist aus, bis es eingeschaltet wird; offline erfasst, online nachgeladen, gerundet gesendet', async ({
+const later: Catch = {
+  ...withPos,
+  id: 'wx-3',
+  at: '2026-10-21T08:00:00+02:00',
+  createdAt: '2026-10-21T08:05:00+02:00',
+  updatedAt: '2026-10-21T08:05:00+02:00',
+  speciesId: 'perch',
+};
+
+test('WX-1: Wetter ist standardmäßig an; offline erfasst, online nachgeladen, gerundet gesendet; abschaltbar', async ({
   page,
   context,
 }) => {
   const errors = collectErrors(page);
   await useLocalExternals(page);
   const requests = await fakeOpenMeteo(page);
-  await seed(page, [withPos, noPos]);
-
-  // Standard: aus – nichts verlässt das Gerät
-  await page.goto('/fangbuch/wx-1');
+  await page.goto('/fangbuch');
   await waitForApp(page);
-  const box = page.getByRole('region', { name: 'Wetter (Modellwert)' });
-  await expect(box).toContainText('Wetter kann in den Einstellungen eingeschaltet werden.');
-  expect(requests).toHaveLength(0);
 
-  // Offline einschalten → noch kein Abruf, Hinweis „wird geladen"
-  await box.getByRole('link').click();
-  await expect(page.getByRole('heading', { name: 'Einstellungen' })).toBeVisible();
+  // Offline erfasst → noch kein Abruf, Hinweis „wird geladen"
   await context.setOffline(true);
-  const on = page.getByRole('radio', { name: 'Automatisch laden' });
-  await on.click();
-  await expect(on).toBeChecked();
-  await page.goBack();
+  await put(page, [withPos, noPos]);
+  // Ohne Netz kein page.goto: im Client navigieren
+  await page.evaluate(() => {
+    history.pushState({}, '', '/fangbuch/wx-1');
+    dispatchEvent(new PopStateEvent('popstate'));
+  });
+  const box = page.getByRole('region', { name: 'Wetter (Modellwert)' });
   await expect(box).toContainText('Wird geladen, sobald eine Verbindung besteht.');
   expect(requests).toHaveLength(0);
 
@@ -107,16 +110,25 @@ test('WX-1: Wetter ist aus, bis es eingeschaltet wird; offline erfasst, online n
   expect(requests[0]?.searchParams.get('longitude')).toBe('6.210');
   expect(requests[0]?.href).not.toContain('51.3123');
 
-  // Fang ohne Standort: kein Wetterbereich
+  // 390 px ohne horizontales Scrollen
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  // Abschalten → neue Fänge werden nicht mehr abgefragt
+  await page.goto('/mehr/einstellungen');
+  await waitForApp(page);
+  const on = page.getByRole('radio', { name: 'Automatisch laden' });
+  await expect(on).toBeChecked();
+  const off = page.getByRole('group', { name: 'Wetter am Fang' }).getByRole('radio', { name: 'Aus' });
+  await off.click();
+  await expect(off).toBeChecked();
+  await put(page, [later]);
+  await page.goto('/fangbuch/wx-3');
+  await waitForApp(page);
+  await expect(box).toContainText('Wetter ist ausgeschaltet.');
   await page.goto('/fangbuch/wx-2');
   await waitForApp(page);
   await expect(page.getByRole('region', { name: 'Wetter (Modellwert)' })).toHaveCount(0);
-
-  // 390 px ohne horizontales Scrollen
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/fangbuch/wx-1');
-  await waitForApp(page);
-  await expect(box).toContainText('Bedeckt');
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(requests).toHaveLength(1);
   expect(errors).toEqual([]);
 });

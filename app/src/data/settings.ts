@@ -5,8 +5,10 @@ export interface Settings {
   lastBackupAt: string;
   backupReminderSnoozedUntil: string;
   persistRequested: boolean;
-  /** Wetter zu Fängen laden (sendet gerundete Koordinaten an den Wetterdienst); Standard: aus */
+  /** Wetter zu Fängen laden (sendet gerundete Koordinaten an den Wetterdienst); Standard: an */
   weatherEnabled: boolean;
+  /** Standort beim Öffnen der Karte anzeigen (bleibt auf dem Gerät); Standard: an */
+  locateOnStart: boolean;
 }
 
 export async function getSetting<K extends keyof Settings>(

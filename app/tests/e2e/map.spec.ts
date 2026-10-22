@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -161,17 +161,17 @@ test('Legende zeigt alle Symbole', async ({ page }) => {
   await expect(legend).toBeHidden();
 });
 
-test('MAP-1: Standort wird erst nach Erklärung und Zustimmung abgefragt', async ({ page }) => {
+const geoCalls = (page: Page) =>
+  page.evaluate(() => (window as unknown as { __geoCalls: number }).__geoCalls);
+
+test('MAP-1: Standort startet standardmäßig mit der Karte; abschaltbar, dann erst nach Erklärung', async ({
+  page,
+}) => {
   await stubGeolocation(page, 'ok');
   await mockBasemap(page);
   await openMap(page);
-  expect(await page.evaluate(() => (window as unknown as { __geoCalls: number }).__geoCalls)).toBe(0);
-  await page.getByRole('button', { name: 'Meinen Standort zeigen' }).click();
-  const sheet = page.getByRole('dialog', { name: 'Standort anzeigen?' });
-  await expect(sheet).toContainText('nicht gespeichert und nicht übertragen');
-  expect(await page.evaluate(() => (window as unknown as { __geoCalls: number }).__geoCalls)).toBe(0);
-  await sheet.getByRole('button', { name: 'Standort anzeigen' }).click();
   await expect(page.getByText('Genauigkeit ca. 25 m')).toBeVisible();
+  expect(await geoCalls(page)).toBe(1);
   await expect(page.getByRole('button', { name: 'Standort ausblenden' })).toHaveAttribute(
     'aria-pressed',
     'true',
@@ -179,6 +179,22 @@ test('MAP-1: Standort wird erst nach Erklärung und Zustimmung abgefragt', async
   await expect
     .poll(() => page.evaluate(() => Math.round(window.__fangpunktMap?.getZoom() ?? 0)))
     .toBeGreaterThanOrEqual(14);
+
+  // Einstellung „Nur auf Knopfdruck" → kein Abruf beim Start, beim ersten Tipp eine Erklärung
+  await page.goto('/mehr/einstellungen');
+  await waitForApp(page);
+  const manual = page.getByRole('radio', { name: 'Nur auf Knopfdruck' });
+  await manual.click();
+  await expect(manual).toBeChecked();
+  await openMap(page);
+  await page.waitForTimeout(300);
+  expect(await geoCalls(page)).toBe(0);
+  await page.getByRole('button', { name: 'Meinen Standort zeigen' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Standort anzeigen?' });
+  await expect(sheet).toContainText('nicht gespeichert und nicht übertragen');
+  expect(await geoCalls(page)).toBe(0);
+  await sheet.getByRole('button', { name: 'Standort anzeigen' }).click();
+  await expect(page.getByText('Genauigkeit ca. 25 m')).toBeVisible();
   // Zweites Mal ohne Erklärung
   await page.getByRole('button', { name: 'Standort ausblenden' }).click();
   await page.getByRole('button', { name: 'Meinen Standort zeigen' }).click();
@@ -186,13 +202,18 @@ test('MAP-1: Standort wird erst nach Erklärung und Zustimmung abgefragt', async
   await expect(page.getByText('Genauigkeit ca. 25 m')).toBeVisible();
 });
 
-test('MAP-2: Verweigerter Standort zeigt eine verständliche Meldung, Karte bleibt nutzbar', async ({
+test('MAP-2: Verweigerter Standort: beim Start still, auf Knopfdruck verständliche Meldung, Karte nutzbar', async ({
   page,
 }) => {
   await stubGeolocation(page, 'denied');
-  await page.addInitScript(() => localStorage.setItem('fangpunkt.locHintSeen', '1'));
   await mockBasemap(page);
   await openMap(page);
+  await expect.poll(() => geoCalls(page)).toBe(1);
+  await expect(page.getByRole('button', { name: 'Meinen Standort zeigen' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
+  await expect(page.getByRole('alert')).toHaveCount(0);
   await page.getByRole('button', { name: 'Meinen Standort zeigen' }).click();
   await expect(page.getByRole('alert')).toContainText('Standortzugriff ist blockiert');
   await page.getByRole('button', { name: 'Legende' }).click();

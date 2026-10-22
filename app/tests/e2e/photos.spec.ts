@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { startCatchAt, useLocalExternals, waitForApp } from './helpers';
 
 // Mit Service Worker: die Abnahme verlangt Erfassen offline und Neustart offline (CAT-2).

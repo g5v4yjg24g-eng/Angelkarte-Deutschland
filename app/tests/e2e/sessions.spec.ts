@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { startCatchAt, useLocalExternals, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
@@ -28,6 +28,8 @@ async function addCatch(page: Page, species: string) {
 test('SES-1/SES-2: Session starten, Einträge zuordnen, beenden; keine zweite gleichzeitig', async ({
   page,
 }) => {
+  // Langer Ablauf (~25 s auf mobil, auch vor der Wetter-Änderung) – sonst knapp am 30-s-Limit
+  test.slow();
   await openMap(page);
   await page.getByRole('button', { name: 'Session starten' }).click();
   await expect(page.getByText('Session gestartet.', { exact: false })).toBeVisible();

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 import { collectErrors, waitForApp, useLocalExternals } from './helpers';
 
 test.use({ serviceWorkers: 'block' });

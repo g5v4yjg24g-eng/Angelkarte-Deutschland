@@ -44,8 +44,8 @@ Netzwerk in E2E: Externe Dienste (Karte, Wetter) werden per `page.route` **gemoc
 ### 3.2 Karte und Gewässer
 | ID | Testfall | Erwartung |
 |---|---|---|
-| MAP-1 | Standort-Button ohne Freigabe | Erklärtext, dann Browser-Prompt; **kein** Prompt beim App-Start |
-| MAP-2 | Standort verweigert / nicht verfügbar | Verständliche Meldung, Karte weiter nutzbar |
+| MAP-1 | Kartenstart / Einstellung „Nur auf Knopfdruck“ | Standard: Standort startet mit der Karte und zentriert. Mit „Nur auf Knopfdruck“ kein Abruf beim Start, beim ersten Tipp Erklärtext (Entscheidung 2026-10-22) |
+| MAP-2 | Standort verweigert / nicht verfügbar | Beim Start still; auf Knopfdruck verständliche Meldung; Karte weiter nutzbar |
 | MAP-3 | Tipp auf leere Fläche | Sheet „Neu an dieser Stelle" mit Typen |
 | MAP-4 | Tipp auf Gewässer | Sheet mit Gewässername, Profil-Link |
 | MAP-5 | Basiskarte offline | Hinweis „Karte offline nicht verfügbar"; eigene Marker weiter sichtbar |
@@ -75,7 +75,7 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | SES-1 | Session starten → 3 Fänge → beenden | Fänge zugeordnet; Dauer korrekt. *Automatisiert (M5.4): `sessions.spec.ts`, `session.test.ts`* |
 | SES-2 | Zweite Session starten, während eine läuft | Nicht möglich, Hinweis. *Automatisiert: Startknopf fehlt; Datenschicht lehnt ab (`sessionService.test.ts`)* |
 | SES-3 | Session > 24 h | Korrekturdialog. *Automatisiert: Hinweis in der Kopfzeile, Vorschlag übernehmen, Ende vor Beginn abgelehnt* |
-| WX-1 | Fang offline, später online | Wetter wird nachgeladen; gekennzeichnet als Modellwert; vorher Standard „aus" ohne Abruf; Koordinaten gerundet (✅ `weather.spec.ts`) |
+| WX-1 | Fang offline, später online | Wetter wird nachgeladen; gekennzeichnet als Modellwert; Standard „an“; offline kein Abruf; Koordinaten gerundet; ausgeschaltet kein Abruf (✅ `weather.spec.ts`) |
 
 ### 3.5 Statistik
 *Automatisiert (M6): `domain/stats.test.ts` mit Fixture `test/fixtures/stats.ts`, E2E `stats.spec.ts` (STA-1 bis STA-7, hell und dunkel bei 390 px).*

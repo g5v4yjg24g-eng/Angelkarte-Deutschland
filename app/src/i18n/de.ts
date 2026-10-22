@@ -400,7 +400,7 @@ export const de = {
     backup: 'Daten & Sicherung',
     backupHint: 'Export, Import, Speicher',
     settings: 'Einstellungen',
-    settingsHint: 'Darstellung, Wetter',
+    settingsHint: 'Darstellung, Standort, Wetter',
     about: 'Über Fangpunkt & Quellen',
     aboutHint: 'Version, Datenquellen, Lizenzen',
   },
@@ -610,15 +610,20 @@ export const de = {
     weather: 'Wetter am Fang',
     weatherOff: 'Aus',
     weatherOn: 'Automatisch laden',
+    location: 'Standort',
+    locationOff: 'Nur auf Knopfdruck',
+    locationOn: 'Beim Kartenstart',
+    locationHint:
+      'Zeigt beim Öffnen der Karte deinen Standort. Dein Browser fragt einmal nach der Erlaubnis. Der Standort wird nur auf der Karte angezeigt und nicht übertragen.',
     weatherHint:
-      'Lädt zu jedem Fang mit Standort Modellwerte von Open-Meteo (Temperatur, Wind, Luftdruck, Bewölkung, Niederschlag). Dafür wird die auf etwa 100 m gerundete Position mit Datum und Stunde an Open-Meteo gesendet. Ohne Netz wird später nachgeladen. Verfügbar für Fänge ab 2022.',
+      'Lädt zu jedem Fang mit Standort Modellwerte von Open-Meteo (Temperatur, Wind, Luftdruck, Bewölkung, Niederschlag). Dafür wird die auf etwa 100 m gerundete Position mit Datum und Stunde an Open-Meteo gesendet. Ohne Netz wird später nachgeladen. Verfügbar für Fänge ab 2022. Standard: an.',
   },
   weather: {
     title: 'Wetter (Modellwert)',
     modelNote: (hour: string) => `Modellwerte für ${hour}, nicht am Gewässer gemessen.`,
     source: 'Quelle: Open-Meteo.com, CC BY 4.0',
     pending: 'Wird geladen, sobald eine Verbindung besteht.',
-    off: 'Wetter kann in den Einstellungen eingeschaltet werden.',
+    off: 'Wetter ist ausgeschaltet. In den Einstellungen wieder einschalten.',
     tooOld: 'Für Fänge vor 2022 gibt es keine Wetterdaten.',
     temp: 'Lufttemperatur',
     wind: 'Wind',
@@ -682,7 +687,7 @@ export const de = {
     version: (v: string) => `Version ${v}`,
     privacyTitle: 'Datenschutz',
     privacyText:
-      'Fangpunkt speichert deine Fänge und Markierungen nur auf diesem Gerät. Es gibt kein Konto, kein Tracking und keine Werbung. Nur wenn du „Wetter am Fang" einschaltest, gehen Datum, Stunde und die auf etwa 100 m gerundete Position eines Fangs an Open-Meteo.',
+      'Fangpunkt speichert deine Fänge und Markierungen nur auf diesem Gerät. Es gibt kein Konto, kein Tracking und keine Werbung. Ausnahme „Wetter am Fang" (Standard: an, abschaltbar in den Einstellungen): Datum, Stunde und die auf etwa 100 m gerundete Position eines Fangs gehen an Open-Meteo.',
     sourcesTitle: 'Quellen & Lizenzen',
     sources: [
       { name: 'Schriften Inter und Fraunces', license: 'SIL Open Font License 1.1' },
