@@ -154,8 +154,23 @@ export async function addOverlays(map: MlMap, data: OverlayData, glyphFont: stri
       layout: { visibility: 'none' },
       paint: {
         'heatmap-weight': 1,
-        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 5, 0.25, 15, 0.8],
-        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 5, 10, 12, 22, 16, 36],
+        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 5, 0.25, 15, 0.8, 17, 1.6, 20, 3],
+        // Beim Hineinzoomen mitwachsen (exponentiell), damit Flecken nicht zu Punkten schrumpfen
+        'heatmap-radius': [
+          'interpolate',
+          ['exponential', 2],
+          ['zoom'],
+          5,
+          10,
+          12,
+          22,
+          16,
+          40,
+          18,
+          110,
+          20,
+          300,
+        ],
         // Von durchsichtig über Gelb nach Rot: auf heller und dunkler Karte erkennbar
         'heatmap-color': [
           'interpolate',
@@ -172,7 +187,8 @@ export async function addOverlays(map: MlMap, data: OverlayData, glyphFont: stri
           1,
           'rgba(160,20,40,0.9)',
         ],
-        'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0.85, 17, 0.35],
+        // Auf allen Zoomstufen gleich kräftig (Wunsch Nutzer 2026-10-22: vorher verblasste sie ab z14)
+        'heatmap-opacity': 0.85,
       },
     });
   if (!map.getLayer(LAYERS.meAccuracy))
@@ -256,11 +272,12 @@ export function setOverlayData(map: MlMap, data: Partial<OverlayData>) {
   set('fp-me', data.me);
 }
 
-/** Heatmap ein/aus; die Zahlenkreise fassen dasselbe zusammen und entfallen solange. */
+/** Heatmap ein/aus; solange sie an ist, entfallen Fang-Symbole und Zahlenkreise (Wunsch Nutzer 2026-10-22). */
 export function setHeatmap(map: MlMap, on: boolean) {
   const vis = (id: string, v: boolean) =>
     map.getLayer(id) && map.setLayoutProperty(id, 'visibility', v ? 'visible' : 'none');
   vis(LAYERS.heat, on);
+  vis(LAYERS.catches, !on);
   vis(LAYERS.clusters, !on);
   vis(LAYERS.clusterCount, !on);
 }

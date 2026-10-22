@@ -63,6 +63,11 @@ test('HEAT-1: Heatmap der gelandeten Fische ein- und ausschalten, Wahl bleibt, L
   await expect(page.getByText('Noch keine gelandeten Fische mit Fangort')).toBeVisible();
   expect(await visibility(page, 'fp-catch-heat')).toBe('visible');
   expect(await visibility(page, 'fp-catch-clusters')).toBe('none');
+  // Fang-Symbole sind ausgeblendet, die Heatmap verblasst beim Zoomen nicht
+  expect(await visibility(page, 'fp-catches')).toBe('none');
+  expect(
+    await page.evaluate(() => window.__fangpunktMap?.getPaintProperty('fp-catch-heat', 'heatmap-opacity')),
+  ).toBe(0.85);
 
   // Mit Fängen: nur gelandete zählen
   await put(page, [
@@ -87,6 +92,7 @@ test('HEAT-1: Heatmap der gelandeten Fische ein- und ausschalten, Wahl bleibt, L
   await page.getByRole('button', { name: 'Heatmap ausblenden' }).click();
   expect(await visibility(page, 'fp-catch-heat')).toBe('none');
   expect(await visibility(page, 'fp-catch-clusters')).toBe('visible');
+  expect(await visibility(page, 'fp-catches')).toBe('visible');
 
   // Legende erklärt die Heatmap
   await page.getByRole('button', { name: 'Legende' }).click();
