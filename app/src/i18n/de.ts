@@ -51,7 +51,7 @@ export const de = {
       `Erst ${n} ${n === 1 ? 'Fang' : 'Fänge'} mit Fangort – unter ${min} sind Häufungen oft Zufall.`,
     legendHeat: 'Heatmap',
     legendHeatHint:
-      'Zeigt, wo du die meisten Fische gelandet hast: von Gelb (wenige) bis Rot (viele). Nur deine eigenen Fänge mit Fangort; Kontakte und Fehlbisse zählen nicht.',
+      'Zeigt, wo du die meisten Fische gelandet hast: von Blau (wenige) über Grün und Gelb bis Rot (sehr viele). Nur deine eigenen Fänge mit Fangort; Kontakte und Fehlbisse zählen nicht.',
     newHereTitle: 'Neu an dieser Stelle',
     coords: (lat: number, lng: number) =>
       `${lat.toLocaleString('de-DE', { maximumFractionDigits: 5 })}, ${lng.toLocaleString('de-DE', { maximumFractionDigits: 5 })}`,

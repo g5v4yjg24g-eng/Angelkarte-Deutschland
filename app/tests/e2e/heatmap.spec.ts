@@ -97,7 +97,7 @@ test('HEAT-1: Heatmap der gelandeten Fische ein- und ausschalten, Wahl bleibt, L
   // Legende erklärt die Heatmap
   await page.getByRole('button', { name: 'Legende' }).click();
   await expect(page.getByRole('dialog', { name: 'Kartensymbole' })).toContainText(
-    'von Gelb (wenige) bis Rot (viele)',
+    'von Blau (wenige) über Grün und Gelb bis Rot (sehr viele)',
   );
   expect(errors).toEqual([]);
 });
