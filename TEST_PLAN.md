@@ -91,7 +91,7 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | STA-7 | Diagramme | Jede Grafik hat eine Textalternative/Tabelle |
 
 ### 3.6 Recht
-*Automatisiert (M7): LAW-1 `domain/regulations.test.ts` + `data/regulationFiles.test.ts` (alle Landesdateien, auch `pnpm validate:data`), LAW-2/LAW-3 Logik und Anzeige (`RegulationView.test.tsx`, Uhr per `nowMs`), LAW-4 E2E `law.spec.ts` (Bayern, inkl. axe und 390 px), Prüfansicht für Entwürfe (Hamburg). Alle Landesdateien laufen durch `data/regulationFiles.test.ts`; der Lader wird mit echten Dateien getestet (`data/regulations.test.ts`). LAW-5 folgt mit Gewässerregeln (P3).*
+*Automatisiert (M7): LAW-1 `domain/regulations.test.ts` + `data/regulationFiles.test.ts` (alle Landesdateien, auch `pnpm validate:data`), LAW-2/LAW-3 Logik und Anzeige (`RegulationView.test.tsx`, Uhr per `nowMs`), LAW-4 E2E `law.spec.ts` (erstes Land ohne Datei, inkl. axe und 390 px), sichtbares Land (Hamburg). Alle Landesdateien laufen durch `data/regulationFiles.test.ts`; der Lader wird mit echten Dateien getestet (`data/regulations.test.ts`). LAW-5 folgt mit Gewässerregeln (P3).*
 
 | ID | Testfall | Erwartung |
 |---|---|---|

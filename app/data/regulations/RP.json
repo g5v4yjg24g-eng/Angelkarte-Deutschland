@@ -1,13 +1,13 @@
 {
   "stateCode": "RP",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "Fischereischein und Erlaubnisse (Landesfischereigesetz)",
     "Gewässerliste der Frühjahrsschonzeit im Detail (§ 18 Abs. 1, Anlage 3)",
     "Allgemeinverfügungen der oberen Fischereibehörde (§§ 21, 22)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); Gegenprüfung durch den Nutzer ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "LFischO RP",

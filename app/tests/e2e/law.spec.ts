@@ -21,13 +21,16 @@ test('M7: Übersicht der Länder, Land ohne geprüfte Angaben (LAW-4), Hinweis �
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
   await expect(states.filter({ hasText: 'Bayern' })).toContainText('Teilweise geprüft');
-  // LAW-4: Berlin hat (noch) keine Datei → erklärender Zustand mit Link zum Landesrechtsportal
-  await expect(states.filter({ hasText: 'Berlin' })).toContainText('Noch keine Angaben');
-  await states.filter({ hasText: 'Berlin' }).click();
-  await expect(page.getByRole('heading', { name: 'Für Berlin noch keine geprüften Angaben' })).toBeVisible();
+  await expect(states.filter({ hasText: 'Berlin' })).toContainText('Teilweise geprüft');
+  // LAW-4: erstes Land ohne Datei → erklärender Zustand mit Link zum Landesrechtsportal
+  const empty = states.filter({ hasText: 'Noch keine Angaben' }).first();
+  const name = ((await empty.textContent()) ?? '').replace('Noch keine Angaben', '').trim();
+  expect(name.length).toBeGreaterThan(0);
+  await empty.click();
+  await expect(page.getByRole('heading', { name: `Für ${name} noch keine geprüften Angaben` })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Zum Landesrechtsportal' })).toHaveAttribute(
     'href',
-    'https://gesetze.berlin.de/',
+    /^https:\/\//,
   );
   await expect(page.getByText(/^Keine Rechtsauskunft\./)).toBeVisible();
   expect(
