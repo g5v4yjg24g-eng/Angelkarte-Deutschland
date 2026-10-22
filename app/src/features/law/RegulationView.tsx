@@ -3,13 +3,14 @@
 import { de } from '../../i18n/de';
 import { Badge } from '../../design/components/Badge';
 import { Notice } from '../../design/components/Notice';
-import { speciesById } from '../../domain/species';
 import {
   berlinDay,
   freshness,
   inClosedSeason,
   type MonthDay,
+  type MinSizeRule,
   type RegulationSet,
+  taxonLabel,
 } from '../../domain/regulations';
 import styles from './Law.module.css';
 
@@ -23,7 +24,25 @@ const formatCheckedDate = (iso: string) =>
     year: 'numeric',
     timeZone: 'UTC',
   });
-const speciesName = (id: string) => speciesById(id)?.de ?? t.unknownSpecies;
+type Taxon = { taxon: { de: string; sci?: string | undefined } };
+
+function Species({ r }: { r: Taxon }) {
+  return (
+    <>
+      {taxonLabel(r)}
+      {r.taxon.sci && <span className={styles.sci}> ({r.taxon.sci})</span>}
+    </>
+  );
+}
+
+const sizeText = (r: MinSizeRule) =>
+  r.minCm !== undefined && r.maxCm !== undefined
+    ? t.window(r.minCm, r.maxCm)
+    : r.minCm !== undefined
+      ? t.cm(r.minCm)
+      : r.maxCm !== undefined
+        ? t.maxOnly(r.maxCm)
+        : '–';
 
 export function Disclaimer() {
   return <Notice tone="warning">{t.disclaimer}</Notice>;
@@ -54,91 +73,76 @@ export function RegulationView({ set, nowMs }: { set: RegulationSet; nowMs: numb
   const checked = formatCheckedDate(set.checkedAt);
   const fresh = freshness(set.checkedAt, nowMs);
   const today = berlinDay(nowMs);
-  const bySpecies = <T extends { speciesId: string }>(list: T[]) =>
-    [...list].sort((a, b) => speciesName(a.speciesId).localeCompare(speciesName(b.speciesId), 'de'));
+  const bySpecies = <T extends Taxon>(list: T[]) =>
+    [...list].sort((a, b) => taxonLabel(a).localeCompare(taxonLabel(b), 'de'));
 
   return (
     <div className={styles.stack}>
       <Disclaimer />
       <div className={styles.section}>
         <div className={styles.statusRow}>
-          <Badge tone={set.status === 'verified' ? 'info' : 'warning'}>
-            {set.status === 'verified' ? t.status.verified : t.status.partial}
-          </Badge>
-          {fresh === 'current' && <span className={styles.note}>{t.checkedAt(checked)}</span>}
+          <Badge tone={set.status === 'verified' ? 'info' : 'warning'}>{t.status[set.status]}</Badge>
+          {set.status === 'draft' ? (
+            <span className={styles.note}>{t.recordedAt(checked)}</span>
+          ) : (
+            fresh === 'current' && <span className={styles.note}>{t.checkedAt(checked)}</span>
+          )}
         </div>
-        {fresh === 'stale' && <Notice tone="warning">{t.stale(checked)}</Notice>}
-        {fresh === 'outdated' && <Notice tone="error">{t.outdated(checked)}</Notice>}
-        {set.status === 'partial' && set.missing && (
+        {set.status === 'draft' && <Notice tone="error">{t.draftBanner(set.checkedBy)}</Notice>}
+        {set.status !== 'draft' && fresh === 'stale' && <Notice tone="warning">{t.stale(checked)}</Notice>}
+        {set.status !== 'draft' && fresh === 'outdated' && (
+          <Notice tone="error">{t.outdated(checked)}</Notice>
+        )}
+        {set.status !== 'verified' && set.missing && (
           <Notice tone="warning">{t.missing(set.missing.join(', '))}</Notice>
         )}
       </div>
 
       <Section title={t.closedSeasons} empty={set.closedSeasons.length === 0}>
-        <div className={styles.scroll}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th scope="col">{t.colSpecies}</th>
-                <th scope="col">{t.colPeriod}</th>
-                <th scope="col">{t.colRef}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bySpecies(set.closedSeasons).map((r, i) => (
-                <tr key={`${r.speciesId}-${i}`}>
-                  <td>
-                    {speciesName(r.speciesId)}
-                    <Scope scope={r.scope} note={r.note} />
-                  </td>
-                  <td>
-                    <span className={`tabular ${styles.nowrap}`}>{t.period(md(r.from), md(r.to))}</span>
-                    {inClosedSeason(r, today) && (
-                      <span className={styles.sub}>
-                        <Badge tone="warning">{t.closedToday}</Badge>
-                      </span>
-                    )}
-                  </td>
-                  <td className={styles.ref}>{ref(r)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ul className={styles.list}>
+          {bySpecies(set.closedSeasons).map((r, i) => (
+            <li key={i} className={styles.rule}>
+              <div className={styles.ruleHead}>
+                <span>
+                  <Species r={r} />
+                </span>
+                <strong className={`tabular ${styles.nowrap}`}>{t.period(md(r.from), md(r.to))}</strong>
+              </div>
+              {inClosedSeason(r, today) && <Badge tone="warning">{t.closedToday}</Badge>}
+              <Scope scope={r.scope} note={r.note} />
+              <span className={styles.refLine}>{ref(r)}</span>
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Section title={t.minSizes} empty={set.minSizes.length === 0}>
-        <div className={styles.scroll}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th scope="col">{t.colSpecies}</th>
-                <th scope="col">{t.colMin}</th>
-                <th scope="col">{t.colRef}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bySpecies(set.minSizes).map((r, i) => (
-                <tr key={`${r.speciesId}-${i}`}>
-                  <td>
-                    {speciesName(r.speciesId)}
-                    <Scope scope={r.scope} note={r.note} />
-                  </td>
-                  <td className={`tabular ${styles.nowrap}`}>{t.cm(r.minCm)}</td>
-                  <td className={styles.ref}>{ref(r)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ul className={styles.list}>
+          {bySpecies(set.minSizes).map((r, i) => (
+            <li key={i} className={styles.rule}>
+              <div className={styles.ruleHead}>
+                <span>
+                  <Species r={r} />
+                </span>
+                <strong className={`tabular ${styles.nowrap}`}>{sizeText(r)}</strong>
+              </div>
+              {r.minCm !== undefined && r.maxCm !== undefined && (
+                <span className={styles.sub}>{t.windowLabel}</span>
+              )}
+              {r.dailyLimit !== undefined && <span className={styles.sub}>{t.dailyLimit(r.dailyLimit)}</span>}
+              <Scope scope={r.scope} note={r.note} />
+              <span className={styles.refLine}>{ref(r)}</span>
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Section title={t.protectedSpecies} empty={set.protectedSpecies.length === 0}>
         <ul className={styles.list}>
-          {bySpecies(set.protectedSpecies).map((r) => (
-            <li key={r.speciesId}>
-              {speciesName(r.speciesId)} <span className={styles.ref}>{ref(r)}</span>
-              <Scope note={r.note} />
+          {bySpecies(set.protectedSpecies).map((r, i) => (
+            <li key={i}>
+              <Species r={r} /> <span className={styles.ref}>{ref(r)}</span>
+              <Scope scope={r.scope} note={r.note} />
             </li>
           ))}
         </ul>
@@ -178,7 +182,9 @@ export function RegulationView({ set, nowMs }: { set: RegulationSet; nowMs: numb
             </li>
           ))}
         </ul>
-        {fresh === 'current' || <p className={styles.note}>{t.checkedAt(checked)}</p>}
+        {set.status !== 'draft' && fresh !== 'current' && (
+          <p className={styles.note}>{t.checkedAt(checked)}</p>
+        )}
       </section>
     </div>
   );

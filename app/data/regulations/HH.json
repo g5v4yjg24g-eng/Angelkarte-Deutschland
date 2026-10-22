@@ -1,0 +1,432 @@
+{
+  "stateCode": "HH",
+  "status": "draft",
+  "missing": ["Fischereischein (HmbFAnG)", "Schon- und Sperrgebiete (§ 9)", "Ausnahmen (§ 10)"],
+  "checkedAt": "2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); Gegenprüfung durch den Nutzer ausstehend",
+  "legalBasis": [
+    {
+      "id": "HmbFAnGDVO",
+      "title": "Verordnung zur Durchführung des Hamburgischen Fischerei- und Angelgesetzes",
+      "version": "vom 4. Juni 2019 (HmbGVBl. S. 169), geändert durch Verordnung vom 1. Februar 2022 (HmbGVBl. S. 88); Gesamtausgabe Stand 25.09.2023",
+      "url": "https://dokumente.hamburg.de/resource/blob/179406/1c1045f6e901b54e7ffc68ecfc432444/verordnung-zur-durchfuehrung-des-hamburgischen-fischerei-und-angelgesetzes-data.pdf",
+      "retrievedAt": "2026-10-22"
+    }
+  ],
+  "closedSeasons": [
+    {
+      "taxon": {
+        "de": "Bachforelle"
+      },
+      "speciesId": "brown_trout",
+      "from": {
+        "month": 10,
+        "day": 15
+      },
+      "to": {
+        "month": 2,
+        "day": 15
+      },
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 2 Nr. 1 (zu § 8 Abs. 1)",
+      "note": "gilt nicht in gewerblichen Fischzuchtbetrieben (§ 8 Abs. 1 Satz 2)"
+    },
+    {
+      "taxon": {
+        "de": "Meerforelle"
+      },
+      "from": {
+        "month": 10,
+        "day": 15
+      },
+      "to": {
+        "month": 2,
+        "day": 15
+      },
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 2 Nr. 1 (zu § 8 Abs. 1)",
+      "note": "gilt nicht in gewerblichen Fischzuchtbetrieben (§ 8 Abs. 1 Satz 2)"
+    },
+    {
+      "taxon": {
+        "de": "Äsche"
+      },
+      "speciesId": "grayling",
+      "from": {
+        "month": 1,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 15
+      },
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 2 Nr. 2 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Hecht"
+      },
+      "speciesId": "pike",
+      "from": {
+        "month": 2,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      },
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 2 Nr. 3 (zu § 8 Abs. 1)"
+    },
+    {
+      "taxon": {
+        "de": "Zander"
+      },
+      "speciesId": "zander",
+      "from": {
+        "month": 2,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      },
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 2 Nr. 4 (zu § 8 Abs. 1)"
+    }
+  ],
+  "minSizes": [
+    {
+      "taxon": {
+        "de": "Aal",
+        "sci": "Anguilla anguilla"
+      },
+      "speciesId": "eel",
+      "minCm": 45,
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 1 Nr. 1 (zu § 7 Abs. 1)",
+      "maxCm": 75,
+      "dailyLimit": 3,
+      "note": "Tageshöchstfangmenge gilt nur für Anglerinnen und Angler in den Freien Gewässern"
+    },
+    {
+      "taxon": {
+        "de": "Bachforelle",
+        "sci": "Salmo trutta forma fario"
+      },
+      "speciesId": "brown_trout",
+      "minCm": 20,
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 1 Nr. 2 (zu § 7 Abs. 1)",
+      "maxCm": 40
+    },
+    {
+      "taxon": {
+        "de": "Flussbarsch",
+        "sci": "Perca fluviatilis"
+      },
+      "speciesId": "perch",
+      "minCm": 10,
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 1 Nr. 3 (zu § 7 Abs. 1)",
+      "maxCm": 35
+    },
+    {
+      "taxon": {
+        "de": "Hecht",
+        "sci": "Esox lucius"
+      },
+      "speciesId": "pike",
+      "minCm": 45,
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 1 Nr. 4 (zu § 7 Abs. 1)",
+      "maxCm": 75,
+      "dailyLimit": 2,
+      "note": "Tageshöchstfangmenge gilt nur für Anglerinnen und Angler in den Freien Gewässern"
+    },
+    {
+      "taxon": {
+        "de": "Meerforelle",
+        "sci": "Salmo trutta forma trutta"
+      },
+      "minCm": 40,
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 1 Nr. 5 (zu § 7 Abs. 1)",
+      "maxCm": 65,
+      "dailyLimit": 2,
+      "note": "Tageshöchstfangmenge gilt nur für Anglerinnen und Angler in den Freien Gewässern"
+    },
+    {
+      "taxon": {
+        "de": "Rapfen",
+        "sci": "Aspius aspius"
+      },
+      "speciesId": "asp",
+      "minCm": 50,
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 1 Nr. 6 (zu § 7 Abs. 1)",
+      "maxCm": 70,
+      "dailyLimit": 1,
+      "note": "Tageshöchstfangmenge gilt nur für Anglerinnen und Angler in den Freien Gewässern"
+    },
+    {
+      "taxon": {
+        "de": "Schlei",
+        "sci": "Tinca tinca"
+      },
+      "speciesId": "tench",
+      "minCm": 25,
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 1 Nr. 7 (zu § 7 Abs. 1)",
+      "maxCm": 45
+    },
+    {
+      "taxon": {
+        "de": "Quappe",
+        "sci": "Lota lota"
+      },
+      "speciesId": "burbot",
+      "minCm": 30,
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 1 Nr. 8 (zu § 7 Abs. 1)",
+      "maxCm": 50,
+      "dailyLimit": 3,
+      "note": "Tageshöchstfangmenge gilt nur für Anglerinnen und Angler in den Freien Gewässern"
+    },
+    {
+      "taxon": {
+        "de": "Zander",
+        "sci": "Stizostedion lucioperca"
+      },
+      "speciesId": "zander",
+      "minCm": 45,
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 1 Nr. 9 (zu § 7 Abs. 1)",
+      "maxCm": 75,
+      "dailyLimit": 2,
+      "note": "Tageshöchstfangmenge gilt nur für Anglerinnen und Angler in den Freien Gewässern"
+    },
+    {
+      "taxon": {
+        "de": "Karpfen",
+        "sci": "Cyprinus carpio"
+      },
+      "speciesId": "carp",
+      "minCm": 35,
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "Anlage 1 Nr. 10 (zu § 7 Abs. 1)"
+    }
+  ],
+  "protectedSpecies": [
+    {
+      "taxon": {
+        "de": "Bachneunauge",
+        "sci": "Lampetra planeri"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Bitterling",
+        "sci": "Rhodeus amarus"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Elritze",
+        "sci": "Phoxinus phoxinus"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Finte",
+        "sci": "Alosa fallax"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Flussneunauge",
+        "sci": "Lampetra fluviatilis"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Groppe",
+        "sci": "Cottus gobio"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Hasel",
+        "sci": "Leuciscus leuciscus"
+      },
+      "speciesId": "dace",
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Lachs",
+        "sci": "Salmo salar"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Maifisch",
+        "sci": "Alosa alosa"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Meerneunauge",
+        "sci": "Petromyzon marinus"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Moderlieschen",
+        "sci": "Leucaspius delineatus"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Neunstachliger Stichling",
+        "sci": "Pungitius pungitius"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Schlammpeitzger",
+        "sci": "Misgurnus fossilis"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Schmerle",
+        "sci": "Noemacheilus barbatulus"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Nordseeschnäpel",
+        "sci": "Coregonus oxyrhynchus"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Ostseeschnäpel",
+        "sci": "Coregonus maraena"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Steinbeißer",
+        "sci": "Cobitis taenia"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Stromgründling",
+        "sci": "Romanogobio belingi"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Stör",
+        "sci": "Acipenser sturio"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "taxon": {
+        "de": "Zährte",
+        "sci": "Vimba vimba"
+      },
+      "note": "darf nicht gezielt befischt und getötet werden",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 1"
+    }
+  ],
+  "licences": [
+    {
+      "kind": "levy",
+      "text": "Die Fischereiabgabe für Anglerinnen und Angler beträgt 10 Euro je Kalenderjahr.",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 1 Abs. 1 Satz 1"
+    }
+  ],
+  "otherRules": [
+    {
+      "topic": "Handangeln",
+      "text": "Anglerinnen und Anglern ist es erlaubt, die Fischerei mit zwei Handangeln mit bis zu zwei Anbissstellen auszuüben.",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 4 Abs. 1 Satz 1"
+    },
+    {
+      "topic": "Zurücksetzen",
+      "text": "Zusammengefasst: Geschützte Arten (§ 6 Abs. 1), Fische außerhalb des Entnahmefensters und Fische in der Schonzeit sind unverzüglich mit der gebotenen Sorgfalt wieder in das Fanggewässer einzusetzen, sofern sie nicht so verletzt sind, dass ein Weiterleben voraussichtlich nur mit erheblichen Schmerzen, Leiden oder Schäden möglich ist.",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 6 Abs. 2, § 7 Abs. 2, § 8 Abs. 1"
+    },
+    {
+      "topic": "Köder in der Zanderschonzeit",
+      "text": "Zusammengefasst: Während der Zanderschonzeit ist die Fischerei mit toten Köderfischen, Fischfetzen und Kunstködern jeglicher Art untersagt. Ausgenommen sind die Bille oberhalb des Bergedorfer Hallenbades, die Alster oberhalb der Ohlsdorfer Schleuse und der unmittelbare Strömungsbereich des Elbe-Hauptstroms; Kunstköder dürfen nur in strömenden Bereichen der Elbe verwendet werden. Das Kunstköderverbot gilt nicht für das Fliegenfischen.",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 8 Abs. 2"
+    }
+  ]
+}

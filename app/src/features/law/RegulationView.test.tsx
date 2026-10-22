@@ -14,8 +14,9 @@ describe('RegulationView', () => {
     expect(screen.getByText('Noch nicht erfasst: Erlaubnisse.')).toBeInTheDocument();
     expect(screen.getByText('15.02.–30.04.')).toBeInTheDocument();
     expect(screen.getAllByText('§ 1 Abs. 1 TVO').length).toBe(1);
-    expect(screen.getByText('50 cm')).toBeInTheDocument();
+    expect(screen.getByText('ab 50 cm')).toBeInTheDocument();
     expect(screen.getByText('Nase')).toBeInTheDocument();
+    expect(screen.getByText('(Chondrostoma nasus)', { exact: false })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Testverordnung (TVO)' })).toHaveAttribute(
       'href',
       'https://example.org/testverordnung',
@@ -25,7 +26,7 @@ describe('RegulationView', () => {
 
   it('LAW-3: am 15.01. ist die jahresübergreifende Schonzeit aktiv, die Frühjahrs-Schonzeit nicht', () => {
     render(<RegulationView set={fx} nowMs={at('2027-01-15')} />);
-    const rows = screen.getAllByRole('row');
+    const rows = screen.getAllByRole('listitem');
     const trout = rows.find((r) => within(r).queryByText('Bachforelle'));
     const pike = rows.find((r) => within(r).queryByText('15.02.–30.04.'));
     expect(trout).toBeDefined();
@@ -45,5 +46,28 @@ describe('RegulationView', () => {
   it('leere Abschnitte sagen das ausdrücklich', () => {
     render(<RegulationView set={{ ...fx, minSizes: [] }} nowMs={at('2026-10-15')} />);
     expect(screen.getAllByText('In den Angaben für dieses Land nicht enthalten.').length).toBe(2); // Mindestmaße + Erlaubnisse
+  });
+
+  it('Entnahmefenster, Tageshöchstmenge und Entwurfsbanner', () => {
+    const set = {
+      ...fx,
+      status: 'draft' as const,
+      minSizes: [
+        {
+          taxon: { de: 'Zander', sci: 'Stizostedion lucioperca' },
+          minCm: 45,
+          maxCm: 75,
+          dailyLimit: 2,
+          basisId: 'TVO',
+          basisRef: 'Anlage 1 Nr. 9',
+        },
+      ],
+    };
+    render(<RegulationView set={set} nowMs={at('2026-10-15')} />);
+    expect(screen.getByText('45–75 cm')).toBeInTheDocument();
+    expect(screen.getByText(/^Entnahmefenster/)).toBeInTheDocument();
+    expect(screen.getByText('höchstens 2 Stück pro Tag')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('ungeprüfter Entwurf');
+    expect(screen.getByText('Entwurf')).toBeInTheDocument();
   });
 });

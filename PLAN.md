@@ -211,6 +211,7 @@ Abhängig von: M4
 
 ### M8 – Recht: alle 16 Länder
 Abhängig von: M7 · Aufwand redaktionell (≈ 0,5–1 Tag pro Land [A])
+- ⏳ **Begonnen 2026-10-22 auf deinen Wunsch, während recht.nrw.de in Wartung ist (Abweichung von E7 „zuerst NRW"):** Entwürfe für Bayern, Niedersachsen, Sachsen und Hamburg (Schonzeiten, Maße, geschützte Arten, einzelne weitere Regeln). Sichtbar erst nach deiner Gegenprüfung; Prüfansicht `…/mehr/recht/BY?pruefung=1`. Die übrigen elf Portale sind aus der Cloud-Umgebung nicht erreichbar.
 - Quellenrecherche je Land, Erfassung, Vier-Augen-Prüfung (du prüfst jede Landesdatei gegen den verlinkten amtlichen Text).
 - *Abnahme:* 16 Landesdateien mit Status `verified` oder ausdrücklich `partial` und Liste fehlender Teile.
 

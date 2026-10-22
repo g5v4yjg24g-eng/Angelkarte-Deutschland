@@ -18,6 +18,7 @@ export const regulationFixture: RegulationSet = {
   ],
   closedSeasons: [
     {
+      taxon: { de: 'Hecht', sci: 'Esox lucius' },
       speciesId: 'pike',
       from: { month: 2, day: 15 },
       to: { month: 4, day: 30 },
@@ -25,6 +26,7 @@ export const regulationFixture: RegulationSet = {
       basisRef: '§ 1 Abs. 1',
     },
     {
+      taxon: { de: 'Bachforelle', sci: 'Salmo trutta f. fario' },
       speciesId: 'brown_trout',
       from: { month: 10, day: 1 },
       to: { month: 3, day: 1 },
@@ -33,8 +35,16 @@ export const regulationFixture: RegulationSet = {
       basisRef: '§ 1 Abs. 2',
     },
   ],
-  minSizes: [{ speciesId: 'pike', minCm: 50, basisId: 'TVO', basisRef: '§ 2' }],
-  protectedSpecies: [{ speciesId: 'nase', basisId: 'TVO', basisRef: '§ 3' }],
+  minSizes: [
+    {
+      taxon: { de: 'Hecht', sci: 'Esox lucius' },
+      speciesId: 'pike',
+      minCm: 50,
+      basisId: 'TVO',
+      basisRef: '§ 2',
+    },
+  ],
+  protectedSpecies: [{ taxon: { de: 'Nase', sci: 'Chondrostoma nasus' }, basisId: 'TVO', basisRef: '§ 3' }],
   licences: [],
   otherRules: [{ topic: 'Testthema', text: 'Testregel.', basisId: 'TVO', basisRef: '§ 4' }],
 };

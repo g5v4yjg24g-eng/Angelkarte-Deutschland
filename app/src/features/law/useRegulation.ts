@@ -3,16 +3,16 @@ import { loadRegulation, type RegulationResult } from '../../data/regulations';
 import { STATE_CODES, type StateCode } from '../../domain/water';
 
 /** undefined = lädt noch */
-export function useRegulation(code: StateCode | undefined) {
+export function useRegulation(code: StateCode | undefined, includeDraft = false) {
   const [result, setResult] = useState<{ code: StateCode; r: RegulationResult }>();
   useEffect(() => {
     if (!code) return;
     let alive = true;
-    void loadRegulation(code).then((r) => alive && setResult({ code, r }));
+    void loadRegulation(code, { includeDraft }).then((r) => alive && setResult({ code, r }));
     return () => {
       alive = false;
     };
-  }, [code]);
+  }, [code, includeDraft]);
   return result && result.code === code ? result.r : undefined;
 }
 
