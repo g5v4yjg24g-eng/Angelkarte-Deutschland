@@ -85,6 +85,12 @@ export const SlidersIcon = (p: IconProps) => (
     <circle cx="9" cy="17" r="2" />
   </Icon>
 );
+export const HookIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="14" cy="4.5" r="1.8" />
+    <path d="M14 6.3V15a4.5 4.5 0 0 1-9 0v-2.5l2.6 2.2" />
+  </Icon>
+);
 export const InfoIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="12" cy="12" r="9" />

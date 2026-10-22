@@ -32,7 +32,12 @@ export function CatchFacts({ item }: { item: Catch }) {
   const sessionLabel =
     session && !session.deletedAt ? de.sessions.inSession(formatDateTime(session.startAt)) : undefined;
   const c = item.conditions;
-  const bait = [item.bait?.name, item.bait?.type && t.baitTypes[item.bait.type], item.bait?.color]
+  const bait = [
+    item.bait?.name,
+    item.bait?.type && t.baitTypes[item.bait.type],
+    item.bait?.color,
+    item.bait && t.baitDetails(item.bait),
+  ]
     .filter(Boolean)
     .join(' · ');
   const conditions = [
