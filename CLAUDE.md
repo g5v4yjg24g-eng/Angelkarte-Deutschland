@@ -13,6 +13,7 @@ Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`,
 - CSV-Export: Baustein `domain/csv.ts` (Zahlen als Zahl übergeben, Text wird gegen Formeln entschärft), Spalten `features/backup/catchCsv.ts`.
 - Fangbuch nach Gewässern: Gruppierung `domain/waterGroups.ts` (200 m für unbekannte), Reiter `features/catches/WaterTabs.tsx`, Ort-Nachtrag und Umbenennen `data/waterPlaceService.ts`. Eigene Namen nur an unbenannten Gewässern.
 - Heatmap: Ebene `fp-catch-heat` in `features/map/mapLayers.ts` (`setHeatmap`), Umschalter in `MapView.tsx` (localStorage `fangpunkt.heatmap`).
+- Datenschutzseite `features/about/PrivacyPage.tsx` (`/mehr/datenschutz`): neue Fremdserver nur zusammen mit Eintrag dort und in `privacy.spec.ts` (ALLOWED_EXTERNAL).
 - Statistik: Logik rein in `app/src/domain/stats.ts` (Mindestmengen, DATA_MODEL §9), Ansicht `app/src/features/stats`.
 - Fotos: `lib/processPhoto.ts` (Neu-Kodierung entfernt EXIF), Speichern nur über `data/catchService.ts` (eine Transaktion mit dem Fang).
 - Fangbuch: `app/src/features/catches`, Formularlogik rein in `app/src/domain/catchDraft.ts`. IDs immer über `domain/id.ts` (`crypto.randomUUID` fehlt außerhalb sicherer Kontexte).

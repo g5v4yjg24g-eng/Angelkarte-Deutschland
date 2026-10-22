@@ -466,6 +466,8 @@ export const de = {
     baitsHint: 'Köder mit einem Tipp übernehmen',
     settings: 'Einstellungen',
     settingsHint: 'Darstellung, Standort, Wetter',
+    privacy: 'Datenschutz',
+    privacyHint: 'Was auf dem Gerät bleibt, was übertragen wird',
     about: 'Über Fangpunkt & Quellen',
     aboutHint: 'Version, Datenquellen, Lizenzen',
   },
@@ -853,15 +855,61 @@ export const de = {
     version: (v: string) => `Version ${v}`,
     privacyTitle: 'Datenschutz',
     privacyText:
-      'Fangpunkt speichert deine Fänge und Markierungen nur auf diesem Gerät. Es gibt kein Konto, kein Tracking und keine Werbung. Ausnahme „Wetter am Fang" (Standard: an, abschaltbar in den Einstellungen): Datum, Stunde und die auf etwa 100 m gerundete Position eines Fangs gehen an Open-Meteo.',
+      'Fangpunkt speichert deine Fänge und Markierungen nur auf diesem Gerät. Es gibt kein Konto, kein Tracking und keine Werbung.',
+    privacyLink: 'Was wohin übertragen wird',
     sourcesTitle: 'Quellen & Lizenzen',
     sources: [
       { name: 'Schriften Inter und Fraunces', license: 'SIL Open Font License 1.1' },
-      { name: 'Kartendaten (ab Kartenmodul)', license: '© OpenStreetMap-Mitwirkende, ODbL 1.0' },
+      {
+        name: 'Kartenhintergrund: OpenFreeMap',
+        license: 'OpenFreeMap © OpenMapTiles, Daten © OpenStreetMap-Mitwirkende (ODbL 1.0)',
+      },
+      {
+        name: 'Gewässer, Suche und Landesgrenzen: OpenStreetMap',
+        license: '© OpenStreetMap-Mitwirkende, ODbL 1.0',
+      },
       { name: 'Wetter am Fang: Open-Meteo.com', license: 'CC BY 4.0' },
+      {
+        name: 'Angelrecht: amtliche Texte der Länder',
+        license: 'Quelle und Fassung je Land unter „Angelrecht der Länder“',
+      },
     ],
     legalNote:
       'Fangpunkt ersetzt keine Rechtsauskunft. Maßgeblich sind die amtlichen Texte und dein Erlaubnisschein.',
+  },
+  privacy: {
+    title: 'Datenschutz',
+    intro:
+      'Fangpunkt ist eine private App ohne Konto, ohne Werbung und ohne Tracking oder Analyse-Dienste. So gehen die Daten:',
+    localTitle: 'Bleibt auf diesem Gerät',
+    local: [
+      'Fänge, Kontakte, Beobachtungen, Orte, Sessions, Köder-Favoriten und Einstellungen liegen nur im Speicher dieses Browsers.',
+      'Fotos werden beim Speichern neu kodiert; dabei fallen Kamera- und Ortsangaben (EXIF) weg.',
+      'Sicherungen und CSV-Dateien entstehen nur, wenn du sie selbst erstellst, und landen dort, wo du sie speicherst.',
+      'Löschen: über die Browser-Einstellungen („Websitedaten löschen“). Vorher sichern, sonst sind die Daten weg.',
+    ],
+    locationTitle: 'Standort',
+    location:
+      'Der Browser fragt einmal um Erlaubnis. Der Standort wird nur auf der Karte gezeigt und nicht übertragen – einzige Ausnahme ist das Wetter (siehe unten). Abschalten: Mehr → Einstellungen → Standort.',
+    serversTitle: 'Verbindungen zu anderen Servern',
+    serversIntro:
+      'Wie bei jeder Website erfährt der jeweilige Server dabei technisch deine IP-Adresse. Fangpunkt sendet keine Fänge, Fotos oder Notizen.',
+    servers: [
+      {
+        name: 'GitHub Pages',
+        what: 'liefert die App selbst und die Gewässerdaten (Karte, Suche, Landesgrenzen).',
+      },
+      {
+        name: 'OpenFreeMap (tiles.openfreemap.org)',
+        what: 'liefert den Kartenhintergrund; dabei erfährt der Server, welchen Kartenausschnitt du ansiehst.',
+      },
+      {
+        name: 'Open-Meteo',
+        what: 'nur wenn „Wetter am Fang“ an ist (Standard: an): Datum, Stunde und die auf etwa 100 m gerundete Position eines Fangs. Abschalten: Mehr → Einstellungen.',
+      },
+    ],
+    linksTitle: 'Links',
+    links: 'Links zu Gesetzestexten oder OpenStreetMap öffnen fremde Seiten erst, wenn du sie antippst.',
   },
   notFound: {
     title: 'Seite nicht gefunden',

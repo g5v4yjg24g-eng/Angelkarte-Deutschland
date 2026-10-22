@@ -1,7 +1,7 @@
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
 import { ListLink } from '../../design/components/ListLink';
-import { DatabaseIcon, HookIcon, InfoIcon, ParagraphIcon, SlidersIcon } from '../../design/icons';
+import { DatabaseIcon, HookIcon, InfoIcon, LockIcon, ParagraphIcon, SlidersIcon } from '../../design/icons';
 import styles from '../../design/components/Page.module.css';
 
 export function MorePage() {
@@ -23,6 +23,12 @@ export function MorePage() {
           icon={<SlidersIcon />}
           title={de.more.settings}
           hint={de.more.settingsHint}
+        />
+        <ListLink
+          to="/mehr/datenschutz"
+          icon={<LockIcon />}
+          title={de.more.privacy}
+          hint={de.more.privacyHint}
         />
         <ListLink to="/mehr/info" icon={<InfoIcon />} title={de.more.about} hint={de.more.aboutHint} />
       </div>

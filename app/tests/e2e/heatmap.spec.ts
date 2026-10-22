@@ -78,7 +78,9 @@ test('HEAT-1: Heatmap der gelandeten Fische ein- und ausschalten, Wahl bleibt, L
   await expect.poll(() => visibility(page, 'fp-catch-heat')).toBe('visible');
   await expect(page.getByText('Noch keine gelandeten Fische mit Fangort')).toHaveCount(0);
   // Wenige Punkte: Hinweis auf Scheinmuster (Alt-App-Regel, < 30)
-  await expect(page.getByText('Erst 2 Fänge mit Fangort – unter 30 sind Häufungen oft Zufall.')).toBeVisible();
+  await expect(
+    page.getByText('Erst 2 Fänge mit Fangort – unter 30 sind Häufungen oft Zufall.'),
+  ).toBeVisible();
   const filter = await page.evaluate(() => JSON.stringify(window.__fangpunktMap?.getFilter('fp-catch-heat')));
   expect(filter).toContain('catch-caught');
 

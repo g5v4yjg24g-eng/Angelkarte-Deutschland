@@ -104,7 +104,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Session-Vergleich, Rekorde | P1 | ✅ in M6. Session-Pausen (aktive Angelzeit) umgesetzt 2026-10-22 |
 | Fischarten pro Gewässer (Monitoring-Nachweise, Stufe 2) | P2 | Datenaufbereitung nötig (DATA_SOURCES §4) |
 | Tiefenkarten (erste lizenzierte Quelle) | P2 | **Zurückgestellt (Entscheidung Nutzer 2026-10-22):** kein Einbau ohne Lizenz – Repo und Vorschau sind öffentlich; auch der vorgeschlagene private Import wird nicht umgesetzt |
-| Offline-Kartenregionen | P2 | Eigene PMTiles-Hosting-Infrastruktur nötig |
+| Offline-Kartenregionen | P2 | **Zurückgestellt (Entscheidung Nutzer 2026-10-22).** Eigene PMTiles-Hosting-Infrastruktur wäre nötig |
 | **Rechts-Warnung beim Erfassen** (Schonzeit, Mindestmaß, Entnahmefenster im Fang-Bundesland) | P1 | ✅ umgesetzt 2026-10-22 (siehe unten); echte Landesgrenzen erst nach dem nächsten Lauf „Gewässerdaten erzeugen“ |
 | **Fangbuch nach Gewässern** (Reiter je Gewässer, Name + Ort, unbekannte Gewässer selbst benennen, Suche nach Gewässer und Ort) | P1 | ✅ umgesetzt 2026-10-22 – siehe „Fangbuch nach Gewässern“ unten |
 | Heatmap, CSV-Export | P2 | ✅ CSV-Export umgesetzt 2026-10-22 (Daten & Sicherung → „Fangbuch als Tabelle“). Heatmap umgesetzt 2026-10-22 (Kartenknopf, nur gelandete Fische, pro Gerät gemerkt) |
@@ -263,13 +263,14 @@ Abhängig von: M4 und Klärung von R4/E6
 - *Abnahme:* Der Button erscheint nur bei `available`; Tiefenmodus ist visuell eindeutig (eigene Legende, Banner „Tiefenkarte – Quelle …, nicht zur Navigation").
 
 ### M10 – Offline-Karten (optional)
+- ⏸ **Zurückgestellt (Nutzer 2026-10-22):** keine Offline-Kartenregionen. Die App behauptet weiterhin nicht „offline verfügbar“ für die Karte.
 Abhängig von: M3, E2-Variante „Self-Hosting"
 - Regionen (z. B. Landkreis-Ausschnitt) als PMTiles im Cache Storage oder OPFS speichern; Speicherbedarf anzeigen.
 - *Abnahme:* Region geladen → Flugmodus → Karte und Gewässer sichtbar. Erst danach darf die App „offline verfügbar" behaupten.
 
 ### M11 – Härtung und Release 1.0
 Abhängig von: M1–M7
-- ⏳ **Begonnen 2026-10-22:** axe-Prüfung aller Hauptansichten (0 Befunde) und Touch-Ziele ≥ 44 px automatisiert; dafür Segment-Schalter, Chips, Kartenknöpfe, Session-Chip, Sicherungs-Erinnerung, Tabellen-Umschalter und „Zur Karte“ (404) auf 44 px gebracht. Tastatur: Fangstelle per „Kartenmitte (+)“ mit Fadenkreuz wählbar (vorher nur per Tippen/Standort); Fokus kehrt nach Dialogen zurück, auch wenn der Auslöser verschwunden ist.
+- ⏳ **Begonnen 2026-10-22:** axe-Prüfung aller Hauptansichten (0 Befunde) und Touch-Ziele ≥ 44 px automatisiert; dafür Segment-Schalter, Chips, Kartenknöpfe, Session-Chip, Sicherungs-Erinnerung, Tabellen-Umschalter und „Zur Karte“ (404) auf 44 px gebracht. Tastatur: Fangstelle per „Kartenmitte (+)“ mit Fadenkreuz wählbar (vorher nur per Tippen/Standort); Fokus kehrt nach Dialogen zurück, auch wenn der Auslöser verschwunden ist. Datenschutzseite (Mehr → Datenschutz) beschreibt die tatsächlichen Datenflüsse, belegt durch PRIV-1; App bleibt privat (Nutzer 2026-10-22), daher kein Impressum. Quellenliste unter „Über“ aktualisiert.
 - Barrierefreiheit (axe, Tastatur, Screenreader-Stichprobe), Geräte-Matrix, Datenschutzerklärung, Impressum (falls öffentlich), Quellen- und Lizenzseite.
 - *Abnahme:* TEST_PLAN §6 komplett grün.
 
