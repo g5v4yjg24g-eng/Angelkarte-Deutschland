@@ -1,0 +1,570 @@
+{
+  "stateCode": "RP",
+  "status": "draft",
+  "missing": [
+    "Fischereischein und Erlaubnisse (Landesfischereigesetz)",
+    "Gewässerliste der Frühjahrsschonzeit im Detail (§ 18 Abs. 1, Anlage 3)",
+    "Allgemeinverfügungen der oberen Fischereibehörde (§§ 21, 22)"
+  ],
+  "checkedAt": "2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); Gegenprüfung durch den Nutzer ausstehend",
+  "legalBasis": [
+    {
+      "id": "LFischO RP",
+      "title": "Landesverordnung zur Durchführung des Landesfischereigesetzes (Landesfischereiordnung)",
+      "version": "vom 14. Oktober 1985 (GVBl. S. 241), zuletzt geändert durch Artikel 2 der Verordnung vom 11.02.2026 (GVBl. S. 44, 50); Gesamtausgabe Stand 22.10.2026",
+      "url": "https://landesrecht.rlp.de/bsrp/document/jlr-NNLRP00005A7E",
+      "retrievedAt": "2026-10-22"
+    }
+  ],
+  "closedSeasons": [
+    {
+      "taxon": {
+        "de": "Bachforelle"
+      },
+      "speciesId": "brown_trout",
+      "from": {
+        "month": 10,
+        "day": 15
+      },
+      "to": {
+        "month": 3,
+        "day": 15
+      },
+      "scope": "in Gewässern, die keiner Winterschonzeit unterliegen",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 1 Nr. 1"
+    },
+    {
+      "taxon": {
+        "de": "Äsche"
+      },
+      "speciesId": "grayling",
+      "from": {
+        "month": 2,
+        "day": 15
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 1 Nr. 2"
+    },
+    {
+      "taxon": {
+        "de": "Hecht"
+      },
+      "speciesId": "pike",
+      "from": {
+        "month": 2,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 1 Nr. 3"
+    },
+    {
+      "taxon": {
+        "de": "Zander"
+      },
+      "speciesId": "zander",
+      "from": {
+        "month": 4,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      },
+      "scope": "in der Lahn",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 1 Nr. 4"
+    },
+    {
+      "taxon": {
+        "de": "Zander"
+      },
+      "speciesId": "zander",
+      "from": {
+        "month": 3,
+        "day": 15
+      },
+      "to": {
+        "month": 5,
+        "day": 15
+      },
+      "scope": "im Übrigen",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 1 Nr. 4"
+    },
+    {
+      "taxon": {
+        "de": "Barbe"
+      },
+      "speciesId": "barbel",
+      "from": {
+        "month": 5,
+        "day": 1
+      },
+      "to": {
+        "month": 6,
+        "day": 15
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 1 Nr. 5"
+    },
+    {
+      "taxon": {
+        "de": "Nase"
+      },
+      "speciesId": "nase",
+      "from": {
+        "month": 3,
+        "day": 15
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      },
+      "scope": "in allen Gewässern außer Rhein, Mosel und Lahn",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 1 Nr. 6"
+    }
+  ],
+  "minSizes": [
+    {
+      "taxon": {
+        "de": "Seeforelle",
+        "sci": "Salmo trutta forma lacustris L."
+      },
+      "minCm": 60,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Hecht",
+        "sci": "Esox lucius L."
+      },
+      "speciesId": "pike",
+      "minCm": 50,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Zander",
+        "sci": "Stizostedion lucioperca [L.]"
+      },
+      "speciesId": "zander",
+      "minCm": 45,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Aal",
+        "sci": "Anguilla anguilla L."
+      },
+      "speciesId": "eel",
+      "minCm": 50,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Karpfen",
+        "sci": "Cyprinus carpio L."
+      },
+      "speciesId": "carp",
+      "minCm": 35,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Barbe",
+        "sci": "Barbus barbus L."
+      },
+      "speciesId": "barbel",
+      "minCm": 35,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Äsche",
+        "sci": "Thymallus thymallus L."
+      },
+      "speciesId": "grayling",
+      "minCm": 30,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Blaufelchen",
+        "sci": "Coregonus lavaretus L."
+      },
+      "minCm": 25,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Schleie",
+        "sci": "Tinca tinca L."
+      },
+      "speciesId": "tench",
+      "minCm": 25,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Bachforelle",
+        "sci": "Salmo trutta forma fario L."
+      },
+      "speciesId": "brown_trout",
+      "minCm": 25,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Nase",
+        "sci": "Chondrostoma nasus L."
+      },
+      "speciesId": "nase",
+      "minCm": 30,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Plötze, Rotauge",
+        "sci": "Rutilus rutilus L."
+      },
+      "speciesId": "roach",
+      "minCm": 15,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Rotfeder",
+        "sci": "Scardinius erythrophthalmus L."
+      },
+      "speciesId": "rudd",
+      "minCm": 15,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Hasel",
+        "sci": "Leuciscus leuciscus L."
+      },
+      "speciesId": "dace",
+      "minCm": 15,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "taxon": {
+        "de": "Güster",
+        "sci": "Blicca bjoerkna L."
+      },
+      "speciesId": "silver_bream",
+      "minCm": 15,
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    }
+  ],
+  "protectedSpecies": [
+    {
+      "taxon": {
+        "de": "Lachs",
+        "sci": "Salmo salar L."
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Meerforelle",
+        "sci": "Salmo trutta L."
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Stör",
+        "sci": "Acipenser sturio L."
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Schnäpel",
+        "sci": "Coregonus oxyrhychus [L.]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Bitterling",
+        "sci": "Rhodeus sericeus amarus Bloch"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Elritze",
+        "sci": "Phoxinus phoxinus [L.]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Moderlieschen",
+        "sci": "Leucaspius delineatus [Heckel]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Karausche",
+        "sci": "Carassius carassius [L.]"
+      },
+      "speciesId": "crucian_carp",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Aland",
+        "sci": "Leuciscus idus [L.]"
+      },
+      "speciesId": "ide",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Schneider",
+        "sci": "Alburnoides bipunctatus [Bloch]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Quappe",
+        "sci": "Lota lota [L.]"
+      },
+      "speciesId": "burbot",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Flunder",
+        "sci": "Pleuronectes flesus L."
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Schlammpeitzger",
+        "sci": "Misgurnus fossilis [L.]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Bachschmerle",
+        "sci": "Barbatula barbatula [L.]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Steinbeißer",
+        "sci": "Cobitis taenia L."
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Koppe",
+        "sci": "Cottus gobio L."
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Maifisch",
+        "sci": "Alosa alosa [L.]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Finte",
+        "sci": "Alosa fallax [Lacépède]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Meerneunauge",
+        "sci": "Petromyzon marinus L."
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Flussneunauge",
+        "sci": "Lampetra fluviatilis [L.]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Bachneunauge",
+        "sci": "Lampetra planeri [Bloch]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Europäischer Flusskrebs",
+        "sci": "Astacus astacus L."
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Steinkrebs",
+        "sci": "Austropotamobius torrentium [L.]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Flussperlmuschel",
+        "sci": "Margaritifera margaritifera [L.]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Kleine Teichmuschel",
+        "sci": "Pseudanodonta complanata [Rossmässler]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Große Teichmuschel",
+        "sci": "Anodonta cygnea [L.]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Malermuschel",
+        "sci": "Unio pictorum [L.]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Kleine Flussmuschel",
+        "sci": "Unio crassus [Philipsson]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    },
+    {
+      "taxon": {
+        "de": "Große Flussmuschel",
+        "sci": "Unio tumidus [Philipsson]"
+      },
+      "basisId": "LFischO RP",
+      "basisRef": "§ 20 Abs. 2"
+    }
+  ],
+  "licences": [],
+  "otherRules": [
+    {
+      "topic": "Frühjahrsschonzeit",
+      "text": "Zusammengefasst: Vom 15. April bis 31. Mai gilt in den in § 18 Abs. 1 aufgezählten Gewässern eine Frühjahrsschonzeit (u. a. Rhein, Mosel außer Grenzstrecke, Lahn, Nahe, Sieg, Saar, Altrheingewässer mit offener Verbindung zum Rhein, Abschnitte weiterer Flüsse und Bäche, Mündungsbereiche der Nebengewässer bis 1 km). Angeln mit Hand- und Schleppangel bleibt erlaubt, jedoch sind Spinner, Blinker und sonstige künstliche Köder außer künstlichen Fliegen verboten. Die genaue Gewässerliste steht in § 18 Abs. 1.",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 18"
+    },
+    {
+      "topic": "Winterschonzeit",
+      "text": "Die Winterschonzeit dauert vom 15. Oktober bis 15. März. Während dieser Zeit ist jeglicher Fischfang einschließlich der Fischerei mit der Handangel verboten. Ihr unterliegen alle offenen Gewässer, für die eine Frühjahrsschonzeit (§ 18) nicht festgesetzt ist.",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 19"
+    },
+    {
+      "topic": "Messen",
+      "text": "Gemessen wird von der Kopfspitze bis zum Ende des längsten Teiles der Schwanzflosse, bei Krebsen bis zum Schwanzende.",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 17"
+    },
+    {
+      "topic": "Anlandepflicht",
+      "text": "Für Fische, die nicht zu den in § 17, § 20 Abs. 2 und § 33 Abs. 1 genannten Arten zählen, besteht eine Anlandeverpflichtung.",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 21 Satz 3"
+    },
+    {
+      "topic": "Zurücksetzen",
+      "text": "Fische, die einem Fangverbot unterliegen, sind, wenn sie nach dem Fang noch überlebensfähig sind, unverzüglich mit der zu ihrer Erhaltung erforderlichen Vorsicht ins Gewässer zurückzusetzen.",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 23 Abs. 1"
+    },
+    {
+      "topic": "Lebender Köderfisch",
+      "text": "Der Fischfang mit dem lebenden Köderfisch ist verboten.",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 29"
+    },
+    {
+      "topic": "Fischerprüfung",
+      "text": "Zur Prüfung wird nicht zugelassen, wer das 13. Lebensjahr noch nicht vollendet hat; Voraussetzung ist ein Vorbereitungslehrgang von mindestens 30 Stunden, davon mindestens acht Stunden praktische Einweisung.",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 5 Abs. 2 und 5"
+    }
+  ]
+}
