@@ -88,6 +88,41 @@
 .wrap :global(.maplibregl-ctrl-attrib a) {
   color: var(--color-text-muted);
 }
+/* Eingeklappt als ⓘ: Touch-Ziel 44 × 44 px */
+.wrap :global(.maplibregl-ctrl-attrib.maplibregl-compact) {
+  min-height: 44px;
+}
+.wrap :global(.maplibregl-ctrl-attrib.maplibregl-compact.maplibregl-compact-show) {
+  padding-right: 48px;
+}
+.wrap :global(.maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button) {
+  width: 44px;
+  height: 44px;
+  top: 0;
+  right: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
+  border-radius: var(--radius-full);
+}
+.wrap :global(.maplibregl-ctrl-attrib.maplibregl-compact:not(.maplibregl-compact-show)) {
+  width: 44px;
+  padding: 0;
+}
+/* Dunkles Theme: Symbol hell (MapLibre liefert es schwarz) */
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .wrap :global(.maplibregl-ctrl-attrib-button) {
+    filter: invert(1);
+  }
+}
+:global(:root[data-theme='dark']) .wrap :global(.maplibregl-ctrl-attrib-button) {
+  filter: invert(1);
+}
+.wrap :global(.maplibregl-ctrl-attrib.maplibregl-compact) {
+  display: flex;
+  align-items: center;
+  border-radius: 22px;
+}
 
 /* Sheet-Inhalte */
 .typeGrid {

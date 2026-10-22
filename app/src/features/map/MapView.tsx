@@ -269,7 +269,11 @@ export default function MapView() {
       attributionControl: false,
       maxPitch: 0,
       dragRotate: false,
-      locale: { 'NavigationControl.ZoomIn': de.map.zoomIn, 'NavigationControl.ZoomOut': de.map.zoomOut },
+      locale: {
+        'NavigationControl.ZoomIn': de.map.zoomIn,
+        'NavigationControl.ZoomOut': de.map.zoomOut,
+        'AttributionControl.ToggleAttribution': de.map.toggleAttribution,
+      },
     });
     map.touchZoomRotate.disableRotation();
     // OSM-Vermerk (Pflicht laut OSMF-Richtlinie): beim Start sichtbar, klappt nach dem ersten Verschieben
