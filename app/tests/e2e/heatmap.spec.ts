@@ -67,7 +67,7 @@ test('HEAT-1: Heatmap der gelandeten Fische ein- und ausschalten, Wahl bleibt, L
   expect(await visibility(page, 'fp-catches')).toBe('none');
   expect(
     await page.evaluate(() => window.__fangpunktMap?.getPaintProperty('fp-catch-heat', 'heatmap-opacity')),
-  ).toBe(0.85);
+  ).toBe(0.8);
 
   // Mit Fängen: nur gelandete zählen
   await put(page, [
