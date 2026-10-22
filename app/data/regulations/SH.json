@@ -1,6 +1,6 @@
 {
   "stateCode": "SH",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "Küstengewässer (Küstenfischereiverordnung)",
     "Gewässerliste der Winterschonzeit (Anlage 3)",
@@ -8,7 +8,7 @@
     "Urlauberfischereischein und Höhe der Fischereiabgabe (Verordnungen nach § 26 Abs. 5 und § 29 Abs. 6 LFischG)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "BiFVO",

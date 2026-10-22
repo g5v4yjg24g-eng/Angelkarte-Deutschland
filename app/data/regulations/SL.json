@@ -1,9 +1,9 @@
 {
   "stateCode": "SL",
-  "status": "draft",
+  "status": "partial",
   "missing": ["Ausnahmen des Fischereiverbands Saar (§ 27 Abs. 2 SFischG, § 9 LFO)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, Amtsblatt-PDF vom Nutzer; mit Gesamtausgabe Stand 22.10.2026 abgeglichen); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, Amtsblatt-PDF vom Nutzer; mit Gesamtausgabe Stand 22.10.2026 abgeglichen); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "LFO",
