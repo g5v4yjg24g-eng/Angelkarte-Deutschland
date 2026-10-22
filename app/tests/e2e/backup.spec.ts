@@ -30,7 +30,7 @@ async function importFile(page: Page, file: string) {
 test('Alt-App importieren, sichern, wieder einlesen, rückgängig machen', async ({ page }) => {
   const errors = collectErrors(page);
   await openBackup(page);
-  await expect(page.getByText('0 Einträge im Fangbuch · 0 Orte · 0 Sessions · 0 Fotos')).toBeVisible();
+  await expect(page.getByText('0 Einträge im Fangbuch · 0 Orte · 0 Sessions · 0 Termine · 0 Fotos')).toBeVisible();
   await expect(page.getByText('Noch keine Sicherung erstellt.')).toBeVisible();
 
   // BAK-7 Alt-App
@@ -48,18 +48,18 @@ test('Alt-App importieren, sichern, wieder einlesen, rückgängig machen', async
         r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
       ),
   ).toEqual([]);
-  await preview.getByRole('button', { name: '7 Datensätze importieren' }).click();
-  await expect(page.getByText(/^7 Datensätze importiert/)).toBeVisible();
-  await expect(page.getByText('3 Einträge im Fangbuch · 2 Orte · 1 Sessions · 1 Fotos')).toBeVisible();
+  await preview.getByRole('button', { name: '9 Datensätze importieren' }).click();
+  await expect(page.getByText(/^9 Datensätze importiert/)).toBeVisible();
+  await expect(page.getByText('3 Einträge im Fangbuch · 2 Orte · 1 Sessions · 2 Termine · 1 Fotos')).toBeVisible();
 
-  // BAK-6: Erinnerung erscheint auf anderen Seiten (6 ungesicherte Änderungen) und lässt sich vertagen
+  // BAK-6: Erinnerung erscheint auf anderen Seiten (8 ungesicherte Änderungen) und lässt sich vertagen
   await page
     .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('link', { name: 'Fangbuch' })
     .click();
   // Fangbuch zeigt die importierten Einträge der Alt-App
   await expect(page.getByText('3 Einträge', { exact: true })).toBeVisible();
-  const reminder = page.getByText('6 Änderungen sind noch nicht gesichert.');
+  const reminder = page.getByText('8 Änderungen sind noch nicht gesichert.');
   await expect(reminder).toBeVisible();
   await page.getByRole('button', { name: 'Später' }).click();
   await expect(reminder).toHaveCount(0);
@@ -90,12 +90,12 @@ test('Alt-App importieren, sichern, wieder einlesen, rückgängig machen', async
   page.once('dialog', (d) => void d.accept());
   await page.getByRole('button', { name: 'Stand vor dem Import wiederherstellen' }).click();
   await expect(page.getByText('Der Stand vor dem Import wurde wiederhergestellt.')).toBeVisible();
-  await expect(page.getByText('0 Einträge im Fangbuch · 0 Orte · 0 Sessions · 0 Fotos')).toBeVisible();
+  await expect(page.getByText('0 Einträge im Fangbuch · 0 Orte · 0 Sessions · 0 Termine · 0 Fotos')).toBeVisible();
 
   // Und aus der ZIP-Sicherung wiederherstellen, inklusive Foto
   await importFile(page, zipPath);
   await page.getByRole('button', { name: /Datensätze importieren/ }).click();
-  await expect(page.getByText('3 Einträge im Fangbuch · 2 Orte · 1 Sessions · 1 Fotos')).toBeVisible();
+  await expect(page.getByText('3 Einträge im Fangbuch · 2 Orte · 1 Sessions · 2 Termine · 1 Fotos')).toBeVisible();
 
   expect(readFileSync(zipPath).subarray(0, 2).toString()).toBe('PK');
   expect(errors).toEqual([]);
@@ -105,8 +105,8 @@ test('Daten überstehen einen Neustart der App', async ({ page }) => {
   await openBackup(page);
   await importFile(page, legacyFile);
   await page.getByRole('button', { name: /Datensätze importieren/ }).click();
-  await expect(page.getByText('3 Einträge im Fangbuch · 2 Orte · 1 Sessions · 1 Fotos')).toBeVisible();
+  await expect(page.getByText('3 Einträge im Fangbuch · 2 Orte · 1 Sessions · 2 Termine · 1 Fotos')).toBeVisible();
   await page.reload();
   await waitForApp(page);
-  await expect(page.getByText('3 Einträge im Fangbuch · 2 Orte · 1 Sessions · 1 Fotos')).toBeVisible();
+  await expect(page.getByText('3 Einträge im Fangbuch · 2 Orte · 1 Sessions · 2 Termine · 1 Fotos')).toBeVisible();
 });

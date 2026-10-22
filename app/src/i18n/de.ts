@@ -675,8 +675,8 @@ export const de = {
     persistDenied:
       'Der Browser hat abgelehnt. Installiere Fangpunkt als App, dann wird der Speicher meist dauerhaft.',
     usage: (used: string, quota: string) => `${used} von ${quota} belegt`,
-    counts: (c: { catches: number; places: number; sessions: number; photos: number }) =>
-      `${c.catches} Einträge im Fangbuch · ${c.places} Orte · ${c.sessions} Sessions · ${c.photos} Fotos`,
+    counts: (c: { catches: number; places: number; sessions: number; trips: number; photos: number }) =>
+      `${c.catches} Einträge im Fangbuch · ${c.places} Orte · ${c.sessions} Sessions · ${c.trips} Termine · ${c.photos} Fotos`,
     exportTitle: 'Sicherung erstellen',
     lastBackup: (d: string) => `Letzte Sicherung: ${d}`,
     neverBackedUp: 'Noch keine Sicherung erstellt.',
