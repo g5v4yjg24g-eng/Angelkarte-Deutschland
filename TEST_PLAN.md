@@ -75,7 +75,7 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | SES-1 | Session starten → 3 Fänge → beenden | Fänge zugeordnet; Dauer korrekt. *Automatisiert (M5.4): `sessions.spec.ts`, `session.test.ts`* |
 | SES-2 | Zweite Session starten, während eine läuft | Nicht möglich, Hinweis. *Automatisiert: Startknopf fehlt; Datenschicht lehnt ab (`sessionService.test.ts`)* |
 | SES-3 | Session > 24 h | Korrekturdialog. *Automatisiert: Hinweis in der Kopfzeile, Vorschlag übernehmen, Ende vor Beginn abgelehnt* |
-| WX-1 | Fang offline, später online | Wetter wird nachgeladen; gekennzeichnet als Modellwert |
+| WX-1 | Fang offline, später online | Wetter wird nachgeladen; gekennzeichnet als Modellwert; vorher Standard „aus" ohne Abruf; Koordinaten gerundet (✅ `weather.spec.ts`) |
 
 ### 3.5 Statistik
 *Automatisiert (M6): `domain/stats.test.ts` mit Fixture `test/fixtures/stats.ts`, E2E `stats.spec.ts` (STA-1 bis STA-7, hell und dunkel bei 390 px).*

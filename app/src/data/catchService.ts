@@ -3,6 +3,7 @@ import type { Catch, Photo } from '../domain/schemas';
 import { PhotoSchema } from '../domain/schemas';
 import { newId } from '../domain/id';
 import { nowIso } from '../domain/time';
+import { weatherStillValid } from '../domain/weather';
 import { getDb, type FangpunktDB } from './db';
 import { repo, type NewEntity } from './repository';
 import { ValidationError } from './errors';
@@ -54,7 +55,14 @@ export async function saveCatch(
       const removed = new Set(args.removePhotoIds ?? []);
       const photoIds = [...(cur.photoIds ?? []).filter((p) => !removed.has(p)), ...addedIds];
       if (removed.size) await db.photos.bulkDelete([...removed]);
-      return r.update(args.id, { ...args.changes, photoIds: photoIds.length ? photoIds : undefined });
+      const next = { ...cur, ...args.changes };
+      // Wetter gehört zu Zeit und Ort; ändert sich eins davon, wird es neu geladen.
+      const weather = cur.weather && weatherStillValid(cur, next) ? cur.weather : undefined;
+      return r.update(args.id, {
+        ...args.changes,
+        weather,
+        photoIds: photoIds.length ? photoIds : undefined,
+      });
     }
     const existing = args.input.photoIds ?? [];
     return r.create({

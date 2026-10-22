@@ -98,7 +98,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Fangbuch (Fang/Kontakt/Fehlbiss), Foto, Sessions | P0 | |
 | Statistik-Basis (Kennzahlen, Arten, Gewässer, Köder, Verlauf, Filter) | P0 | Im Auftrag als besonders wichtig markiert |
 | Recht: Struktur + Landesrecht für die ersten 2–3 Länder | P0 | Struktur jetzt; Inhalte wachsen pro Land |
-| Wetter am Fang (online, automatisch nachgeladen) | P1 | Open-Meteo Free (nicht kommerziell, E3) |
+| Wetter am Fang (online, automatisch nachgeladen) | P1 | Open-Meteo Free (nicht kommerziell, E3). ✅ umgesetzt 2026-10-22 (Einstellung, Standard aus) |
 | Köder-Favoriten, Schnellerfassung „Hier" | P1 | |
 | Recht: restliche Bundesländer | P1 | Redaktioneller Aufwand, siehe §5 M8 |
 | Session-Vergleich, Rekorde | P1 | |
@@ -212,6 +212,7 @@ Abhängig von: M4
 ### M8 – Recht: alle 16 Länder
 Abhängig von: M7 · Aufwand redaktionell (≈ 0,5–1 Tag pro Land [A])
 - ⏳ **Begonnen 2026-10-22 auf deinen Wunsch, während recht.nrw.de in Wartung ist (Abweichung von E7 „zuerst NRW"):** Entwürfe für Bayern, Niedersachsen, Sachsen und Hamburg (Schonzeiten, Maße, geschützte Arten, einzelne weitere Regeln). Von dir am 2026-10-22 gegengeprüft und als `partial` freigegeben (Fischereischein-Regeln fehlen noch); Artnamen-Zuordnung bestätigt. Die übrigen elf Portale sind aus der Cloud-Umgebung nicht erreichbar.
+- **Stand 2026-10-22:** 15 Länder `partial` und von dir gegengeprüft, inklusive Fischereischein-Regeln (PRs #29–#32). Zurückgestellt: Berliner Landesfischereischeingesetz (21.04.1995), Abgabehöhen-Verordnungen TH/SH/ST/RP, Urlauberschein SH. NRW wartet auf den amtlichen Text.
 - Quellenrecherche je Land, Erfassung, Vier-Augen-Prüfung (du prüfst jede Landesdatei gegen den verlinkten amtlichen Text).
 - *Abnahme:* 16 Landesdateien mit Status `verified` oder ausdrücklich `partial` und Liste fehlender Teile.
 

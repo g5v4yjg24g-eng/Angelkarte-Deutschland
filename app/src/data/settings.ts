@@ -5,6 +5,8 @@ export interface Settings {
   lastBackupAt: string;
   backupReminderSnoozedUntil: string;
   persistRequested: boolean;
+  /** Wetter zu Fängen laden (sendet gerundete Koordinaten an den Wetterdienst); Standard: aus */
+  weatherEnabled: boolean;
 }
 
 export async function getSetting<K extends keyof Settings>(

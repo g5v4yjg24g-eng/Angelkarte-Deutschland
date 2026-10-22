@@ -1,11 +1,13 @@
 import { createContext, useContext } from 'react';
 import type { BasemapProvider } from './basemap';
 import type { WaterDataProvider } from './waterData';
+import type { WeatherProvider } from './weather';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
   basemap: BasemapProvider;
   water: WaterDataProvider;
+  weather: WeatherProvider;
 }
 
 export const ProvidersContext = createContext<Providers | null>(null);

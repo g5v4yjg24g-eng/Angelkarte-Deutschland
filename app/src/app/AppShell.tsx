@@ -7,6 +7,7 @@ import { useOnline } from '../lib/useOnline';
 import { UpdatePrompt } from './UpdatePrompt';
 import { BackupReminder } from '../features/backup/BackupReminder';
 import { SessionChip } from '../features/sessions/SessionChip';
+import { WeatherSync } from '../features/weather/WeatherSync';
 import styles from './AppShell.module.css';
 
 const NAV = [
@@ -68,6 +69,7 @@ export function AppShell() {
         <Outlet />
       </main>
       <UpdatePrompt />
+      <WeatherSync />
     </div>
   );
 }
