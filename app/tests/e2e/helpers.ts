@@ -108,7 +108,7 @@ export async function tapRendered(page: Page, layer: string, lng: number, lat: n
  */
 export async function startCatchAt(page: Page, at?: { lng: number; lat: number }) {
   await page.getByRole('button', { name: 'Fang erfassen' }).click();
-  await page.getByText('Tippe auf die Stelle, an der du gefangen hast', { exact: false }).waitFor();
+  await page.getByRole('button', { name: 'Abbrechen' }).waitFor();
   const p = await page.evaluate((at) => {
     const map = window.__fangpunktMap;
     if (!map) throw new Error('Karte fehlt');

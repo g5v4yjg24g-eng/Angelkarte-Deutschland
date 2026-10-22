@@ -205,6 +205,7 @@ export default function MapView() {
   const runningSession = useRunningSession();
   // „Fang erfassen": wartet auf den Tipp an die Fangstelle (der nächste Tipp öffnet das Formular dort)
   const [picking, setPicking] = useState(false);
+  const [centerFocus, setCenterFocus] = useState(false);
   const fabRef = useRef<HTMLButtonElement>(null);
   const pickingRef = useRef(false);
   useEffect(() => {
@@ -920,23 +921,32 @@ export default function MapView() {
           <span>{de.sessions.start}</span>
         </button>
       )}
-      {picking && <div className={styles.crosshair} aria-hidden="true" />}
+      {/* Fadenkreuz nur, solange „Kartenmitte" den Tastaturfokus hat */}
+      {picking && centerFocus && <div className={styles.crosshair} aria-hidden="true" />}
       {picking && (
-        <div className={styles.pickBar} role="status">
-          <p>{de.map.pickHint}</p>
-          <div className={styles.pickActions}>
-            {locating && geo.fix && (
-              <Button variant="secondary" onClick={() => addCatchAtMyLocation('gps')}>
-                {de.map.pickMyLocation}
-              </Button>
-            )}
-            <Button variant="secondary" onClick={() => addCatchAtMyLocation('center')}>
-              {de.map.pickCenter}
+        // Ohne sichtbaren Hinweistext (Wunsch Nutzer 2026-10-22): Screenreader bekommen ihn trotzdem angesagt
+        <div className={styles.pickBar}>
+          <p className="visually-hidden" role="status">
+            {de.map.pickHint}
+          </p>
+          {locating && geo.fix && (
+            <Button variant="secondary" onClick={() => addCatchAtMyLocation('gps')}>
+              {de.map.pickMyLocation}
             </Button>
-            <Button variant="ghost" onClick={() => setPicking(false)}>
-              {de.map.pickCancel}
-            </Button>
-          </div>
+          )}
+          {/* Für die Bedienung ohne Maus/Finger: erst sichtbar, wenn er per Tastatur den Fokus bekommt */}
+          <Button
+            variant="secondary"
+            className={styles.pickCenter}
+            onFocus={() => setCenterFocus(true)}
+            onBlur={() => setCenterFocus(false)}
+            onClick={() => addCatchAtMyLocation('center')}
+          >
+            {de.map.pickCenter}
+          </Button>
+          <Button variant="secondary" onClick={() => setPicking(false)}>
+            {de.map.pickCancel}
+          </Button>
         </div>
       )}
       <button
