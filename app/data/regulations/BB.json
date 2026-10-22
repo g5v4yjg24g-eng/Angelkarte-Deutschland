@@ -1,9 +1,9 @@
 {
   "stateCode": "BB",
-  "status": "draft",
+  "status": "partial",
   "missing": ["Anordnungen des Landesamts und Hegepläne (abweichende Schonzeiten und Maße)"],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, bravors.brandenburg.de abgerufen am 2026-10-22); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), Gegenprüfung ausstehend",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, bravors.brandenburg.de abgerufen am 2026-10-22); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
   "legalBasis": [
     {
       "id": "BbgFischO",
