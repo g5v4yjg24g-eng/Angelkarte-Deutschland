@@ -106,6 +106,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Tiefenkarten (erste lizenzierte Quelle) | P2 | Lizenzklärung nötig |
 | Offline-Kartenregionen | P2 | Eigene PMTiles-Hosting-Infrastruktur nötig |
 | **Rechts-Warnung beim Erfassen** (Schonzeit, Mindestmaß, Entnahmefenster im Fang-Bundesland) | P1 | ✅ umgesetzt 2026-10-22 (siehe unten); echte Landesgrenzen erst nach dem nächsten Lauf „Gewässerdaten erzeugen“ |
+| **Fangbuch nach Gewässern** (Reiter je Gewässer, Name + Ort, unbekannte Gewässer selbst benennen, Suche nach Gewässer und Ort) | P1 | Wunsch Nutzer 2026-10-22, vorgemerkt – siehe „Vorgemerkt: Fangbuch nach Gewässern“ unten |
 | Heatmap, CSV-Export | P2 | ✅ CSV-Export umgesetzt 2026-10-22 (Daten & Sicherung → „Fangbuch als Tabelle“). Heatmap offen |
 | Gewässerbezogene Regeln / Angelzonen (Stufe 4) | P3 | Kaum offene Daten; Kooperationen nötig |
 | Angelkalender, Beißfenster-Analyse | P3 | |
@@ -113,6 +114,24 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Konten und Cloud-Sync | P3 | Erst bei Bedarf (siehe ARCHITECTURE §9) |
 
 ---
+
+### Vorgemerkt: Fangbuch nach Gewässern (Wunsch Nutzer 2026-10-22)
+**Wunsch:**
+1. Sobald an einem Gewässer ein Eintrag entsteht (Fang, Biss, Kontakt, Beobachtung …), bekommt das Fangbuch einen **Reiter mit dem Namen dieses Gewässers**. Antippen zeigt dessen Einträge.
+2. Jeder Reiter zeigt den **Gewässernamen und darunter kleiner den Ort**, z. B. „De Wittsee“ / „Nettetal“.
+3. **Unbekanntes Gewässer** (kein Name in den Daten oder kein Gewässer am Fangort): Reiter heißt „Unbekanntes Gewässer“; den Namen kann man **selbst ändern**. Der eigene Name gilt **nur im Fangbuch** (nicht auf der Karte, nicht in den Gewässerdaten).
+4. **Bekannte Namen sind nicht änderbar.**
+5. **Suche** im Fangbuch nach Gewässername **und** Ort.
+
+**Ausgangslage im Code:** Der Fang speichert `waterId` und `waterSnapshot.name`. Den Ort (Gemeinde, sonst Kreis) liefern die Gewässerkacheln (`WaterInfo.municipality`/`district`), er wird aber bisher **nicht** am Fang gespeichert. Die Fangbuch-Suche kennt schon Art, Gewässer, Köder und Notiz, aber noch keinen Ort.
+
+**Vorüberlegungen und Fragen vor der Umsetzung:**
+- Ort am Fang speichern: `waterSnapshot.place` (optionales Feld, kein neuer Index). Bestandsfänge ohne Ort: nachtragen, sobald die Karte das Gewässer kennt (über `waterId`), sonst „Ort unbekannt“ – nichts raten.
+- Unbekannte Gewässer gruppieren **[O, Entscheidung]**: (a) je Fangort im Umkreis von z. B. 200 m ein Reiter, (b) ein gemeinsamer Reiter „Unbekanntes Gewässer“ je Ort/Gemeinde, (c) man ordnet beim Benennen selbst zu. Empfehlung später: (a), weil Einträge am selben Ufer zusammenbleiben.
+- Eigene Namen als eigene lokale Liste (z. B. `customWaters`: id, Name, Mittelpunkt) mit Zod-Schema, Dexie-Migration, Migrationstest und Aufnahme in die Sicherung.
+- Verhältnis zur bisherigen Liste nach Tagen **[O, Entscheidung]**: Reiter zusätzlich („Alle“ + je Gewässer) oder Liste ersetzen. Empfehlung: zusätzlich, Reiter „Alle“ bleibt Standard.
+- Reihenfolge der Reiter: zuletzt befischt zuerst, mit Anzahl der Einträge.
+- Reiter bei vielen Gewässern: waagerecht scrollbar bzw. als Liste; bei 390 px prüfen.
 
 ### Rechts-Warnung beim Erfassen eines Fangs (Wunsch Nutzer 2026-10-22, ✅ umgesetzt)
 **Entschieden (Nutzer 2026-10-22):** warnen, nicht blockieren; Bundesland aus dem Standort über Landesgrenzen; Länder ohne Daten „keine Prüfung möglich“; Regeln mit Geltungsbereich als „bitte prüfen“. Umsetzung: Landesgrenzen aus der Gewässer-Pipeline (`states.json`, OSM `admin_level=4`, ODbL), Prüfung `domain/regulationCheck.ts`, Anzeige `features/law/LawCheckPanel.tsx` im Fangformular (live) und am Eintrag. Geprüft werden zusätzlich ganzjährig geschützte Arten. In Grenznähe (< 150 m) wählt der Nutzer das Land.
