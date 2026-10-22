@@ -12,6 +12,8 @@ import { MorePage } from '../features/more/MorePage';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { AboutPage } from '../features/about/AboutPage';
 import { LazyBackupPage } from '../features/backup/LazyBackupPage';
+import { LawPage } from '../features/law/LawPage';
+import { StateLawPage } from '../features/law/StateLawPage';
 
 export const routes = [
   {
@@ -32,6 +34,8 @@ export const routes = [
           { path: 'mehr/einstellungen', element: <SettingsPage /> },
           { path: 'mehr/info', element: <AboutPage /> },
           { path: 'mehr/daten', element: <LazyBackupPage /> },
+          { path: 'mehr/recht', element: <LawPage /> },
+          { path: 'mehr/recht/:state', element: <StateLawPage /> },
           { path: '*', element: <NotFound /> },
         ],
       },

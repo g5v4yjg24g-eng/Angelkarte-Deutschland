@@ -127,6 +127,10 @@ test('WAT-1/2: Suche findet den De Wittsee; das Profil zeigt nur belegte Angaben
   );
   // WAT-5: kein Tiefenkarten-Knopf ohne verfügbare Tiefendaten
   await expect(profile.getByRole('button', { name: /Tiefenkarte/ })).toHaveCount(0);
+  // Landesrecht des Bundeslands verlinkt (M7)
+  await expect(
+    profile.getByRole('link', { name: 'Landesrecht Nordrhein-Westfalen: Schonzeiten, Mindestmaße' }),
+  ).toHaveAttribute('href', /\/mehr\/recht\/NW$/);
   // Hervorhebung des gewählten Gewässers
   expect(
     await page.evaluate(

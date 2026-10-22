@@ -1,7 +1,6 @@
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
 import { ListLink } from '../../design/components/ListLink';
-import { Badge } from '../../design/components/Badge';
 import { DatabaseIcon, InfoIcon, ParagraphIcon, SlidersIcon } from '../../design/icons';
 import styles from '../../design/components/Page.module.css';
 
@@ -10,10 +9,10 @@ export function MorePage() {
     <Page title={de.more.title}>
       <div className={styles.card}>
         <ListLink
+          to="/mehr/recht"
           icon={<ParagraphIcon />}
           title={de.more.regulations}
           hint={de.more.regulationsHint}
-          badge={<Badge>{de.common.inProgress}</Badge>}
         />
         <ListLink to="/mehr/daten" icon={<DatabaseIcon />} title={de.more.backup} hint={de.more.backupHint} />
       </div>

@@ -115,12 +115,14 @@ Artenliste (Namen, wiss. Namen) wird einmalig redaktionell aus der GBIF-Taxonomi
 | Schleswig-Holstein | gesetze-rechtsprechung.sh.juris.de | – |
 | Thüringen | landesrecht.thueringen.de | – |
 
+**Stand 2026-10-22, 01:22–01:30 UTC:** recht.nrw.de meldet „Dieser Server ist aktuell im Wartungsmodus!"; alle Unterseiten liefern 404 [V]. Die NRW-Inhalte werden erfasst, sobald der amtliche Text erreichbar ist. Zweitquellen (umwelt-online.de, lexaris.de) werden nicht als Quelle verwendet. Laut Suchergebnis wurde die LFischVO zuletzt durch Art. 2 der Verordnung vom 01.07.2026 geändert (gültig ab 03.07.2026) [O: am amtlichen Text bestätigen]. Viele Landesportale sind aus der Cloud-Umgebung nicht erreichbar (Verbindungsabbruch); die Links in der App (`STATE_PORTALS`) sind die Einstiegspunkte dieser Tabelle [O: je Land beim Erfassen prüfen].
+
 Die Altprojekt-Angaben (NRW, HH) gelten als **Ausgangspunkt**, nicht als geprüft für das neue Projekt. Sie werden in M7 erneut am amtlichen Text abgeglichen.
 
 ### 5.3 Pflege- und Aktualisierungsprozess
-1. Jede Landesdatei `data/regulations/<land>.json` enthält `checkedAt`, `checkedBy`, `legalBasis[]` (Titel, Fassung, URL, Abrufdatum) und je Regel den **Paragrafen**.
-2. CI-Check: Schema gültig; jede Regel hat eine Quelle; `checkedAt` älter als **180 Tage** erzeugt eine Warnung, älter als **365 Tage** einen Fehler (Build bleibt grün, aber ein Issue wird erzeugt [A]).
-3. In der App: Banner „Zuletzt geprüft am … – möglicherweise veraltet", sobald 180 Tage überschritten sind. Status `partial` listet fehlende Teile.
+1. Jede Landesdatei `app/data/regulations/<KÜRZEL>.json` (z. B. `NW.json`) enthält `checkedAt`, `checkedBy`, `legalBasis[]` (Titel, Fassung, URL, Abrufdatum) und je Regel den **Paragrafen**.
+2. CI-Check (`pnpm validate:data`, auch Teil von `pnpm test`): Schema gültig; jede Regel hat Quelle und Paragraf, sonst rot. `checkedAt` älter als **180 Tage** erzeugt eine Warnung im Testlauf; ein automatisches Issue gibt es noch nicht [O].
+3. In der App: Banner „Zuletzt geprüft am … – möglicherweise veraltet", sobald 180 Tage überschritten sind; ab 365 Tagen deutlicher Warnhinweis. Status `partial` listet fehlende Teile.
 4. Halbjährlicher Prüftermin (Kalendererinnerung für dich). Änderungen per Pull Request mit Link zur Fundstelle.
 5. Disclaimer in jeder Rechtsansicht: „Keine Rechtsauskunft. Maßgeblich sind der amtliche Text und die Bedingungen deines Erlaubnisscheins."
 

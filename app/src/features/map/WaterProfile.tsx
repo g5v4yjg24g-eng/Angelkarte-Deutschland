@@ -1,4 +1,5 @@
 // Gewässerprofil (PLAN M4): nur belegte Angaben; alles andere ausdrücklich als unbekannt/nicht verfügbar.
+import { Link } from 'react-router';
 import { de } from '../../i18n/de';
 import { Badge } from '../../design/components/Badge';
 import { Button } from '../../design/components/Button';
@@ -51,7 +52,11 @@ export function WaterProfile({
         <dd>{de.water.speciesNone}</dd>
         <dt>{de.water.rulesTitle}</dt>
         <dd>
-          {state ? de.water.rulesState(state) : de.water.rulesNoState}
+          {info.state && state ? (
+            <Link to={`/mehr/recht/${info.state}`}>{de.water.rulesState(state)}</Link>
+          ) : (
+            de.water.rulesNoState
+          )}
           <br />
           <span className="muted">{de.water.rulesWater}</span>
         </dd>

@@ -239,7 +239,8 @@ export const de = {
     assignTitle: 'Gewässer zuordnen',
     assignIntro: 'Gewässer an der Stelle dieses Eintrags:',
     assignSearching: 'Gewässer werden gesucht …',
-    assignNone: 'An dieser Stelle ist kein Gewässer bekannt. Ohne Internet sind Gewässer nur dort bekannt, wo die Karte schon geladen war.',
+    assignNone:
+      'An dieser Stelle ist kein Gewässer bekannt. Ohne Internet sind Gewässer nur dort bekannt, wo die Karte schon geladen war.',
     assignRemove: 'Zuordnung entfernen',
     assigned: (name: string) => `Zugeordnet: ${name}.`,
     assignRemoved: 'Zuordnung entfernt.',
@@ -367,7 +368,8 @@ export const de = {
     period: 'Zeitraum',
     count: 'Anzahl',
     baits: 'Köder',
-    baitsHint: 'Fänge je Köder (n = alle Bisse mit diesem Köder). Ohne Angelzeit je Köder ist das keine Rangliste.',
+    baitsHint:
+      'Fänge je Köder (n = alle Bisse mit diesem Köder). Ohne Angelzeit je Köder ist das keine Rangliste.',
     baitsTooFew: (n: number, need: number) =>
       `Zu wenige Daten: Köder sind erst bei ${n} von mindestens ${need} Ködern eingetragen.`,
     bites: (n: number) => `n = ${n}`,
@@ -393,7 +395,7 @@ export const de = {
 
   more: {
     title: 'Mehr',
-    regulations: 'Fischereirecht NRW',
+    regulations: 'Angelrecht der Länder',
     regulationsHint: 'Schonzeiten, Mindestmaße, Erlaubnisse',
     backup: 'Daten & Sicherung',
     backupHint: 'Export, Import, Speicher',
@@ -401,6 +403,52 @@ export const de = {
     settingsHint: 'Darstellung',
     about: 'Über Fangpunkt & Quellen',
     aboutHint: 'Version, Datenquellen, Lizenzen',
+  },
+  law: {
+    title: 'Angelrecht der Länder',
+    disclaimer:
+      'Keine Rechtsauskunft. Maßgeblich sind der amtliche Text und die Bedingungen deines Erlaubnisscheins.',
+    intro:
+      'Landesrecht zu Schonzeiten, Mindestmaßen und Erlaubnissen – nur mit Quelle und Prüfdatum. Regeln des Vereins oder Pächters stehen auf deinem Erlaubnisschein.',
+    statesLabel: 'Bundesländer',
+    status: { verified: 'Geprüft', partial: 'Teilweise geprüft', none: 'Noch keine Angaben' },
+    loading: 'Wird geladen …',
+    invalid: 'Die Angaben für dieses Land sind fehlerhaft und werden deshalb nicht gezeigt.',
+    loadError: 'Die Angaben konnten nicht geladen werden.',
+    noneTitle: (state: string) => `Für ${state} noch keine geprüften Angaben`,
+    noneText:
+      'Fangpunkt zeigt Rechtsangaben erst, wenn sie am amtlichen Text geprüft sind. Bis dahin gilt: im Landesrechtsportal nachlesen und beim Ausgeber deines Erlaubnisscheins fragen.',
+    portal: 'Zum Landesrechtsportal',
+    checkedAt: (date: string) => `Zuletzt geprüft am ${date}`,
+    stale: (date: string) =>
+      `Zuletzt geprüft am ${date} – möglicherweise veraltet. Prüfe die aktuelle Fassung im amtlichen Text.`,
+    outdated: (date: string) =>
+      `Zuletzt geprüft am ${date} – seit über einem Jahr nicht geprüft. Verlass dich nicht auf diese Angaben.`,
+    missing: (parts: string) => `Noch nicht erfasst: ${parts}.`,
+    closedSeasons: 'Schonzeiten',
+    minSizes: 'Mindestmaße',
+    protectedSpecies: 'Ganzjährig geschont',
+    licences: 'Fischereischein und Erlaubnisse',
+    otherRules: 'Weitere Regeln',
+    sources: 'Rechtsgrundlagen',
+    colSpecies: 'Art',
+    colPeriod: 'Schonzeit',
+    colMin: 'Mindestmaß',
+    colRef: 'Fundstelle',
+    noEntries: 'In den Angaben für dieses Land nicht enthalten.',
+    closedToday: 'Heute in Schonzeit',
+    period: (from: string, to: string) => `${from}–${to}`,
+    cm: (n: number) => `${n.toLocaleString('de-DE')} cm`,
+    ref: (ref: string, basis: string) => `${ref} ${basis}`,
+    version: (v: string, date: string) => `${v} · abgerufen am ${date}`,
+    unknownSpecies: 'Unbekannte Art',
+    licenceKinds: {
+      fishing_licence: 'Fischereischein',
+      permit: 'Erlaubnisschein',
+      levy: 'Abgabe',
+      youth: 'Jugend',
+      tourist: 'Gäste',
+    },
   },
   water: {
     unnamed: 'Unbenanntes Gewässer',
@@ -428,7 +476,7 @@ export const de = {
     speciesTitle: 'Fischarten',
     speciesNone: 'Keine geprüften Angaben.',
     rulesTitle: 'Angelregeln',
-    rulesState: (state: string) => `Landesrecht ${state}: in Arbeit (Meilenstein M7).`,
+    rulesState: (state: string) => `Landesrecht ${state}: Schonzeiten, Mindestmaße`,
     rulesNoState: 'Bundesland unbekannt.',
     rulesWater:
       'Wer hier angeln darf und welche Gewässerregeln gelten, ist unbekannt – frag den Verein bzw. Fischereiberechtigten.',
