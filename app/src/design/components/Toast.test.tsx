@@ -19,12 +19,11 @@ describe('Toast', () => {
     expect(onDismiss).toHaveBeenCalledOnce();
   });
 
-  it('reine Info: kürzer', () => {
+  it('reine Info: blendet sich nach TOAST_INFO_MS aus', () => {
     const onDismiss = vi.fn();
     render(<Toast onDismiss={onDismiss}>Gespeichert.</Toast>);
     act(() => void vi.advanceTimersByTime(TOAST_INFO_MS));
     expect(onDismiss).toHaveBeenCalledOnce();
-    expect(TOAST_INFO_MS).toBeLessThan(TOAST_MS);
   });
 
   it('solange der Fokus darin ist, läuft die Zeit nicht (WCAG 2.2.1)', () => {

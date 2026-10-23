@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import styles from './Toast.module.css';
 
-/** Anzeigedauer mit Aktion (z. B. „Rückgängig") bzw. reine Info (Wunsch Nutzer 2026-10-22: kürzer als vorher 7 s) */
-export const TOAST_MS = 4000;
-export const TOAST_INFO_MS = 2500;
+/** Anzeigedauer mit Aktion (z. B. „Rückgängig") bzw. reine Info – beide 1,5 s (Wunsch Nutzer 2026-10-22).
+ *  Liegt der Finger auf dem Hinweis, läuft die Zeit nicht weiter. */
+export const TOAST_MS = 1500;
+export const TOAST_INFO_MS = 1500;
 
 /**
  * Kurzer Hinweis über der Leiste, angesagt über role="status". Mit `onDismiss` blendet er sich nach `duration`
