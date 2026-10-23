@@ -66,6 +66,18 @@ async function seed(db: FangpunktDB) {
     tz: 'Europe/Berlin',
     waterSnapshot: { name: 'De Wittsee', place: 'Nettetal', centroid: { lat: 51.32, lng: 6.25 } },
   });
+  // GPS-Route der Session (seit DB v3)
+  await repo('tracks', db).create({
+    id: `track-${session.id}`,
+    sessionId: session.id,
+    segments: [
+      [
+        { t: 1781500000000, lat: 51.318, lng: 6.25, acc: 6 },
+        { t: 1781500030000, lat: 51.3183, lng: 6.2504, acc: 5 },
+      ],
+      [{ t: 1781501000000, lat: 51.319, lng: 6.251, acc: 8 }],
+    ],
+  });
   return { session, place, preset, c };
 }
 
@@ -82,6 +94,7 @@ async function dump(db: FangpunktDB) {
     sessions: await db.sessions.toArray(),
     baitPresets: await db.baitPresets.toArray(),
     trips: await db.trips.toArray(),
+    tracks: await db.tracks.toArray(),
     photos,
   };
 }
@@ -106,7 +119,8 @@ describe('BAK-1: Export → leeres Gerät → Import ergibt dieselben Daten', ()
 
     const b = freshDb();
     const { plan } = await importFile(exp.blob, b);
-    expect(summarize(plan)).toMatchObject({ added: 6, conflicts: 0 });
+    expect(summarize(plan)).toMatchObject({ added: 7, conflicts: 0 });
+    expect((await b.tracks.toArray())[0]?.segments).toHaveLength(2);
     expect(await dump(b)).toEqual(await dump(a));
   });
 
@@ -133,11 +147,15 @@ describe('BAK-1: Export → leeres Gerät → Import ergibt dieselben Daten', ()
     };
     delete file.data.trips;
     delete file.counts.trips;
+    delete file.data.tracks;
+    delete file.counts.tracks;
     file.checksum = await checksumOf(file.data);
     const b = freshDb();
     const { plan } = await importFile(new Blob([JSON.stringify(file)]), b);
     expect(plan.trips.added).toEqual([]);
+    expect(plan.tracks.added).toEqual([]);
     expect(await b.catches.count()).toBe(1);
+    expect(await b.sessions.count()).toBe(1);
   });
 
   it('zweiter Import derselben Datei ändert nichts', async () => {
@@ -145,7 +163,7 @@ describe('BAK-1: Export → leeres Gerät → Import ergibt dieselben Daten', ()
     await seed(a);
     const exp = await exportBackup({ withPhotos: true }, a);
     const { plan } = await importFile(exp.blob, a);
-    expect(summarize(plan)).toMatchObject({ added: 0, identical: 6, conflicts: 0 });
+    expect(summarize(plan)).toMatchObject({ added: 0, identical: 7, conflicts: 0 });
   });
 });
 
@@ -233,7 +251,7 @@ describe('BAK-3: Konflikte und Strategien', () => {
     const plan = await prepareImport(await readBackupFile(file), device);
     expect(summarize(plan)).toEqual({
       added: 1,
-      identical: 4,
+      identical: 5,
       incomingNewer: 1,
       existingNewer: 1,
       conflicts: 2,
@@ -359,7 +377,7 @@ describe('Änderungen seit der letzten Sicherung', () => {
   it('zählt neue und geänderte Datensätze', async () => {
     const db = freshDb();
     await seed(db);
-    expect((await changesSince(undefined, db)).count).toBe(5);
+    expect((await changesSince(undefined, db)).count).toBe(6);
     const exp = await exportBackup({ withPhotos: false }, db);
     expect((await changesSince(exp.backup.exportedAt, db)).count).toBe(0);
   });

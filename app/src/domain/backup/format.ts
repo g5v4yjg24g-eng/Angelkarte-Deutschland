@@ -7,6 +7,7 @@ import {
   type PhotoMeta,
   type Place,
   type Session,
+  type Track,
   type Trip,
 } from '../schemas';
 
@@ -19,6 +20,8 @@ export interface BackupData {
   sessions: Session[];
   baitPresets: BaitPreset[];
   trips: Trip[];
+  /** GPS-Routen der Sessions (seit DB v3) */
+  tracks: Track[];
   /** Nur Metadaten; die Bilddateien liegen im ZIP unter photos/<id>.<ext> oder fehlen (photos: 'omitted'). */
   photos: PhotoMeta[];
 }
@@ -51,6 +54,8 @@ export const BackupEnvelopeSchema = z.object({
     baitPresets: z.array(z.unknown()),
     /** seit DB v2; ältere Sicherungen haben keine Termine */
     trips: z.array(z.unknown()).default([]),
+    /** seit DB v3; ältere Sicherungen haben keine Routen */
+    tracks: z.array(z.unknown()).default([]),
     photos: z.array(z.unknown()),
   }),
 });
@@ -83,6 +88,7 @@ export async function buildBackup(
       sessions: data.sessions.length,
       baitPresets: data.baitPresets.length,
       trips: data.trips.length,
+      tracks: data.tracks.length,
       photos: data.photos.length,
     },
     photos: meta.withPhotos ? 'zip-sidecar' : 'omitted',

@@ -54,7 +54,10 @@ describe('Migrationen', () => {
     expect(v1.verno).toBe(1);
     v1.close();
 
-    const v2 = new FangpunktDB(name);
+    const v2 = new FangpunktDB(
+      name,
+      SCHEMA_VERSIONS.filter((v) => v.version <= 2),
+    );
     await v2.open();
     expect(v2.verno).toBe(2);
     expect(await v2.catches.count()).toBe(1);
@@ -62,5 +65,35 @@ describe('Migrationen', () => {
     const t = await repo('trips', v2).create({ date: '2026-10-24', from: '06:00', tz: 'Europe/Berlin' });
     expect(await v2.trips.where('date').equals('2026-10-24').first()).toEqual(t);
     v2.close();
+  });
+
+  it('Upgrade v2 → v3 (Session-Routen): Sessions und Fänge bleiben, Routen sind speicherbar', async () => {
+    const v2 = freshDb(SCHEMA_VERSIONS.filter((v) => v.version <= 2));
+    const name = v2.name;
+    const s = await repo('sessions', v2).create({
+      startAt: '2026-10-20T06:00:00+02:00',
+      tz: 'Europe/Berlin',
+    });
+    await repo('catches', v2).create({
+      outcome: 'caught',
+      at: '2026-10-20T07:10:00+02:00',
+      tz: 'Europe/Berlin',
+      sessionId: s.id,
+    });
+    expect(v2.verno).toBe(2);
+    v2.close();
+
+    const v3 = new FangpunktDB(name);
+    await v3.open();
+    expect(v3.verno).toBe(3);
+    expect(await v3.sessions.get(s.id)).toEqual(s);
+    expect(await v3.catches.where('sessionId').equals(s.id).count()).toBe(1);
+    const tr = await repo('tracks', v3).create({
+      id: `track-${s.id}`,
+      sessionId: s.id,
+      segments: [[{ t: 1781500000000, lat: 51.3, lng: 6.2, acc: 5 }]],
+    });
+    expect(await v3.tracks.where('sessionId').equals(s.id).first()).toEqual(tr);
+    v3.close();
   });
 });

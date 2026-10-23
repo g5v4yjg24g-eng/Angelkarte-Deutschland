@@ -44,7 +44,10 @@ test('SES-1/SES-2: Session starten, Einträge zuordnen, beenden; keine zweite gl
   await expect(page.getByRole('heading', { level: 1, name: 'Session' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Einträge (3)' })).toBeVisible();
   await page.getByRole('button', { name: 'Session beenden' }).click();
-  await expect(page.getByText(/^Session beendet/)).toBeVisible();
+  // Nach dem Beenden öffnet sich der Rückblick; Schließen führt zur Session zurück
+  await expect(page.getByRole('heading', { name: 'Dein Angeltrip im Rückblick' })).toBeVisible();
+  await expect(page.getByRole('dialog')).toContainText('3 Gefangen');
+  await page.getByRole('button', { name: 'Rückblick schließen' }).click();
   await expect(page.getByRole('link', { name: /Laufende Session/ })).toHaveCount(0);
 
   // Titel vergeben; Liste zeigt 3 Einträge
@@ -99,7 +102,8 @@ test('SES-3: Session länger als 24 h → Korrekturdialog mit Vorschlag', async 
   // Vorschlag (Beginn + 4 h, keine Einträge) übernehmen
   await page.reload();
   await page.getByRole('button', { name: 'Ende speichern' }).click();
-  await expect(page.getByText('Session beendet (4 h 00 min).')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Dein Angeltrip im Rückblick' })).toBeVisible();
+  await page.getByRole('button', { name: 'Rückblick schließen' }).click();
   await expect(page.getByText('4 h 00 min', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: /Session über 24 h/ })).toHaveCount(0);
 });
@@ -117,7 +121,8 @@ test('SES-4: Pause und Weiter, Pause nachtragen; Angelzeit ohne Pausen', async (
   await expect(page.getByRole('link', { name: /^Laufende Session, seit/ })).toBeVisible();
   await expect(page.getByText(/^1 Pause \(/)).toBeVisible();
   await page.getByRole('button', { name: 'Session beenden' }).click();
-  await expect(page.getByText(/^Session beendet/)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Dein Angeltrip im Rückblick' })).toBeVisible();
+  await page.getByRole('button', { name: 'Rückblick schließen' }).click();
 
   // Beendete Session (06:00–10:00): Pause nachtragen
   await page.evaluate(async () => {

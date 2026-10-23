@@ -4,7 +4,15 @@ import type { Records } from './parse';
 
 export type ImportStrategy = 'keepNewer' | 'fileWins' | 'onlyNew';
 export type PlanTable = EntityTable | 'photos';
-export const PLAN_TABLES: PlanTable[] = ['sessions', 'places', 'baitPresets', 'catches', 'trips', 'photos'];
+export const PLAN_TABLES: PlanTable[] = [
+  'sessions',
+  'places',
+  'baitPresets',
+  'catches',
+  'trips',
+  'tracks',
+  'photos',
+];
 
 interface Row {
   id: string;

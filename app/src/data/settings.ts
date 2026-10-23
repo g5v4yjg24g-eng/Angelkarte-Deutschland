@@ -9,6 +9,8 @@ export interface Settings {
   weatherEnabled: boolean;
   /** Standort beim Öffnen der Karte anzeigen (bleibt auf dem Gerät); Standard: an */
   locateOnStart: boolean;
+  /** Route laufender Sessions aufzeichnen (bleibt auf dem Gerät); Standard: an */
+  trackSessions: boolean;
 }
 
 export async function getSetting<K extends keyof Settings>(

@@ -29,6 +29,7 @@ import { localToZonedIso, toZonedIso } from '../../domain/time';
 import { formatDateTime } from '../../lib/storage';
 import { useNow } from '../../lib/useNow';
 import { catchTitle } from '../catches/catchText';
+import { TrackingStatus } from './tracking/TrackingStatus';
 import styles from './Sessions.module.css';
 
 const t = de.sessions;
@@ -238,7 +239,7 @@ export function SessionDetailPage() {
             <CorrectEnd
               session={s}
               suggested={suggestedEnd(s, data.catches)}
-              onDone={(ended) => setMessage(t.ended(formatDuration(durationMs(ended, now))))}
+              onDone={(ended) => navigate(`/fangbuch/sessions/${ended.id}/rueckblick`)}
             />
             <div>
               <Button variant="secondary" onClick={() => setKeepRunning(true)}>
@@ -291,13 +292,20 @@ export function SessionDetailPage() {
             </Button>
             <Button
               onClick={() =>
+                // Erst speichern, dann den Rückblick öffnen (er liest nur gespeicherte Daten)
                 void endSession(s.id)
-                  .then((ended) => setMessage(t.ended(formatDuration(durationMs(ended, Date.now())))))
+                  .then((ended) => navigate(`/fangbuch/sessions/${ended.id}/rueckblick`))
                   .catch((err: unknown) => setError(userMessage(err)))
               }
             >
               {t.end}
             </Button>
+          </div>
+        )}
+        {running && <TrackingStatus sessionId={s.id} />}
+        {!running && (
+          <div className={styles.actions}>
+            <Button onClick={() => navigate(`/fangbuch/sessions/${s.id}/rueckblick`)}>{t.reviewOpen}</Button>
           </div>
         )}
         {message && <Notice tone="success">{message}</Notice>}

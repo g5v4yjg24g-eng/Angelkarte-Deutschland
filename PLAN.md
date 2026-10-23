@@ -102,6 +102,7 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | Köder-Favoriten, Schnellerfassung „Hier" | P1 | ✅ Köder-Favoriten umgesetzt 2026-10-22 (Mehr → Köder-Favoriten, Tipp im Fangformular, „Als Favorit merken“). „Hier“ = „Am eigenen Standort“ im Fangformular (M5.1) |
 | Recht: restliche Bundesländer | P1 | Redaktioneller Aufwand, siehe §5 M8 |
 | Session-Vergleich, Rekorde | P1 | ✅ in M6. Session-Pausen (aktive Angelzeit) umgesetzt 2026-10-22 |
+| Session-Rückblick mit GPS-Route | P1 | Wunsch Nutzer 2026-10-23. ✅ Route während der Session (nur bei geöffneter App), animierter Rückblick auf der Karte, Highlights, Chronik, später erneut öffnen, Teil der Sicherung (DB v3). Offen: Hintergrund-Aufzeichnung nur nativ möglich (Capacitor) [O] |
 | Fischarten pro Gewässer (Monitoring-Nachweise, Stufe 2) | P2 | Datenaufbereitung nötig (DATA_SOURCES §4) |
 | Tiefenkarten (erste lizenzierte Quelle) | P2 | **Zurückgestellt (Entscheidung Nutzer 2026-10-22):** kein Einbau ohne Lizenz – Repo und Vorschau sind öffentlich; auch der vorgeschlagene private Import wird nicht umgesetzt |
 | Offline-Kartenregionen | P2 | **Zurückgestellt (Entscheidung Nutzer 2026-10-22).** Eigene PMTiles-Hosting-Infrastruktur wäre nötig |

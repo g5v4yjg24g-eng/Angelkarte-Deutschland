@@ -122,6 +122,12 @@ function rasterIcons(): Promise<Map<string, ImageData>> {
   return iconCache;
 }
 
+/** Ereignis-Symbole (gleiche wie auf der Hauptkarte) in einen Stil laden, z. B. für den Session-Rückblick. */
+export async function addMarkerImages(map: MlMap) {
+  const icons = await rasterIcons();
+  for (const [kind, img] of icons) if (!map.hasImage(kind)) map.addImage(kind, img, { pixelRatio: 2 });
+}
+
 export interface OverlayData {
   places: FeatureCollection;
   catches: FeatureCollection;

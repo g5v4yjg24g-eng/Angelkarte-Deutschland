@@ -8,7 +8,7 @@ export async function changesSince(
   const since = iso ? Date.parse(iso) : -Infinity;
   let count = 0;
   let oldest: string | undefined;
-  for (const t of [db.catches, db.places, db.sessions, db.baitPresets, db.trips] as const) {
+  for (const t of [db.catches, db.places, db.sessions, db.baitPresets, db.trips, db.tracks] as const) {
     await (t as typeof db.catches).each((r) => {
       if (Date.parse(r.updatedAt) > since) {
         count++;
