@@ -37,6 +37,7 @@ import { useWaterOptions, type PlaceOption } from '../weather/useForecastPlace';
 import { useWeatherEnabled } from '../weather/useWeatherEnabled';
 import { WeatherTabs } from '../weather/WeatherTabs';
 import { TripWeather } from './TripWeather';
+import { exportTrips } from './exportIcs';
 import styles from './Calendar.module.css';
 
 const t = de.calendar;
@@ -182,6 +183,7 @@ function TripCard({
   showDate,
   onEdit,
   onDelete,
+  onExport,
 }: {
   trip: Trip;
   today: string;
@@ -189,6 +191,7 @@ function TripCard({
   showDate: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onExport: () => void;
 }) {
   const head = [showDate && t.dayTitle(trip.date), t.time(trip.from, trip.to)].filter(Boolean).join(' · ');
   const name = trip.title ?? waterLabel(trip.waterSnapshot?.name, trip.waterSnapshot?.place);
@@ -204,6 +207,9 @@ function TripCard({
       <div className={styles.actions}>
         <Button variant="secondary" onClick={onEdit} aria-label={`${head}: ${t.edit}`}>
           {t.edit}
+        </Button>
+        <Button variant="secondary" onClick={onExport} aria-label={t.toCalendarLabel(head)}>
+          {t.toCalendar}
         </Button>
         <Button variant="danger" onClick={onDelete} aria-label={`${head}: ${t.delete}`}>
           {t.delete}
@@ -267,6 +273,7 @@ export function CalendarPage() {
       showDate={showDate}
       onEdit={() => setEditing(x.id)}
       onDelete={() => void remove(x)}
+      onExport={() => exportTrips([x], `angeltermin-${x.date}.ics`)}
     />
   );
   const editTrip = live.find((x) => x.id === editing);
@@ -386,7 +393,18 @@ export function CalendarPage() {
             {t.emptyText}
           </EmptyState>
         ) : (
-          <ul className={styles.trips}>{upcoming.map((x) => card(x, true))}</ul>
+          <>
+            <ul className={styles.trips}>{upcoming.map((x) => card(x, true))}</ul>
+            {upcoming.length > 1 && (
+              <Button
+                variant="secondary"
+                onClick={() => exportTrips(upcoming, `angeltermine-ab-${today}.ics`)}
+              >
+                {t.allToCalendar}
+              </Button>
+            )}
+            <p className="muted">{t.toCalendarHint}</p>
+          </>
         )}
         {weather && <p className="muted">{t.weatherSource}</p>}
       </Section>

@@ -490,3 +490,37 @@ test('ALERT-1: Amtliche Warnungen auf der Wetter-Seite und am Angeltermin; ohne 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect(errors.filter((e) => !e.includes('Failed to load resource'))).toEqual([]);
 });
+
+test('CAL-3: Termin als Kalenderdatei (.ics) für den Handy-Kalender', async ({ page }) => {
+  await useLocalExternals(page);
+  await stubGeolocation(page);
+  await fakeForecast(page);
+  await page.goto('/wetter/kalender');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Termin eintragen' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Neuer Angeltermin' });
+  const day = new Date(Date.now() + 3 * 86_400_000).toLocaleDateString('sv-SE', {
+    timeZone: 'Europe/Berlin',
+  });
+  await sheet.getByLabel('Tag').fill(day);
+  await sheet.getByLabel('Von').fill('06:00');
+  await sheet.getByLabel('Titel (optional)').fill('Hecht, Zander');
+  await sheet.getByRole('button', { name: 'Speichern' }).click();
+  await expect(sheet).toBeHidden();
+
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    page
+      .getByRole('button', { name: /in den Kalender des Handys übernehmen/ })
+      .first()
+      .click(),
+  ]);
+  expect(download.suggestedFilename()).toBe(`angeltermin-${day}.ics`);
+  const path = await download.path();
+  const text = (await import('node:fs')).readFileSync(path, 'utf8');
+  expect(text).toMatch(/^BEGIN:VCALENDAR\r\nVERSION:2\.0\r\n/);
+  expect(text).toContain('SUMMARY:Hecht\\, Zander');
+  expect(text).toContain(`DTSTART:${day.replaceAll('-', '')}T`);
+  expect(text).toContain('TRIGGER:-PT60M');
+  expect(text.trimEnd().endsWith('END:VCALENDAR')).toBe(true);
+});

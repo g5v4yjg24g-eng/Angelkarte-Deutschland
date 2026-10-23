@@ -880,6 +880,13 @@ export const de = {
       const b = t2.toLocaleDateString('de-DE', { day: 'numeric', month: 'short', year: 'numeric' });
       return `KW ${kw} · ${a.replace(/\.$/, '')}.–${b}`;
     },
+    toCalendar: 'In Kalender',
+    toCalendarLabel: (head: string) => `${head}: in den Kalender des Handys übernehmen`,
+    allToCalendar: 'Alle anstehenden in den Kalender',
+    toCalendarHint:
+      'Lädt eine Kalenderdatei (.ics). Öffnen oder antippen übernimmt die Termine in den Kalender des Handys – mit Erinnerung 1 Stunde vorher (ganztägig: am Vorabend um 18 Uhr). Spätere Änderungen hier musst du dort erneut übernehmen.',
+    icsDefaultTitle: 'Angeln',
+    icsReminder: 'Angeltermin',
     weekTrips: 'Termine in dieser Woche',
     dayTrips: 'Termine an diesem Tag',
     noTripsWeek: 'In dieser Woche ist nichts eingetragen.',
