@@ -23,6 +23,7 @@ import { PressureChart } from './PressureChart';
 import { BiteWindows } from './BiteWindows';
 import { WeatherTabs } from './WeatherTabs';
 import { WeatherAlerts } from './AlertsList';
+import { GaugeCard } from './GaugeCard';
 import styles from './Weather.module.css';
 
 const t = de.forecast;
@@ -210,6 +211,8 @@ export function WeatherPage() {
       {/* Warnungen zuerst: Sicherheit vor allem anderen */}
       {enabled && q && <WeatherAlerts lat={q.lat} lng={q.lng} nowMs={nowMs} />}
       {body}
+      {/* Pegel nach der Vorhersage; ohne Positionsübertragung (ganze Stationsliste, Suche auf dem Gerät) */}
+      {enabled && q && <GaugeCard lat={q.lat} lng={q.lng} />}
     </Page>
   );
 }

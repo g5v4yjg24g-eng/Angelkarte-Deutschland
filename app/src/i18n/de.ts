@@ -830,6 +830,39 @@ export const de = {
     note: 'Modellwerte, nicht am Gewässer gemessen.',
     source: (time: string) => `Quelle: Open-Meteo.com (CC BY 4.0) · Stand ${time}`,
   },
+  gauge: {
+    title: 'Pegel in der Nähe',
+    loading: 'Pegel werden geladen …',
+    error: 'Pegeldaten sind gerade nicht abrufbar.',
+    stale: (time: string) => `Ohne Verbindung – Stand ${time}.`,
+    station: (name: string, water: string, km: number) =>
+      `${name} · ${water} · ${km.toLocaleString('de-DE', { maximumFractionDigits: km < 10 ? 1 : 0 })} km entfernt`,
+    none: (radius: number) => `Kein Pegel im Umkreis von ${radius} km.`,
+    nearestFar: (name: string, water: string, km: number) =>
+      `Nächster Pegel: ${name} (${water}), ${Math.round(km)} km entfernt.`,
+    coverage:
+      'PEGELONLINE misst nur an Bundeswasserstraßen (große Flüsse und Kanäle). Für Seen und kleinere Gewässer gibt es hier meist keine Werte.',
+    level: 'Wasserstand',
+    levelValue: (v: number, unit: string) =>
+      `${v.toLocaleString('de-DE', { maximumFractionDigits: 1 })} ${unit}`,
+    levelNote: 'Stand über dem Pegelnullpunkt – keine Wassertiefe.',
+    change: (d: number, unit: string) =>
+      `${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d).toLocaleString('de-DE', { maximumFractionDigits: 1 })} ${unit} in 24 h`,
+    states: {
+      low: 'niedrig (am oder unter dem mittleren Niedrigwasser)',
+      normal: 'normal (zwischen mittlerem Niedrig- und Hochwasser)',
+      high: 'hoch (am oder über dem mittleren Hochwasser)',
+      unknown: '',
+      commented: 'Störung an der Messstelle',
+      'out-dated': 'veraltet (älter als 25 Stunden)',
+    },
+    flow: 'Abfluss',
+    temp: 'Wassertemperatur',
+    measuredAt: (time: string) => `gemessen ${time}`,
+    unnamedWater: 'Gewässer',
+    source:
+      'Quelle: PEGELONLINE, Wasserstraßen- und Schifffahrtsverwaltung des Bundes (DL-DE->Zero-2.0) – ungeprüfte Rohdaten.',
+  },
   alerts: {
     title: 'Amtliche Warnungen',
     loading: 'Warnungen werden geladen …',
@@ -1086,6 +1119,10 @@ export const de = {
         license: 'CC BY 4.0',
       },
       {
+        name: 'Pegel: PEGELONLINE, Wasserstraßen- und Schifffahrtsverwaltung des Bundes',
+        license: 'DL-DE->Zero-2.0 (ungeprüfte Rohdaten)',
+      },
+      {
         name: 'Angelrecht: amtliche Texte der Länder',
         license: 'Quelle und Fassung je Land unter „Angelrecht der Länder“',
       },
@@ -1122,6 +1159,10 @@ export const de = {
       {
         name: 'Open-Meteo',
         what: 'nur wenn „Wetter am Fang“ an ist (Standard: an): Datum, Stunde und die auf etwa 100 m gerundete Position eines Fangs; im Bereich „Wetter“ die auf etwa 100 m gerundete Position des gewählten Orts (dein Standort oder ein Gewässer) für die Vorhersage. Abschalten: Mehr → Einstellungen.',
+      },
+      {
+        name: 'PEGELONLINE (www.pegelonline.wsv.de)',
+        what: 'nur wenn „Wetter am Fang“ an ist: die Liste aller Pegel mit aktuellen Werten und die 24-Stunden-Werte des nächstgelegenen Pegels. Es wird keine Position übertragen – den nächsten Pegel sucht die App auf dem Gerät.',
       },
       {
         name: 'Bright Sky (api.brightsky.dev)',
