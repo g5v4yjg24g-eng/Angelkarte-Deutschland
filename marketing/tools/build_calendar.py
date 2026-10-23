@@ -9,7 +9,7 @@ import datetime as dt
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-START = dt.date(2026, 11, 9)  # Montag Woche 1 (Woche 0 = Vorbereitung ab 2026-11-02)
+START = dt.date(2026, 10, 26)  # Montag Woche 1; Launch am Sonntag davor (Entscheidung Nutzer 2026-10-24), Vorbereitung am Samstag
 OUT = Path(__file__).resolve().parent.parent / "content-calendar"
 
 # Kürzel
@@ -19,12 +19,12 @@ IG_B = "Instagram Bildbeitrag → Facebook-Seite"
 IG_S = "Instagram Story (+ Facebook Story)"
 FB_G = "Facebook-Gruppen / Foren (nur wo Eigenwerbung erlaubt)"
 
-DAY = {"Di": 1, "Do": 3, "Sa": 5, "So": 6}
+DAY = {"Start": -1, "Di": 1, "Do": 3, "Sa": 5, "So": 6}  # "Start" = Sonntag vor Woche 1
 
 # Woche, Tag, Kanal, Format, Säule, Serie, Thema, Ziel, Hook, Ablauf, CTA, Material, Vorbereitung, Wiederverwendung
 P = [
     # --- Woche 1: Start ---
-    (1, "Di", IG_B, "Bildbeitrag", "Nutzergewinnung", "Start", "Marken-Launch: Fangpunkt stellt sich vor",
+    (1, "Start", IG_B, "Bildbeitrag", "Nutzergewinnung", "Start", "Marken-Launch: Fangpunkt stellt sich vor",
      "Erste Follower aus dem eigenen Umfeld, Profil wirkt bewohnt",
      "Ich hab mir die Angel-App gebaut, die ich selbst haben wollte.",
      "Motiv 01. Caption: wer dahinter steht, warum nicht kommerziell, was sie kann, was (noch) nicht.",
@@ -271,13 +271,13 @@ HEAD = ["Woche", "Datum", "Tag", "Plattform", "Format", "Säule", "Serie", "Them
 def rows():
     for w, day, *rest in P:
         date = START + dt.timedelta(weeks=w - 1, days=DAY[day])
-        yield [w, date.isoformat(), day, *rest]
+        yield [w, date.isoformat(), "So" if day == "Start" else day, *rest]
 
 
 # ---------- Kalenderdatei (RFC 5545) ----------
 TZ = ZoneInfo("Europe/Berlin")
 # Vorgeschlagene Posting-Zeiten [A]: werktags abends, am Wochenende vormittags
-POST_TIME = {"Di": dt.time(18, 0), "Do": dt.time(18, 0), "Sa": dt.time(10, 0), "So": dt.time(10, 0)}
+POST_TIME = {"Start": dt.time(18, 0), "Di": dt.time(18, 0), "Do": dt.time(18, 0), "Sa": dt.time(10, 0), "So": dt.time(10, 0)}
 STAMP = "20261023T000000Z"
 
 
@@ -317,8 +317,8 @@ def event(uid: str, day: dt.date, start: dt.time, minutes: int, summary: str, de
 def write_ics(data):
     cal = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Fangpunkt//Redaktionsplan//DE", "CALSCALE:GREGORIAN",
            "METHOD:PUBLISH", "X-WR-CALNAME:Fangpunkt Social Media", "X-WR-TIMEZONE:Europe/Berlin"]
-    prep = START - dt.timedelta(days=7)
-    cal += event("woche0", prep, dt.time(19, 0), 60, "Fangpunkt: Woche 0 – Vorbereitung",
+    prep = START - dt.timedelta(days=2)
+    cal += event("woche0", prep, dt.time(10, 0), 60, "Fangpunkt: Vorbereitung für den Start",
                  "Profile anlegen und Handles sichern, Profilbild + Bio, Creator-Konto, 3 Beiträge vorab "
                  "(Motiv 01, Karussell 02, Motiv 04), Story-Highlights, 10 Beta-Tester anschreiben.\n"
                  "Details: marketing/content-calendar/REDAKTIONSPLAN-90-TAGE.md", 60)
@@ -328,7 +328,7 @@ def write_ics(data):
         desc = (f"Plattform: {platform}\nFormat: {fmt}\nSäule: {pillar} · Serie: {series}\nZiel: {goal}\n\n"
                 f"Hook: „{hook}“\n\nAblauf: {flow}\n\nCTA: {cta}\n\nMaterial: {material}\n"
                 f"Vorbereitung: {prep_t}\nWiederverwendung: {reuse}\n\nCaption: marketing/posts/CAPTIONS.md")
-        cal += event(f"post-{i:02d}-{date}", d, POST_TIME[day], 30, f"Post: {topic} ({fmt})", desc, 120)
+        cal += event(f"post-{i:02d}-{date}", d, (POST_TIME["Start"] if d < START else POST_TIME[day]), 30, f"Post: {topic} ({fmt})", desc, 120)
     for w in range(1, 14):
         d = START + dt.timedelta(weeks=w - 1, days=6)
         cal += event(f"auswertung-{w:02d}", d, dt.time(20, 0), 20, f"Fangpunkt: Wochenauswertung (Woche {w})",
@@ -348,7 +348,7 @@ def main():
         wr.writerow(HEAD)
         wr.writerows(data)
     md = ["# 90-Tage-Redaktionsplan (Beiträge)", "",
-          f"Woche 1 beginnt am {START.isoformat()} (Montag). Vorbereitung (Woche 0) und Rhythmus: siehe "
+          f"Launch-Post am Sonntag vor Woche 1 (18:00), Woche 1 beginnt am {START.isoformat()} (Montag). Vorbereitung und Rhythmus: siehe "
           "[REDAKTIONSPLAN-90-TAGE.md](REDAKTIONSPLAN-90-TAGE.md). Diese Datei wird aus "
           "`marketing/tools/build_calendar.py` erzeugt – Änderungen dort vornehmen.", ""]
     week = None

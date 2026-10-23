@@ -1,6 +1,6 @@
 # Redaktionsplan – die ersten 90 Tage
 
-**Zeitraum:** Woche 0 (Vorbereitung) ab Mo 2026-11-02, Woche 1–13 vom 2026-11-09 bis 2027-02-07.
+**Zeitraum:** Vorbereitung Sa 2026-10-24, Launch-Post So 2026-10-25 18:00, danach Woche 1–13 vom 2026-10-26 bis 2027-01-24 (Start vorgezogen, Entscheidung Nutzer 2026-10-24). Alle Termine stehen im Google-Kalender (Farbe Pfau).
 Verschiebt sich der Start (z. B. weil Impressum, Domain oder EUIPO-Prüfung noch fehlen), in `marketing/tools/build_calendar.py` das Datum `START` ändern und neu erzeugen.
 
 **Dateien**
@@ -23,7 +23,7 @@ Verschiebt sich der Start (z. B. weil Impressum, Domain oder EUIPO-Prüfung noch
 
 **Batching-Tipp:** Bildschirmaufnahmen der App für 3–4 Reels an einem Abend machen; Naturclips bei jedem Angeltag „auf Vorrat“ filmen (immer 9:16, 4K wenn möglich, je 5–10 s, ruhig halten).
 
-## Woche 0 – Vorbereitung (vor dem ersten Beitrag)
+## Vorbereitung (Sa 24.10., vor dem ersten Beitrag)
 1. Entscheidungen aus der [README](../README.md#offen) treffen (öffentlich ja/nein, Impressum, Domain, Markenrecherche).
 2. Handles sichern (Instagram, TikTok, YouTube, Facebook-Seite) – möglichst überall gleich.
 3. Profilbild `profile/profilbild-dark-1080.png` hochladen, Bio aus STRATEGIE §5, Link setzen; Banner aus `brand/`.
