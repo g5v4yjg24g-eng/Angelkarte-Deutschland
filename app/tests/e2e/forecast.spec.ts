@@ -524,3 +524,85 @@ test('CAL-3: Termin als Kalenderdatei (.ics) für den Handy-Kalender', async ({ 
   expect(text).toContain('TRIGGER:-PT60M');
   expect(text.trimEnd().endsWith('END:VCALENDAR')).toBe(true);
 });
+
+test('GAUGE-1: Pegel in der Nähe mit Wasserstand, Tendenz, Wassertemperatur; ohne Pegel in der Nähe ein ehrlicher Hinweis', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await useLocalExternals(page);
+  await stubGeolocation(page);
+  await fakeForecast(page);
+  const now = Date.now();
+  let near = true;
+  const requests: URL[] = [];
+  // Teststation 2 km vom (gerundeten) Standort; zweite Station weit weg
+  await page.route('https://www.pegelonline.wsv.de/**', (route: Route) => {
+    const u = new URL(route.request().url());
+    requests.push(u);
+    if (u.pathname.endsWith('/W/measurements.json'))
+      return route.fulfill({
+        json: [
+          { timestamp: new Date(now - 24 * HOUR).toISOString(), value: 140 },
+          { timestamp: new Date(now - 12 * HOUR).toISOString(), value: 146 },
+          { timestamp: new Date(now).toISOString(), value: 152 },
+        ],
+      });
+    const ts = (v: number, kind: string, unit: string, extra = {}) => ({
+      shortname: kind,
+      unit,
+      currentMeasurement: { timestamp: new Date(now).toISOString(), value: v, ...extra },
+    });
+    return route.fulfill({
+      json: [
+        ...(near
+          ? [
+              {
+                uuid: 'test-nah',
+                longname: 'TESTPEGEL NAH',
+                latitude: 51.3263 + 0.018,
+                longitude: 6.2418,
+                water: { longname: 'TESTFLUSS' },
+                timeseries: [
+                  ts(152, 'W', 'cm', { stateMnwMhw: 'normal' }),
+                  ts(12.4, 'WT', '°C'),
+                  ts(31, 'Q', 'm³/s'),
+                ],
+              },
+            ]
+          : []),
+        {
+          uuid: 'test-fern',
+          longname: 'TESTPEGEL FERN',
+          latitude: 51.66,
+          longitude: 6.24,
+          water: { longname: 'FERNER FLUSS' },
+          timeseries: [ts(300, 'W', 'cm')],
+        },
+      ],
+    });
+  });
+  await page.goto('/wetter');
+  await waitForApp(page);
+  const box = page.getByRole('region', { name: 'Pegel in der Nähe' });
+  await expect(box).toContainText('Testpegel Nah · Testfluss · 2 km entfernt');
+  await expect(box).toContainText('152 cm · +12 cm in 24 h');
+  await expect(box).toContainText('normal (zwischen mittlerem Niedrig- und Hochwasser)');
+  await expect(box).toContainText('keine Wassertiefe');
+  await expect(box).toContainText('12,4 °C');
+  await expect(box).toContainText('31 m³/s');
+  await expect(box).toContainText('PEGELONLINE');
+  // Keine Position in den Anfragen
+  for (const u of requests) expect(u.search).not.toMatch(/51\.|6\.2|lat|lon/);
+
+  // Kein Pegel in der Nähe → ehrlicher Hinweis mit nächstem Pegel
+  near = false;
+  await page.evaluate(() => localStorage.removeItem('fangpunkt.gauges'));
+  await page.reload();
+  await waitForApp(page);
+  await expect(box).toContainText('Kein Pegel im Umkreis von 15 km.');
+  await expect(box).toContainText(/Nächster Pegel: Testpegel Fern \(Ferner Fluss\), 37 km entfernt\./);
+  await expect(box).toContainText('nur an Bundeswasserstraßen');
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(errors.filter((e) => !e.includes('Failed to load resource'))).toEqual([]);
+});
