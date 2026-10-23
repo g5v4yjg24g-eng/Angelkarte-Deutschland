@@ -9,3 +9,9 @@ export interface GaugesProvider {
   /** Wasserstand der letzten 24 h (Stand über Pegelnull, cm). */
   waterLevel24h(uuid: string): Promise<Point[]>;
 }
+
+/** Landespegel NRW: Stationen mit letztem Wert und 24-h-Änderung aus der Tagesdatei (keine Position übertragen). */
+export interface NrwGaugesProvider {
+  id: string;
+  stations(): Promise<GaugeStation[] | null>;
+}

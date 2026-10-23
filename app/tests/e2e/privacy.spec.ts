@@ -11,6 +11,7 @@ const ALLOWED_EXTERNAL = [
   'api.open-meteo.com',
   'api.brightsky.dev',
   'www.pegelonline.wsv.de',
+  'www.opengeodata.nrw.de',
 ];
 const ROUTES = [
   '/',
@@ -87,6 +88,7 @@ test('PRIV-1: nur App-Server, OpenFreeMap und Open-Meteo; Fänge und Notizen ver
     'Open-Meteo',
     'Bright Sky',
     'PEGELONLINE',
+    'OpenGeoData.NRW',
   ])
     await expect(page.getByText(name, { exact: false }).first()).toBeVisible();
 });

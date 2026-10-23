@@ -1,4 +1,4 @@
-// Pegel in der Nähe des gewählten Orts (Idee 1, Variante A): Wasserstand mit Lage zu MNW/MHW und 24-h-Änderung,
+// Pegel in der Nähe des gewählten Orts (Idee 1, Varianten A + B1: Bund live, Landespegel NRW aus der Tagesdatei): Wasserstand mit Lage zu MNW/MHW und 24-h-Änderung,
 // Abfluss und Wassertemperatur, wo gemessen. Ehrlich, wenn kein Pegel in der Nähe ist.
 import { de } from '../../i18n/de';
 import { GAUGE_RADIUS_KM, seriesOf, type GaugeSeries, type GaugeStation } from '../../domain/gauges';
@@ -18,6 +18,8 @@ const time = (iso?: string) =>
     : undefined;
 const stamp = (ms: number) =>
   new Date(ms).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Berlin' });
+/** Gewässer; bei Landespegeln NRW steht in den Daten nur das Einzugsgebiet */
+const waterOf = (s: GaugeStation) => s.water || s.area || t.nrwNoWater;
 const value = (s: GaugeSeries) => (s.value === undefined ? undefined : t.levelValue(s.value, s.unit));
 
 function GaugeFacts({
@@ -33,7 +35,7 @@ function GaugeFacts({
   const state = level?.state ? t.states[level.state] : '';
   return (
     <div className={w.nowCard}>
-      <span className="muted">{t.station(station.name, station.water, km)}</span>
+      <span className="muted">{t.station(station.name, waterOf(station), km)}</span>
       <dl className={w.facts}>
         {level && level.value !== undefined && (
           <div>
@@ -44,7 +46,7 @@ function GaugeFacts({
               {state && <span className="muted"> · {state}</span>}
               <br />
               <small className="muted">
-                {time(level.at) && `${t.measuredAt(time(level.at) ?? '')} · `}
+                {station.source !== 'hygon' && time(level.at) && `${t.measuredAt(time(level.at) ?? '')} · `}
                 {t.levelNote}
               </small>
             </dd>
@@ -64,6 +66,9 @@ function GaugeFacts({
           );
         })}
       </dl>
+      {station.source === 'hygon' && level?.at && (
+        <small className="muted">{t.nrwDaily(time(level.at) ?? '')}</small>
+      )}
     </div>
   );
 }
@@ -85,7 +90,7 @@ export function GaugeCard({ lat, lng }: { lat: number; lng: number }) {
               <p>{t.none(GAUGE_RADIUS_KM)}</p>
               {g.nearest && (
                 <p className="muted">
-                  {t.nearestFar(g.nearest.station.name, g.nearest.station.water, g.nearest.km)}
+                  {t.nearestFar(g.nearest.station.name, waterOf(g.nearest.station), g.nearest.km)}
                 </p>
               )}
               <p className="muted">{t.coverage}</p>
@@ -93,7 +98,11 @@ export function GaugeCard({ lat, lng }: { lat: number; lng: number }) {
           ) : (
             <GaugeFacts station={g.nearest.station} km={g.nearest.km} change24h={g.change24h} />
           )}
-          <p className={styles.source}>{t.source}</p>
+          <p className={styles.source}>
+            {g.nearest?.station.source === 'hygon' && g.nearest.km <= GAUGE_RADIUS_KM
+              ? t.sourceNrw
+              : t.source}
+          </p>
         </>
       )}
     </section>

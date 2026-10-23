@@ -22,8 +22,15 @@ const SeriesSchema = z.object({
 });
 export const GaugeStationSchema = z.object({
   uuid: z.string(),
+  /** pegelonline = Bundeswasserstraßen (live), hygon = Landespegel NRW (Tagesdatei) */
+  source: z.enum(['pegelonline', 'hygon']),
   name: z.string(),
+  /** Gewässername; bei Landespegeln NRW nicht in den Daten → leer, dafür `area` */
   water: z.string(),
+  /** Einzugsgebiet (Landespegel NRW) */
+  area: z.string().optional(),
+  /** Änderung des Wasserstands in 24 h, wenn schon in den Daten enthalten (Landespegel NRW) */
+  change24h: z.number().optional(),
   lat: z.number(),
   lng: z.number(),
   series: z.array(SeriesSchema),
@@ -67,7 +74,16 @@ export function parsePegelonlineStations(json: unknown): GaugeStation[] | null {
       });
       if (r.success) series.push(r.data);
     }
-    if (series.length) out.push({ uuid, name: titleCase(name), water: titleCase(water), lat, lng, series });
+    if (series.length)
+      out.push({
+        uuid,
+        source: 'pegelonline',
+        name: titleCase(name),
+        water: titleCase(water),
+        lat,
+        lng,
+        series,
+      });
   }
   return out;
 }
@@ -115,4 +131,116 @@ export function changeOver(points: readonly Point[], hours = 24): number | undef
   for (const p of points) if (!best || Math.abs(p.t - target) < Math.abs(best.t - target)) best = p;
   if (!best || Math.abs(best.t - target) > 3_600_000) return undefined;
   return Math.round((last.v - best.v) * 10) / 10;
+}
+
+// ---- Landespegel NRW (OpenHygon, LANUK) ------------------------------------------------------------------
+// Stationsliste OpenHygon-Pegel-Stationen_EPSG4326.txt und Messwerte der letzten 7 Tage (messwerte.txt aus
+// OpenHygon-Pegel-aktuell_CSV.zip, einmal täglich gegen 3 Uhr erzeugt) [V: opengeodata.nrw.de …/hygon/,
+// Abruf 2026-10-23]. Lizenz DL-DE->Zero-2.0. Kein Gewässername in den Daten – nur das Einzugsgebiet.
+
+interface HygonStation {
+  no: string;
+  name: string;
+  lat: number;
+  lng: number;
+  area?: string | undefined;
+  mnw?: number | undefined;
+  mhw?: number | undefined;
+}
+
+const dec = (s: string | undefined) => {
+  const v = s === undefined || s.trim() === '' ? NaN : Number(s.replace(',', '.'));
+  return Number.isFinite(v) ? v : undefined;
+};
+
+/** Stationsliste (Semikolon, Kopfzeile mit Spaltennamen). */
+export function parseHygonStations(text: string): HygonStation[] {
+  const lines = text
+    .replace(/^\uFEFF/, '')
+    .split(/\r?\n/)
+    .filter((l) => l.trim());
+  const head = (lines.shift() ?? '').split(';');
+  const col = (n: string) => head.indexOf(n);
+  const [iLat, iLng, iName, iNo, iArea, iMnw, iMhw] = [
+    'station_latitude',
+    'station_longitude',
+    'station_name',
+    'station_no',
+    'catchment_name',
+    'LANUV_MNW',
+    'LANUV_MHW',
+  ].map(col);
+  if ([iLat, iLng, iName, iNo].some((i) => i === undefined || i < 0)) return [];
+  const out: HygonStation[] = [];
+  for (const l of lines) {
+    const f = l.split(';');
+    const lat = dec(f[iLat ?? -1]);
+    const lng = dec(f[iLng ?? -1]);
+    const no = f[iNo ?? -1]?.trim();
+    const name = f[iName ?? -1]?.trim();
+    if (lat === undefined || lng === undefined || !no || !name) continue;
+    out.push({
+      no,
+      name: name.replace(/_/g, ' '),
+      lat,
+      lng,
+      area: f[iArea ?? -1]?.trim() || undefined,
+      mnw: dec(f[iMnw ?? -1]),
+      mhw: dec(f[iMhw ?? -1]),
+    });
+  }
+  return out;
+}
+
+/** Lage zu MNW/MHW wie bei PEGELONLINE: am oder unter MNW niedrig, am oder über MHW hoch. */
+export function levelState(v: number, mnw?: number, mhw?: number): GaugeState {
+  if (mnw === undefined || mhw === undefined) return 'unknown';
+  return v <= mnw ? 'low' : v >= mhw ? 'high' : 'normal';
+}
+
+/** Messwerte (station_no;time;value(cm)) + Stationen → Stationen mit letztem Wert und 24-h-Änderung. */
+export function summarizeHygon(stations: readonly HygonStation[], measurements: string): GaugeStation[] {
+  const wanted = new Map(stations.map((s) => [s.no, [] as Point[]]));
+  let start = measurements.indexOf('\n') + 1;
+  while (start > 0 && start < measurements.length) {
+    let end = measurements.indexOf('\n', start);
+    if (end < 0) end = measurements.length;
+    const line = measurements.slice(start, end);
+    start = end + 1;
+    const a = line.indexOf(';');
+    const b = line.indexOf(';', a + 1);
+    if (a < 0 || b < 0) continue;
+    const pts = wanted.get(line.slice(0, a));
+    if (!pts) continue;
+    const t = Date.parse(line.slice(a + 1, b));
+    const v = dec(line.slice(b + 1));
+    if (Number.isFinite(t) && v !== undefined) pts.push({ t, v });
+  }
+  const out: GaugeStation[] = [];
+  for (const s of stations) {
+    const pts = (wanted.get(s.no) ?? []).sort((x, y) => x.t - y.t);
+    const last = pts.at(-1);
+    if (!last) continue;
+    const change = changeOver(pts);
+    out.push({
+      uuid: `hygon:${s.no}`,
+      source: 'hygon',
+      name: s.name,
+      water: '',
+      ...(s.area ? { area: s.area } : {}),
+      ...(change !== undefined ? { change24h: change } : {}),
+      lat: s.lat,
+      lng: s.lng,
+      series: [
+        {
+          kind: 'W',
+          unit: 'cm',
+          value: last.v,
+          at: new Date(last.t).toISOString(),
+          state: levelState(last.v, s.mnw, s.mhw),
+        },
+      ],
+    });
+  }
+  return out;
 }
