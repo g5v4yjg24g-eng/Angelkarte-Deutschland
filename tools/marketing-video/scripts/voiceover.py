@@ -7,7 +7,11 @@ from pathlib import Path
 
 root = Path(__file__).resolve().parent.parent
 cfg = json.loads((root / 'video.config.json').read_text())
-voice = cfg['voice']
+if cfg['voice'].get('engine') == 'elevenlabs':
+    sys.exit('Sprecher kommt von ElevenLabs (video.config.json → voice.engine). Neu schneiden mit:\n'
+             f"  python3 scripts/split-voiceover.py {cfg['voice']['source']}\n"
+             'Für die lokale Piper-Stimme voice.engine auf "piper" setzen.')
+voice = cfg['voice']['piper']
 model = Path.home() / '.piper' / f"{voice['model']}.onnx"
 out = root / 'assets' / 'voiceover'
 out.mkdir(parents=True, exist_ok=True)

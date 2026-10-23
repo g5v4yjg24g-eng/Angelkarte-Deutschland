@@ -255,8 +255,10 @@ function Sound() {
   const vo = voiceover.map((v) => [sec(v.at), sec(v.at + v.durationS)] as const);
   const speaking = (f: number) => vo.some(([a, b]) => f >= a - 6 && f <= b + 6);
   const music = (f: number) => (speaking(f) ? 0.09 : 0.16) * interpolate(f, [0, 20], [0, 1], { extrapolateRight: 'clamp' });
+  // Naturgeräusche unter dem Sprecher auf ein Drittel absenken, damit jedes Wort verständlich bleibt
   const amb = (f: number) =>
-    interpolate(f, [0, sec(4.5), sec(5.5), sec(23.5), sec(24), sec(30), sec(33)], [0.45, 0.45, 0.12, 0.12, 0.4, 0.3, 0.05], { extrapolateRight: 'clamp' });
+    interpolate(f, [0, sec(4.5), sec(5.5), sec(23.5), sec(24), sec(30), sec(33)], [0.45, 0.45, 0.12, 0.12, 0.4, 0.3, 0.05], { extrapolateRight: 'clamp' }) *
+    (speaking(f) ? 0.35 : 1);
   const fx = (file: string, at: number, volume = 0.5) => (
     <Sequence key={`${file}${at}`} from={sec(at)}>
       <Audio src={staticFile(`graphics/${file}`)} volume={volume} />

@@ -22,7 +22,7 @@ Videos liegen nicht im Repository (`output/` ist ignoriert); sie werden als Anha
 | Zeit | Szene | Bild | Sprecher |
 |---|---|---|---|
 | 0–4,5 s | Leidenschaft | Angelszene „See im Morgennebel“, langsame Kamerafahrt | „Dein nächster Fang beginnt mit dem richtigen Überblick.“ |
-| 4,5–11 s | App entdecken | Handy fährt ein; echte Aufnahme: Suche „Hohendeicher“ → Karte fliegt zum See | „Mit Fangpunkt entdeckst du Gewässer in ganz Deutschland.“ |
+| 4,5–11 s | App entdecken | Handy fährt ein; echte Aufnahme (30 fps): Suche „Hohendeicher“ → Karte fliegt zum See | „Mit Fangpunkt entdeckst du Gewässer in ganz Deutschland.“ |
 | 11–23,5 s | Funktionen | 4 echte Ansichten: Spots & Stege · Fang erfassen · Wetter & Pegel · Statistik | je ein kurzer Satz pro Funktion |
 | 23,5–30 s | Fangmoment | Drill → Fisch über dem Wasser → echter Fangbuch-Eintrag | „Denn jeder Fang erzählt eine Geschichte.“ |
 | 30–42 s | Abschluss | Logo-Animation wie im App-Intro, Name, Slogan; **QR-Code ab 33 s unbewegt bis zum Ende (9 s)** | „Fangpunkt. Jetzt scannen und kostenlos entdecken.“ |
@@ -35,7 +35,9 @@ Voraussetzungen: Node ≥ 22 mit pnpm, FFmpeg, Python 3 mit NumPy, Chromium (Pla
 
 ```bash
 pnpm install                                   # im Repo-Root (Workspace)
-pip install piper-tts faster-whisper           # Sprecher (lokal) + Verständlichkeitsprüfung
+pip install faster-whisper                     # Schnitt und Verständlichkeitsprüfung des Sprechers
+# nur für die lokale Ersatzstimme (voice.engine = "piper"):
+pip install piper-tts
 mkdir -p ~/.piper && cd ~/.piper
 B=https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/high
 curl -LO $B/de_DE-thorsten-high.onnx && curl -LO $B/de_DE-thorsten-high.onnx.json
@@ -50,7 +52,9 @@ pnpm qr                 # QR-Code aus video.config.json erzeugen und durch Dekod
 pnpm screenshots        # echte App-Ansichten der veröffentlichten App aufnehmen (≈ 6 min)
 pnpm screenshots --only=stats,weather   # nur einzelne Ansichten neu aufnehmen
 pnpm music              # eigene Musik, Naturgeräusche, Effekte erzeugen (deterministisch)
-pnpm voiceover          # Sprecher erzeugen (mehrere Aufnahmen je Satz, die verständlichste bleibt)
+python3 scripts/split-voiceover.py assets/voiceover/elevenlabs/hans-deep-warm-german_eleven-v4.mp3
+                        # ElevenLabs-Aufnahme satzweise schneiden (Wort-Zeitstempel der Spracherkennung)
+pnpm voiceover          # nur bei voice.engine = "piper": lokale Ersatzstimme erzeugen
 pnpm studio             # Vorschau im Browser mit Zeitleiste
 pnpm render:vertical    # → output/fangpunkt-werbevideo-1080x1920.mp4
 pnpm render:horizontal  # → output/fangpunkt-werbevideo-1920x1080.mp4
@@ -59,11 +63,13 @@ pnpm check output/fangpunkt-werbevideo-1920x1080.mp4 1920 1080
 python3 scripts/asr-check.py   # Sprecher per Spracherkennung gegen den Text prüfen
 ```
 
-Komplett neu: `pnpm qr && pnpm screenshots && pnpm music && pnpm voiceover && pnpm render:vertical && pnpm render:horizontal`.
+Komplett neu: `pnpm qr && pnpm screenshots && pnpm music && python3 scripts/split-voiceover.py <aufnahme> && pnpm render:vertical && pnpm render:horizontal`.
+
+Die Kartenfahrt (`flight`) wird Bild für Bild aufgenommen: Die Uhr der Seite steht während der Aufnahme still und wird pro Videobild um 1/30 s weitergestellt. Dadurch läuft sie im Video flüssig, auch wenn der Rechner die Karte nur langsam zeichnet (Cloud-Umgebung ohne Grafikkarte).
 
 ## Was wo geändert wird
 
-- **Texte, Slogan, Handlungsaufforderung, URL, Sprechertext und -zeitpunkte:** `video.config.json`. Bei `voiceover[].say` steht eine reine Ausspracheschreibung für die Stimme (z. B. „Spotts“); eingeblendet wird immer `text`. Nach Änderungen am Sprecher `pnpm voiceover`.
+- **Texte, Slogan, Handlungsaufforderung, URL, Sprechertext und -zeitpunkte:** `video.config.json`. Wird der Sprechertext geändert, braucht es eine neue Aufnahme: in ElevenLabs (Stimme und Modell unter `voice.elevenlabs`) den ganzen Text als eine Aufnahme erzeugen, nach `assets/voiceover/elevenlabs/` legen, `voice.source` anpassen und `split-voiceover.py` laufen lassen. Das Skript bricht ab, wenn die Wortzahl der Aufnahme nicht zum Text passt. `voiceover[].say` gilt nur für die Piper-Ersatzstimme (Ausspracheschreibung, z. B. „Spotts“).
 - **Szenenlängen:** `T` in `src/config.ts` (QR-Stillstand `qrStill`; `scripts/check.mjs` prüft ab derselben Sekunde).
 - **Angelszenen:** Clip nach `assets/fishing-scenes/` legen und den Dateinamen unter `clips` in `video.config.json` eintragen (`null` = Platzhalter).
 - **App-Ansichten:** `pnpm screenshots` nimmt sie neu auf; welche Datei in welcher Szene erscheint, steht unter `screens`. Aufnahme-Schritte in `scripts/screenshots.mjs`.
@@ -88,6 +94,7 @@ Nicht automatisch geprüft: ein Scan mit einem echten Smartphone vom Bildschirm.
 | Schriften Inter, Fraunces | SIL Open Font License 1.1 (wie in der App) |
 | Karte in den App-Ansichten | OpenFreeMap © OpenMapTiles, Daten © OpenStreetMap-Mitwirkende (ODbL 1.0). Vermerk ist im Video eingeblendet. |
 | Musik, Naturgeräusche, Effekte | eigene, per Code erzeugte Werke (`scripts/music.py`), keine fremden Rechte |
-| Sprecher | Piper (GPL-3.0, nur als Werkzeug) mit der Stimme `de_DE-thorsten-high`: Datensatz Thorsten-Voice CC0. **Offen [O]:** Laut Modellkarte ist die Stimme auf ein englisches Basismodell (lessac) aufgesetzt, dessen Trainingsdaten (Blizzard 2013) nur nichtkommerziell genutzt werden dürfen. Für ein kostenloses, nichtkommerzielles Projekt vertretbar [A]; rechtssicher ist eine eigene Sprachaufnahme (Dateien `assets/voiceover/<id>.wav` ersetzen, `voiceover.json` mit den Dauern anpassen). |
+| Sprecher | ElevenLabs, Stimme „Hans – Deep Warm German“ (Bibliotheksstimme, ID `43H9TfBpRZiNdzjX9Acg`), Modell `eleven_v4`, erzeugt vom Nutzer am 2026-10-23 im eigenen ElevenLabs-Konto. **Offen [O]:** Nutzungsrechte hängen vom ElevenLabs-Tarif des Kontos ab (laut ElevenLabs-Bedingungen im kostenlosen Tarif keine kommerzielle Nutzung und Namensnennung „ElevenLabs“ nötig [A], nicht in dieser Sitzung geprüft). Bei Bedarf Vermerk in den Beitragstext. |
+| Ersatzstimme (nicht im Video) | Piper (GPL-3.0, Werkzeug) mit `de_DE-thorsten-high`: Datensatz CC0, Basismodell lessac mit nichtkommerziellen Trainingsdaten [O] |
 | QR-Code | `qrcode` (MIT), Prüfung mit `jsqr` (Apache-2.0) |
 | Angelszenen | siehe `assets/fishing-scenes/README.md` |

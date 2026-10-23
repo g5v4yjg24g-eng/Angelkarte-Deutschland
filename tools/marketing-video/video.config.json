@@ -16,11 +16,20 @@
     "demoNote": "Beispieldaten · Karte: OpenFreeMap © OpenMapTiles, Daten © OpenStreetMap-Mitwirkende"
   },
   "voice": {
-    "model": "de_DE-thorsten-high",
-    "speaker": null,
-    "lengthScale": 1.08,
-    "noiseScale": 0.45,
-    "noiseWScale": 0.5
+    "engine": "elevenlabs",
+    "source": "assets/voiceover/elevenlabs/hans-deep-warm-german_eleven-v4.mp3",
+    "elevenlabs": {
+      "voice": "Hans - Deep Warm German",
+      "voiceId": "43H9TfBpRZiNdzjX9Acg",
+      "model": "eleven_v4",
+      "generated": "2026-10-23"
+    },
+    "piper": {
+      "model": "de_DE-thorsten-high",
+      "lengthScale": 1.08,
+      "noiseScale": 0.45,
+      "noiseWScale": 0.5
+    }
   },
   "voiceover": [
     {
