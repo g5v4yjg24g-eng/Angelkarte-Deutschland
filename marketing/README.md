@@ -13,6 +13,7 @@ Stand 2026-10-23. Getrennt von der App: Nichts in diesem Ordner wird gebaut oder
 | **5 Video-Konzepte** mit Szenenplan, Sprechertext, Untertiteln | [videos/VIDEO-KONZEPTE.md](videos/VIDEO-KONZEPTE.md) |
 | **Designsystem** und Regeln für das Fisch-Logo | [brand/DESIGNSYSTEM.md](brand/DESIGNSYSTEM.md) |
 | **Übersicht aller Bilder und Videos** (im Browser öffnen) | [UEBERSICHT.html](UEBERSICHT.html) |
+| **Gesprächsskript** „Fangpunkt statt/neben ALLE ANGELN“ (Einwände, fairer Vergleich) | [templates/GESPRAECHSSKRIPT-ALLE-ANGELN.md](templates/GESPRAECHSSKRIPT-ALLE-ANGELN.md) |
 | **Kontaktvorlagen** (Creator, Vereine, Gruppen, Einwilligung) | [templates/KONTAKT-VORLAGEN.md](templates/KONTAKT-VORLAGEN.md) |
 
 ## Bilddateien
