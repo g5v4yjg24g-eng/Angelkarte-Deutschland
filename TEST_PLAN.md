@@ -49,6 +49,7 @@ Netzwerk in E2E: Externe Dienste (Karte, Wetter) werden per `page.route` **gemoc
 | MAP-3 | Tipp auf leere Fläche | Sheet „Neu an dieser Stelle" mit Typen |
 | MAP-4 | Tipp auf Gewässer | Sheet mit Gewässername, Profil-Link |
 | MAP-6 | OSM-Vermerk | Beim Start sichtbar, nach 5 s eingeklappt (ⓘ), per Tipp wieder offen; unter Über gelistet (✅ `map.spec.ts`) |
+| MAP-7 | Ansicht nach Seitenwechsel | Weg vom Standort scrollen, Seite wechseln und zurück → Ansicht unverändert (Zoom auf den Standort nur einmal pro App-Start); Knopf „Zu meinem Standort“ führt zurück, auch bei 390 px sichtbar (✅ `map.spec.ts`) |
 | NAV-1 | Gedrückt über die Leiste wischen | Glas-Linse folgt dem Finger, Punkt darunter vergrößert, Loslassen wählt und rastet ein; normaler Tipp unverändert (✅ `app.spec.ts`, `navLens.test.ts`) |
 | NAV-2 | Durchsichtige Leiste | Hintergrund unter 50 % deckend; bei „Transparenz reduzieren" deckend, bei reduzierter Bewegung ohne Animation (✅ `app.spec.ts`) |
 | MAP-5 | Basiskarte offline | Hinweis „Karte offline nicht verfügbar"; eigene Marker weiter sichtbar |

@@ -202,6 +202,42 @@ test('MAP-1: Standort startet standardmäßig mit der Karte; abschaltbar, dann e
   await expect(page.getByText('Genauigkeit ca. 25 m')).toBeVisible();
 });
 
+test('MAP-7: Ansicht bleibt nach Seitenwechsel; „Zu meinem Standort“ führt zurück', async ({ page }) => {
+  await stubGeolocation(page, 'ok');
+  await mockBasemap(page);
+  await openMap(page);
+  await expect(page.getByText('Genauigkeit ca. 25 m')).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => Math.round(window.__fangpunktMap?.getZoom() ?? 0)))
+    .toBeGreaterThanOrEqual(14);
+  // Weg vom Standort scrollen
+  await page.evaluate(() => window.__fangpunktMap?.jumpTo({ center: [7.0, 50.9], zoom: 12 }));
+  const center = () =>
+    page.evaluate(() => {
+      const c = window.__fangpunktMap?.getCenter();
+      return c ? [Math.round(c.lng * 100) / 100, Math.round(c.lat * 100) / 100] : null;
+    });
+  await expect.poll(center).toEqual([7, 50.9]);
+
+  // Seite wechseln und zurück (in der App, ohne Neuladen) → Ansicht unverändert, kein Sprung zum Standort
+  const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
+  await nav.getByRole('link', { name: 'Fangbuch' }).click();
+  await expect(page).toHaveURL(/\/fangbuch$/);
+  await nav.getByRole('link', { name: 'Karte' }).click();
+  await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'));
+  await expect(page.getByText('Genauigkeit ca. 25 m')).toBeVisible();
+  await page.waitForTimeout(800);
+  expect(await center()).toEqual([7, 50.9]);
+
+  // Knopf im Kartenknopf-Design führt zum Standort zurück
+  const recenter = page.getByRole('button', { name: 'Zu meinem Standort' });
+  await expect(recenter).toBeVisible();
+  await recenter.click();
+  await expect.poll(center).toEqual([6.24, 51.33]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(recenter).toBeInViewport();
+});
+
 test('MAP-2: Verweigerter Standort: beim Start still, auf Knopfdruck verständliche Meldung, Karte nutzbar', async ({
   page,
 }) => {

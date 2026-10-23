@@ -70,6 +70,12 @@ const HEAT_MIN = 30;
 /** OSMF: Vermerk darf nach Interaktion oder 5 s einklappen, muss aber auffindbar bleiben */
 const ATTRIBUTION_COLLAPSE_MS = 5000;
 
+/**
+ * Einmal pro App-Start auf den Standort zoomen. Beim Zurückwechseln zur Karte bleibt die zuletzt gesehene Ansicht
+ * (Wunsch Nutzer 2026-10-23); zurück zum Standort geht es mit dem Knopf „Zu meinem Standort“.
+ */
+let centeredThisLaunch = false;
+
 function readHeat(): boolean {
   try {
     return localStorage.getItem(HEAT_KEY) === '1';
@@ -196,7 +202,7 @@ export default function MapView() {
     autoLocated.current = false;
     setLocating(false);
   });
-  const centeredOnFix = useRef(false);
+  const centeredOnFix = useRef(centeredThisLaunch);
   const [waterManifest, setWaterManifest] = useState<WaterManifest | null>(null);
   const waterRef = useRef<WaterManifest | null>(null);
   const [selectedWid, setSelectedWid] = useState<string>();
@@ -525,6 +531,7 @@ export default function MapView() {
   useEffect(() => {
     if (!geo.fix || centeredOnFix.current) return;
     centeredOnFix.current = true;
+    centeredThisLaunch = true;
     mapRef.current?.easeTo({
       center: [geo.fix.lng, geo.fix.lat],
       zoom: Math.max(mapRef.current.getZoom(), 14),
@@ -552,6 +559,17 @@ export default function MapView() {
     }
     if (locHintSeen() || locateOnStart) setLocating(true);
     else setSheet({ kind: 'locate' });
+  }
+
+  /** Zurück zum eigenen Standort; ist er noch nicht bekannt, wird er eingeschaltet und beim ersten Wert angefahren. */
+  function onRecenter() {
+    const map = mapRef.current;
+    if (locating && geo.fix && map) {
+      map.easeTo({ center: [geo.fix.lng, geo.fix.lat], zoom: Math.max(map.getZoom(), 14) });
+      return;
+    }
+    centeredOnFix.current = false;
+    if (!locating) onLocate();
   }
 
   async function deletePlace(id: string) {
@@ -875,6 +893,12 @@ export default function MapView() {
           onClick={onLocate}
         />
         <IconButton
+          className={styles.control}
+          label={de.map.recenter}
+          icon={<RecenterIcon />}
+          onClick={onRecenter}
+        />
+        <IconButton
           className={[styles.control, heat ? styles.controlOn : ''].join(' ')}
           label={heat ? de.map.heatmapOff : de.map.heatmapOn}
           aria-pressed={heat}
@@ -1018,6 +1042,24 @@ function SearchIcon() {
     >
       <circle cx="10.5" cy="10.5" r="6.5" />
       <path d="m15.5 15.5 5 5" />
+    </svg>
+  );
+}
+
+/** Navigationspfeil: „zu meinem Standort“ */
+function RecenterIcon() {
+  return (
+    <svg
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 4 4 11l7 2 2 7z" />
     </svg>
   );
 }
