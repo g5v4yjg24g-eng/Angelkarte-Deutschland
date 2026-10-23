@@ -1,0 +1,853 @@
+{
+  "version": 1,
+  "historyId": "63271ad9-9e06-45c8-989a-943c2e9b065d",
+  "currentRevision": "e32bdce3-313e-479b-ab12-fecd42d7f9e2",
+  "pendingChanges": false,
+  "files": {
+    "CLAUDE.md": {
+      "hash": "1b36171117cb7c18f4100a0db6a3782ff2e096115995733200445cc2e80a4060",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/1b/1b36171117cb7c18f4100a0db6a3782ff2e096115995733200445cc2e80a4060"
+    },
+    "compositions/app.html": {
+      "hash": "6fcbe9d158679cf1ca52751df5748e0fc84fc9c489f3aa87dbe1a516d55e8b91",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/6f/6fcbe9d158679cf1ca52751df5748e0fc84fc9c489f3aa87dbe1a516d55e8b91"
+    },
+    "compositions/components/soft-blur-in.html": {
+      "hash": "9b732bb33aead010102a79d2f63039aaa20108619e567a0d14435c0489fcb9b2",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/9b/9b732bb33aead010102a79d2f63039aaa20108619e567a0d14435c0489fcb9b2"
+    },
+    "compositions/hook.html": {
+      "hash": "4e11454c30d7923e876d33b5c1eeb74ecf9b2f168a4e92a5b7af9f02049835ad",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/4e/4e11454c30d7923e876d33b5c1eeb74ecf9b2f168a4e92a5b7af9f02049835ad"
+    },
+    "compositions/organic-light-leak-overlay.html": {
+      "hash": "51205909ff79eeb078905f6c1ca45efbf278045df5ce600bcd61704c92d0b79e",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/51/51205909ff79eeb078905f6c1ca45efbf278045df5ce600bcd61704c92d0b79e"
+    },
+    "compositions/outro.html": {
+      "hash": "65d1df4b197f3e0e2e803a21e4c15408aaddbd14f6015ad646dbdfc6a8171a50",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/65/65d1df4b197f3e0e2e803a21e4c15408aaddbd14f6015ad646dbdfc6a8171a50"
+    },
+    "compositions/story.html": {
+      "hash": "da82a56f616e529bf05369e49647eb606634907791f92a0fb11c77b3dae2de3d",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/da/da82a56f616e529bf05369e49647eb606634907791f92a0fb11c77b3dae2de3d"
+    },
+    "hyperframes.json": {
+      "hash": "72a1a5c9a8cd91c6beb76ba0009581e786735aeb81d81853273a10f47b8768bd",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/72/72a1a5c9a8cd91c6beb76ba0009581e786735aeb81d81853273a10f47b8768bd"
+    },
+    "hyperframes.lock.json": {
+      "hash": "1216031ca8fefe19e229d68600f852e576c7fc05c3cca5687c9afce452bc7ca9",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/12/1216031ca8fefe19e229d68600f852e576c7fc05c3cca5687c9afce452bc7ca9"
+    },
+    "index.html": {
+      "hash": "3b7e89379de3428d76a9278ea23ae0c63ca4b0cb1a47c5169db3668be1cd3b0e",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/3b/3b7e89379de3428d76a9278ea23ae0c63ca4b0cb1a47c5169db3668be1cd3b0e"
+    },
+    "meta.json": {
+      "hash": "9090ce74a9173c3b0180e677bf0a3708d7a613822461129ec35afbc8ce05069e",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/90/9090ce74a9173c3b0180e677bf0a3708d7a613822461129ec35afbc8ce05069e"
+    },
+    "package.json": {
+      "hash": "ba4c48ef6942608390b03cbd56da192571e7a629078edcb0a8be37169d47a12c",
+      "content": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/ba/ba4c48ef6942608390b03cbd56da192571e7a629078edcb0a8be37169d47a12c"
+    }
+  },
+  "revisions": {
+    "1ff55de7-1cfb-4387-9ed2-127c16eb6d31": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792754242932,
+      "endedAt": 1792754242945,
+      "files": {
+        "compositions/app.html": {
+          "before": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/c7/c7354a867de174445101cd9ce765b1b7dba96d6a861e6c0d5205ac14510f1f8d",
+          "after": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/05/05c858f071fa8ae155958ea08f2cb864870eae5dee995c94705ed55e2683295b"
+        },
+        "compositions/hook.html": {
+          "before": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/87/872cd6a77bfef3c32be30ee15f2dbfa9a7994776bc96db4dcb3fae00949524da",
+          "after": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/4e/4e11454c30d7923e876d33b5c1eeb74ecf9b2f168a4e92a5b7af9f02049835ad"
+        },
+        "compositions/outro.html": {
+          "before": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/ee/ee82bec4a3f3e34e5211fba85e8907fde3676301ed408ad9ad86fbedd246f9ee",
+          "after": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/65/65d1df4b197f3e0e2e803a21e4c15408aaddbd14f6015ad646dbdfc6a8171a50"
+        },
+        "compositions/story.html": {
+          "before": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/9d/9dd7b5a7b42e3accd5fabb5dc824624b707bff7023680fc557b1163a8ed87e95",
+          "after": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/ea/eace707504ad2275950ffea411b0834c5d0cd5f5cfefdd3e578ca7022aeec3fb"
+        }
+      }
+    },
+    "1619d506-e81a-446f-8270-a8ad1694fbfd": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792754329938,
+      "endedAt": 1792754329941,
+      "files": {
+        "compositions/story.html": {
+          "before": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/ea/eace707504ad2275950ffea411b0834c5d0cd5f5cfefdd3e578ca7022aeec3fb",
+          "after": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/7e/7e67e7550236b9fbf77858189fea36d9bca21a0566aaea1fc2f9634fdd99820d"
+        }
+      }
+    },
+    "e32bdce3-313e-479b-ab12-fecd42d7f9e2": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792754401499,
+      "endedAt": 1792754401535,
+      "files": {
+        "compositions/app.html": {
+          "before": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/05/05c858f071fa8ae155958ea08f2cb864870eae5dee995c94705ed55e2683295b",
+          "after": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/6f/6fcbe9d158679cf1ca52751df5748e0fc84fc9c489f3aa87dbe1a516d55e8b91"
+        },
+        "compositions/organic-light-leak-overlay.html": {
+          "before": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/3e/3e2e2503279194347bae900b144e3f3578fd967dfe523c55fddb2b56cda09f4d",
+          "after": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/51/51205909ff79eeb078905f6c1ca45efbf278045df5ce600bcd61704c92d0b79e"
+        },
+        "compositions/story.html": {
+          "before": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/7e/7e67e7550236b9fbf77858189fea36d9bca21a0566aaea1fc2f9634fdd99820d",
+          "after": "/root/.cache/hyperframes/history/63271ad9-9e06-45c8-989a-943c2e9b065d/blobs/da/da82a56f616e529bf05369e49647eb606634907791f92a0fb11c77b3dae2de3d"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "e32bdce3-313e-479b-ab12-fecd42d7f9e2",
+      "id": "b38c61a1-4bde-4ecd-8e58-3f5de4172407"
+    },
+    "revisions": {
+      "e32bdce3-313e-479b-ab12-fecd42d7f9e2": [
+        {
+          "id": "b38c61a1-4bde-4ecd-8e58-3f5de4172407",
+          "scope": "project",
+          "report": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/checks/b38c61a1-4bde-4ecd-8e58-3f5de4172407.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792754413564,
+          "contentHash": "89e48aa01809d990cebc20c05c4c70f3d3ac9e748128e5d56ea1fb139d13db37",
+          "revision": "e32bdce3-313e-479b-ab12-fecd42d7f9e2",
+          "inputFingerprint": "690fbd6712cad828c52ba13fb62f5626a2ee0b4a664a79e793a9b67a7cf1f901",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "b9aeb979-2f76-4125-9e18-a251a0e74f7b",
+        "scope": "project",
+        "report": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/checks/b9aeb979-2f76-4125-9e18-a251a0e74f7b.json",
+        "metadata": {
+          "ok": true,
+          "browserSkipped": false,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 3000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1792754224424,
+        "contentHash": "09533022ee8de8720cb75b105faab0f7f3edf11a425c561d043e891504f09772",
+        "revision": null,
+        "inputFingerprint": "daf0c3e27c2330a49a23e101ab9a7b1e1ba2505f24af5ac0b9d170e53cbd0d0b",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": {
+      "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+      "id": "0a882199-0cb8-49df-8938-49c6da75747e-10"
+    },
+    "revisions": {
+      "1ff55de7-1cfb-4387-9ed2-127c16eb6d31": [
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-0",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-00-at-0.3s.png",
+          "time": 0.3,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "87a0f7f10a0babf4ef4b5d52f65e1e29fefbb74165c0088ce1f8c7e40c9f9c28",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-1",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-01-at-1.2s.png",
+          "time": 1.2,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "ba1675f1d898e37f71a767c01cd57e65cebb56ae1dda4187eaf3951f1f61f887",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-2",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-02-at-3s.png",
+          "time": 3,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "e53c8f2dd60420b4d81be60ea69ae0abbf4248b2cb89e2ed518ac5678ccc70f5",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-3",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-03-at-4.3s.png",
+          "time": 4.3,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "de8c1cea35ac283eb92b3fdeb542504cdced9c17c56b6f0736a2dd71191bd213",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-4",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-04-at-4.6s.png",
+          "time": 4.6,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "af0fad0a70e5908abd25a925de853fe4d1e29865503696378d2c37cab36d41c4",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-5",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-05-at-5.5s.png",
+          "time": 5.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "69355eb87ec26ffe9b8a61fd4caed39a40736fccdcb0744061aa2c3bf6f4f29e",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-6",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-06-at-8s.png",
+          "time": 8,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "7bd6d13addb7963a801ce34b164ccf5b48f639490ee78e1e33a7fc12d6a54a55",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-7",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-07-at-11.3s.png",
+          "time": 11.3,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "41450a997ca9fb3baf08b60a99384c83bf27e75f7097b85277db41cbc2bc23bc",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-8",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-08-at-14.5s.png",
+          "time": 14.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "60063c7003eef833e023c5c68541f7fc0bcf5af603d53451bcc67b99ae7137e3",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-9",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-09-at-17.6s.png",
+          "time": 17.6,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "9c23bdf87dbe0d89fd02443f42911a3dc5548380bfe2befc052b701a15e73524",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-10",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-10-at-20.7s.png",
+          "time": 20.7,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "64b75146341ba75f2baad5c36d467e3d697749fb235c29f75c3836fb4d0c9bc4",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-11",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-11-at-23.2s.png",
+          "time": 23.2,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "d90dd69b9b38aa806ed2f07c3a3c83f4099c66ad8d28d5cfbcd71d4ecbe3faa3",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-12",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-12-at-24.3s.png",
+          "time": 24.3,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "2d34312a35cfcf947a7ab5518a29e6ef1f5f6b6d9f31d8e1da45620e00d3cd46",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-13",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-13-at-26s.png",
+          "time": 26,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "3b14bb78639a74f668b5d4061f8f2bc3b2dad6f81892138d14f04c0d401732f5",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-14",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-14-at-27.2s.png",
+          "time": 27.2,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "579d596b5d3f96a0ffc8d953494e313ca8aff031886f55ba31a43ec25d505fb7",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-15",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-15-at-29s.png",
+          "time": 29,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "3157be5816ac08eb19e2189e89340bd43d373fe109ded7bb04334a592ebdf406",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-16",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-16-at-30.6s.png",
+          "time": 30.6,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "ca37d5420dc7b0cf990958779956613d4a8fd2cd0a832993c569c13ba0386131",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-17",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-17-at-31.5s.png",
+          "time": 31.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "aa370d4a6d7e4e9e83bb528d4398b4a260a21865730d0a9fdc90f8f7ce95351a",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-18",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-18-at-33.2s.png",
+          "time": 33.2,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "68c6f1eac904293c5a2490f39dbd85479b715fb5f71dbfa80ab0e4e748c7eb39",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-19",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-19-at-41.8s.png",
+          "time": 41.8,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "68c6f1eac904293c5a2490f39dbd85479b715fb5f71dbfa80ab0e4e748c7eb39",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0d2817ae-bffd-473c-9327-ff776e8c2882-20",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/413aa8e9-9914-4327-b148-33009abd8f4b/frame-20-at-40.74s.png",
+          "time": 40.74,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754301823,
+          "contentHash": "68c6f1eac904293c5a2490f39dbd85479b715fb5f71dbfa80ab0e4e748c7eb39",
+          "revision": "1ff55de7-1cfb-4387-9ed2-127c16eb6d31",
+          "inputFingerprint": "2cb9fee1434f11b5ccd1aa4da47ee64295be21e0d2d894b3d3882fa380a069c5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "1619d506-e81a-446f-8270-a8ad1694fbfd": [
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-0",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-00-at-3.8s.png",
+          "time": 3.8,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "5b1e1907d46fa7caf02849c1bd7970d9823aa8f3ff7d336ab41c7961e93d63d3",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-1",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-01-at-4s.png",
+          "time": 4,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "261d1ce6c2ece958d8f9c00f3acefee252d14b5d0a70938580e2c0ea13b35c42",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-2",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-02-at-4.2s.png",
+          "time": 4.2,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "13c581d06a45d36d39ce2227e8eb9e84d9e102b576d8b95c5414a17694a4d83c",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-3",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-03-at-4.45s.png",
+          "time": 4.45,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "9a0eaa7cd55455ffbdcd42b81c9e6dde4a9a0878ee6c65d466a9d04920be0509",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-4",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-04-at-4.7s.png",
+          "time": 4.7,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "4bbbc341280bccdd867c6b94ec5a0e0ba29b531cbe35c367a9c951ccc016186b",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-5",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-05-at-24s.png",
+          "time": 24,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "5bb6c7aaa4a8fa737b81f2d01eeaf2b2fc1be528fd2c3f3b84aec4e53b438636",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-6",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-06-at-25.6s.png",
+          "time": 25.6,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "276c2019ea44d62328d037f419eee85e41dfc52acea305b594a37cbdd735f552",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-7",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-07-at-25.75s.png",
+          "time": 25.75,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "ac416f46dfe35721241efd62dc5540b54a16d876f62098d8110a489968566dd2",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-8",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-08-at-28.1s.png",
+          "time": 28.1,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "2e68702fd3447ca60f05eb2ffe9392224a827605fb322964820524abff39314b",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-9",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-09-at-28.3s.png",
+          "time": 28.3,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "4882a85e24f30a6e74058233b96f293dce3eb8282bda286613ae6c07a0106c88",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "0a882199-0cb8-49df-8938-49c6da75747e-10",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes/.hyperframes/artifacts/snapshots/45686773-af50-4169-8e11-dabfcb0a9889/frame-10-at-40.74s.png",
+          "time": 40.74,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792754381259,
+          "contentHash": "68c6f1eac904293c5a2490f39dbd85479b715fb5f71dbfa80ab0e4e748c7eb39",
+          "revision": "1619d506-e81a-446f-8270-a8ad1694fbfd",
+          "inputFingerprint": "a90ff7392a5eb597eef2fcb121e14f232d250afa50a1f8489bdbd40242f44af9",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "79711ecf-46dd-4117-961b-f3106d8d843d",
+      "completedAt": 1792755319468,
+      "output": "/home/user/angelkarte-deutschland/tools/marketing-video/output/raw-hf-vertical.mp4",
+      "status": "completed",
+      "revision": null
+    },
+    "retainedRevisions": []
+  },
+  "pendingArtifactCleanup": []
+}

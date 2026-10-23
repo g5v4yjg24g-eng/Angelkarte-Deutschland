@@ -19,3 +19,7 @@ tools/marketing-video/assets/voiceover/.*-take*.wav
 # Musik und Geräusche sind deterministisch erzeugt (pnpm music)
 tools/marketing-video/assets/music/*.wav
 tools/marketing-video/assets/graphics/sfx-*.wav
+# HyperFrames: Vorschaubilder, Zwischenstände und Renders
+tools/marketing-video/hyperframes/.hyperframes/artifacts/
+tools/marketing-video/hyperframes/renders/
+tools/marketing-video/hyperframes/.hyperframes/video-state-lock

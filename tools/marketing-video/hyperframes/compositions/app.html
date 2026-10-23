@@ -1,0 +1,245 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Fraunces Variable";
+      font-weight: 100 900;
+      src: url("assets/fonts/fraunces-latin-wght-normal.woff2") format("woff2-variations");
+    }
+    @font-face {
+      font-family: "Fraunces Variable";
+      font-weight: 100 900;
+      src: url("assets/fonts/fraunces-latin-ext-wght-normal.woff2") format("woff2-variations");
+      unicode-range: U+0100-024F;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    /* Die ganze Szene öffnet sich als Kreis aus den Wellenringen der Szene 1 */
+    #app-world {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(80% 55% at 50% 52%, var(--color-primary, #0f5c6e) 0%, var(--color-deep, #0b2a33) 72%);
+      clip-path: circle(0px at 300px 1120px);
+    }
+    .app-head {
+      position: absolute;
+      top: 190px;
+      left: 70px;
+      right: 70px;
+      text-align: center;
+      font-family: "Fraunces Variable", Georgia, serif;
+      font-weight: 640;
+      font-size: 80px;
+      line-height: 1.12;
+      color: #fff;
+    }
+    .app-head .w {
+      display: inline-block;
+    }
+    .app-head .accent {
+      color: var(--color-ripple, #5cc4d6);
+    }
+    .app-head .num {
+      display: inline-block;
+      width: 64px;
+      height: 64px;
+      margin-right: 18px;
+      border-radius: 50%;
+      background: var(--color-accent, #f2994a);
+      color: var(--color-deep, #0b2a33);
+      font: 700 36px/64px Inter, sans-serif;
+      text-align: center;
+      vertical-align: 10px;
+    }
+    /* Handy: fest an seinem Platz (Wunsch Nutzer), 520 px breit, Bildschirm 393 × 852 CSS-px × 1,2306 */
+    #app-phone {
+      position: absolute;
+      top: 410px;
+      left: 280px;
+      width: 520px;
+      height: 1085px;
+      padding: 18.2px;
+      border-radius: 80px;
+      background: linear-gradient(145deg, #3a4246, #15191b 45%, #2b3236);
+      box-shadow:
+        0 40px 90px rgba(0, 0, 0, 0.45),
+        0 10px 30px rgba(0, 0, 0, 0.35),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+    }
+    #app-screen {
+      position: relative;
+      width: 483.6px;
+      height: 1048.4px;
+      border-radius: 65px;
+      overflow: hidden;
+      background: #fff;
+    }
+    #app-status {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 66.4px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 42px 0;
+      font: 600 21px Inter, sans-serif;
+      color: #000;
+      z-index: 3;
+    }
+    #app-island {
+      position: absolute;
+      top: 13.5px;
+      left: 165.5px;
+      width: 152.6px;
+      height: 44.3px;
+      border-radius: 22px;
+      background: #000;
+      z-index: 4;
+    }
+    #app-area {
+      position: absolute;
+      left: 0;
+      top: 66.4px;
+      width: 483.6px;
+      height: 982px;
+      overflow: hidden;
+    }
+    .scr-wrap {
+      position: absolute;
+      inset: 0;
+    }
+    .scr-wrap img,
+    .scr-wrap video {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 483.6px;
+      height: 982px;
+      object-fit: cover;
+      object-position: top;
+    }
+    #app-note {
+      position: absolute;
+      top: 1530px;
+      left: 60px;
+      right: 60px;
+      text-align: center;
+      font: 500 24px/1.4 Inter, sans-serif;
+      color: rgba(232, 244, 245, 0.8);
+    }
+  </style>
+  <div id="root" data-composition-id="app" data-width="1080" data-height="1920">
+    <div id="app-world">
+      <!-- Überschriften: Entdecken, dann eine je Funktion (Wechsel als Unschärfe-Tausch an derselben Stelle) -->
+      <h2 id="head-discover" class="app-head clip" data-start="0.5" data-duration="6.25" data-track-index="2">
+        <span class="w">Entdecke</span> <span class="w">Gewässer</span><br />
+        <span class="w">in</span> <span class="w">ganz</span> <span class="w accent">Deutschland.</span>
+      </h2>
+      <h2 id="head-spots" class="app-head clip" data-start="6.6" data-duration="3.25" data-track-index="2">
+        <span class="w"><span class="num">1</span>Spots &amp; Stege</span><br />
+        <span class="w accent">markieren</span>
+      </h2>
+      <h2 id="head-catch" class="app-head clip" data-start="9.725" data-duration="3.25" data-track-index="2">
+        <span class="w"><span class="num">2</span>Fänge</span><br />
+        <span class="w accent">erfassen</span>
+      </h2>
+      <h2 id="head-weather" class="app-head clip" data-start="12.85" data-duration="3.25" data-track-index="2">
+        <span class="w"><span class="num">3</span>Wetter</span><br />
+        <span class="w accent">&amp; Pegel</span>
+      </h2>
+      <h2 id="head-stats" class="app-head clip" data-start="15.975" data-duration="3.2" data-track-index="2">
+        <span class="w"><span class="num">4</span>Deine</span><br />
+        <span class="w accent">Statistik</span>
+      </h2>
+
+      <div id="app-phone">
+        <div id="app-screen">
+          <div id="app-status" data-layout-ignore>
+            <span>9:41</span>
+            <svg width="84" height="17" viewBox="0 0 70 14">
+              <rect x="0" y="10" width="3.4" height="4" rx="0.8" fill="#000" />
+              <rect x="5" y="7" width="3.4" height="7" rx="0.8" fill="#000" />
+              <rect x="10" y="4" width="3.4" height="10" rx="0.8" fill="#000" />
+              <rect x="15" y="1" width="3.4" height="13" rx="0.8" fill="#000" />
+              <path d="M28 5.2a10 10 0 0 1 14 0l-1.6 1.6a7.6 7.6 0 0 0-10.8 0zM31.4 8.6a5.2 5.2 0 0 1 7.2 0L35 12.2z" fill="#000" />
+              <rect x="46" y="1.5" width="21" height="11" rx="3" fill="none" stroke="#000" stroke-opacity="0.4" />
+              <rect x="48" y="3.5" width="15" height="7" rx="1.6" fill="#000" />
+              <rect x="68" y="5" width="1.6" height="4" rx="0.6" fill="#000" fill-opacity="0.4" />
+            </svg>
+          </div>
+          <div id="app-island"></div>
+          <div id="app-area">
+            <!-- Echte App-Aufnahmen (Handy-Ansicht der veröffentlichten App). Zeitgesteuert ist das Medium, bewegt wird die Hülle. -->
+            <div class="scr-wrap" id="wrap-flight">
+              <video id="scr-flight" class="clip" src="assets/screenshots/light-flight.mp4" data-start="0" data-duration="7.05" data-media-start="0.7" data-track-index="3" muted playsinline></video>
+            </div>
+            <div class="scr-wrap" id="wrap-spots">
+              <img id="scr-spots" class="clip" src="assets/screenshots/light-new-place.png" data-start="6.6" data-duration="3.575" data-track-index="4" alt="Neu an dieser Stelle" />
+            </div>
+            <div class="scr-wrap" id="wrap-catch">
+              <img id="scr-catch" class="clip" src="assets/screenshots/light-catch-form.png" data-start="9.725" data-duration="3.575" data-track-index="3" alt="Fang erfassen" />
+            </div>
+            <div class="scr-wrap" id="wrap-weather">
+              <img id="scr-weather" class="clip" src="assets/screenshots/light-weather.png" data-start="12.85" data-duration="3.575" data-track-index="4" alt="Wetter" />
+            </div>
+            <div class="scr-wrap" id="wrap-stats">
+              <img id="scr-stats" class="clip" src="assets/screenshots/light-stats.png" data-start="15.975" data-duration="3.525" data-track-index="3" alt="Statistik" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p id="app-note" data-layout-ignore class="clip" data-start="0.3" data-duration="19.2" data-track-index="5">
+        Beispieldaten · Karte: OpenFreeMap © OpenMapTiles, Daten © OpenStreetMap-Mitwirkende
+      </p>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // Übergang aus Szene 1: Kreis öffnet sich aus den Wellenringen (Iris)
+    tl.fromTo(
+      "#app-world",
+      { clipPath: "circle(0px at 300px 1120px)" },
+      { clipPath: "circle(2300px at 300px 1120px)", duration: 0.62, ease: "power2.in" },
+      0,
+    );
+
+    // „Entdecke Gewässer …“: ganze Zeile aus der Unschärfe
+    tl.fromTo("#head-discover .w", { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power2.out" }, 0.55);
+
+    // Ausgangslage: alle späteren Bildschirme warten rechts außerhalb des Handys
+    tl.set(["#wrap-spots", "#wrap-catch", "#wrap-weather", "#wrap-stats"], { xPercent: 100 }, 0);
+    tl.set("#wrap-flight", { xPercent: 0 }, 0);
+
+    // Funktionen: Überschrift wird an derselben Stelle getauscht (raus unscharf, rein scharf werdend),
+    // der App-Bildschirm schiebt sich wie in der App von rechts herein, der vorige weicht nach links
+    const beats = [
+      { t: 6.6, head: "#head-spots", prevHead: "#head-discover", wrap: "#wrap-spots", prev: "#wrap-flight" },
+      { t: 9.725, head: "#head-catch", prevHead: "#head-spots", wrap: "#wrap-catch", prev: "#wrap-spots" },
+      { t: 12.85, head: "#head-weather", prevHead: "#head-catch", wrap: "#wrap-weather", prev: "#wrap-catch" },
+      { t: 15.975, head: "#head-stats", prevHead: "#head-weather", wrap: "#wrap-stats", prev: "#wrap-weather" },
+    ];
+    beats.forEach((b) => {
+      tl.fromTo(b.prevHead + " .w", { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(8px)", duration: 0.15, ease: "power2.in", immediateRender: false }, b.t - 0.15);
+      tl.fromTo(
+        b.head + " .w",
+        { opacity: 0, filter: "blur(6px)" },
+        { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power2.out", stagger: 0.07, immediateRender: false },
+        b.t,
+      );
+      tl.fromTo(b.wrap, { xPercent: 100 }, { xPercent: 0, duration: 0.42, ease: "power3.out", immediateRender: false }, b.t);
+      tl.fromTo(b.prev, { xPercent: 0 }, { xPercent: -28, duration: 0.42, ease: "power3.out", immediateRender: false }, b.t);
+    });
+    // letzte Überschrift verlässt die Bühne vor dem Lichteinfall
+    tl.fromTo("#head-stats .w", { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(8px)", duration: 0.18, ease: "power2.in", immediateRender: false }, 18.85);
+
+    window.__timelines["app"] = tl;
+  </script>
+</template>

@@ -1,0 +1,156 @@
+<!doctype html>
+<!--
+  Fangpunkt – Werbevideo, HyperFrames-Fassung (Hochformat 1080 × 1920, 42 s).
+  Szenen in compositions/, Medien in assets/ (gemeinsam mit dem Remotion-Projekt, Verweis ../assets).
+  Texte, Farben und Ziel-URL sind Variablen (HyperFrames-App → Variables).
+-->
+<html
+  lang="de"
+  data-composition-variables='[
+    {"id":"color-deep","type":"color","label":"Tiefblau","default":"#0B2A33"},
+    {"id":"color-primary","type":"color","label":"Petrol","default":"#0F5C6E"},
+    {"id":"color-ripple","type":"color","label":"Türkis","default":"#5CC4D6"},
+    {"id":"color-accent","type":"color","label":"Akzent Orange","default":"#F2994A"},
+    {"id":"color-fish","type":"color","label":"Fischweiß","default":"#E8F4F5"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --color-deep: #0b2a33;
+        --color-primary: #0f5c6e;
+        --color-ripple: #5cc4d6;
+        --color-accent: #f2994a;
+        --color-fish: #e8f4f5;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--color-deep);
+      }
+      #ground {
+        position: absolute;
+        inset: 0;
+        background: var(--color-deep);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="42"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="ground"></div>
+
+      <!-- Szene 1 – Leidenschaft: Angler am nebligen See -->
+      <div
+        id="hook"
+        data-composition-id="hook"
+        data-composition-src="compositions/hook.html"
+        data-start="0"
+        data-duration="5"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 1"
+      ></div>
+
+      <!-- Szene 2+3 – App entdecken und Funktionen (ein Handy, das stillsteht) -->
+      <div
+        id="app"
+        data-composition-id="app"
+        data-composition-src="compositions/app.html"
+        data-start="4.4"
+        data-duration="19.5"
+        data-track-index="2"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 2"
+      ></div>
+
+      <!-- Lichteinfall als Übergang in den Fangmoment -->
+      <div
+        id="organic-light-leak-overlay"
+        data-composition-id="organic-light-leak-overlay"
+        data-composition-src="compositions/organic-light-leak-overlay.html"
+        data-start="22.9"
+        data-duration="1.6"
+        data-track-index="5"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 6"
+      ></div>
+
+      <!-- Szene 4 – Fangmoment: Steg im Nebel, Fisch wird zurückgesetzt, echter Fangbuch-Eintrag -->
+      <div
+        id="story"
+        data-composition-id="story"
+        data-composition-src="compositions/story.html"
+        data-start="23.5"
+        data-duration="6.8"
+        data-track-index="3"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 3"
+      ></div>
+
+      <!-- Szene 5 – Marke und QR-Code (ab 33 s unbewegt) -->
+      <div
+        id="outro"
+        data-composition-id="outro"
+        data-composition-src="compositions/outro.html"
+        data-start="30"
+        data-duration="12"
+        data-track-index="4"
+        data-track-kind="graphics"
+        data-width="1080"
+        data-height="1920"
+        style="z-index: 4"
+      ></div>
+
+      <!-- Ton: eigene Musik und Naturgeräusche (unter dem Sprecher abgesenkt), Sprecher ElevenLabs „Hans“, Effekte -->
+      <audio id="music" class="clip" src="assets/music/music.wav" data-start="0" data-duration="42" data-track-index="10" data-volume="1" data-audio-group="music" data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0.0},{&quot;t&quot;:0.15,&quot;v&quot;:0.03},{&quot;t&quot;:0.3,&quot;v&quot;:0.06},{&quot;t&quot;:0.45,&quot;v&quot;:0.05},{&quot;t&quot;:3.62,&quot;v&quot;:0.09},{&quot;t&quot;:3.92,&quot;v&quot;:0.16},{&quot;t&quot;:4.95,&quot;v&quot;:0.16},{&quot;t&quot;:5.25,&quot;v&quot;:0.09},{&quot;t&quot;:8.58,&quot;v&quot;:0.09},{&quot;t&quot;:8.88,&quot;v&quot;:0.16},{&quot;t&quot;:10.9,&quot;v&quot;:0.16},{&quot;t&quot;:11.2,&quot;v&quot;:0.09},{&quot;t&quot;:12.87,&quot;v&quot;:0.09},{&quot;t&quot;:13.17,&quot;v&quot;:0.16},{&quot;t&quot;:14.05,&quot;v&quot;:0.16},{&quot;t&quot;:14.35,&quot;v&quot;:0.09},{&quot;t&quot;:16.12,&quot;v&quot;:0.09},{&quot;t&quot;:16.42,&quot;v&quot;:0.16},{&quot;t&quot;:17.15,&quot;v&quot;:0.16},{&quot;t&quot;:17.45,&quot;v&quot;:0.09},{&quot;t&quot;:19.38,&quot;v&quot;:0.09},{&quot;t&quot;:19.68,&quot;v&quot;:0.16},{&quot;t&quot;:20.3,&quot;v&quot;:0.16},{&quot;t&quot;:20.6,&quot;v&quot;:0.09},{&quot;t&quot;:23.86,&quot;v&quot;:0.09},{&quot;t&quot;:24.15,&quot;v&quot;:0.16},{&quot;t&quot;:24.16,&quot;v&quot;:0.16},{&quot;t&quot;:24.45,&quot;v&quot;:0.09},{&quot;t&quot;:26.87,&quot;v&quot;:0.09},{&quot;t&quot;:27.17,&quot;v&quot;:0.16},{&quot;t&quot;:30.75,&quot;v&quot;:0.16},{&quot;t&quot;:31.05,&quot;v&quot;:0.09},{&quot;t&quot;:34.58,&quot;v&quot;:0.09},{&quot;t&quot;:34.88,&quot;v&quot;:0.16}]}]}"></audio>
+      <audio id="ambience" class="clip" src="assets/music/ambience.wav" data-start="0" data-duration="42" data-track-index="11" data-volume="1" data-audio-group="music" data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0.45},{&quot;t&quot;:0.15,&quot;v&quot;:0.45},{&quot;t&quot;:0.45,&quot;v&quot;:0.158},{&quot;t&quot;:3.62,&quot;v&quot;:0.158},{&quot;t&quot;:3.92,&quot;v&quot;:0.45},{&quot;t&quot;:4.5,&quot;v&quot;:0.45},{&quot;t&quot;:4.95,&quot;v&quot;:0.301},{&quot;t&quot;:5.25,&quot;v&quot;:0.071},{&quot;t&quot;:5.5,&quot;v&quot;:0.12},{&quot;t&quot;:8.58,&quot;v&quot;:0.042},{&quot;t&quot;:8.88,&quot;v&quot;:0.12},{&quot;t&quot;:10.9,&quot;v&quot;:0.12},{&quot;t&quot;:11.2,&quot;v&quot;:0.042},{&quot;t&quot;:12.87,&quot;v&quot;:0.042},{&quot;t&quot;:13.17,&quot;v&quot;:0.12},{&quot;t&quot;:14.05,&quot;v&quot;:0.12},{&quot;t&quot;:14.35,&quot;v&quot;:0.042},{&quot;t&quot;:16.12,&quot;v&quot;:0.042},{&quot;t&quot;:16.42,&quot;v&quot;:0.12},{&quot;t&quot;:17.15,&quot;v&quot;:0.12},{&quot;t&quot;:17.45,&quot;v&quot;:0.042},{&quot;t&quot;:19.38,&quot;v&quot;:0.042},{&quot;t&quot;:19.68,&quot;v&quot;:0.12},{&quot;t&quot;:20.3,&quot;v&quot;:0.12},{&quot;t&quot;:20.6,&quot;v&quot;:0.042},{&quot;t&quot;:23.5,&quot;v&quot;:0.12},{&quot;t&quot;:23.86,&quot;v&quot;:0.113},{&quot;t&quot;:24,&quot;v&quot;:0.4},{&quot;t&quot;:24.15,&quot;v&quot;:0.398},{&quot;t&quot;:24.16,&quot;v&quot;:0.397},{&quot;t&quot;:24.45,&quot;v&quot;:0.137},{&quot;t&quot;:26.87,&quot;v&quot;:0.123},{&quot;t&quot;:27.17,&quot;v&quot;:0.347},{&quot;t&quot;:30,&quot;v&quot;:0.3},{&quot;t&quot;:30.75,&quot;v&quot;:0.237},{&quot;t&quot;:31.05,&quot;v&quot;:0.074},{&quot;t&quot;:33,&quot;v&quot;:0.05},{&quot;t&quot;:34.58,&quot;v&quot;:0.017},{&quot;t&quot;:34.88,&quot;v&quot;:0.05},{&quot;t&quot;:41.9,&quot;v&quot;:0.05}]}]}"></audio>
+
+      <audio id="vo1" class="clip" src="assets/voiceover/vo1.wav" data-start="0.6" data-track-index="21" data-duration="2.865" data-volume="1" data-audio-group="voiceover"></audio>
+      <audio id="vo2" class="clip" src="assets/voiceover/vo2.wav" data-start="5.4" data-track-index="22" data-duration="3.03" data-volume="1" data-audio-group="voiceover"></audio>
+      <audio id="vo3a" class="clip" src="assets/voiceover/vo3a.wav" data-start="11.35" data-track-index="23" data-duration="1.37" data-volume="1" data-audio-group="voiceover"></audio>
+      <audio id="vo3b" class="clip" src="assets/voiceover/vo3b.wav" data-start="14.5" data-track-index="24" data-duration="1.475" data-volume="1" data-audio-group="voiceover"></audio>
+      <audio id="vo3c" class="clip" src="assets/voiceover/vo3c.wav" data-start="17.6" data-track-index="25" data-duration="1.63" data-volume="1" data-audio-group="voiceover"></audio>
+      <audio id="vo3d" class="clip" src="assets/voiceover/vo3d.wav" data-start="20.75" data-track-index="26" data-duration="2.96" data-volume="1" data-audio-group="voiceover"></audio>
+      <audio id="vo4" class="clip" src="assets/voiceover/vo4.wav" data-start="24.6" data-track-index="27" data-duration="2.12" data-volume="1" data-audio-group="voiceover"></audio>
+      <audio id="vo5" class="clip" src="assets/voiceover/vo5.wav" data-start="31.2" data-track-index="28" data-duration="3.233" data-volume="1" data-audio-group="voiceover"></audio>
+
+      <audio id="sfx-ripple" class="clip" src="assets/graphics/sfx-whoosh.wav" data-start="4.15" data-track-index="29" data-duration="0.7" data-volume="0.4" data-audio-group="sfx"></audio>
+      <audio id="sfx-tap-search" class="clip" src="assets/graphics/sfx-tap.wav" data-start="7.6" data-track-index="30" data-duration="0.06" data-volume="0.45" data-audio-group="sfx"></audio>
+      <audio id="sfx-tap-1" class="clip" src="assets/graphics/sfx-tap.wav" data-start="11" data-track-index="31" data-duration="0.06" data-volume="0.4" data-audio-group="sfx"></audio>
+      <audio id="sfx-tap-2" class="clip" src="assets/graphics/sfx-tap.wav" data-start="14.13" data-track-index="32" data-duration="0.06" data-volume="0.4" data-audio-group="sfx"></audio>
+      <audio id="sfx-tap-3" class="clip" src="assets/graphics/sfx-tap.wav" data-start="17.25" data-track-index="33" data-duration="0.06" data-volume="0.4" data-audio-group="sfx"></audio>
+      <audio id="sfx-tap-4" class="clip" src="assets/graphics/sfx-tap.wav" data-start="20.38" data-track-index="34" data-duration="0.06" data-volume="0.4" data-audio-group="sfx"></audio>
+      <audio id="sfx-release" class="clip" src="assets/graphics/sfx-splash.wav" data-start="26.55" data-track-index="35" data-duration="0.9" data-volume="0.35" data-audio-group="sfx"></audio>
+      <audio id="sfx-outro" class="clip" src="assets/graphics/sfx-whoosh.wav" data-start="29.75" data-track-index="36" data-duration="0.7" data-volume="0.35" data-audio-group="sfx"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

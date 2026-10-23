@@ -1,0 +1,162 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Fraunces Variable";
+      font-weight: 100 900;
+      src: url("assets/fonts/fraunces-latin-wght-normal.woff2") format("woff2-variations");
+    }
+    @font-face {
+      font-family: "Fraunces Variable";
+      font-weight: 100 900;
+      src: url("assets/fonts/fraunces-latin-ext-wght-normal.woff2") format("woff2-variations");
+      unicode-range: U+0100-024F;
+    }
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    /* Grund: Tiefblau mit örtlichem Schimmer (radial, kein großflächiger linearer Verlauf – der bandet in H.264) */
+    #outro-ground {
+      position: absolute;
+      inset: 0;
+      background: var(--color-deep, #0b2a33);
+    }
+    #outro-glow {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(70% 45% at 50% 46%, rgba(18, 64, 75, 1) 0%, rgba(11, 42, 51, 0) 100%);
+    }
+    #outro-brand {
+      position: absolute;
+      top: 240px;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+    }
+    #outro-mark {
+      width: 160px;
+      height: 160px;
+      overflow: visible;
+    }
+    #outro-word {
+      font-family: "Fraunces Variable", Georgia, serif;
+      font-weight: 650;
+      font-size: 108px;
+      line-height: 1;
+      color: var(--color-fish, #e8f4f5);
+    }
+    #outro-word .l {
+      display: inline-block;
+    }
+    #outro-slogan {
+      position: absolute;
+      top: 440px;
+      left: 90px;
+      right: 90px;
+      text-align: center;
+      font: 500 42px/1.3 Inter, sans-serif;
+      color: var(--color-ripple, #5cc4d6);
+    }
+    #outro-slogan .w {
+      display: inline-block;
+    }
+    /* QR-Code: reines Schwarz auf Weiß, Ruhezone 4 Module im SVG, 45 Module × 11 px – wird nie bewegt oder skaliert */
+    #outro-qr-card {
+      position: absolute;
+      top: 600px;
+      left: 292px;
+      width: 495px;
+      height: 495px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      background: #fff;
+    }
+    #outro-qr {
+      display: block;
+      width: 495px;
+      height: 495px;
+      image-rendering: pixelated;
+    }
+    #outro-cta {
+      position: absolute;
+      top: 1135px;
+      left: 60px;
+      right: 60px;
+      text-align: center;
+      font: 650 48px Inter, sans-serif;
+      color: #fff;
+    }
+    #outro-url {
+      position: absolute;
+      top: 1205px;
+      left: 60px;
+      right: 60px;
+      text-align: center;
+      font: 500 29px Inter, sans-serif;
+      color: rgba(232, 244, 245, 0.78);
+    }
+  </style>
+  <div id="root" data-composition-id="outro" data-width="1080" data-height="1920">
+    <div id="outro-ground"></div>
+    <div id="outro-glow"></div>
+
+    <div id="outro-brand" data-hold class="clip" data-start="0" data-duration="12" data-track-index="1">
+      <!-- Fisch-Symbol aus dem Marken-Master app/src/design/brand/fish.json -->
+      <svg id="outro-mark" viewBox="0 0 100 100" aria-label="Fangpunkt-Logo">
+        <path id="outro-ripple" d="M26 86q6-4.5 12 0t12 0t12 0t12 0t12 0" fill="none" stroke="#5CC4D6" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="80" />
+        <g id="outro-fish">
+          <path id="outro-tail" d="M31 45L12 30Q18 50 12 70L31 55Z" fill="#E8F4F5" />
+          <path d="M49 32Q56 20 67 24Q62 28 61 33Z" fill="#E8F4F5" />
+          <path d="M53 68Q57 77 65 76Q62 72 62 67Z" fill="#E8F4F5" />
+          <path d="M88 50C80 36 63 29.5 46 32C38 33.5 32 38 28 43L28 57C32 62 38 66.5 46 68C63 70.5 80 64 88 50Z" fill="#E8F4F5" />
+          <path d="M66 37Q59.5 50 66 63" fill="none" stroke="#0B2A33" stroke-width="2.6" stroke-linecap="round" />
+          <circle id="outro-eye" cx="75" cy="46" r="4.4" fill="#F2994A" />
+        </g>
+      </svg>
+      <div id="outro-word">
+        <span class="l">F</span><span class="l">a</span><span class="l">n</span><span class="l">g</span><span class="l">p</span><span class="l">u</span><span class="l">n</span><span class="l">k</span><span class="l">t</span>
+      </div>
+    </div>
+
+    <p id="outro-slogan" data-hold class="clip" data-start="0" data-duration="12" data-track-index="2">
+      <span class="w">Dein</span> <span class="w">Gewässer.</span> <span class="w">Deine</span> <span class="w">Spots.</span><br />
+      <span class="w">Deine</span> <span class="w">Fanggeschichte.</span>
+    </p>
+
+    <div id="outro-qr-block" data-hold class="clip" data-start="0" data-duration="12" data-track-index="3">
+      <div id="outro-qr-card">
+        <img id="outro-qr" src="assets/qr/fangpunkt-qr.svg" alt="QR-Code zu Fangpunkt" />
+      </div>
+      <p id="outro-cta">Jetzt scannen und App entdecken.</p>
+      <p id="outro-url">g5v4yjg24g-eng.github.io/Angelkarte-Deutschland</p>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    // Welle zeichnet sich, der Fisch schwimmt mit einem Flossenschlag ein, das Auge erscheint
+    tl.fromTo("#outro-ripple", { strokeDashoffset: 80 }, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 0.15);
+    tl.fromTo("#outro-fish", { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: "expo.out" }, 0.3);
+    tl.fromTo("#outro-tail", { rotation: 0, svgOrigin: "30 50" }, { keyframes: [{ rotation: -12, duration: 0.13 }, { rotation: 8, duration: 0.13 }, { rotation: 0, duration: 0.14 }], ease: "sine.inOut" }, 0.75);
+    tl.fromTo("#outro-eye", { scale: 0, svgOrigin: "75 46" }, { scale: 1, duration: 0.3, ease: "back.out(1.6)" }, 0.95);
+
+    // Name: Buchstabe für Buchstabe (0,07 s Abstand), leicht unscharf aus 30 % Deckkraft
+    tl.fromTo("#outro-word .l", { opacity: 0, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power2.out", stagger: 0.07 }, 0.6);
+
+    // Slogan Wort für Wort
+    tl.fromTo("#outro-slogan .w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.14, ease: "power2.out", stagger: 0.08 }, 1.45);
+
+    // QR-Block: nur Deckkraft, keine Bewegung; ab 3,0 s (= 33 s im Video) steht alles still bis zum Ende
+    tl.fromTo("#outro-qr-card", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 2.0);
+    tl.fromTo(["#outro-cta", "#outro-url"], { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 2.3);
+    tl.to({}, { duration: 12 }, 0);
+
+    window.__timelines["outro"] = tl;
+  </script>
+</template>

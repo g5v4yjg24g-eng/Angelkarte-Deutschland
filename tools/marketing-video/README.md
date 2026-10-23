@@ -76,6 +76,22 @@ Die Kartenfahrt (`flight`) wird Bild für Bild aufgenommen: Die Uhr der Seite st
 - **Musik/Geräusche:** `scripts/music.py` anpassen oder eigene Datei als `assets/music/music.wav` ablegen (dann Lizenz unten eintragen). Lautstärken in `Sound()` in `src/Video.tsx`.
 - **Layout der Formate:** `LAYOUTS` in `src/Video.tsx`.
 
+## HyperFrames-Fassung (Hochformat, überarbeitet)
+
+Im Ordner `hyperframes/` liegt eine überarbeitete Hochformat-Fassung, gebaut mit [HyperFrames](https://hyperframes.heygen.com) (HTML + GSAP, Open Source von HeyGen, lokal gerendert, keine Kosten). Sie nutzt dieselben Medien (`hyperframes/assets` verweist auf `assets/`). Was sich gegenüber der Remotion-Fassung geändert hat, steht in `hyperframes/TRANSLATION_NOTES.md`.
+
+```bash
+cd tools/marketing-video/hyperframes
+npx --yes hyperframes@0.8.188 browser ensure          # einmalig: Chrome zum Rendern
+npx --yes hyperframes@0.8.188 check                   # Prüfung (Lint, Laufzeit, Layout, Kontrast)
+npx --yes hyperframes@0.8.188 preview --background    # Vorschau im Browser (HyperFrames Studio)
+npx --yes hyperframes@0.8.188 render --quality delivery --output ../output/raw-hf-vertical.mp4
+cd .. && node scripts/finalize.mjs output/raw-hf-vertical.mp4 output/fangpunkt-werbevideo-hyperframes-1080x1920.mp4
+pnpm check output/fangpunkt-werbevideo-hyperframes-1080x1920.mp4
+```
+
+Texte stehen direkt in `hyperframes/compositions/*.html`; Farben sind Variablen in `hyperframes/index.html`. Der Farblook der Angelclips ist als `data-color-grading` an den `<video>`-Elementen gespeichert (ändern mit `npx hyperframes media-treatment`). Die anonyme Nutzungsstatistik der HyperFrames-CLI ist abgeschaltet (`hyperframes telemetry disable`).
+
 ## Echte App, Beispieldaten
 
 Alle Bildschirme sind Aufnahmen der veröffentlichten App (Handy-Ansicht 393 × 798 CSS-px bei 3-facher Pixeldichte, deutsche Spracheinstellung). Es werden ausschließlich Handy-Ansichten gezeigt. Fangbuch, Sessions, Orte und Statistik zeigen **Beispieldaten** (`scripts/demo-data.mjs`, eingespielt über den normalen Import der App) am Hohendeicher See (OSM-Relation 9075175); das Video kennzeichnet sie mit „Beispieldaten“. Wetter, Warnungen und Gewässerprofil sind echte Antworten der App zum Aufnahmezeitpunkt (Wetter vom 23.10.2026).
@@ -90,6 +106,7 @@ Nicht automatisch geprüft: ein Scan mit einem echten Smartphone vom Bildschirm.
 
 | Bestandteil | Quelle / Lizenz |
 |---|---|
+| HyperFrames 0.8.188 | Open Source (HeyGen), lokal gerendert; Lichteinfall-Block `organic-light-leak-overlay` aus der HyperFrames-Bibliothek |
 | Remotion 4 | Free License für Einzelpersonen, gemeinnützige Organisationen und Firmen bis 3 Beschäftigte (`node_modules/remotion/LICENSE.md`, gelesen 2026-10-23) |
 | Schriften Inter, Fraunces | SIL Open Font License 1.1 (wie in der App) |
 | Karte in den App-Ansichten | OpenFreeMap © OpenMapTiles, Daten © OpenStreetMap-Mitwirkende (ODbL 1.0). Vermerk ist im Video eingeblendet. |
