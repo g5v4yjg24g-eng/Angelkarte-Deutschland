@@ -1,0 +1,93 @@
+# Fangpunkt – Werbevideo
+
+Werbeclip (42 s) für Fangpunkt, programmatisch mit [Remotion](https://www.remotion.dev) gebaut. Getrennt von der App: Hier wird nichts aus `app/` verändert, nur gelesen (Marken-Master `app/src/design/brand/fish.json`).
+
+**Stand:** Prototyp (Phase 3). Echte App-Ansichten, Logo, Sprecher, eigene Musik und QR-Abschluss sind fertig. Die drei **Angelszenen sind noch Platzhalter**, bis die Clips in `assets/fishing-scenes/` liegen (siehe dortige README).
+
+**Ziel-URL des QR-Codes:** `https://g5v4yjg24g-eng.github.io/Angelkarte-Deutschland/` (GitHub Pages, Freigabe Nutzer 2026-10-23). Änderung nur in `video.config.json` → danach `pnpm qr` und neu rendern.
+
+## Ausgaben
+
+| Datei | Inhalt |
+|---|---|
+| `output/fangpunkt-werbevideo-1080x1920.mp4` | Mastervideo vertikal (Reels, TikTok, Shorts) |
+| `output/fangpunkt-werbevideo-1920x1080.mp4` | Horizontale Fassung mit eigenem Layout (Text links, Handy rechts) |
+| `assets/qr/fangpunkt-qr.svg` | QR-Code als Vektor für Flyer und Plakate |
+| `assets/qr/fangpunkt-qr.png` | QR-Code 4096 × 4096 px |
+
+Videos liegen nicht im Repository (`output/` ist ignoriert); sie werden als Anhang eines Releases geteilt oder lokal neu gerendert.
+
+## Ablauf (Storyboard)
+
+| Zeit | Szene | Bild | Sprecher |
+|---|---|---|---|
+| 0–4,5 s | Leidenschaft | Angelszene „See im Morgennebel“, langsame Kamerafahrt | „Dein nächster Fang beginnt mit dem richtigen Überblick.“ |
+| 4,5–11 s | App entdecken | Handy fährt ein; echte Aufnahme: Suche „Hohendeicher“ → Karte fliegt zum See | „Mit Fangpunkt entdeckst du Gewässer in ganz Deutschland.“ |
+| 11–23,5 s | Funktionen | 4 echte Ansichten: Spots & Stege · Fang erfassen · Wetter & Pegel · Statistik | je ein kurzer Satz pro Funktion |
+| 23,5–30 s | Fangmoment | Drill → Fisch über dem Wasser → echter Fangbuch-Eintrag | „Denn jeder Fang erzählt eine Geschichte.“ |
+| 30–42 s | Abschluss | Logo-Animation wie im App-Intro, Name, Slogan; **QR-Code ab 33 s unbewegt bis zum Ende (9 s)** | „Fangpunkt. Jetzt scannen und kostenlos entdecken.“ |
+
+Tiefenkarten kommen bewusst nicht vor: Sie sind in der App nicht umgesetzt (PLAN.md M9).
+
+## Einrichtung
+
+Voraussetzungen: Node ≥ 22 mit pnpm, FFmpeg, Python 3 mit NumPy, Chromium (Playwright; in der Cloud-Umgebung vorinstalliert).
+
+```bash
+pnpm install                                   # im Repo-Root (Workspace)
+pip install piper-tts faster-whisper           # Sprecher (lokal) + Verständlichkeitsprüfung
+mkdir -p ~/.piper && cd ~/.piper
+B=https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/high
+curl -LO $B/de_DE-thorsten-high.onnx && curl -LO $B/de_DE-thorsten-high.onnx.json
+```
+
+Lokal ohne vorinstalliertes Chromium lädt Remotion beim ersten Rendern selbst einen Browser (`remotion.config.ts`).
+
+## Befehle (in `tools/marketing-video/`)
+
+```bash
+pnpm qr                 # QR-Code aus video.config.json erzeugen und durch Dekodieren prüfen
+pnpm screenshots        # echte App-Ansichten der veröffentlichten App aufnehmen (≈ 6 min)
+pnpm screenshots --only=stats,weather   # nur einzelne Ansichten neu aufnehmen
+pnpm music              # eigene Musik, Naturgeräusche, Effekte erzeugen (deterministisch)
+pnpm voiceover          # Sprecher erzeugen (mehrere Aufnahmen je Satz, die verständlichste bleibt)
+pnpm studio             # Vorschau im Browser mit Zeitleiste
+pnpm render:vertical    # → output/fangpunkt-werbevideo-1080x1920.mp4
+pnpm render:horizontal  # → output/fangpunkt-werbevideo-1920x1080.mp4
+pnpm check output/fangpunkt-werbevideo-1080x1920.mp4            # technische Prüfung
+pnpm check output/fangpunkt-werbevideo-1920x1080.mp4 1920 1080
+python3 scripts/asr-check.py   # Sprecher per Spracherkennung gegen den Text prüfen
+```
+
+Komplett neu: `pnpm qr && pnpm screenshots && pnpm music && pnpm voiceover && pnpm render:vertical && pnpm render:horizontal`.
+
+## Was wo geändert wird
+
+- **Texte, Slogan, Handlungsaufforderung, URL, Sprechertext und -zeitpunkte:** `video.config.json`. Bei `voiceover[].say` steht eine reine Ausspracheschreibung für die Stimme (z. B. „Spotts“); eingeblendet wird immer `text`. Nach Änderungen am Sprecher `pnpm voiceover`.
+- **Szenenlängen:** `T` in `src/config.ts` (QR-Stillstand `qrStill`; `scripts/check.mjs` prüft ab derselben Sekunde).
+- **Angelszenen:** Clip nach `assets/fishing-scenes/` legen und den Dateinamen unter `clips` in `video.config.json` eintragen (`null` = Platzhalter).
+- **App-Ansichten:** `pnpm screenshots` nimmt sie neu auf; welche Datei in welcher Szene erscheint, steht unter `screens`. Aufnahme-Schritte in `scripts/screenshots.mjs`.
+- **Musik/Geräusche:** `scripts/music.py` anpassen oder eigene Datei als `assets/music/music.wav` ablegen (dann Lizenz unten eintragen). Lautstärken in `Sound()` in `src/Video.tsx`.
+- **Layout der Formate:** `LAYOUTS` in `src/Video.tsx`.
+
+## Echte App, Beispieldaten
+
+Alle Bildschirme sind Aufnahmen der veröffentlichten App (Handy-Ansicht 393 × 798 CSS-px bei 3-facher Pixeldichte, deutsche Spracheinstellung). Es werden ausschließlich Handy-Ansichten gezeigt. Fangbuch, Sessions, Orte und Statistik zeigen **Beispieldaten** (`scripts/demo-data.mjs`, eingespielt über den normalen Import der App) am Hohendeicher See (OSM-Relation 9075175); das Video kennzeichnet sie mit „Beispieldaten“. Wetter, Warnungen und Gewässerprofil sind echte Antworten der App zum Aufnahmezeitpunkt (Wetter vom 23.10.2026).
+
+## Prüfungen
+
+`pnpm check` prüft Abmessungen, Dauer, Codec (H.264, yuv420p), Tonspur, Lesbarkeit bis zum Ende, Lautheit (−14 LUFS, Spitze ≤ −1 dBFS), dekodiert den QR-Code aus drei Einzelbildern des fertigen Videos (33,05 s, Mitte, Ende) und vergleicht ihn mit der Ziel-URL. Außerdem prüft es, dass der QR-Abschluss unbewegt bleibt.
+
+Nicht automatisch geprüft: ein Scan mit einem echten Smartphone vom Bildschirm. Das bitte selbst einmal testen.
+
+## Lizenzen und Quellen
+
+| Bestandteil | Quelle / Lizenz |
+|---|---|
+| Remotion 4 | Free License für Einzelpersonen, gemeinnützige Organisationen und Firmen bis 3 Beschäftigte (`node_modules/remotion/LICENSE.md`, gelesen 2026-10-23) |
+| Schriften Inter, Fraunces | SIL Open Font License 1.1 (wie in der App) |
+| Karte in den App-Ansichten | OpenFreeMap © OpenMapTiles, Daten © OpenStreetMap-Mitwirkende (ODbL 1.0). Vermerk ist im Video eingeblendet. |
+| Musik, Naturgeräusche, Effekte | eigene, per Code erzeugte Werke (`scripts/music.py`), keine fremden Rechte |
+| Sprecher | Piper (GPL-3.0, nur als Werkzeug) mit der Stimme `de_DE-thorsten-high`: Datensatz Thorsten-Voice CC0. **Offen [O]:** Laut Modellkarte ist die Stimme auf ein englisches Basismodell (lessac) aufgesetzt, dessen Trainingsdaten (Blizzard 2013) nur nichtkommerziell genutzt werden dürfen. Für ein kostenloses, nichtkommerzielles Projekt vertretbar [A]; rechtssicher ist eine eigene Sprachaufnahme (Dateien `assets/voiceover/<id>.wav` ersetzen, `voiceover.json` mit den Dauern anpassen). |
+| QR-Code | `qrcode` (MIT), Prüfung mit `jsqr` (Apache-2.0) |
+| Angelszenen | siehe `assets/fishing-scenes/README.md` |

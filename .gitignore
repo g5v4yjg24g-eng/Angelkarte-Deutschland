@@ -11,3 +11,11 @@ app/test-results/
 app/playwright-report/
 app/public/data/
 !app/tests/fixtures/water/*.pmtiles
+# Werbevideo: Renderergebnisse und große Medien (siehe tools/marketing-video/README.md)
+tools/marketing-video/output/
+tools/marketing-video/assets/fishing-scenes/*
+!tools/marketing-video/assets/fishing-scenes/README.md
+tools/marketing-video/assets/voiceover/.*-take*.wav
+# Musik und Geräusche sind deterministisch erzeugt (pnpm music)
+tools/marketing-video/assets/music/*.wav
+tools/marketing-video/assets/graphics/sfx-*.wav

@@ -12,6 +12,9 @@ pnpm test       # Unit-Tests
 pnpm e2e        # End-to-End-Tests gegen den Produktionsbuild
 ```
 
+## Werbevideo
+Produktionsprojekt (Remotion) in [tools/marketing-video](tools/marketing-video/README.md).
+
 ## Dokumente
 - [PLAN.md](PLAN.md) – Meilensteine, Entscheidungen, Risiken
 - [ARCHITECTURE.md](ARCHITECTURE.md) – Technik und Begründungen

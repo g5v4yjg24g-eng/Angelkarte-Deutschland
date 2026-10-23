@@ -1,0 +1,83 @@
+{
+  "targetUrl": "https://g5v4yjg24g-eng.github.io/Angelkarte-Deutschland/",
+  "appName": "Fangpunkt",
+  "fps": 30,
+  "texts": {
+    "hook": "Dein nächster Fang beginnt mit dem richtigen Überblick.",
+    "discover": "Entdecke Gewässer in ganz Deutschland.",
+    "featuresClaim": "Deine Spots, deine Fänge und deine Erfahrungen – an einem Ort.",
+    "featureSpots": "Spots & Stege markieren",
+    "featureCatch": "Fänge erfassen",
+    "featureWeather": "Wetter & Pegel",
+    "featureStats": "Deine Statistik",
+    "story": "Jeder Fang erzählt eine Geschichte.",
+    "slogan": "Dein Gewässer. Deine Spots. Deine Fanggeschichte.",
+    "cta": "Jetzt scannen und App entdecken.",
+    "demoNote": "Beispieldaten · Karte: OpenFreeMap © OpenMapTiles, Daten © OpenStreetMap-Mitwirkende"
+  },
+  "voice": {
+    "model": "de_DE-thorsten-high",
+    "speaker": null,
+    "lengthScale": 1.08,
+    "noiseScale": 0.45,
+    "noiseWScale": 0.5
+  },
+  "voiceover": [
+    {
+      "id": "vo1",
+      "at": 0.6,
+      "text": "Dein nächster Fang beginnt mit dem richtigen Überblick."
+    },
+    {
+      "id": "vo2",
+      "at": 5.4,
+      "text": "Mit Fangpunkt entdeckst du Gewässer in ganz Deutschland."
+    },
+    {
+      "id": "vo3a",
+      "at": 11.35,
+      "text": "Markiere deine Spots.",
+      "say": "Markiere deine Spotts."
+    },
+    {
+      "id": "vo3b",
+      "at": 14.5,
+      "text": "Halte jeden Fang fest."
+    },
+    {
+      "id": "vo3c",
+      "at": 17.6,
+      "text": "Behalte Wetter und Pegel im Blick."
+    },
+    {
+      "id": "vo3d",
+      "at": 20.75,
+      "text": "Und erkenne in deiner Statistik, was funktioniert."
+    },
+    {
+      "id": "vo4",
+      "at": 24.6,
+      "text": "Denn jeder Fang erzählt eine Geschichte.",
+      "say": "Denn jeder Fang – erzählt eine Geschichte."
+    },
+    {
+      "id": "vo5",
+      "at": 31.2,
+      "text": "Fangpunkt. Jetzt scannen und kostenlos entdecken.",
+      "say": "Fang-punkt. Jetzt scannen, und kostenlos entdecken."
+    }
+  ],
+  "clips": {
+    "lake": null,
+    "fight": null,
+    "fish": null
+  },
+  "screens": {
+    "flight": "screenshots/light-flight.mp4",
+    "spots": "screenshots/light-new-place.png",
+    "catchForm": "screenshots/light-catch-form.png",
+    "weather": "screenshots/light-weather.png",
+    "stats": "screenshots/light-stats.png",
+    "catchDetail": "screenshots/light-catch-detail.png"
+  }
+}
