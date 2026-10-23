@@ -243,7 +243,6 @@
         {
           "id": "d39dd8db-d925-43f1-8812-7a490e2a12d0",
           "scope": "project",
-          "report": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/checks/d39dd8db-d925-43f1-8812-7a490e2a12d0.json",
           "metadata": {
             "ok": false,
             "browserSkipped": true,
@@ -265,7 +264,9 @@
           "revision": "213f3b68-e5fd-427b-95c3-db102273cb77",
           "inputFingerprint": "ed0d8a60f9db13a68737f170f84fba9f60af142c1e2fa4df4770de1715158b06",
           "inputScope": "local-project-files",
-          "attribution": "recorded-revision"
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "364a99ac-371d-4c87-bee7-48bb6026e123"
         }
       ],
       "ba36e9a9-2db8-494c-b973-802606d2faa4": [
@@ -638,5 +639,18 @@
       ]
     },
     "unversioned": []
-  }
+  },
+  "renders": {
+    "latest": {
+      "id": "364a99ac-371d-4c87-bee7-48bb6026e123",
+      "completedAt": 1792759212634,
+      "output": "/home/user/angelkarte-deutschland/tools/marketing-video/output/raw-tutorial-entwurf.mp4",
+      "status": "completed",
+      "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4"
+    },
+    "retainedRevisions": [
+      "ba36e9a9-2db8-494c-b973-802606d2faa4"
+    ]
+  },
+  "pendingArtifactCleanup": []
 }
