@@ -100,6 +100,7 @@ export const de = {
     water: 'Gewässer',
     locate: 'Meinen Standort zeigen',
     locateStop: 'Standort ausblenden',
+    recenter: 'Zu meinem Standort',
     locateTitle: 'Standort anzeigen?',
     locateText:
       'Fangpunkt zeigt deinen Standort nur auf dieser Karte an. Er wird nicht gespeichert und nicht übertragen. Dein Browser fragt gleich nach der Erlaubnis.',
