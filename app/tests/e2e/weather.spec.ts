@@ -1,6 +1,6 @@
 import { expect, test, type Page } from './fixtures';
 import type { Catch } from '../../src/domain/schemas';
-import { collectErrors, useLocalExternals, waitForApp } from './helpers';
+import { collectErrors, startCatchAt, useLocalExternals, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -20,9 +20,9 @@ const withPos: Catch = {
 const noPos: Catch = { ...withPos, id: 'wx-2', position: undefined };
 
 /** Open-Meteo nie wirklich abrufen: Antwort aus den angefragten Stunden bauen, Anfragen mitschreiben. */
-async function fakeOpenMeteo(page: Page) {
+async function fakeOpenMeteo(page: Page, host = 'historical-forecast-api.open-meteo.com') {
   const requests: URL[] = [];
-  await page.route('https://historical-forecast-api.open-meteo.com/**', async (route) => {
+  await page.route(`https://${host}/**`, async (route) => {
     const u = new URL(route.request().url());
     requests.push(u);
     const start = Date.parse(`${u.searchParams.get('start_hour')}:00Z`);
@@ -197,5 +197,50 @@ test('GAUGE-3: Pegel am Fang – Wasserstand zum Fangzeitpunkt wird gespeichert,
   for (const u of requests) expect(u.search).not.toMatch(/53\.|9\.9|lat|lon/);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test('WX-3: Wetter erscheint schon beim Erfassen unter „Mehr Details“, lässt sich übernehmen und wird gespeichert', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await useLocalExternals(page);
+  // gerade erfasster Fang → Forecast-API (die letzten Stunden fehlen im Archiv womöglich noch)
+  const requests = await fakeOpenMeteo(page, 'api.open-meteo.com');
+  await page.goto('/');
+  await waitForApp(page);
+  await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'), null, { timeout: 30_000 });
+  await startCatchAt(page);
+  const form = page.getByRole('dialog', { name: 'Fang oder Kontakt erfassen' });
+  await form.getByText('Mehr Details').click();
+  const box = form.getByRole('region', { name: 'Wetter am Fangort (Modellwert)' });
+  await expect(box).toContainText('Bedeckt');
+  await expect(box).toContainText('9,4 °C');
+  await expect(box).toContainText('3,8 m/s · aus O · Böen 7,4 m/s');
+  await expect(box).toContainText('nicht am Gewässer gemessen');
+  // Nicht still in die eigenen Felder: erst auf Wunsch übernehmen
+  await expect(form.getByLabel('Lufttemperatur (°C)')).toHaveValue('');
+  await box.getByRole('button', { name: 'In die Felder übernehmen' }).click();
+  await expect(form.getByLabel('Lufttemperatur (°C)')).toHaveValue('9,4');
+  await expect(form.getByLabel(/Wind/)).toHaveValue('3');
+  await expect(form.getByRole('combobox', { name: 'Himmel' })).toHaveValue('cloudy');
+
+  await form.getByRole('button', { name: 'Speichern' }).click();
+  await expect(page.getByText('Fang gespeichert.')).toBeVisible();
+  // Gespeichert ist das Wetter aus dem Formular – kein zweiter Abruf
+  const stored = await page.evaluate(async () => {
+    const req = indexedDB.open('fangpunkt');
+    const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
+    const all = await new Promise<{ weather?: { tempC?: number } }[]>((r) => {
+      const g = db.transaction('catches').objectStore('catches').getAll();
+      g.onsuccess = () => r(g.result as { weather?: { tempC?: number } }[]);
+    });
+    db.close();
+    return all.map((c) => c.weather?.tempC);
+  });
+  expect(stored).toEqual([9.4]);
+  await page.waitForTimeout(500);
+  expect(requests).toHaveLength(1);
+  expect(requests[0]?.searchParams.get('latitude')).toMatch(/^\d+\.\d{3}$/);
   expect(errors).toEqual([]);
 });

@@ -71,11 +71,46 @@ export function weatherQuery(at: string, pos: LatLng): WeatherQuery {
   };
 }
 
+/** Liegt die Stunde im abgedeckten Zeitraum? Ab 2022 bis zur nächsten vollen Stunde (14:40 → 15:00 gilt schon). */
+export function weatherAvailable(atIso: string, nowMs: number): boolean {
+  const h = nearestHour(atIso);
+  return h >= Date.parse(WEATHER_FROM) && h - nowMs <= HOUR;
+}
+
 /** Braucht dieser Fang noch Wetter? Nur mit Standort, ohne Wetter, nicht gelöscht, im abgedeckten Zeitraum. */
 export function needsWeather(c: Catch, nowMs: number): boolean {
   if (c.deletedAt || c.weather || !c.position) return false;
-  const h = nearestHour(c.at);
-  return h >= Date.parse(WEATHER_FROM) && h <= nowMs;
+  return weatherAvailable(c.at, nowMs);
+}
+
+/**
+ * Jüngere Stunden fragt die App bei der Forecast-API ab: Das Archiv (Historical Forecast) setzt sich aus den
+ * ersten Stunden der Modellläufe zusammen und enthält die letzten Stunden womöglich noch nicht [A]; die Forecast-API
+ * hat dieselben Modelle und Parameter [V: open-meteo.com/en/docs/historical-forecast-api, 2026-10-23].
+ */
+export const RECENT_MS = 48 * HOUR;
+export const isRecentQuery = (q: Pick<WeatherQuery, 'forHour'>, nowMs: number) =>
+  nowMs - Date.parse(q.forHour) < RECENT_MS;
+
+/** Beaufort-Stufe aus der Windgeschwindigkeit (m/s, Obergrenzen der WMO-Beaufort-Skala) */
+const BFT_LIMITS = [0.3, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8, 24.5, 28.5, 32.7];
+export function beaufort(ms: number): number {
+  const i = BFT_LIMITS.findIndex((limit) => ms < limit);
+  return i < 0 ? 12 : i;
+}
+
+type Sky = NonNullable<NonNullable<Catch['conditions']>['sky']>;
+/**
+ * Himmel für das Formular aus dem WMO-Wettercode [A: Zuordnung zur Übersicht]: Niederschlag → Regen, 0–1 → sonnig,
+ * 2 → wechselhaft, 3/Nebel → bewölkt. Schnee und unbekannte Codes bleiben leer.
+ */
+export function skyFromCode(code: number | undefined): Sky | undefined {
+  if (code === undefined) return undefined;
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || code >= 95) return 'rain';
+  if (code <= 1) return 'sunny';
+  if (code === 2) return 'mixed';
+  if (code === 3 || code === 45 || code === 48) return 'cloudy';
+  return undefined;
 }
 
 const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : undefined);

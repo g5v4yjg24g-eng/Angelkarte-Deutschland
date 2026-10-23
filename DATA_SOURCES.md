@@ -157,7 +157,7 @@ Die Altprojekt-Angaben (NRW, HH) gelten als **Ausgangspunkt**, nicht als geprüf
 
 | Dienst | Kosten | Limits | Lizenz | Bewertung |
 |---|---|---|---|---|
-| **Open-Meteo** (Free) | 0 € | < 10 000 Aufrufe/Tag, 5 000/h, 600/min, 300 000/Monat; **nur nicht-kommerziell** [V: open-meteo.com/en/terms] | CC BY 4.0, Attribution [V] | **Gewählt** (E3 = nicht kommerziell). Forecast, Historical-Forecast und Archiv (ERA5) verfügbar (vom Altprojekt genutzt). Limits gelten pro IP, also pro Nutzergerät [V: „per IP address"]. |
+| **Open-Meteo** (Free) | 0 € | < 10 000 Aufrufe/Tag, 5 000/h, 600/min, 300 000/Monat; **nur nicht-kommerziell** [V: open-meteo.com/en/terms] | CC BY 4.0, Attribution [V] | **Gewählt** (E3 = nicht kommerziell). Forecast, Historical-Forecast und Archiv (ERA5) verfügbar (vom Altprojekt genutzt). Limits gelten pro IP, also pro Nutzergerät [V: „per IP address"]. Wetter am Fang: Stunden der letzten 48 h über die Forecast-API (`api.open-meteo.com`, gleiche Parameter), ältere über das Archiv – das Archiv enthält die jüngsten Stunden womöglich noch nicht [A] (2026-10-23). |
 | Open-Meteo (Abo) | [O] | höher | CC BY 4.0 | Bei kommerzieller Nutzung. |
 | **Bright Sky** (DWD-Daten) | 0 € „for all purposes", kein Key [V: brightsky.dev] | Nicht angegeben [V] | DWD-Nutzungsbedingungen [V: Verweis], konkreter Lizenztext [O] | Kommerziell zulässige Alternative; nur DWD-Stationen und -Modelle für DE. |
 

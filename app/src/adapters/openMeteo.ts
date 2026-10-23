@@ -1,5 +1,5 @@
 import { nowIso } from '../domain/time';
-import { parseOpenMeteoHourly, type WeatherQuery } from '../domain/weather';
+import { isRecentQuery, parseOpenMeteoHourly, type WeatherQuery } from '../domain/weather';
 import type { WeatherProvider } from '../ports/weather';
 import type { ForecastProvider } from '../ports/forecast';
 import { FORECAST_DAYS, parseOpenMeteoForecast, type ForecastQuery } from '../domain/forecast';
@@ -32,11 +32,17 @@ export function openMeteoUrl(q: WeatherQuery, base = OPEN_METEO_URL): string {
   return u.href;
 }
 
-export function openMeteo(base = OPEN_METEO_URL): WeatherProvider {
+/** Ältere Stunden aus dem Archiv, die letzten 48 h aus der Forecast-API (gleiche Parameter und Antwort). */
+export function openMeteo(
+  base = OPEN_METEO_URL,
+  recentBase = OPEN_METEO_FORECAST_URL,
+  now: () => number = Date.now,
+): WeatherProvider {
   return {
     id: 'open-meteo',
     async fetchHour(q) {
-      const r = await fetch(openMeteoUrl(q, base), { credentials: 'omit', referrerPolicy: 'no-referrer' });
+      const url = openMeteoUrl(q, isRecentQuery(q, now()) ? recentBase : base);
+      const r = await fetch(url, { credentials: 'omit', referrerPolicy: 'no-referrer' });
       if (!r.ok) throw new Error(`Wetter: HTTP ${r.status}`);
       const values = parseOpenMeteoHourly(await r.json(), q);
       if (!values) return null;

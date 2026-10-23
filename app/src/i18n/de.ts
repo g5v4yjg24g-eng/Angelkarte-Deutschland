@@ -197,6 +197,18 @@ export const de = {
     water: 'Gewässer',
     waterUnknown: 'Unbekannt – du kannst den Eintrag später zuordnen.',
     more: 'Mehr Details',
+    weatherTitle: 'Wetter am Fangort (Modellwert)',
+    weatherSaved: 'Wird mit dem Eintrag gespeichert.',
+    weatherApply: 'In die Felder übernehmen',
+    weatherStates: {
+      noPosition: 'Ohne Ort kein Wetter – wähle eine Stelle auf der Karte oder deinen Standort.',
+      unavailable: 'Für diesen Zeitpunkt gibt es keine Wetterdaten (vor 2022 oder in der Zukunft).',
+      offline:
+        'Ohne Verbindung – das Wetter wird nach dem Speichern geladen, sobald eine Verbindung besteht.',
+      loading: 'Wetter wird geladen …',
+      none: 'Der Wetterdienst hat für diese Stunde keine Werte.',
+      error: 'Wetter gerade nicht abrufbar – es wird nach dem Speichern erneut versucht.',
+    },
     size: 'Größe',
     length: 'Länge (cm)',
     lengthMethod: 'Länge',
@@ -1300,7 +1312,7 @@ export const de = {
       },
       {
         name: 'Open-Meteo',
-        what: 'nur wenn „Wetter am Fang“ an ist (Standard: an): Datum, Stunde und die auf etwa 100 m gerundete Position eines Fangs; im Bereich „Wetter“ die auf etwa 100 m gerundete Position des gewählten Orts (dein Standort oder ein Gewässer) für die Vorhersage. Abschalten: Mehr → Einstellungen.',
+        what: 'nur wenn „Wetter am Fang“ an ist (Standard: an): Datum, Stunde und die auf etwa 100 m gerundete Position eines Fangs (schon beim Erfassen); im Bereich „Wetter“ die auf etwa 100 m gerundete Position des gewählten Orts (dein Standort oder ein Gewässer) für die Vorhersage. Abschalten: Mehr → Einstellungen.',
       },
       {
         name: 'PEGELONLINE (www.pegelonline.wsv.de)',

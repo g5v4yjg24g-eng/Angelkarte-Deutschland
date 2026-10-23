@@ -58,7 +58,9 @@ export async function saveCatch(
       if (removed.size) await db.photos.bulkDelete([...removed]);
       const next = { ...cur, ...args.changes };
       // Wetter gehört zu Zeit und Ort; ändert sich eins davon, wird es neu geladen.
-      const weather = cur.weather && weatherStillValid(cur, next) ? cur.weather : undefined;
+      // Neues Wetter aus dem Formular (passend zu Zeit und Ort) hat Vorrang
+      const weather =
+        args.changes.weather ?? (cur.weather && weatherStillValid(cur, next) ? cur.weather : undefined);
       const gauge = cur.gauge && gaugeStillValid(cur, next) ? cur.gauge : undefined;
       return r.update(args.id, {
         ...args.changes,
