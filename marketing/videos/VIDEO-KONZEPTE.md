@@ -10,6 +10,8 @@
 ---
 
 ## V1 · „Fang eintragen, bevor der Fisch zurück ist“
+
+> **Erste Fassung fertig:** `videos/v1-fang-eintragen-1080x1920.mp4` – 15 s, ohne Ton. Titelbild (2,6 s) → echte Bildschirmaufnahme der Live-App mit Beispieldaten und eingeblendeten Schritten „1 Fang erfassen · 2 Stelle antippen · 3 Fischart wählen · 4 Speichern. Fertig.“ (orange Kreise zeigen die Tipps) → Schluss-Karte. Erzeugt mit `tools/video-v1.mjs`. **Ohne Naturaufnahmen:** Statt Fisch und Ufer läuft das Titelbild. Mit eigenem Clip: die ersten 2,6 s im Schnittprogramm durch die Fisch-Szene ersetzen und Musik dazulegen. Die Aufnahme ist automatisiert und läuft schneller als echte Bedienung; deshalb wird keine Sekundenzahl, sondern die Zahl der Tipps gezeigt.
 - **Ziel / Zielgruppe:** Reichweite, Kernnutzen; Raubfischangler, Dokumentierer
 - **Dauer:** 18 s
 - **Hook (0–2 s):** Barsch/Zander in der Hand über dem Wasser (eigener Fang), Text: „Fang eintragen, bevor er zurück im Wasser ist.“

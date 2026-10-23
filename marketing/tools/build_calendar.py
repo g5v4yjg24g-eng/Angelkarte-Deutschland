@@ -44,7 +44,7 @@ P = [
      "Reichweite über Nicht-Follower; Kernnutzen zeigen",
      "Fang eintragen, bevor der Fisch zurück im Wasser ist.",
      "Bildschirmaufnahme: Fang erfassen → Stelle tippen → Art → Speichern. Stoppuhr-Einblendung. Siehe Video-Konzept V1.",
-     "Link in der Bio.", "Bildschirmaufnahme (Handy), 1 Clip Wasser/Ufer; Cover stories/reel-cover/cover-video-v1", "60 min",
+     "Link in der Bio.", "Fertige erste Fassung videos/v1-fang-eintragen-1080x1920.mp4; optional eigener Fisch-/Uferclip für die ersten 2,6 s", "20 min",
      "TikTok, YouTube Shorts, Story"),
     # --- Woche 2 ---
     (2, "Di", IG_R, "Reel 20–30 s", "Vertrauen", "Werkstatt-Notiz", "Warum es Fangpunkt gibt",
