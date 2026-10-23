@@ -19,12 +19,28 @@ audio = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
 
 asr16 = audio[:: SR // 16000]
 words = [w for s in WhisperModel('small', device='cpu', compute_type='int8').transcribe(asr16, language='de', beam_size=5, word_timestamps=True)[0] for w in s.words]
-count = lambda t: len(re.sub(r'[^\wäöüß ]', ' ', t).split())
+norm = lambda t: re.sub(r'[^\wäöüß ]', '', t.lower().replace("'", '')).split()
 lines = cfg['voiceover']
-need = sum(count(l['text']) for l in lines)
-if len(words) != need:
-    sys.exit(f'Erkannt wurden {len(words)} Wörter, der Text hat {need}. Bitte Aufnahme und video.config.json vergleichen.')
-
+# Text und erkannte Wörter angleichen (die Erkennung trennt/verbindet manchmal Wörter, z. B. „schon Zeit“)
+heard = [norm(w.word)[0] if norm(w.word) else '' for w in words]
+text, owner = [], []
+for i, l in enumerate(lines):
+    for t in norm(l['text']):
+        text.append(t); owner.append(i)
+import difflib
+match = {}
+for a, b, n in difflib.SequenceMatcher(None, text, heard, autojunk=False).get_matching_blocks():
+    for k in range(n):
+        match[a + k] = b + k
+bounds = []
+for i, l in enumerate(lines):
+    idx = [match[k] for k in range(len(text)) if owner[k] == i and k in match]
+    if not idx:
+        sys.exit(f"Satz {l['id']} wurde in der Aufnahme nicht gefunden: {l['text']}")
+    bounds.append((words[idx[0]].start, words[idx[-1]].end))
+missing = len(text) - len(match)
+if missing > max(3, len(text) // 20):
+    sys.exit(f'{missing} von {len(text)} Wörtern nicht zuzuordnen. Bitte Aufnahme und Text vergleichen.')
 def quietest(a, b):
     """Zeitpunkt (s) mit der geringsten Lautstärke (10-ms-Fenster) zwischen a und b."""
     i, j = int(a * SR), max(int(b * SR), int(a * SR) + 480)
@@ -32,11 +48,6 @@ def quietest(a, b):
     rms = [np.sqrt(np.mean(audio[k : k + win] ** 2)) for k in range(i, j - win + 1, win // 2)]
     return (i + int(np.argmin(rms)) * win // 2 + win // 2) / SR
 
-bounds, k = [], 0
-for l in lines:
-    n = count(l['text'])
-    bounds.append((words[k].start, words[k + n - 1].end))
-    k += n
 cuts = [0.0] + [quietest(bounds[i][1] - 0.05, bounds[i + 1][0] + 0.05) for i in range(len(bounds) - 1)] + [len(audio) / SR]
 
 out = root / opt.get('out', 'assets/voiceover')

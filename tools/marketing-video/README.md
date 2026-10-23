@@ -113,6 +113,7 @@ node scripts/check.mjs output/fangpunkt-erklaervideo-1080x1920.mp4 1080 1920 --q
 - **Aufnahmen:** `scripts/record-tutorial.mjs` spielt die Beispieldaten ein und bedient die App wie ein Nutzer (Handy-Ansicht 393 × 798 CSS-px, doppelte Pixeldichte). Die Seitenuhr steht während der Aufnahme still und wird je Bild um 1/30 s weitergestellt, damit Kartenflüge flüssig sind. Jeder Tipp landet mit Zeit und Ort in `<name>.taps.json`; daraus zeichnet das Video den Fingerring genau an diese Stelle.
 - **Sprecher:** ElevenLabs „Hans – Deep Warm German“ (eleven_v4), Text in `hyperframes-tutorial/voiceover.config.json` (Flow https://elevenlabs.io/app/flows/YUFSdtKmvl5lYnRb12LB). Ohne geschnittene Aufnahme schätzt `build.mjs` die Satzlängen und lässt den Sprecher weg (nur zum Ansehen).
 - **Nicht von Hand ändern:** `index.html` und `compositions/` werden aus `src/` erzeugt. Texte, Überschriften und Fußnoten stehen in `src/*.html` bzw. `build.mjs` (`plan`, `notes`).
+- **Ergebnis (2026-10-23):** `output/fangpunkt-erklaervideo-1080x1920.mp4`, 65,2 s; `check.mjs` bestanden (−14,5 LUFS, Spitze −1,3 dBFS, QR ab 59,65 s unbewegt und aus drei Bildern dekodiert). Spracherkennung (faster-whisper small) findet alle 13 Sätze. Der Schnitt gleicht Text und erkannte Wörter an, weil die Erkennung z. B. „Schonzeit“ als „schon Zeit“ hört.
 - Die Fußnote unter dem Handy nennt je Bildschirm „Beispieldaten“ und die Quellen (Karte, Open-Meteo, PEGELONLINE); bei Fang und Fangbuch zusätzlich „Keine Rechtsauskunft“.
 
 ## Echte App, Beispieldaten

@@ -1,13 +1,13 @@
-Gesamt 67.8 s · Sprecher GESCHÄTZT (noch ohne Ton)
-hook       0.00 s  +3.40 s  t01@0.70(2.2)
-weather    3.40 s  +7.06 s  t02@0.50(6.16)
-search    10.46 s  +11.62 s  t03@0.30(2.56) t04@6.40(4.72)
-place     22.08 s  +5.42 s  t05@0.30(4.72)
-session   27.50 s  +2.85 s  t06@0.25(2.2)
-bite      30.35 s  +2.20 s  t07@0.35(0.76)
-catch     32.55 s  +12.28 s  t08@0.20(3.64) t09@4.09(2.2) t10@6.54(5.44)
-release   44.83 s  +2.90 s  
-catches   47.73 s  +6.00 s  t11@0.35(5.08)
-stats     53.73 s  +5.57 s  t12@0.35(4.72)
-outro     59.30 s  +8.50 s  t13@0.60(3.28)
-QR unbewegt ab 62.3 s
+Gesamt 65.15 s · Sprecher echt
+hook       0.00 s  +3.40 s  t01@0.70(1.35)
+weather    3.40 s  +7.00 s  t02@0.50(3.79)
+search    10.40 s  +10.68 s  t03@0.30(1.85) t04@6.40(3.78)
+place     21.08 s  +5.38 s  t05@0.30(4.68)
+session   26.46 s  +2.60 s  t06@0.25(1.65)
+bite      29.06 s  +2.20 s  t07@0.35(0.5)
+catch     31.26 s  +11.09 s  t08@0.20(2.81) t09@3.26(2.41) t10@5.92(4.87)
+release   42.35 s  +2.90 s  
+catches   45.25 s  +6.00 s  t11@0.35(5.03)
+stats     51.25 s  +5.40 s  t12@0.35(3.47)
+outro     56.65 s  +8.50 s  t13@0.60(3.908)
+QR unbewegt ab 59.65 s

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "historyId": "6f99d187-dd3a-46bd-ae31-ca531715eb1a",
-  "currentRevision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+  "currentRevision": "a310e5df-e6c9-4cea-b0ea-910a3ce859c1",
   "pendingChanges": false,
   "files": {
     "CLAUDE.md": {
@@ -33,8 +33,8 @@
       "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/26/26a858693e26b433481c52853631d86c8fd399940455331efcd3b39db54c5b90"
     },
     "index.html": {
-      "hash": "b6c977b6d5d91f8c454c07354a52801d7f415494371b51e092a021319287074a",
-      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/b6/b6c977b6d5d91f8c454c07354a52801d7f415494371b51e092a021319287074a"
+      "hash": "6b12071f20419359c91544f7f0f312d36b73e93877f2962a10ccee5401865483",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/6b/6b12071f20419359c91544f7f0f312d36b73e93877f2962a10ccee5401865483"
     },
     "meta.json": {
       "hash": "92ecd54c6984c8dd29baf3b3c972a03c46828b18cf669353b4ba4f77c5f998b4",
@@ -45,8 +45,8 @@
       "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/30/307621b4a7b331a8bc2e33079d6559b3f10d40363479892c119bd49a7d87bff1"
     },
     "timing.txt": {
-      "hash": "e1614f11adf5de315ac3693529f50491c1bc6db5f32afb5b8e20e3c0807bd171",
-      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/e1/e1614f11adf5de315ac3693529f50491c1bc6db5f32afb5b8e20e3c0807bd171"
+      "hash": "78f63a91e3ad6d8a539ce30495402c9393ddcb30fd4fe7a0ffe3f2f135fe4c5e",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/78/78f63a91e3ad6d8a539ce30495402c9393ddcb30fd4fe7a0ffe3f2f135fe4c5e"
     },
     "voiceover.config.json": {
       "hash": "a09faa1cbbfc17181f243a80e2fa1d1638c0e7e259af1f22e3bbf6f2ecddeb76",
@@ -69,8 +69,8 @@
       "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ca/cafe11ef9990fd0600a627723f246c65ecce025ecc961d09ec7a90fa6674c09e"
     },
     "compositions/world.html": {
-      "hash": "78fe5caf5735e8f73aa5d28ca66141d65437c854c4384288ea65eca8796d1a42",
-      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/78/78fe5caf5735e8f73aa5d28ca66141d65437c854c4384288ea65eca8796d1a42"
+      "hash": "ae3d9382099009fd36d30355544a6fd65077b203484a4108a1b796282ad7d33b",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ae/ae3d9382099009fd36d30355544a6fd65077b203484a4108a1b796282ad7d33b"
     },
     "src/bite.html": {
       "hash": "ee2ae27abfd93266f2fe26b3221149690723c284695c54c91d0756bfd45d50df",
@@ -231,12 +231,35 @@
           "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/e8/e8ed12684ef43224fc884e96a2c2795ee6dca35c77d47f7f4d87f8971a53521c"
         }
       }
+    },
+    "a310e5df-e6c9-4cea-b0ea-910a3ce859c1": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792760350525,
+      "endedAt": 1792760350536,
+      "files": {
+        "compositions/world.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/78/78fe5caf5735e8f73aa5d28ca66141d65437c854c4384288ea65eca8796d1a42",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ae/ae3d9382099009fd36d30355544a6fd65077b203484a4108a1b796282ad7d33b"
+        },
+        "index.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/b6/b6c977b6d5d91f8c454c07354a52801d7f415494371b51e092a021319287074a",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/6b/6b12071f20419359c91544f7f0f312d36b73e93877f2962a10ccee5401865483"
+        },
+        "timing.txt": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/e1/e1614f11adf5de315ac3693529f50491c1bc6db5f32afb5b8e20e3c0807bd171",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/78/78f63a91e3ad6d8a539ce30495402c9393ddcb30fd4fe7a0ffe3f2f135fe4c5e"
+        }
+      }
     }
   },
   "checks": {
     "latest": {
-      "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
-      "id": "bee9f7f9-355b-45fe-ba07-bf92d590c56b"
+      "revision": "a310e5df-e6c9-4cea-b0ea-910a3ce859c1",
+      "id": "14e48126-ca18-47ac-92b3-2d335b00f10a"
     },
     "revisions": {
       "213f3b68-e5fd-427b-95c3-db102273cb77": [
@@ -294,6 +317,35 @@
           "contentHash": "5a971356b13e00cc97ead197108595e8f4351ea70a374d4e74d3f191999c38cb",
           "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
           "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "a310e5df-e6c9-4cea-b0ea-910a3ce859c1": [
+        {
+          "id": "14e48126-ca18-47ac-92b3-2d335b00f10a",
+          "scope": "project",
+          "report": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/checks/14e48126-ca18-47ac-92b3-2d335b00f10a.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792760371090,
+          "contentHash": "462c0365d7605c9a719412a0aa58b0a1e5543329d3c6b306a36a07c84c2c4c7e",
+          "revision": "a310e5df-e6c9-4cea-b0ea-910a3ce859c1",
+          "inputFingerprint": "123bb3b11b671d953ae4232b7ab84d7fa2becb8ec5df183a982cbd4fe0bd49f6",
           "inputScope": "local-project-files",
           "attribution": "recorded-revision"
         }
@@ -642,13 +694,14 @@
   },
   "renders": {
     "latest": {
-      "id": "364a99ac-371d-4c87-bee7-48bb6026e123",
-      "completedAt": 1792759212634,
-      "output": "/home/user/angelkarte-deutschland/tools/marketing-video/output/raw-tutorial-entwurf.mp4",
+      "id": "5380c391-870f-4d51-b878-09228b6f9787",
+      "completedAt": 1792761285917,
+      "output": "/home/user/angelkarte-deutschland/tools/marketing-video/output/raw-tutorial.mp4",
       "status": "completed",
-      "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4"
+      "revision": "a310e5df-e6c9-4cea-b0ea-910a3ce859c1"
     },
     "retainedRevisions": [
+      "a310e5df-e6c9-4cea-b0ea-910a3ce859c1",
       "ba36e9a9-2db8-494c-b973-802606d2faa4"
     ]
   },
