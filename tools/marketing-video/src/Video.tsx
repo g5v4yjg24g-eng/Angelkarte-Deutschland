@@ -72,12 +72,19 @@ export function FangpunktVideo({ format }: { format: Format }) {
 
       {/* Szene 4 – Fangmoment, dann der echte Fangbuch-Eintrag */}
       <Sequence from={S(T.story[0])} durationInFrames={dur(T.story)}>
-        <Sequence durationInFrames={sec(2.7)}>
-          <Footage clip={clips.fight} label="Angler wirft vom Steg aus" push={[1.04, 1.12]} duration={sec(2.7)} scrim={L.enter === 'bottom' ? 'top' : 'left'} />
+        <Sequence durationInFrames={sec(2.2)}>
+          <Footage clip={clips.fight} label="Angler wirft vom Steg aus" push={[1.04, 1.12]} duration={sec(2.2)} scrim={L.enter === 'bottom' ? 'top' : 'left'} />
         </Sequence>
-        <Sequence from={sec(2.6)} durationInFrames={sec(2.2)}>
+        <Sequence from={sec(2.1)} durationInFrames={sec(2.7)}>
           <CrossFade>
-            <Footage clip={clips.fish} label="Fisch mit nassen Händen über dem Wasser" push={[1.06, 1.0]} duration={sec(2.2)} scrim={L.enter === 'bottom' ? 'top' : 'left'} />
+            <Footage
+              clip={clips.fish}
+              label="Fisch mit nassen Händen über dem Wasser"
+              push={[1.04, 1.0]}
+              duration={sec(2.7)}
+              scrim={L.enter === 'bottom' ? 'top' : 'left'}
+              square={L.enter === 'bottom' ? { top: 500, size: 1000 } : undefined}
+            />
           </CrossFade>
         </Sequence>
         <Sequence from={sec(4.7)}>
@@ -119,22 +126,18 @@ function CrossFade({ children, frames = 8 }: { children: React.ReactNode; frames
   return <AbsoluteFill style={{ opacity: interpolate(f, [0, frames], [0, 1], { extrapolateRight: 'clamp' }) }}>{children}</AbsoluteFill>;
 }
 
-/** Handy fährt weich herein und schwebt danach ganz leicht. */
-function PhoneStage({ L, enterAt, children, tilt = 0 }: { L: Layout; enterAt: number; children: React.ReactNode; tilt?: number }) {
+/** Handy steht fest an seinem Platz (Wunsch Nutzer 2026-10-23) und wird nur weich eingeblendet. */
+function PhoneStage({ L, enterAt, children }: { L: Layout; enterAt: number; children: React.ReactNode }) {
   const f = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const s = spring({ frame: f - enterAt, fps, config: { damping: 18, stiffness: 90, mass: 0.9 } });
-  const off = (1 - s) * (L.enter === 'bottom' ? 900 : 800);
-  const float = Math.sin(f / 45) * 6;
-  const transform = L.enter === 'bottom' ? `translateY(${off + float}px)` : `translate(${off}px, ${float}px)`;
+  const opacity = interpolate(f - enterAt, [0, 12], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   return (
-    <div style={{ ...L.phone, transform: `${transform} rotate(${tilt}deg)` }}>
+    <div style={{ ...L.phone, opacity }}>
       <Phone width={L.phoneWidth}>{children}</Phone>
     </div>
   );
 }
 
-/** Vier echte Funktionen nacheinander; die Bildschirme wechseln wie in der App seitlich. */
+/** Vier echte Funktionen nacheinander; das Handy steht still, nur die Bildschirme wechseln wie in der App seitlich. */
 function Features({ L }: { L: Layout }) {
   const f = useCurrentFrame();
   const tx = cfg.texts;
@@ -151,10 +154,9 @@ function Features({ L }: { L: Layout }) {
     const p = interpolate(f - k * len, [0, 10], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp', easing: Easing.out(Easing.cubic) });
     return k === 0 ? 0 : p * 100;
   };
-  const tilt = interpolate(f, [0, dur(T.features)], [-1.5, 1.5]);
   return (
     <>
-      <div style={{ ...L.phone, transform: `translateY(${Math.sin(f / 45) * 6}px) rotate(${tilt}deg)` }}>
+      <div style={L.phone}>
         <Phone width={L.phoneWidth}>
           {beats.map((b, k) =>
             k <= i && k >= i - 1 ? (

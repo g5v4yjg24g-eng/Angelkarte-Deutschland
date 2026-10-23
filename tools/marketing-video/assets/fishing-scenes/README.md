@@ -17,7 +17,7 @@ Verwendete Clips (vom Nutzer am 2026-10-23 bereitgestellt; Quelle laut Dateiname
 | Schlüssel | Datei | Inhalt | Pexels-ID → Link | Im Video |
 |---|---|---|---|---|
 | lake | `lake-pexels-5236943.mp4` (1920 × 1080, 12 s) | Angler wirft am nebligen See aus, von hinten | 5236943 → https://www.pexels.com/video/5236943/ | Szene 1, 0–4,5 s, Ausschnitt rechts der Mitte (`focusX` 0,62) |
-| fight | `jetty-cast-pexels-12544249.mp4` (1080 × 1920, 10 s) | Angler als Silhouette auf einem Steg im Nebel | 12544249 → https://www.pexels.com/video/12544249/ | Szene 4, 23,5–26,2 s (ab 3,6 s im Clip); statt Drill |
-| fish | `fish-release-pexels-16588810.mp4` (1920 × 1080, 8 s) | Forelle wird mit nassen Händen ins Wasser zurückgesetzt | 16588810 → https://www.pexels.com/video/16588810/ | Szene 4, 26,1–28,3 s (ab 3,8 s im Clip) |
+| fight | `jetty-cast-pexels-12544249.mp4` (1080 × 1920, 10 s) | Angler als Silhouette auf einem Steg im Nebel | 12544249 → https://www.pexels.com/video/12544249/ | Szene 4, 23,5–25,7 s (ab 3,6 s im Clip); statt Drill |
+| fish | `fish-release-pexels-16588810.mp4` (1920 × 1080, 8 s) | Forelle wird mit nassen Händen ins Wasser zurückgesetzt | 16588810 → https://www.pexels.com/video/16588810/ | Szene 4, 25,6–28,3 s (ab 3,3 s im Clip: Fisch in der Hand → schwimmt davon); im Hochformat als Quadrat 1000 × 1000 |
 
 Hinweis: Der Fisch im Clip `fish` ist eine nordamerikanische Forellenart (orange Kehlstreifen, Cutthroat-Forelle [A]), keine heimische Art. Für Laien kaum erkennbar; bei Bedarf durch einen Clip mit Bachforelle, Hecht oder Barsch ersetzen.

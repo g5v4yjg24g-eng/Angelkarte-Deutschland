@@ -22,9 +22,9 @@ Videos liegen nicht im Repository (`output/` ist ignoriert); sie werden als Anha
 | Zeit | Szene | Bild | Sprecher |
 |---|---|---|---|
 | 0–4,5 s | Leidenschaft | Angelszene „See im Morgennebel“, langsame Kamerafahrt | „Dein nächster Fang beginnt mit dem richtigen Überblick.“ |
-| 4,5–11 s | App entdecken | Handy fährt ein; echte Aufnahme (30 fps): Suche „Hohendeicher“ → Karte fliegt zum See | „Mit Fangpunkt entdeckst du Gewässer in ganz Deutschland.“ |
+| 4,5–11 s | App entdecken | Handy wird eingeblendet und steht danach still; echte Aufnahme (30 fps): Suche „Hohendeicher“ → Karte fliegt zum See | „Mit Fangpunkt entdeckst du Gewässer in ganz Deutschland.“ |
 | 11–23,5 s | Funktionen | 4 echte Ansichten: Spots & Stege · Fang erfassen · Wetter & Pegel · Statistik | je ein kurzer Satz pro Funktion |
-| 23,5–30 s | Fangmoment | Angler auf dem Steg im Nebel → Forelle wird zurückgesetzt → echter Fangbuch-Eintrag | „Denn jeder Fang erzählt eine Geschichte.“ |
+| 23,5–30 s | Fangmoment | Angler auf dem Steg im Nebel → Forelle wird zurückgesetzt und schwimmt davon (im Hochformat als großes Quadrat vor unscharfem Hintergrund) → echter Fangbuch-Eintrag | „Denn jeder Fang erzählt eine Geschichte.“ |
 | 30–42 s | Abschluss | Logo-Animation wie im App-Intro, Name, Slogan; **QR-Code ab 33 s unbewegt bis zum Ende (9 s)** | „Fangpunkt. Jetzt scannen und kostenlos entdecken.“ |
 
 Tiefenkarten kommen bewusst nicht vor: Sie sind in der App nicht umgesetzt (PLAN.md M9).

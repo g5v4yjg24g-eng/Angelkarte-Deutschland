@@ -143,24 +143,47 @@ export function Caption({ text, from, to, size, style }: { text: string; from: n
   );
 }
 
-/** Angelszene: Clip aus assets/fishing-scenes/ mit langsamer Kamerafahrt; ohne Clip ein klar gekennzeichneter Platzhalter. */
-export function Footage({ clip, label, push = [1, 1.08], duration, scrim = 'top' }: { clip: Clip | null; label: string; push?: [number, number]; duration: number; scrim?: 'top' | 'left' }) {
+/** Angelszene: Clip aus assets/fishing-scenes/ mit langsamer Kamerafahrt; ohne Clip ein klar gekennzeichneter Platzhalter.
+ * `square` (Hochformat): Querformat-Clip als großes Quadrat zeigen, dahinter dieselbe Szene unscharf – so bleibt
+ * mehr vom Bild sichtbar als beim Beschnitt auf 9:16 (z. B. der Fisch, der davonschwimmt). */
+export function Footage({ clip, label, push = [1, 1.08], duration, scrim = 'top', square }: { clip: Clip | null; label: string; push?: [number, number]; duration: number; scrim?: 'top' | 'left'; square?: { top: number; size: number } }) {
   const f = useCurrentFrame();
   const scale = interpolate(f, [0, duration], push);
+  const video = (style: CSSProperties) =>
+    clip ? (
+      <OffthreadVideo
+        src={staticFile(`fishing-scenes/${clip.file}`)}
+        startFrom={sec(clip.startFrom ?? 0)}
+        muted
+        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: `${(clip.focusX ?? 0.5) * 100}% ${(clip.focusY ?? 0.5) * 100}%`, ...style }}
+      />
+    ) : (
+      <Placeholder label={label} />
+    );
   return (
     <AbsoluteFill style={{ overflow: 'hidden', background: C.deep }}>
-      <AbsoluteFill style={{ transform: `scale(${scale})` }}>
-        {clip ? (
-          <OffthreadVideo
-            src={staticFile(`fishing-scenes/${clip.file}`)}
-            startFrom={sec(clip.startFrom ?? 0)}
-            muted
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: `${(clip.focusX ?? 0.5) * 100}% ${(clip.focusY ?? 0.5) * 100}%` }}
-          />
-        ) : (
-          <Placeholder label={label} />
-        )}
-      </AbsoluteFill>
+      {square && clip ? (
+        <>
+          <AbsoluteFill style={{ transform: 'scale(1.2)', filter: 'blur(36px) brightness(0.55)' }}>{video({ objectPosition: '50% 50%' })}</AbsoluteFill>
+          <div
+            style={{
+              position: 'absolute',
+              top: square.top,
+              left: '50%',
+              width: square.size,
+              height: square.size,
+              marginLeft: -square.size / 2,
+              borderRadius: 28,
+              overflow: 'hidden',
+              boxShadow: '0 30px 80px rgba(0,0,0,0.45)',
+            }}
+          >
+            <AbsoluteFill style={{ transform: `scale(${scale})` }}>{video({})}</AbsoluteFill>
+          </div>
+        </>
+      ) : (
+        <AbsoluteFill style={{ transform: `scale(${scale})` }}>{video({})}</AbsoluteFill>
+      )}
       {/* Abdunklung dort, wo der Text steht (oben im Hochformat, links im Querformat) – auch über hellem Nebel lesbar */}
       <AbsoluteFill
         style={{
