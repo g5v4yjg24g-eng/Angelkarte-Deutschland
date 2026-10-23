@@ -8,6 +8,10 @@ import { moonEvents, solunarWindows } from '../../domain/solunar';
 import { addDays, dayStartMs, forecastStatus } from '../../domain/trip';
 import type { Trip } from '../../domain/schemas';
 import { useForecast } from '../weather/useForecast';
+import { useAlerts } from '../weather/useAlerts';
+import { AlertsList } from '../weather/AlertsList';
+import { alertsBetween, alertsQuery } from '../../domain/alerts';
+import { localToZonedIso } from '../../domain/time';
 import styles from './Calendar.module.css';
 
 const t = de.calendar;
@@ -50,6 +54,28 @@ function ForecastLine({ trip, lat, lng }: { trip: Trip; lat: number; lng: number
   );
 }
 
+/** Amtliche Warnungen, die in die Angelzeit des Termins fallen (ohne Uhrzeit: der ganze Tag). */
+function TripAlerts({ trip, lat, lng }: { trip: Trip; lat: number; lng: number }) {
+  const q = useMemo(() => alertsQuery({ lat, lng }), [lat, lng]);
+  const { state } = useAlerts(q);
+  const data = state.status === 'ok' ? state.data : state.status === 'loading' ? state.cached : undefined;
+  if (!data) return null;
+  const from = trip.from
+    ? Date.parse(localToZonedIso(trip.date, trip.from, trip.tz))
+    : dayStartMs(trip.date, trip.tz);
+  const to = trip.to
+    ? Date.parse(localToZonedIso(trip.date, trip.to, trip.tz))
+    : dayStartMs(addDays(trip.date, 1), trip.tz);
+  const list = alertsBetween(data.alerts, from, to);
+  if (!list.length) return null;
+  return (
+    <div className={styles.tripAlerts} role="note">
+      <p>{de.alerts.tripWarning(list.length)}</p>
+      <AlertsList alerts={list} compact />
+    </div>
+  );
+}
+
 export function TripWeather({ trip, today, enabled }: { trip: Trip; today: string; enabled: boolean }) {
   const pos = trip.waterSnapshot?.centroid;
   const status = forecastStatus(trip.date, today);
@@ -69,7 +95,10 @@ export function TripWeather({ trip, today, enabled }: { trip: Trip; today: strin
       ) : status.kind === 'later' ? (
         <p className="muted">{t.weatherLater(status.from)}</p>
       ) : (
-        <ForecastLine trip={trip} lat={pos.lat} lng={pos.lng} />
+        <>
+          <TripAlerts trip={trip} lat={pos.lat} lng={pos.lng} />
+          <ForecastLine trip={trip} lat={pos.lat} lng={pos.lng} />
+        </>
       )}
       {majors.length > 0 && (
         <p className="muted">{t.solunarMajor(majors.map((m) => `${hm(m.from)}–${hm(m.to)}`).join(', '))}</p>

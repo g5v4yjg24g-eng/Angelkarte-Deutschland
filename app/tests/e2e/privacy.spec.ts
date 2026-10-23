@@ -9,6 +9,7 @@ const ALLOWED_EXTERNAL = [
   'tiles.openfreemap.org',
   'historical-forecast-api.open-meteo.com',
   'api.open-meteo.com',
+  'api.brightsky.dev',
 ];
 const ROUTES = [
   '/',
@@ -79,6 +80,6 @@ test('PRIV-1: nur App-Server, OpenFreeMap und Open-Meteo; Fänge und Notizen ver
   // Die Seite nennt genau diese Server
   await page.goto('/mehr/datenschutz');
   await waitForApp(page);
-  for (const name of ['GitHub Pages', 'OpenFreeMap (tiles.openfreemap.org)', 'Open-Meteo'])
+  for (const name of ['GitHub Pages', 'OpenFreeMap (tiles.openfreemap.org)', 'Open-Meteo', 'Bright Sky'])
     await expect(page.getByText(name, { exact: false }).first()).toBeVisible();
 });

@@ -3,6 +3,7 @@ import type { BasemapProvider } from './basemap';
 import type { WaterDataProvider } from './waterData';
 import type { WeatherProvider } from './weather';
 import type { ForecastProvider } from './forecast';
+import type { AlertsProvider } from './alerts';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
@@ -10,6 +11,7 @@ export interface Providers {
   water: WaterDataProvider;
   weather: WeatherProvider;
   forecast: ForecastProvider;
+  alerts: AlertsProvider;
 }
 
 export const ProvidersContext = createContext<Providers | null>(null);
