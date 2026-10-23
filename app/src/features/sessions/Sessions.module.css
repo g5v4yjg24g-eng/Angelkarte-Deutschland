@@ -139,3 +139,40 @@
     display: inline;
   }
 }
+
+/* Session-Liste: Zeile + Zugang zum Rückblick */
+.rowWrap {
+  display: flex;
+  align-items: stretch;
+  background: var(--color-surface);
+}
+.rowWrap > .row {
+  flex: 1;
+  min-width: 0;
+}
+.reviewLink {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  min-height: var(--touch);
+  border-left: 1px solid var(--color-border);
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.reviewLink:hover {
+  background: var(--color-surface-2);
+}
+.reviewLink:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -3px;
+}
+.gpsMark {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-success);
+  color: var(--color-on-primary);
+}

@@ -7,6 +7,7 @@ import { CatchesPage } from '../features/catches/CatchesPage';
 import { CatchDetailPage } from '../features/catches/CatchDetailPage';
 import { SessionsPage } from '../features/sessions/SessionsPage';
 import { SessionDetailPage } from '../features/sessions/SessionDetailPage';
+import { SessionReviewPage } from '../features/sessions/review/SessionReviewPage';
 import { StatsPage } from '../features/stats/StatsPage';
 import { MorePage } from '../features/more/MorePage';
 import { SettingsPage } from '../features/settings/SettingsPage';
@@ -32,6 +33,7 @@ export const routes = [
           { path: 'fangbuch', element: <CatchesPage /> },
           { path: 'fangbuch/sessions', element: <SessionsPage /> },
           { path: 'fangbuch/sessions/:id', element: <SessionDetailPage /> },
+          { path: 'fangbuch/sessions/:id/rueckblick', element: <SessionReviewPage /> },
           { path: 'fangbuch/:id', element: <CatchDetailPage /> },
           { path: 'wetter', element: <WeatherPage /> },
           { path: 'wetter/kalender', element: <CalendarPage /> },

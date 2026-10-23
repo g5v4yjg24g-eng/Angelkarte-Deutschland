@@ -205,6 +205,16 @@ interface Session extends Meta {
   defaults?: { method?: MethodId; baitPresetId?: string };
 }
 ```
+**Track (GPS-Route einer Session, DB v3, 2026-10-23):** eigene Tabelle `tracks`, ID `track-<sessionId>`, Index `sessionId`.
+```ts
+interface Track extends Meta {
+  sessionId: string;
+  segments: { t: number; lat: number; lng: number; acc: number }[][]; // Abschnitte; zwischen ihnen wurde nicht
+                                                                      // aufgezeichnet (Hintergrund, Pause, Lücke > 5 min)
+}
+```
+`t` = ms seit 1970, Koordinaten auf 6 Stellen, `acc` = Genauigkeit (m, ganzzahlig). Höchstens 20 000 Punkte je Session. Punkte zeitlich geordnet (Schema prüft). Ereignisse auf der Karte sind die Fangbuch-Einträge der Session (`sessionId`) mit ihrer eigenen `position` – keine zweite Ereignisverwaltung; Einträge ohne Ort erscheinen nur in der Chronik. Kennzahlen des Rückblicks rein in `domain/sessionReview.ts` (Rekorde erst ab 3 früheren Werten derselben Art).
+
 Regeln: höchstens eine laufende Session. Dauer > 24 h → Hinweis „Session vergessen zu beenden?" mit Korrekturdialog (statt sie still zu verwerfen wie im Altprojekt). Fänge außerhalb `[startAt, endAt]` werden beim Bearbeiten markiert.
 
 ### 5.4 Photo
@@ -309,8 +319,8 @@ Anzeige-Logik: Landesrecht und Gewässerregeln werden **getrennt** dargestellt. 
   "appVersion": "1.0.0",
   "exportedAt": "2026-10-21T12:00:00+02:00",
   "schemaVersion": 1,
-  "counts": { "catches": 12, "places": 4, "sessions": 3, "photos": 5, "baitPresets": 2, "trips": 1 },
-  "data": { "catches": [...], "places": [...], "sessions": [...], "baitPresets": [...], "trips": [...] }, // trips seit DB v2, fehlt in älteren Dateien
+  "counts": { "catches": 12, "places": 4, "sessions": 3, "photos": 5, "baitPresets": 2, "trips": 1, "tracks": 2 },
+  "data": { "catches": [...], "places": [...], "sessions": [...], "baitPresets": [...], "trips": [...], "tracks": [...] }, // trips seit DB v2, tracks seit DB v3; fehlen in älteren Dateien
   "photos": "inline-base64" | "zip-sidecar" | "omitted",
   "checksum": "sha256:…"               // über data
 }
@@ -364,4 +374,5 @@ Umsetzung (M6, 2026-10-22):
 
 - Dexie `version(n).stores({...}).upgrade(tx => …)`. Jede Migration hat einen Test mit Fixture der Vorversion.
 - **v2 (2026-10-22):** neue Tabelle `trips` (Angelkalender), keine Umwandlung bestehender Daten; Test `db.test.ts`. Die Prüfsumme wird über den Datenteil der Datei gebildet, wie er dort steht – ältere Sicherungen ohne `trips` bleiben gültig.
+- **v3 (2026-10-23):** neue Tabelle `tracks` (GPS-Routen der Sessions), keine Umwandlung bestehender Daten; Test `db.test.ts`. Sicherungen und Snapshots ohne `tracks` bleiben gültig.
 - Exportformat und DB-Schema sind **getrennt versioniert** (`formatVersion` ≠ `schemaVersion`).

@@ -23,7 +23,14 @@ export function SessionsPage() {
   const [error, setError] = useState<string>();
   const data = useLiveQuery(async () => {
     const db = getDb();
-    const [sessions, catches] = await Promise.all([db.sessions.toArray(), db.catches.toArray()]);
+    const [sessions, catches, tracks] = await Promise.all([
+      db.sessions.toArray(),
+      db.catches.toArray(),
+      db.tracks.toArray(),
+    ]);
+    const routed = new Set(
+      tracks.filter((tr) => !tr.deletedAt && tr.segments.length).map((tr) => tr.sessionId),
+    );
     const counts = new Map<string, number>();
     for (const c of catches)
       if (!c.deletedAt && c.sessionId) counts.set(c.sessionId, (counts.get(c.sessionId) ?? 0) + 1);
@@ -32,6 +39,7 @@ export function SessionsPage() {
         .filter((s) => !s.deletedAt)
         .sort((a, b) => Date.parse(b.startAt) - Date.parse(a.startAt)),
       counts,
+      routed,
     };
   }, []);
 
@@ -66,7 +74,7 @@ export function SessionsPage() {
           {start && <div className={styles.top}>{start}</div>}
           <ul className={styles.list}>
             {data.sessions.map((s) => (
-              <li key={s.id}>
+              <li key={s.id} className={styles.rowWrap}>
                 <Link to={`/fangbuch/sessions/${s.id}`} className={styles.row}>
                   {isRunning(s) && <span className={styles.dot} aria-hidden="true" />}
                   <span className={styles.rowText}>
@@ -76,6 +84,7 @@ export function SessionsPage() {
                         isRunning(s) ? t.running : undefined,
                         formatDuration(durationMs(s, now)),
                         t.entriesCount(data.counts.get(s.id) ?? 0),
+                        data.routed.has(s.id) ? t.withRoute : undefined,
                       ]
                         .filter(Boolean)
                         .join(' · ')}
@@ -83,6 +92,15 @@ export function SessionsPage() {
                   </span>
                   <ChevronRightIcon />
                 </Link>
+                {!isRunning(s) && (
+                  <Link
+                    to={`/fangbuch/sessions/${s.id}/rueckblick`}
+                    className={styles.reviewLink}
+                    aria-label={`${t.reviewOpen}: ${s.title ?? formatDateTime(s.startAt)}`}
+                  >
+                    {t.reviewShort}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

@@ -1,0 +1,280 @@
+/* Session-Rückblick: Vollbild über der App, vertikal scrollbar, Safe Areas des iPhones beachtet. */
+.dialog {
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.dialog::backdrop {
+  background: var(--color-scrim);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .dialog[open] {
+    animation: rise var(--dur-med) var(--ease-out);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+.scroller {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: calc(var(--space-4) + env(safe-area-inset-top)) calc(var(--space-4) + env(safe-area-inset-right))
+    calc(var(--space-7) + env(safe-area-inset-bottom)) calc(var(--space-4) + env(safe-area-inset-left));
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.headText {
+  flex: 1;
+  min-width: 0;
+}
+.kicker {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+.title {
+  margin: var(--space-1) 0;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.meta {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  color: var(--color-text-muted);
+}
+.close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--touch);
+  height: var(--touch);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.close:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.gapNote {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+/* Karte und Steuerung */
+.mapBlock {
+  display: grid;
+  gap: var(--space-3);
+  scroll-margin-top: var(--space-4);
+}
+.map,
+.mapPlaceholder {
+  height: min(58vh, 480px);
+  min-height: 280px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-2);
+  background: var(--color-surface-2);
+}
+.controls {
+  display: grid;
+  gap: var(--space-3);
+}
+.controlRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.scrub {
+  flex: 1 1 200px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch);
+}
+.scrub input {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--color-primary);
+}
+
+/* Abschnitte */
+.section {
+  display: grid;
+  gap: var(--space-3);
+}
+.sectionTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+}
+.subTitle {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-md);
+}
+.stats,
+.catchGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+@media (min-width: 700px) {
+  .stats,
+  .catchGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.stat {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+.statValue {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.statLabel {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.statHint {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+.counts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+.count {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.calm {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+}
+.calm p {
+  margin: 0;
+}
+.calmTitle {
+  font-weight: 650;
+  font-size: var(--text-lg);
+}
+.moments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.moment {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface));
+  font-weight: 600;
+}
+
+/* Chronik */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.entry {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  scroll-margin: var(--space-4);
+}
+.entrySelected {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+.entryBody {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+.entryHead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+}
+.entryNotes {
+  margin: 0;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+.entryActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  align-items: center;
+}
+.linkButton {
+  min-height: var(--touch);
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.thumb {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}

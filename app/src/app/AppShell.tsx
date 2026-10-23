@@ -8,6 +8,7 @@ import { UpdatePrompt } from './UpdatePrompt';
 import { BackupReminder } from '../features/backup/BackupReminder';
 import { SessionChip } from '../features/sessions/SessionChip';
 import { WeatherSync } from '../features/weather/WeatherSync';
+import { SessionTracker } from '../features/sessions/tracking/SessionTracker';
 import { GaugeSync } from '../features/weather/GaugeSync';
 import { DRAG_START_PX, itemAt, lensCenter, type Span } from './navLens';
 import styles from './AppShell.module.css';
@@ -192,6 +193,7 @@ export function AppShell() {
       </main>
       <UpdatePrompt />
       <WeatherSync />
+      <SessionTracker />
       <GaugeSync />
     </div>
   );

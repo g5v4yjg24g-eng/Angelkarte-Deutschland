@@ -130,6 +130,8 @@ Ein langer Druck öffnet direkt „Neu an dieser Stelle" (auch über Gewässerfl
 - Standort startet standardmäßig beim Öffnen der Karte (Entscheidung 2026-10-22, Einstellung „Standort: Beim Kartenstart“); der Browser fragt einmal um Erlaubnis. Ist der Zugriff verweigert, bleibt es beim Start still. Mit „Nur auf Knopfdruck“ erst nach Tipp auf den Button, beim ersten Mal mit Erklärtext.
 - `watchPosition` nur, solange die Karte sichtbar ist. Bei `visibilitychange` wird gestoppt.
 - Kein Hintergrund-Tracking. In Browsern ist das ohne aktive Seite nicht zuverlässig möglich [A, plattformbekannt]. Der Auftrag fordert es auch nicht.
+- **Routenaufzeichnung in Sessions** (Session-Rückblick, Wunsch Nutzer 2026-10-23): ein einziger `watchPosition`-Zuhörer (`features/sessions/tracking/SessionTracker.tsx`), nur solange eine Session läuft, nicht pausiert ist, die Einstellung „Route bei Sessions“ an ist und die App sichtbar ist. Hohe Genauigkeit (nötig für eine Route am Ufer); gespeichert wird höchstens alle 10 s und erst ab 8 m Bewegung, ungenaue Fixe (> 50 m) und Sprünge (> 15 m/s) werden verworfen, nach Neustart/Lücke > 5 min beginnt ein neuer Abschnitt (`domain/track.ts`). Jeder Punkt wird sofort in IndexedDB geschrieben (`data/trackService.ts`).
+- **Grenze der PWA:** Im Hintergrund (andere App, Bildschirm aus) liefern Browser keinen Standort – iOS gar nicht, Android/Chrome nicht verlässlich [A, plattformbekannt; nicht auf echten Geräten geprüft – O]. Die App behauptet dann nichts: Status „App im Hintergrund“, im Rückblick eine nicht verbundene Lücke. Eine echte Hintergrund-Aufzeichnung bräuchte eine native Hülle (z. B. Capacitor mit einem Hintergrund-Standort-Plugin) – offen, nicht entschieden [O].
 
 ## 6. Gewässerdaten-Architektur
 

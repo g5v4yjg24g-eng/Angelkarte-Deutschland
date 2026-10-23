@@ -208,6 +208,25 @@ export const TripSchema = MetaSchema.extend({
   path: ['to'],
 });
 
+/**
+ * GPS-Route einer Session (Session-Rückblick, Wunsch Nutzer 2026-10-23). Bleibt auf dem Gerät. Abschnitte statt einer
+ * Linie: Zwischen zwei Abschnitten wurde nicht aufgezeichnet (App im Hintergrund, Pause, Funkloch) – dort wird nichts
+ * verbunden. Punkte: t = Zeit (ms seit 1970), Koordinaten auf 6 Stellen (≈ 0,1 m), acc = Genauigkeit in m.
+ */
+export const TrackPointSchema = z.object({
+  t: z.number().int().min(0),
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+  acc: z.number().int().min(0).max(1000),
+});
+export const TrackSchema = MetaSchema.extend({
+  sessionId: id,
+  segments: z.array(z.array(TrackPointSchema).min(1)).max(2000),
+}).refine((tr) => tr.segments.flat().every((p, i, all) => i === 0 || p.t >= (all[i - 1]?.t ?? 0)), {
+  message: 'Die Punkte der Route sind nicht zeitlich geordnet.',
+  path: ['segments'],
+});
+
 export type LatLng = z.infer<typeof LatLngSchema>;
 export type Meta = z.infer<typeof MetaSchema>;
 export type Place = z.infer<typeof PlaceSchema>;
@@ -221,6 +240,8 @@ export type Photo = z.infer<typeof PhotoSchema>;
 export type PhotoMeta = z.infer<typeof PhotoMetaSchema>;
 export type BaitPreset = z.infer<typeof BaitPresetSchema>;
 export type Trip = z.infer<typeof TripSchema>;
+export type Track = z.infer<typeof TrackSchema>;
+export type TrackPoint = z.infer<typeof TrackPointSchema>;
 
 /** Alle Entitäten mit eigener Tabelle; Reihenfolge = Import-Reihenfolge (Bezüge zuerst). */
 export const ENTITY_SCHEMAS = {
@@ -229,6 +250,7 @@ export const ENTITY_SCHEMAS = {
   baitPresets: BaitPresetSchema,
   catches: CatchSchema,
   trips: TripSchema,
+  tracks: TrackSchema,
 } as const;
 export type EntityTable = keyof typeof ENTITY_SCHEMAS;
 export interface EntityMap {
@@ -237,4 +259,5 @@ export interface EntityMap {
   baitPresets: BaitPreset;
   catches: Catch;
   trips: Trip;
+  tracks: Track;
 }
