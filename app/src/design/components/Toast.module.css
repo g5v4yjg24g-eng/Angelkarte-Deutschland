@@ -3,7 +3,7 @@
   position: fixed;
   z-index: 50;
   left: 50%;
-  bottom: calc(var(--nav-clearance) + var(--space-2));
+  bottom: calc(var(--nav-clearance) + var(--reminder-h, 0px) + var(--space-2));
   transform: translateX(-50%);
   width: max-content;
   max-width: min(calc(100% - 2 * var(--space-4)), 30rem);
@@ -58,7 +58,7 @@
 }
 @media (min-width: 900px) {
   .toast {
-    bottom: var(--space-5);
+    bottom: calc(var(--space-5) + var(--reminder-h, 0px));
     left: calc(50% + var(--rail-width) / 2);
   }
 }

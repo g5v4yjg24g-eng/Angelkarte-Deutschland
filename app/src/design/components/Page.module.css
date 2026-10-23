@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 44rem;
   margin: 0 auto;
-  padding: var(--space-5) var(--space-4) calc(var(--space-7) + var(--nav-clearance));
+  padding: var(--space-5) var(--space-4) calc(var(--space-7) + var(--nav-clearance) + var(--reminder-h, 0px));
   display: grid;
   gap: var(--space-5);
 }
