@@ -1,18 +1,62 @@
+/* Glas-Kapsel wie die untere Leiste (Wunsch Nutzer 2026-10-22); schwebt direkt darüber.
+   Ihre Höhe steht in --reminder-h: Kartenknöpfe, Seiteninhalt und Hinweise rücken darum nach oben. */
 .bar {
+  position: fixed;
+  z-index: 40;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: calc(var(--nav-clearance) + var(--space-2));
+  max-width: 34rem;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2) var(--space-3);
   flex-wrap: wrap;
-  padding: var(--space-2) var(--space-4);
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border-radius: 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  box-shadow:
+    0 8px 28px rgb(0 0 0 / 0.18),
+    0 1px 3px rgb(0 0 0 / 0.12);
   font-size: var(--text-sm);
   font-weight: 600;
 }
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bar {
+    background: color-mix(in srgb, var(--color-surface) 38%, transparent);
+    border-color: color-mix(in srgb, var(--color-text) 14%, transparent);
+    -webkit-backdrop-filter: blur(10px) saturate(1.8);
+    backdrop-filter: blur(10px) saturate(1.8);
+    text-shadow: 0 0 6px color-mix(in srgb, var(--color-surface) 90%, transparent);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .bar {
+    background: var(--color-surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    text-shadow: none;
+  }
+}
+.text {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+/* kleiner Warnpunkt, damit die Kapsel als Erinnerung erkennbar bleibt */
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
 .actions {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-1);
   margin-left: auto;
 }
 .later,
@@ -25,6 +69,7 @@
   font-weight: 650;
   font-size: var(--text-sm);
   cursor: pointer;
+  text-shadow: none;
 }
 .later {
   border: 0;
@@ -32,19 +77,13 @@
   color: inherit;
 }
 .now {
-  background: var(--color-warning-text);
-  color: var(--color-warning-bg);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   text-decoration: none;
 }
-.floating {
-  position: absolute;
-  z-index: 3;
-  left: var(--space-3);
-  right: var(--space-3);
-  /* direkt über der schwebenden Leiste; die Kartenknöpfe rücken um die Höhe nach oben (--reminder-h) */
-  bottom: calc(var(--nav-clearance) + var(--space-2));
-  max-width: 30rem;
-  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
-  border-radius: 20px;
-  box-shadow: var(--shadow-2);
+@media (min-width: 900px) {
+  .bar {
+    bottom: var(--space-4);
+    left: calc(var(--rail-width) + var(--space-4));
+  }
 }

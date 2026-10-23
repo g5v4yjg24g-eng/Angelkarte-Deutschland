@@ -13,12 +13,11 @@ export function BackupReminder() {
   const { pathname } = useLocation();
   const ref = useRef<HTMLDivElement>(null);
   const visible = !!state?.reminderDue && !pathname.startsWith('/mehr/daten');
-  const floating = visible && pathname === '/';
-  // Auf der Karte: eigene Höhe als --reminder-h melden, damit die Kartenknöpfe darüber bleiben
+  // Eigene Höhe als --reminder-h melden: Kartenknöpfe, Seiteninhalt und Hinweise bleiben darüber
   useEffect(() => {
     const el = ref.current;
     const root = document.documentElement;
-    if (!floating || !el) return;
+    if (!visible || !el) return;
     const set = () => root.style.setProperty('--reminder-h', `${el.offsetHeight + 8}px`);
     set();
     const ro = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(set);
@@ -27,12 +26,15 @@ export function BackupReminder() {
       ro?.disconnect();
       root.style.removeProperty('--reminder-h');
     };
-  }, [floating]);
+  }, [visible]);
   if (!visible || !state) return null;
   return (
-    // Auf der Karte schwebend, damit sie die Karte nicht verschiebt, während man tippt
-    <div ref={ref} className={[styles.bar, floating ? styles.floating : ''].join(' ')} role="status">
-      <span>{de.backup.reminder(state.changes)}</span>
+    // Schwebt als Glas-Kapsel über der unteren Leiste (wie die Leiste selbst), auf allen Seiten gleich
+    <div ref={ref} className={styles.bar} role="status">
+      <span className={styles.text}>
+        <span className={styles.dot} aria-hidden="true" />
+        {de.backup.reminder(state.changes)}
+      </span>
       <span className={styles.actions}>
         <button
           type="button"
