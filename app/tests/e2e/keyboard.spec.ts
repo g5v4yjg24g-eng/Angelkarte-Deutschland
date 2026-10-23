@@ -85,8 +85,15 @@ test('KEY-3: Fang ganz ohne Maus erfassen (Kartenmitte)', async ({ page }) => {
   await openMap(page);
   await page.getByRole('button', { name: 'Fang erfassen' }).focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByText('Tippe auf die Stelle', { exact: false })).toBeVisible();
+  // Hinweis nur für Screenreader (nicht sichtbar), Knöpfe da
+  await expect(page.getByRole('status').filter({ hasText: 'Tippe auf die Stelle' })).toBeAttached();
+  await expect(page.getByRole('button', { name: 'Abbrechen' })).toBeVisible();
+  // Kein Fadenkreuz und kein sichtbarer „Kartenmitte"-Knopf, bis er per Tastatur den Fokus bekommt
+  const cross = page.locator('[class*="crosshair"]');
+  await expect(cross).toHaveCount(0);
   await tabTo(page, /^Kartenmitte/);
+  await expect(cross).toHaveCount(1);
+  await expect(page.getByRole('button', { name: /^Kartenmitte/ })).toBeInViewport();
   await page.keyboard.press('Enter');
   const form = page.getByRole('dialog', { name: 'Fang oder Kontakt erfassen' });
   await expect(form).toBeVisible();
