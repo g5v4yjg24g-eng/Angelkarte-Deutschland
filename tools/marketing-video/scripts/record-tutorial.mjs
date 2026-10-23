@@ -301,6 +301,96 @@ const steps = {
     });
     await record('stats', [...scrollSteps(null, 0, baitY, 0.8, 2.4)], 5.4);
   },
+  // Session-Rückblick (Funktionsanimation hyperframes-route): laufende Beispiel-Session mit Route am Ostufer
+  // einspielen, „Session beenden“ → „Dein Angeltrip im Rückblick“, Wiedergabe 4×, Highlights.
+  // Allein aufrufen (--only=review), sonst läuft schon die Session aus dem Schritt „session“.
+  async review() {
+    await openMap(LAKE_VIEW, 5000);
+    const rect = await page.evaluate(() => {
+      const r = document.querySelector('.maplibregl-canvas').getBoundingClientRect();
+      return { x: r.x, y: r.y, w: r.width, h: r.height };
+    });
+    // Bildpunkt (CSS-px der Ansicht LAKE_VIEW) → Länge/Breite (Web-Mercator, 512-px-Kacheln wie MapLibre)
+    const ws = 512 * 2 ** LAKE_VIEW.zoom;
+    const my = (lat) => (0.5 - Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360)) / (2 * Math.PI)) * ws;
+    const toLngLat = ([px, py]) => {
+      const x = (LAKE_VIEW.lng / 360 + 0.5) * ws + (px - rect.x - rect.w / 2);
+      const y = my(LAKE_VIEW.lat) + (py - rect.y - rect.h / 2);
+      const lat = (360 / Math.PI) * Math.atan(Math.exp((0.5 - y / ws) * 2 * Math.PI)) - 90;
+      return { lat: +lat.toFixed(6), lng: +((x / ws - 0.5) * 360).toFixed(6) };
+    };
+    // Weg auf der Landseite des Ostufers (aus dem Kartenbild abgelesen), Fangstellen im Wasser davor
+    const way = [[165, 120], [172, 160], [178, 200], [186, 228], [192, 250], [198, 270], [203, 285], [222, 312], [252, 340], [272, 366], [292, 388], [306, 410], [322, 432], [330, 456], [338, 478], [350, 502], [362, 526], [390, 560]];
+    const spots = { a: [180, 300], b: [268, 402], c: [318, 500] };
+    const start = Date.now() - 130 * 60_000;
+    const min = (m) => start + m * 60_000;
+    // Ablauf (Minuten): gehen, stehen (angeln), App im Hintergrund = Lücke
+    const plan = [
+      { from: 0, to: 8, a: 0, b: 6 }, // zum ersten Platz
+      { from: 8, to: 40, stay: 6 },
+      { from: 40, to: 52, a: 6, b: 10, gap: [43, 50] },
+      { from: 52, to: 95, stay: 10 },
+      { from: 95, to: 100, a: 10, b: 14 },
+      { from: 100, to: 129, stay: 14 },
+    ];
+    // Wegpunkte fein auflösen und mit leichter Schlangenlinie (±4 px quer zur Laufrichtung) versehen
+    const along = (i0, i1, f) => {
+      const segs = way.slice(i0, i1 + 1);
+      const lens = segs.slice(1).map((p, i) => Math.hypot(p[0] - segs[i][0], p[1] - segs[i][1]));
+      let d = f * lens.reduce((a, b) => a + b, 0);
+      for (let i = 0; i < lens.length; i++) {
+        if (d <= lens[i] || i === lens.length - 1) {
+          const [ax, ay] = segs[i], [bx, by] = segs[i + 1], q = Math.min(1, d / lens[i]);
+          const nx = -(by - ay) / lens[i], ny = (bx - ax) / lens[i], w = 4 * Math.sin(f * 40);
+          return [ax + (bx - ax) * q + nx * w, ay + (by - ay) * q + ny * w];
+        }
+        d -= lens[i];
+      }
+    };
+    const segments = [[]];
+    for (const p of plan) {
+      for (let m = p.from; m < p.to; m += 0.25) {
+        if (p.gap && m >= p.gap[0] && m < p.gap[1]) { if (segments.at(-1).length) segments.push([]); continue; }
+        const xy = p.stay !== undefined ? way[p.stay] : along(p.a, p.b, (m - p.from) / (p.to - p.from));
+        if (p.stay !== undefined && segments.at(-1).length && m > p.from) continue; // im Stand keine neuen Punkte (unter 8 m)
+        segments.at(-1).push({ t: min(m), ...toLngLat(xy), acc: 6 });
+      }
+    }
+    const iso = (t) => new Date(t).toISOString().replace(/\.\d{3}Z$/, '.000Z');
+    const m0 = { createdAt: iso(start), updatedAt: iso(start), rev: 1 };
+    const water = { waterId: 'osm:r9075175', waterSnapshot: { name: 'Hohendeicher See', centroid: { lat: 53.440107, lng: 10.107563 } } };
+    const session = { ...m0, id: 'demo-review-session', startAt: iso(start), tz: 'Europe/Berlin', ...water, title: 'Morgenrunde' };
+    const entry = (n, m, spot, extra) => ({
+      ...m0, id: `demo-review-catch-${n}`, at: iso(min(m)), tz: 'Europe/Berlin', position: { ...toLngLat(spot), source: 'map-tap' },
+      ...water, sessionId: session.id, stateCode: 'HH', ...extra,
+    });
+    const fish = (id, cm, method, bait) => ({ outcome: 'caught', speciesId: id, speciesCertainty: 'certain', speciesSource: 'user', lengthCm: cm, lengthMethod: 'measured', released: 'released', method, bait });
+    const catches = [
+      entry(1, 26, spots.a, fish('perch', 31, 'dropshot', { name: 'Gummifisch 7 cm', type: 'softbait' })),
+      entry(2, 63, spots.b, { outcome: 'missed_bite', method: 'spinning', bait: { name: 'Wobbler 12 cm', type: 'crankbait' } }),
+      entry(3, 82, spots.b, fish('pike', 68, 'spinning', { name: 'Wobbler 12 cm', type: 'crankbait' })),
+      entry(4, 104, spots.c, fish('perch', 27, 'dropshot', { name: 'Gummifisch 7 cm', type: 'softbait' })),
+    ];
+    const track = { ...m0, id: 'demo-review-track', sessionId: session.id, segments: segments.filter((s) => s.length) };
+    const data = { catches, places: [], sessions: [session], baitPresets: [], trips: [], tracks: [track], photos: [] };
+    const file = join(tmpdir(), 'fangpunkt-review-backup.json');
+    writeFileSync(file, JSON.stringify({ ...buildBackup(data), schemaVersion: 3 }));
+    await open('mehr/daten', 1000);
+    await page.locator('input[type="file"]').setInputFiles(file);
+    await page.getByRole('button', { name: /Datensätze? importieren/ }).click();
+    await page.getByText(/importiert/).first().waitFor();
+    await open(`fangbuch/sessions/${session.id}`, 2500);
+    await record(
+      'review',
+      [
+        { at: 0.6, run: () => tap(page.getByRole('button', { name: 'Session beenden' })) },
+        { at: 3.0, run: () => tap(page.getByText('4×', { exact: true })) },
+        ...scrollToSteps(page.getByRole('heading', { name: 'Deine Highlights' }), 9.2, 1.2, 70),
+        ...scrollToSteps(page.getByRole('heading', { name: 'Fang-Highlights' }), 13.4, 1.2, 70),
+      ],
+      17.5,
+    );
+  },
 };
 
 for (const [name, fn] of Object.entries(steps)) {
