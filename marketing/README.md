@@ -35,7 +35,7 @@ Stand 2026-10-23. Getrennt von der App: Nichts in diesem Ordner wird gebaut oder
 | `stories/reel-cover/cover-video-v1…v5-1080x1920.png` | 9:16 | Titelbilder für die fünf Video-Konzepte (Text mittig, übersteht den 3:4- und 4:5-Zuschnitt) |
 | `stories/reel-cover/cover-serie-…-1080x1920.png` | 9:16 | Titelbilder für wiederkehrende Serien (Beißfenster-Check, Wissen in 30 Sekunden, Werkstatt-Notiz, Frag die Runde, Euer Feedback) |
 | `brand/schlusskarte-1080x1920.png` | 9:16 | Schluss-Karte „Link in der Bio“ für alle Videos |
-| `videos/v1-fang-eintragen-1080x1920.mp4` | 9:16, 15 s | **Video V1 (erste Fassung):** Fang in 4 Tipps, echte Bildschirmaufnahme mit Beispieldaten, ohne Ton |
+| `videos/v1-fang-eintragen-1080x1920.mp4` | 9:16, 15 s | **Video V1 (HyperFrames, 18,8 s):** Fisch-Clip, App-Aufnahme in 4 Schritten, Freilassen, Schluss-Karte; mit Wassergeräusch |
 | `videos/reel-fuenf-bilder-1080x1920.mp4` | 9:16, 17 s | **fertiges Slideshow-Reel** aus dem Karussell, ohne Ton (Musik in der Plattform-App wählen) |
 | `screenshots/{light,dark}-*.png` | 1170 × 2532 | echte Screenshots der Live-App mit **Beispieldaten** (hell und dunkel) |
 
@@ -53,7 +53,7 @@ Stand 2026-10-23. Getrennt von der App: Nichts in diesem Ordner wird gebaut oder
 node marketing/tools/screenshots.mjs        # Screenshots von der Live-App (ca. 3 min, braucht Internet)
 node marketing/tools/render.mjs             # Profilbilder, Banner, Motive, Reel-Cover, Schluss-Karte
 bash marketing/tools/reel.sh                # Slideshow-Reel aus dem Karussell (ffmpeg)
-node marketing/tools/video-v1.mjs           # Video V1: Aufnahme der Live-App + Schnitt (ca. 1 min)
+node marketing/tools/record-app.mjs         # App-Aufnahme für Video V1; Rendern mit HyperFrames: videos/v1-hyperframes/README.md
 python3 marketing/tools/overview.py         # UEBERSICHT.html
 python3 marketing/tools/build_calendar.py   # Redaktionsplan (CSV + Markdown)
 ```
@@ -77,7 +77,7 @@ Texte der Motive stehen in `MOTIFS` in `tools/render.mjs`.
 - Eigene Fangfotos und echte eigene Statistik für Jahresrückblick (V3) und „Mein Angeljahr“.
 
 ### Nicht umgesetzt
-- **Videos V1–V5 nicht produziert** – nur Konzepte plus fertige Titelbilder und Schluss-Karte (es fehlen eigene Aufnahmen und Bildschirmvideos vom Handy). Fertig sind das Slideshow-Reel und eine erste Fassung von V1 (ohne Naturaufnahmen).
+- **Videos V1–V5 nicht produziert** – nur Konzepte plus fertige Titelbilder und Schluss-Karte (es fehlen eigene Aufnahmen und Bildschirmvideos vom Handy). Fertig sind das Slideshow-Reel und V1 (mit HyperFrames und deinem Fisch-Clip).
 - **Keine KI-generierten Fotos** – kein Bildgenerator verfügbar; die Motive sind grafisch und mit echten Screenshots gebaut.
 - **Nichts veröffentlicht**, keine Konten angelegt, keine Dienste gebucht.
 - Motiv 08 nennt „Diese Woche neu“ (Stand 2026-10-23) – vor dem Posten aktualisieren.

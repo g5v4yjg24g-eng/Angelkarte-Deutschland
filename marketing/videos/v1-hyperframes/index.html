@@ -1,0 +1,267 @@
+<!doctype html>
+<!--
+  Video V1 „Fang eintragen, bevor er zurück im Wasser ist“ (marketing/videos/VIDEO-KONZEPTE.md), gebaut mit HyperFrames.
+  0–3,4 s Fisch in der Hand · 3,4–13,5 s echte App-Aufnahme (Beispieldaten) mit vier Schritten · 13,3–16,4 s Fisch wird
+  freigelassen · 16,2–18,8 s Schluss-Karte. Zeitpunkte der Tipps: assets/marks.json (aus tools/record-app.mjs).
+  Rendern (in diesem Ordner): siehe README.md
+-->
+<html lang="de" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        font-weight: 100 900;
+        src: url('assets/fonts/inter-latin-wght-normal.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Fraunces';
+        font-weight: 100 900;
+        src: url('assets/fonts/fraunces-latin-wght-normal.woff2') format('woff2');
+      }
+      :root {
+        --deep: #0b2a33;
+        --fish: #e8f4f5;
+        --eye: #f2994a;
+        --ripple: #5cc4d6;
+        --muted: #bfd8dc;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--deep);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        font-family: 'Inter', sans-serif;
+        color: var(--fish);
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+      .footage {
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+      }
+      /* Lesbarkeit der Texte über der Aufnahme */
+      .shade-top {
+        background: linear-gradient(180deg, rgb(6 20 25 / 0.82) 0%, rgb(6 20 25 / 0.35) 34%, transparent 55%);
+      }
+      .shade-full {
+        background: radial-gradient(120% 80% at 80% 0%, rgb(20 90 106 / 0.78) 0%, rgb(11 42 51 / 0.9) 55%, rgb(7 29 36 / 0.95) 100%);
+      }
+      .hook {
+        top: 230px;
+        left: 84px;
+        right: 84px;
+        bottom: auto;
+        text-align: center;
+        font: 650 104px/1.04 'Fraunces', serif;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+      }
+      .hook em,
+      .cap em,
+      .end-title em {
+        font-style: normal;
+        color: var(--eye);
+      }
+      /* Handy: Rahmen und Bildschirm mit echter Rundung (overflow: hidden), keine hellen Ecken */
+      .phone {
+        position: absolute;
+        opacity: 0;
+        left: 220px;
+        top: 470px;
+        right: auto;
+        bottom: auto;
+        width: 640px;
+        height: 1348px;
+        padding: 16px;
+        border-radius: 80px;
+        background: #05161b;
+        box-shadow:
+          0 40px 90px rgb(0 0 0 / 0.5),
+          0 0 0 2px rgb(92 196 214 / 0.3);
+      }
+      .screen {
+        position: relative;
+        width: 608px;
+        height: 1316px;
+        border-radius: 64px;
+        overflow: hidden;
+        background: #05161b;
+        isolation: isolate;
+      }
+      .screen video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .cap {
+        top: 250px;
+        left: 0;
+        right: 0;
+        bottom: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+      .cap .row {
+        display: flex;
+        align-items: center;
+        gap: 26px;
+      }
+      .cap .n {
+        width: 92px;
+        height: 92px;
+        border-radius: 50%;
+        background: var(--eye);
+        color: #2b1600;
+        font: 800 50px/92px 'Inter', sans-serif;
+        text-align: center;
+      }
+      .cap .t {
+        font: 650 76px/1.05 'Fraunces', serif;
+      }
+      .cap .s {
+        font: 500 34px/1 'Inter', sans-serif;
+        color: var(--muted);
+      }
+      .release-text {
+        top: auto;
+        bottom: 420px;
+        left: 84px;
+        right: 84px;
+        text-align: center;
+        font: 650 96px/1.05 'Fraunces', serif;
+        text-wrap: balance;
+        text-shadow: 0 4px 30px rgb(0 0 0 / 0.5);
+      }
+      .end {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: radial-gradient(120% 80% at 80% 0%, #145a6a 0%, var(--deep) 55%, #071d24 100%);
+      }
+      .end img {
+        width: 300px;
+        height: 300px;
+      }
+      .end-brand {
+        margin-top: 8px;
+        font: 650 64px/1 'Fraunces', serif;
+      }
+      .end-title {
+        margin-top: 70px;
+        font: 650 112px/1.04 'Fraunces', serif;
+      }
+      .end-pill {
+        margin-top: 44px;
+        font: 600 34px/1 'Inter', sans-serif;
+        padding: 20px 32px;
+        border-radius: 999px;
+        background: rgb(92 196 214 / 0.14);
+        border: 1.5px solid rgb(92 196 214 / 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18.8" data-width="1080" data-height="1920">
+      <!-- Szene 1: Fisch in der Hand -->
+      <video id="intro-video" class="clip footage" src="assets/fisch-freilassen.mp4" style="object-position: 64% 50%"
+        data-start="0" data-duration="3.4" data-media-start="0.2" data-has-audio="true" data-volume="0.8"
+        data-fade-in="0.3" data-fade-out="0.4" data-track-index="0"></video>
+      <div id="intro-shade" class="clip shade-top" data-start="0" data-duration="3.4" data-track-index="1"></div>
+      <h1 id="hook" class="clip hook" data-start="0" data-duration="3.4" data-track-index="2">
+        Fang eintragen, bevor er <em>zurück</em> im Wasser ist.
+      </h1>
+
+      <!-- Szene 2: App -->
+      <video id="bg-video" class="clip footage" src="assets/fisch-freilassen.mp4" style="object-position: 64% 50%"
+        data-start="3.2" data-duration="10.3" data-media-start="3.4" muted data-track-index="0"></video>
+      <div id="app-shade" class="clip shade-full" data-start="3.2" data-duration="10.3" data-track-index="1"></div>
+      <div id="phone" class="phone">
+        <div class="screen">
+          <video id="app-video" src="assets/app-aufnahme.mp4" muted data-start="3.4" data-duration="10.1"></video>
+        </div>
+      </div>
+      <div id="cap1" class="clip cap" data-start="4.8" data-duration="1.62" data-track-index="3">
+        <div class="row"><span class="n">1</span><span class="t">Fang erfassen</span></div>
+        <span class="s">1 von 4 Tipps</span>
+      </div>
+      <div id="cap2" class="clip cap" data-start="6.42" data-duration="1.7" data-track-index="3">
+        <div class="row"><span class="n">2</span><span class="t">Stelle antippen</span></div>
+        <span class="s">2 von 4 Tipps</span>
+      </div>
+      <div id="cap3" class="clip cap" data-start="8.12" data-duration="2.34" data-track-index="3">
+        <div class="row"><span class="n">3</span><span class="t">Fischart wählen</span></div>
+        <span class="s">3 von 4 Tipps</span>
+      </div>
+      <div id="cap4" class="clip cap" data-start="10.46" data-duration="3.04" data-track-index="3">
+        <div class="row"><span class="n">4</span><span class="t">Speichern. <em>Fertig.</em></span></div>
+        <span class="s">4 von 4 Tipps</span>
+      </div>
+
+      <!-- Szene 3: Fisch wird freigelassen -->
+      <video id="release-video" class="clip footage" src="assets/fisch-freilassen.mp4" style="object-position: 65% 50%"
+        data-start="13.3" data-duration="3.1" data-media-start="8.4" data-has-audio="true" data-volume="0.9"
+        data-fade-in="0.3" data-fade-out="0.5" data-track-index="0"></video>
+      <h2 id="release-text" class="clip release-text" data-start="13.6" data-duration="2.8" data-track-index="2">
+        Und der Fisch ist wieder drin.
+      </h2>
+
+      <!-- Szene 4: Schluss-Karte -->
+      <div id="end" class="clip end" data-start="16.2" data-duration="2.6" data-track-index="4">
+        <img src="assets/fisch.svg" alt="" />
+        <div class="end-brand">Fangpunkt</div>
+        <div class="end-title">Link in der <em>Bio</em></div>
+        <div class="end-pill">Kostenlos · ohne Konto</div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      // Szene 1
+      tl.fromTo('#hook', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 0.25);
+      tl.fromTo('#intro-video', { scale: 1.06 }, { scale: 1, duration: 3.4, ease: 'none' }, 0);
+      // Übergang zur App
+      tl.fromTo('#app-shade', { opacity: 0 }, { opacity: 1, duration: 0.4, ease: 'power2.out' }, 3.2);
+      tl.fromTo('#phone', { opacity: 0, y: 160 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 3.2);
+      // Schritte
+      ['#cap1', '#cap2', '#cap3', '#cap4'].forEach((id, i) => {
+        const at = [4.8, 6.42, 8.12, 10.46][i];
+        tl.fromTo(id, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, at);
+      });
+      // Übergang zum Freilassen
+      tl.to('#phone', { opacity: 0, y: 80, duration: 0.3, ease: 'power2.in' }, 13.2);
+      tl.to('#cap4', { opacity: 0, duration: 0.3 }, 13.2);
+      tl.fromTo('#release-video', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 13.3);
+      tl.fromTo('#release-text', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 13.7);
+      // Schluss-Karte
+      tl.fromTo('#end', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 16.2);
+      tl.fromTo('#end img', { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }, 16.3);
+      tl.fromTo('.end-title', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 16.7);
+      tl.fromTo('.end-pill', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 17.0);
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

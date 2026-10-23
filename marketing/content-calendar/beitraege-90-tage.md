@@ -49,8 +49,8 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Hook:** „Fang eintragen, bevor der Fisch zurück im Wasser ist.“
 - **Ablauf:** Bildschirmaufnahme: Fang erfassen → Stelle tippen → Art → Speichern. Stoppuhr-Einblendung. Siehe Video-Konzept V1.
 - **CTA:** Link in der Bio.
-- **Material:** Fertige erste Fassung videos/v1-fang-eintragen-1080x1920.mp4; optional eigener Fisch-/Uferclip für die ersten 2,6 s
-- **Vorbereitung:** 20 min
+- **Material:** Fertiges Video videos/v1-fang-eintragen-1080x1920.mp4 (Lizenz des Fisch-Clips vorher bestätigen)
+- **Vorbereitung:** 10 min
 - **Wiederverwendung:** TikTok, YouTube Shorts, Story
 
 

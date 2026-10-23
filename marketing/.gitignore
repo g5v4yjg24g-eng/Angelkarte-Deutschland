@@ -2,3 +2,6 @@ templates/_svg/
 einwilligungen/
 videos/_frames/
 videos/_build/
+videos/v1-hyperframes/.hyperframes/
+# Fremdes Videomaterial (vom Nutzer hochgeladen) nicht einchecken – Lizenz siehe videos/v1-hyperframes/README.md
+videos/v1-hyperframes/assets/fisch-freilassen.mp4
