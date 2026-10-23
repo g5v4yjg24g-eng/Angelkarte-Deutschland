@@ -328,7 +328,7 @@ def write_ics(data):
         desc = (f"Plattform: {platform}\nFormat: {fmt}\nSäule: {pillar} · Serie: {series}\nZiel: {goal}\n\n"
                 f"Hook: „{hook}“\n\nAblauf: {flow}\n\nCTA: {cta}\n\nMaterial: {material}\n"
                 f"Vorbereitung: {prep_t}\nWiederverwendung: {reuse}\n\nCaption: marketing/posts/CAPTIONS.md")
-        cal += event(f"post-{i:02d}-{date}", d, POST_TIME[day], 30, f"📱 {topic} ({fmt})", desc, 120)
+        cal += event(f"post-{i:02d}-{date}", d, POST_TIME[day], 30, f"Post: {topic} ({fmt})", desc, 120)
     for w in range(1, 14):
         d = START + dt.timedelta(weeks=w - 1, days=6)
         cal += event(f"auswertung-{w:02d}", d, dt.time(20, 0), 20, f"Fangpunkt: Wochenauswertung (Woche {w})",
