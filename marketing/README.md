@@ -8,6 +8,7 @@ Stand 2026-10-23. Getrennt von der App: Nichts in diesem Ordner wird gebaut oder
 |---|---|
 | **Strategie** – Analyse der App, Positionierung, Slogan, Zielgruppen, Konkurrenz, Plattformen, 9 Content-Serien, Link-/QR-Strategie, Community, Budget, Kennzahlen, Recht | [STRATEGIE.md](STRATEGIE.md) |
 | **90-Tage-Redaktionsplan** – Rhythmus, Vorbereitung, 44 Beiträge mit Hook, Ablauf, CTA, Material, Zeitbedarf | [content-calendar/](content-calendar/REDAKTIONSPLAN-90-TAGE.md) (Markdown + CSV) |
+| **Kalenderdatei** mit allen Beiträgen und Wochenauswertungen | [content-calendar/redaktionsplan-90-tage.ics](content-calendar/redaktionsplan-90-tage.ics) |
 | **Wochenauswertung** (Tabellenvorlage) | [content-calendar/auswertung-vorlage.csv](content-calendar/auswertung-vorlage.csv) |
 | **Captions und Hashtags** zu den 10 Motiven | [posts/CAPTIONS.md](posts/CAPTIONS.md) |
 | **5 Video-Konzepte** mit Szenenplan, Sprechertext, Untertiteln | [videos/VIDEO-KONZEPTE.md](videos/VIDEO-KONZEPTE.md) |

@@ -7,6 +7,7 @@ Startdatum ändern: START unten anpassen (immer ein Montag). Alle Termine versch
 import csv
 import datetime as dt
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 START = dt.date(2026, 11, 9)  # Montag Woche 1 (Woche 0 = Vorbereitung ab 2026-11-02)
 OUT = Path(__file__).resolve().parent.parent / "content-calendar"
@@ -273,6 +274,72 @@ def rows():
         yield [w, date.isoformat(), day, *rest]
 
 
+# ---------- Kalenderdatei (RFC 5545) ----------
+TZ = ZoneInfo("Europe/Berlin")
+# Vorgeschlagene Posting-Zeiten [A]: werktags abends, am Wochenende vormittags
+POST_TIME = {"Di": dt.time(18, 0), "Do": dt.time(18, 0), "Sa": dt.time(10, 0), "So": dt.time(10, 0)}
+STAMP = "20261023T000000Z"
+
+
+def ics_text(value: str) -> str:
+    return value.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace("\n", "\\n")
+
+
+def fold(line: str) -> list[str]:
+    """Zeilen nach 75 Oktetten umbrechen, ohne UTF-8-Zeichen zu zerteilen."""
+    out, cur = [], ""
+    for ch in line:
+        limit = 75 if not out else 74
+        if len((cur + ch).encode("utf-8")) > limit:
+            out.append(cur)
+            cur = ch
+        else:
+            cur += ch
+    out.append(cur)
+    return [out[0]] + [" " + x for x in out[1:]]
+
+
+def utc(day: dt.date, time: dt.time) -> str:
+    return dt.datetime.combine(day, time, TZ).astimezone(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+
+def event(uid: str, day: dt.date, start: dt.time, minutes: int, summary: str, description: str, alarm_min: int):
+    end = (dt.datetime.combine(day, start) + dt.timedelta(minutes=minutes)).time()
+    lines = ["BEGIN:VEVENT", f"UID:{uid}@fangpunkt-redaktionsplan", f"DTSTAMP:{STAMP}",
+             f"DTSTART:{utc(day, start)}", f"DTEND:{utc(day, end)}",
+             f"SUMMARY:{ics_text(summary)}", f"DESCRIPTION:{ics_text(description)}",
+             "CATEGORIES:Fangpunkt Social Media", "TRANSP:TRANSPARENT",
+             "BEGIN:VALARM", "ACTION:DISPLAY", f"DESCRIPTION:{ics_text(summary)}",
+             f"TRIGGER:-PT{alarm_min}M", "END:VALARM", "END:VEVENT"]
+    return lines
+
+
+def write_ics(data):
+    cal = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Fangpunkt//Redaktionsplan//DE", "CALSCALE:GREGORIAN",
+           "METHOD:PUBLISH", "X-WR-CALNAME:Fangpunkt Social Media", "X-WR-TIMEZONE:Europe/Berlin"]
+    prep = START - dt.timedelta(days=7)
+    cal += event("woche0", prep, dt.time(19, 0), 60, "Fangpunkt: Woche 0 – Vorbereitung",
+                 "Profile anlegen und Handles sichern, Profilbild + Bio, Creator-Konto, 3 Beiträge vorab "
+                 "(Motiv 01, Karussell 02, Motiv 04), Story-Highlights, 10 Beta-Tester anschreiben.\n"
+                 "Details: marketing/content-calendar/REDAKTIONSPLAN-90-TAGE.md", 60)
+    for i, r in enumerate(data):
+        w, date, day, platform, fmt, pillar, series, topic, goal, hook, flow, cta, material, prep_t, reuse = r
+        d = dt.date.fromisoformat(date)
+        desc = (f"Plattform: {platform}\nFormat: {fmt}\nSäule: {pillar} · Serie: {series}\nZiel: {goal}\n\n"
+                f"Hook: „{hook}“\n\nAblauf: {flow}\n\nCTA: {cta}\n\nMaterial: {material}\n"
+                f"Vorbereitung: {prep_t}\nWiederverwendung: {reuse}\n\nCaption: marketing/posts/CAPTIONS.md")
+        cal += event(f"post-{i:02d}-{date}", d, POST_TIME[day], 30, f"📱 {topic} ({fmt})", desc, 120)
+    for w in range(1, 14):
+        d = START + dt.timedelta(weeks=w - 1, days=6)
+        cal += event(f"auswertung-{w:02d}", d, dt.time(20, 0), 20, f"Fangpunkt: Wochenauswertung (Woche {w})",
+                     "Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen (Reichweite, Ø Wiedergabedauer, "
+                     "Speichern, Teilen, Profilaufrufe, Link-Klicks). Wiederholen / verändern / stoppen entscheiden, "
+                     "Funktionswünsche notieren, nächste Woche anpassen.", 15)
+    cal.append("END:VCALENDAR")
+    folded = [x for line in cal for x in fold(line)]
+    (OUT / "redaktionsplan-90-tage.ics").write_bytes(("\r\n".join(folded) + "\r\n").encode("utf-8"))
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     data = list(rows())
@@ -300,6 +367,7 @@ def main():
                f"- **Vorbereitung:** {r[13]}",
                f"- **Wiederverwendung:** {r[14]}", ""]
     (OUT / "beitraege-90-tage.md").write_text("\n".join(md), encoding="utf-8")
+    write_ics(data)
     print(len(data), "Beiträge")
 
 

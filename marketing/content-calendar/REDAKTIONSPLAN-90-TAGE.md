@@ -7,6 +7,7 @@ Verschiebt sich der Start (z. B. weil Impressum, Domain oder EUIPO-Prüfung noch
 - [beitraege-90-tage.md](beitraege-90-tage.md) – alle 44 Beiträge mit Datum, Plattform, Format, Säule, Thema, Ziel, Hook, Ablauf, CTA, Material, Zeitbedarf und Wiederverwendung.
 - [redaktionsplan-90-tage.csv](redaktionsplan-90-tage.csv) – dieselben Daten als Tabelle (Semikolon, UTF-8; öffnet in Excel/Numbers/LibreOffice).
 - [auswertung-vorlage.csv](auswertung-vorlage.csv) – Wochenauswertung.
+- [redaktionsplan-90-tage.ics](redaktionsplan-90-tage.ics) – **Kalenderdatei** mit allen 44 Beiträgen (Beschreibung mit Hook, Ablauf, CTA, Material), Woche 0 und 13 Wochenauswertungen; Erinnerung 2 h vor jedem Beitrag. Zeiten [A]: Di/Do 18:00, Sa/So 10:00, Auswertung So 20:00. Import: iPhone – Datei antippen → „Alle hinzufügen“ (am besten in einen eigenen Kalender „Fangpunkt“); Google Kalender – Einstellungen → Importieren; Outlook – Datei öffnen.
 
 ## Rhythmus für eine Person nebenbei
 

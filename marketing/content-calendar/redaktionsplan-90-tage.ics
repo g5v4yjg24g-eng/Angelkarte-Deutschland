@@ -1,0 +1,1219 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Fangpunkt//Redaktionsplan//DE
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Fangpunkt Social Media
+X-WR-TIMEZONE:Europe/Berlin
+BEGIN:VEVENT
+UID:woche0@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261102T180000Z
+DTEND:20261102T190000Z
+SUMMARY:Fangpunkt: Woche 0 – Vorbereitung
+DESCRIPTION:Profile anlegen und Handles sichern\, Profilbild + Bio\, Creato
+ r-Konto\, 3 Beiträge vorab (Motiv 01\, Karussell 02\, Motiv 04)\, Story-H
+ ighlights\, 10 Beta-Tester anschreiben.\nDetails: marketing/content-calend
+ ar/REDAKTIONSPLAN-90-TAGE.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Woche 0 – Vorbereitung
+TRIGGER:-PT60M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-00-2026-11-10@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261110T170000Z
+DTEND:20261110T173000Z
+SUMMARY:📱 Marken-Launch: Fangpunkt stellt sich vor (Bildbeitrag)
+DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
+ ldbeitrag\nSäule: Nutzergewinnung · Serie: Start\nZiel: Erste Follower a
+ us dem eigenen Umfeld\, Profil wirkt bewohnt\n\nHook: „Ich hab mir die A
+ ngel-App gebaut\, die ich selbst haben wollte.“\n\nAblauf: Motiv 01. Cap
+ tion: wer dahinter steht\, warum nicht kommerziell\, was sie kann\, was (n
+ och) nicht.\n\nCTA: Link in der Bio – ausprobieren und ehrlich sagen\, w
+ as fehlt.\n\nMaterial: posts/01-launch-feed-1080x1440.png\nVorbereitung: 2
+ 0 min\nWiederverwendung: Story mit Link-Sticker\; angepinnt im Profil\n\nC
+ aption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Marken-Launch: Fangpunkt stellt sich vor (Bildbeitrag)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-01-2026-11-12@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261112T170000Z
+DTEND:20261112T173000Z
+SUMMARY:📱 App-Übersicht in fünf Bildern (Karussell (6 Bilder))
+DESCRIPTION:Plattform: Instagram Karussell → Facebook-Seite (Bilder) · T
+ ikTok-Fotomodus\nFormat: Karussell (6 Bilder)\nSäule: Erklärung · Serie
+ : Kurz erklärt\nZiel: Verstehen\, was die App kann\; Speichern auslösen\
+ n\nHook: „Fünf Dinge\, die du am Wasser brauchst – in einer App.“\n
+ \nAblauf: Karussell 02-k1 bis k6: Karte\, Fangbuch\, Wetter\, Statistik\, 
+ Angelrecht.\n\nCTA: Speichern für den nächsten Angeltag.\n\nMaterial: po
+ sts/02-karussell/*\nVorbereitung: 15 min\nWiederverwendung: angepinnt\; Fa
+ cebook-Album\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 App-Übersicht in fünf Bildern (Karussell (6 Bilder))
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-02-2026-11-14@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261114T090000Z
+DTEND:20261114T093000Z
+SUMMARY:📱 Fangpunkt in 17 Sekunden (Slideshow) (Reel 17 s (fertig))
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 17 s (fertig)\nSäule: Erklärung · Serie: Kurz erk
+ lärt\nZiel: Karussell als Video an Nicht-Follower ausspielen\, ohne Mehra
+ ufwand\n\nHook: „Fangpunkt in 17 Sekunden.“\n\nAblauf: Fertiges Reel v
+ ideos/reel-fuenf-bilder-1080x1920.mp4 hochladen\, ruhige Musik aus der Pla
+ ttform-Bibliothek dazulegen.\n\nCTA: Link in der Bio.\n\nMaterial: videos/
+ reel-fuenf-bilder-1080x1920.mp4\nVorbereitung: 10 min\nWiederverwendung: T
+ ikTok\, YouTube Shorts\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Fangpunkt in 17 Sekunden (Slideshow) (Reel 17 s (fertig))
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-03-2026-11-15@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261115T090000Z
+DTEND:20261115T093000Z
+SUMMARY:📱 Fang in 10 Sekunden eintragen (Reel 15–20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 15–20 s\nSäule: Reichweite · Serie: Kurz erklär
+ t\nZiel: Reichweite über Nicht-Follower\; Kernnutzen zeigen\n\nHook: „F
+ ang eintragen\, bevor der Fisch zurück im Wasser ist.“\n\nAblauf: Bilds
+ chirmaufnahme: Fang erfassen → Stelle tippen → Art → Speichern. Stop
+ puhr-Einblendung. Siehe Video-Konzept V1.\n\nCTA: Link in der Bio.\n\nMate
+ rial: Fertiges Video videos/v1-fang-eintragen-1080x1920.mp4 (Lizenz des Fi
+ sch-Clips vorher bestätigen)\nVorbereitung: 10 min\nWiederverwendung: Tik
+ Tok\, YouTube Shorts\, Story\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Fang in 10 Sekunden eintragen (Reel 15–20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-04-2026-11-17@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261117T170000Z
+DTEND:20261117T173000Z
+SUMMARY:📱 Warum es Fangpunkt gibt (Reel 20–30 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20–30 s\nSäule: Vertrauen · Serie: Werkstatt-Not
+ iz\nZiel: Gesicht/Stimme hinter der App\, Glaubwürdigkeit\n\nHook: „Mei
+ ne alte Angel-App war eine einzige HTML-Datei für einen See.“\n\nAblauf
+ : Selfie-Video am Wasser oder Sprechertext über alte/neue App-Aufnahmen: 
+ von einem See zu ganz Deutschland\, ohne Konto\, ohne Werbung.\n\nCTA: Fol
+ gen\, wenn du sehen willst\, wie es weitergeht.\n\nMaterial: Selfie-Clip\,
+  Bildschirmaufnahmen\nVorbereitung: 60 min\nWiederverwendung: TikTok\, Sho
+ rts\; Text als Facebook-Beitrag\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Warum es Fangpunkt gibt (Reel 20–30 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-05-2026-11-19@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261119T170000Z
+DTEND:20261119T173000Z
+SUMMARY:📱 Digitales Fangbuch (Bildbeitrag)
+DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
+ ldbeitrag\nSäule: Erklärung · Serie: Fangbuch-Freitag\nZiel: Kernfunkti
+ on Fangbuch erklären\n\nHook: „Jeder Biss zählt. Auch der verlorene.
+ “\n\nAblauf: Motiv 04. Caption: Fang\, Fischkontakt\, Fehlbiss\, Beobach
+ tung – warum Fehlbisse für die Auswertung wichtig sind.\n\nCTA: Wie not
+ ierst du bisher deine Fänge? Kommentar.\n\nMaterial: posts/04-fangbuch-fe
+ ed-1080x1440.png\nVorbereitung: 15 min\nWiederverwendung: Story mit Umfrag
+ e „Zettel / Handy / gar nicht“\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Digitales Fangbuch (Bildbeitrag)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-06-2026-11-21@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261121T090000Z
+DTEND:20261121T093000Z
+SUMMARY:📱 Umfrage: Wie dokumentierst du Fänge? (Story-Serie (3))
+DESCRIPTION:Plattform: Instagram Story (+ Facebook Story)\nFormat: Story-Se
+ rie (3)\nSäule: Vertrauen · Serie: Frag die Runde\nZiel: Interaktion\, Z
+ ielgruppenwissen\n\nHook: „Ehrlich: Schreibst du deine Fänge auf?“\n\
+ nAblauf: Story 1 Umfrage\, Story 2 Quiz „Was zählt als Fischkontakt?“
+ \, Story 3 Ergebnis + Link.\n\nCTA: Link-Sticker zur App.\n\nMaterial: sto
+ ries/04-fangbuch-story-1080x1920.png\nVorbereitung: 15 min\nWiederverwendu
+ ng: Ergebnis als Beitrag in Woche 3\n\nCaption: marketing/posts/CAPTIONS.m
+ d
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Umfrage: Wie dokumentierst du Fänge? (Story-Serie (3))
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-07-2026-11-22@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261122T090000Z
+DTEND:20261122T093000Z
+SUMMARY:📱 Luftdruck der Woche (Reel 20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Beißfenster-Chec
+ k\nZiel: Wiederkehrender Sonntags-Termin aufbauen\n\nHook: „Luftdruck f
+ ällt – was heißt das für dein Wochenende?“\n\nAblauf: Bildschirmauf
+ nahme Wetter → Luftdruck-Verlauf. Klar sagen: Zusammenhang ist umstritte
+ n\; die App zeigt deine eigenen Daten ab 20 Bissen.\n\nCTA: Welche Erfahru
+ ng hast du mit fallendem Luftdruck?\n\nMaterial: Bildschirmaufnahme Wetter
+ seite\nVorbereitung: 40 min\nWiederverwendung: TikTok\, Shorts\n\nCaption:
+  marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Luftdruck der Woche (Reel 20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-08-2026-11-24@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261124T170000Z
+DTEND:20261124T173000Z
+SUMMARY:📱 „Wo war nochmal die Stelle?“ (Reel 25 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 25 s\nSäule: Reichweite · Serie: Problem am Wasser
+ \nZiel: Problem-Lösung\, hohe Wiedererkennung\n\nHook: „Du findest die 
+ Stelle vom letzten Mal nicht wieder?“\n\nAblauf: Szene: Ratlos am Ufer (
+ eigene Aufnahme) → Karte → gespeicherte Angelstelle → Fang dort. Sie
+ he V2.\n\nCTA: Speichern und beim nächsten Mal ausprobieren.\n\nMaterial:
+  Uferclip\, Bildschirmaufnahme Karte\; Cover cover-video-v2\nVorbereitung:
+  60 min\nWiederverwendung: TikTok\, Shorts\n\nCaption: marketing/posts/CAP
+ TIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 „Wo war nochmal die Stelle?“ (Reel 25 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-09-2026-11-26@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261126T170000Z
+DTEND:20261126T173000Z
+SUMMARY:📱 Angelstellen & Heatmap (Bildbeitrag)
+DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
+ ldbeitrag\nSäule: Erklärung · Serie: Kurz erklärt\nZiel: Datenschutz a
+ ls Vorteil zeigen\n\nHook: „Deine Stellen. Nur auf deinem Handy.“\n\nA
+ blauf: Motiv 07. Caption: Markierungen per Tipp\, Heatmap ab 30 Fängen si
+ nnvoll\, nichts wird hochgeladen.\n\nCTA: Wie viele Stellen hast du im Kop
+ f statt auf dem Handy?\n\nMaterial: posts/07-angelstellen-feed-1080x1440.p
+ ng\nVorbereitung: 15 min\nWiederverwendung: Story\n\nCaption: marketing/po
+ sts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Angelstellen & Heatmap (Bildbeitrag)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-10-2026-11-29@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261129T090000Z
+DTEND:20261129T093000Z
+SUMMARY:📱 Ergebnis der Umfrage + nächste Frage (Karussell (4))
+DESCRIPTION:Plattform: Instagram Karussell → Facebook-Seite (Bilder) · T
+ ikTok-Fotomodus\nFormat: Karussell (4)\nSäule: Vertrauen · Serie: Frag d
+ ie Runde\nZiel: Community ernst nehmen\n\nHook: „Ihr habt abgestimmt –
+  so dokumentiert ihr eure Fänge.“\n\nAblauf: Folie 1 Ergebnis (nur echt
+ e Zahlen aus der Story-Umfrage)\, Folie 2 was das für die App heißt\, Fo
+ lie 3 neue Frage.\n\nCTA: Kommentar: Was fehlt dir in deinem Fangbuch?\n\n
+ Material: Vorlage 08 (Text-Layout) anpassen\nVorbereitung: 30 min\nWiederv
+ erwendung: Facebook-Seite\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Ergebnis der Umfrage + nächste Frage (Karussell (4))
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-11-2026-12-01@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261201T170000Z
+DTEND:20261201T173000Z
+SUMMARY:📱 Fänge pro Stunde statt Fänge pro Tag (Reel 30 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 30 s\nSäule: Reichweite · Serie: Wissen in 30 Seku
+ nden\nZiel: Mehrwert ohne App-Zwang\, Statistik-Denke\n\nHook: „10 Fisch
+ e an einem Tag sind nicht gut – wenn du 12 Stunden da warst.“\n\nAblau
+ f: Rechenbeispiel als Texteinblendung\, dann Statistik-Screen „Fänge pr
+ o Stunde“ mit n = …\n\nCTA: Rechnest du deine Angelzeit mit?\n\nMateri
+ al: Statistik-Screenshot\, Texteinblendungen\nVorbereitung: 45 min\nWieder
+ verwendung: TikTok\, Shorts\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Fänge pro Stunde statt Fänge pro Tag (Reel 30 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-12-2026-12-03@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261203T170000Z
+DTEND:20261203T173000Z
+SUMMARY:📱 Statistik (Bildbeitrag)
+DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
+ ldbeitrag\nSäule: Erklärung · Serie: Fangbuch-Freitag\nZiel: Funktion S
+ tatistik erklären\n\nHook: „Was wirklich fängt.“\n\nAblauf: Motiv 06
+ . Caption: Mindestmengen und Stichprobengröße – warum die App bei weni
+ gen Fängen „zu wenige Daten“ sagt.\n\nCTA: Welcher Köder ist bei dir
+  der heimliche Gewinner?\n\nMaterial: posts/06-statistik-feed-1080x1440.pn
+ g\nVorbereitung: 15 min\nWiederverwendung: Story\n\nCaption: marketing/pos
+ ts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Statistik (Bildbeitrag)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-13-2026-12-05@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261205T090000Z
+DTEND:20261205T093000Z
+SUMMARY:📱 Vorstellung in 1–2 passenden Gruppen (Text + 1 Bild)
+DESCRIPTION:Plattform: Facebook-Gruppen / Foren (nur wo Eigenwerbung erlaub
+ t)\nFormat: Text + 1 Bild\nSäule: Nutzergewinnung · Serie: Community\nZi
+ el: Erste Tester außerhalb des Umfelds\n\nHook: „Ich suche ehrliches Fe
+ edback zu meiner kostenlosen Angel-App.“\n\nAblauf: Vorher Gruppenregeln
+  lesen bzw. Admin fragen (Vorlage KONTAKT-VORLAGEN.md). Kein Copy-Paste in
+  viele Gruppen.\n\nCTA: Wer Lust hat: testen und sagen\, was nervt.\n\nMat
+ erial: Motiv 10 oder Karussell-Titelbild\nVorbereitung: 30 min\nWiederverw
+ endung: –\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Vorstellung in 1–2 passenden Gruppen (Text + 1 Bild)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-14-2026-12-06@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261206T090000Z
+DTEND:20261206T093000Z
+SUMMARY:📱 Solunar – Theorie ehrlich erklärt (Reel 20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Beißfenster-Chec
+ k\nZiel: Reichweite über ein bekanntes Suchthema\n\nHook: „Mondphasen u
+ nd Beißzeiten – was ist dran?“\n\nAblauf: Solunar-Zeiten in der App z
+ eigen\, Hinweis „Theorie\, wissenschaftlich nicht belegt“ einblenden\;
+  eigene Auswertung als Gegenstück.\n\nCTA: Glaubst du an Solunar? Ja/Nein
+  in die Kommentare.\n\nMaterial: Bildschirmaufnahme Beißfenster\nVorberei
+ tung: 40 min\nWiederverwendung: TikTok\, Shorts\n\nCaption: marketing/post
+ s/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Solunar – Theorie ehrlich erklärt (Reel 20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-15-2026-12-08@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261208T170000Z
+DTEND:20261208T173000Z
+SUMMARY:📱 Warum es (noch) keine Tiefenkarten gibt (Reel 30 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 30 s\nSäule: Vertrauen · Serie: Ehrlich gesagt\nZi
+ el: Vertrauen durch Transparenz\; Abgrenzung\n\nHook: „Viele Apps haben 
+ Tiefenkarten. Meine nicht. Absichtlich.“\n\nAblauf: Sprechertext: Tiefen
+ daten brauchen eine Lizenz\; geschätzte Linien wären keine Messung. Sieh
+ e V4.\n\nCTA: Kennst du eine freie Quelle? Schreib mir.\n\nMaterial: Selfi
+ e-Clip oder Text auf Wasserbild\nVorbereitung: 45 min\nWiederverwendung: M
+ otiv 03 als Bildbeitrag am Donnerstag\n\nCaption: marketing/posts/CAPTIONS
+ .md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Warum es (noch) keine Tiefenkarten gibt (Reel 30 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-16-2026-12-10@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261210T170000Z
+DTEND:20261210T173000Z
+SUMMARY:📱 Tiefenkarten: Noch nicht (Bildbeitrag)
+DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
+ ldbeitrag\nSäule: Vertrauen · Serie: Ehrlich gesagt\nZiel: Haltung zeige
+ n\, Hinweise aus der Community sammeln\n\nHook: „Tiefenkarten? Noch nich
+ t.“\n\nAblauf: Motiv 03. Caption erklärt\, was es heute gibt (Gewässer
+ profil mit Quelle).\n\nCTA: Quelle bekannt? DM.\n\nMaterial: posts/03-tief
+ enkarten-feed-1080x1440.png\nVorbereitung: 10 min\nWiederverwendung: Story
+ \n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Tiefenkarten: Noch nicht (Bildbeitrag)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-17-2026-12-13@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261213T090000Z
+DTEND:20261213T093000Z
+SUMMARY:📱 Gewässer suchen und Profil ansehen (Reel 20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Kurz erklärt\nZi
+ el: Deutschland-Abdeckung zeigen\n\nHook: „Kennst du den Namen von deine
+ m Hausgewässer? Die Karte schon.“\n\nAblauf: Suche „Möhnesee“ o. 
+ ä. → Profil: Name\, Typ\, Fläche\, Lage\, Quelle OSM. Hinweis: Angaben
+  aus OpenStreetMap.\n\nCTA: Such dein Gewässer – Link in der Bio.\n\nMa
+ terial: Bildschirmaufnahme Suche/Profil\nVorbereitung: 40 min\nWiederverwe
+ ndung: TikTok\, Shorts\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Gewässer suchen und Profil ansehen (Reel 20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-18-2026-12-15@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261215T170000Z
+DTEND:20261215T173000Z
+SUMMARY:📱 Unwetter beim Ansitz (Reel 30 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 30 s\nSäule: Reichweite · Serie: Problem am Wasser
+ \nZiel: Sicherheit als Nutzen\n\nHook: „Gewitter auf dem See ist kein Ab
+ enteuer.“\n\nAblauf: Amtliche Warnungen (DWD) auf der Wetterseite und be
+ im Angeltermin zeigen. Keine Panikmache.\n\nCTA: Prüfst du Warnungen vor 
+ dem Losfahren?\n\nMaterial: Bildschirmaufnahme Warnungen (nur echte\, aktu
+ elle)\nVorbereitung: 40 min\nWiederverwendung: TikTok\, Shorts\n\nCaption:
+  marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Unwetter beim Ansitz (Reel 30 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-19-2026-12-17@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261217T170000Z
+DTEND:20261217T173000Z
+SUMMARY:📱 Wetter & Beißfenster (Bildbeitrag)
+DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
+ ldbeitrag\nSäule: Erklärung · Serie: Beißfenster-Check\nZiel: Funktion
+  erklären\n\nHook: „Wann beißt es bei dir?“\n\nAblauf: Motiv 05. Cap
+ tion: Vorhersage\, Luftdruck\, eigene Auswertung ab 20 Bissen\, keine „g
+ ut/schlecht“-Wertung.\n\nCTA: Wie viele Bisse hast du dieses Jahr notier
+ t?\n\nMaterial: posts/05-wetter-beissfenster-feed-1080x1440.png\nVorbereit
+ ung: 15 min\nWiederverwendung: Story\n\nCaption: marketing/posts/CAPTIONS.
+ md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Wetter & Beißfenster (Bildbeitrag)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-20-2026-12-19@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261219T090000Z
+DTEND:20261219T093000Z
+SUMMARY:📱 Ein Tag Entwicklung (Story-Serie (4))
+DESCRIPTION:Plattform: Instagram Story (+ Facebook Story)\nFormat: Story-Se
+ rie (4)\nSäule: Vertrauen · Serie: Werkstatt-Notiz\nZiel: Nähe\, Persö
+ nlichkeit\n\nHook: „Heute baue ich …“\n\nAblauf: Fotos vom Schreibti
+ sch/Testgerät\, eine Vorher-nachher-Aufnahme\, Frage-Sticker.\n\nCTA: Fra
+ ge-Sticker: Was soll als Nächstes kommen?\n\nMaterial: Handyfotos\nVorber
+ eitung: 20 min\nWiederverwendung: Antworten als Reel in Woche 7\n\nCaption
+ : marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Ein Tag Entwicklung (Story-Serie (4))
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-21-2026-12-20@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261220T090000Z
+DTEND:20261220T093000Z
+SUMMARY:📱 Wochenausblick Wetter (Reel 20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Beißfenster-Chec
+ k\nZiel: Sonntagsformat festigen\n\nHook: „Dein Angelwetter für die Woc
+ he – in 20 Sekunden.“\n\nAblauf: Vorhersage „Die nächsten Tage“ s
+ crollen\, Luftdruck-Tendenz\, ein Satz Einordnung.\n\nCTA: Wann gehst du d
+ iese Woche ans Wasser?\n\nMaterial: Bildschirmaufnahme Wetter\; Cover cove
+ r-serie-beissfenster-check\nVorbereitung: 30 min\nWiederverwendung: TikTok
+ \, Shorts\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Wochenausblick Wetter (Reel 20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-22-2026-12-22@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261222T170000Z
+DTEND:20261222T173000Z
+SUMMARY:📱 Eure Wünsche – was daraus wird (Reel 30 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 30 s\nSäule: Vertrauen · Serie: Euer Feedback\nZie
+ l: Community-Bindung\n\nHook: „Ihr habt gefragt – das kommt (und das n
+ icht).“\n\nAblauf: Antworten aus der Story-Frage vorlesen\, ehrlich prio
+ risieren. Nichts versprechen\, was nicht geplant ist.\n\nCTA: Weitere Wün
+ sche in die Kommentare.\n\nMaterial: Screenshots der Antworten (nur mit Ei
+ nverständnis\, sonst anonymisiert)\nVorbereitung: 45 min\nWiederverwendun
+ g: Facebook-Text\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Eure Wünsche – was daraus wird (Reel 30 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-23-2026-12-24@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261224T170000Z
+DTEND:20261224T173000Z
+SUMMARY:📱 5 Dinge\, die ins Fangbuch gehören (Karussell (5))
+DESCRIPTION:Plattform: Instagram Karussell → Facebook-Seite (Bilder) · T
+ ikTok-Fotomodus\nFormat: Karussell (5)\nSäule: Reichweite · Serie: Wisse
+ n in 30 Sekunden\nZiel: Speicherbarer Mehrwert\n\nHook: „Diese 5 Angaben
+  machen dein Fangbuch wirklich nützlich.“\n\nAblauf: Zeit\, Stelle\, K
+ öder\, Ergebnis (auch Fehlbiss)\, Bedingungen. Letzte Folie: App macht da
+ s mit wenigen Tipps.\n\nCTA: Speichern.\n\nMaterial: Vorlage Text-Layout\,
+  1 Screenshot\nVorbereitung: 40 min\nWiederverwendung: Facebook\, Pinteres
+ t optional\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 5 Dinge\, die ins Fangbuch gehören (Karussell (5))
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-24-2026-12-27@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261227T090000Z
+DTEND:20261227T093000Z
+SUMMARY:📱 Pegel – warum Wasserstand keine Tiefe ist (Reel 20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Beißfenster-Chec
+ k\nZiel: Fachwissen + Funktion Pegel\n\nHook: „75 cm Wasserstand heißt 
+ nicht 75 cm tief.“\n\nAblauf: Pegelkarte in der App\, Erklärung Pegelnu
+ llpunkt. Hinweis: nur Bundeswasserstraßen und NRW-Landespegel.\n\nCTA: An
+ gelst du an Flüssen? Pegel bei dir schon geprüft?\n\nMaterial: Bildschir
+ maufnahme Pegel\nVorbereitung: 40 min\nWiederverwendung: TikTok\, Shorts\n
+ \nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Pegel – warum Wasserstand keine Tiefe ist (Reel 20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-25-2026-12-29@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261229T170000Z
+DTEND:20261229T173000Z
+SUMMARY:📱 „War das jetzt Schonzeit?“ (Reel 25 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 25 s\nSäule: Reichweite · Serie: Problem am Wasser
+ \nZiel: Recht-Funktion zeigen\, mit klarer Einschränkung\n\nHook: „Fisc
+ h gefangen – darfst du ihn mitnehmen?“\n\nAblauf: Fang eintragen → R
+ echts-Hinweis der App mit Paragraf. Einblendung „keine Rechtsauskunft\, 
+ Erlaubnisschein gilt“. NRW: noch keine Daten.\n\nCTA: Kennst du die Scho
+ nzeiten in deinem Land?\n\nMaterial: Bildschirmaufnahme Fangformular mit H
+ inweis\nVorbereitung: 60 min\nWiederverwendung: TikTok\, Shorts\n\nCaption
+ : marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 „War das jetzt Schonzeit?“ (Reel 25 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-26-2026-12-31@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261231T170000Z
+DTEND:20261231T173000Z
+SUMMARY:📱 Hinter den Kulissen: Neu in der App (Bildbeitrag)
+DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
+ ldbeitrag\nSäule: Vertrauen · Serie: Werkstatt-Notiz\nZiel: Fortschritt 
+ zeigen\n\nHook: „Diese Woche neu in Fangpunkt.“\n\nAblauf: Motiv 08 vo
+ rher aktualisieren: nur Funktionen nennen\, die live sind.\n\nCTA: Was feh
+ lt dir? Kommentar.\n\nMaterial: posts/08-entwicklung-feed-1080x1440.png (a
+ ktualisieren)\nVorbereitung: 20 min\nWiederverwendung: Story\n\nCaption: m
+ arketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Hinter den Kulissen: Neu in der App (Bildbeitrag)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-27-2027-01-03@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270103T090000Z
+DTEND:20270103T093000Z
+SUMMARY:📱 Wochenausblick Wetter (Reel 20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Beißfenster-Chec
+ k\nZiel: Sonntagsformat\n\nHook: „Angelwetter der Woche in 20 Sekunden.
+ “\n\nAblauf: Wie Woche 6.\n\nCTA: Wann geht's los?\n\nMaterial: Bildschi
+ rmaufnahme\nVorbereitung: 30 min\nWiederverwendung: TikTok\, Shorts\n\nCap
+ tion: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Wochenausblick Wetter (Reel 20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-28-2027-01-05@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270105T170000Z
+DTEND:20270105T173000Z
+SUMMARY:📱 Mein Angeljahr in Zahlen (Reel 30–45 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 30–45 s\nSäule: Reichweite · Serie: Fangbuch-Fre
+ itag\nZiel: Persönliche Geschichte mit eigenen echten Daten (Jahresrückb
+ lick)\n\nHook: „Mein Angeljahr in 30 Sekunden – ehrlich\, mit allen Sc
+ hneidertagen.“\n\nAblauf: Eigene Statistik zeigen (nur echte eigene Date
+ n!)\, Highlights\, Fehlbisse\, Fänge pro Stunde. Siehe V3.\n\nCTA: Wie wa
+ r dein Jahr? Zahl in die Kommentare.\n\nMaterial: eigene Statistik\, eigen
+ e Fangfotos\nVorbereitung: 90 min\nWiederverwendung: TikTok\, Shorts\, Fac
+ ebook\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Mein Angeljahr in Zahlen (Reel 30–45 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-29-2027-01-07@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270107T170000Z
+DTEND:20270107T173000Z
+SUMMARY:📱 Zum Jahreswechsel: Fangbuch-Vorsatz (Karussell (4))
+DESCRIPTION:Plattform: Instagram Karussell → Facebook-Seite (Bilder) · T
+ ikTok-Fotomodus\nFormat: Karussell (4)\nSäule: Nutzergewinnung · Serie: 
+ Frag die Runde\nZiel: Einstieg zum Jahresstart erleichtern\n\nHook: „Neu
+ es Jahr\, neues Fangbuch?“\n\nAblauf: Folien: Warum aufschreiben\, was e
+ s bringt\, wie schnell es geht\, wie du startest.\n\nCTA: Starte am 1. Jan
+ uar mit dem ersten Eintrag.\n\nMaterial: Vorlage Text-Layout\, Motiv 10\nV
+ orbereitung: 30 min\nWiederverwendung: Story\n\nCaption: marketing/posts/C
+ APTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Zum Jahreswechsel: Fangbuch-Vorsatz (Karussell (4))
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-30-2027-01-10@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270110T090000Z
+DTEND:20270110T093000Z
+SUMMARY:📱 Morgens oder abends? (Story-Serie)
+DESCRIPTION:Plattform: Instagram Story (+ Facebook Story)\nFormat: Story-Se
+ rie\nSäule: Vertrauen · Serie: Frag die Runde\nZiel: Interaktion\n\nHook
+ : „Morgens oder abends?“\n\nAblauf: Motiv 09 als Story mit Umfrage-Sti
+ cker\; Ergebnis am Mittwoch.\n\nCTA: Abstimmen.\n\nMaterial: stories/09-co
+ mmunity-frage-story-1080x1920.png\nVorbereitung: 10 min\nWiederverwendung:
+  Feed-Beitrag Motiv 09\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Morgens oder abends? (Story-Serie)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-31-2027-01-12@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270112T170000Z
+DTEND:20270112T173000Z
+SUMMARY:📱 Morgens oder abends? (Feed) (Bildbeitrag)
+DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
+ ldbeitrag\nSäule: Vertrauen · Serie: Frag die Runde\nZiel: Kommentare sa
+ mmeln\n\nHook: „Morgens oder abends – wann läuft's bei dir besser?“
+ \n\nAblauf: Motiv 09. Kommentare beantworten.\n\nCTA: Antwort in die Komme
+ ntare.\n\nMaterial: posts/09-community-frage-feed-1080x1440.png\nVorbereit
+ ung: 10 min\nWiederverwendung: –\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Morgens oder abends? (Feed) (Bildbeitrag)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-32-2027-01-14@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270114T170000Z
+DTEND:20270114T173000Z
+SUMMARY:📱 App auf den Startbildschirm legen (Reel 30 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 30 s\nSäule: Nutzergewinnung · Serie: Kurz erklär
+ t\nZiel: Hürde „ist doch nur eine Website“ abbauen\n\nHook: „Diese 
+ App gibt's in keinem Store – und das ist Absicht.“\n\nAblauf: Bildschi
+ rmaufnahme iPhone und Android: hinzufügen\, starten\, ohne Internet Fang 
+ eintragen. Siehe V5.\n\nCTA: Probier's aus – Link in der Bio.\n\nMateria
+ l: Bildschirmaufnahmen auf 2 Geräten\nVorbereitung: 60 min\nWiederverwend
+ ung: TikTok\, Shorts\, Story\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 App auf den Startbildschirm legen (Reel 30 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-33-2027-01-17@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270117T090000Z
+DTEND:20270117T093000Z
+SUMMARY:📱 Wochenausblick Wetter (Reel 20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Beißfenster-Chec
+ k\nZiel: Sonntagsformat\n\nHook: „Angelwetter der Woche.“\n\nAblauf: W
+ ie Woche 6.\n\nCTA: Wann geht's los?\n\nMaterial: Bildschirmaufnahme\nVorb
+ ereitung: 30 min\nWiederverwendung: TikTok\, Shorts\n\nCaption: marketing/
+ posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Wochenausblick Wetter (Reel 20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-34-2027-01-19@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270119T170000Z
+DTEND:20270119T173000Z
+SUMMARY:📱 Fehlbisse aufschreiben – warum? (Reel 30 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 30 s\nSäule: Reichweite · Serie: Wissen in 30 Seku
+ nden\nZiel: Mehrwert\, Kernidee der App\n\nHook: „Deine Fehlbisse verrat
+ en mehr als deine Fänge.“\n\nAblauf: Erklärung: Bisse zeigen Aktivitä
+ t\; Landequote = Fänge / (Fänge + Kontakte). Statistik-Screen.\n\nCTA: N
+ otierst du Fehlbisse?\n\nMaterial: Statistik-Screenshot\nVorbereitung: 40 
+ min\nWiederverwendung: TikTok\, Shorts\n\nCaption: marketing/posts/CAPTION
+ S.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Fehlbisse aufschreiben – warum? (Reel 30 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-35-2027-01-21@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270121T170000Z
+DTEND:20270121T173000Z
+SUMMARY:📱 Wiederholung: App-Übersicht (neue Follower) (Karussell (6))
+DESCRIPTION:Plattform: Instagram Karussell → Facebook-Seite (Bilder) · T
+ ikTok-Fotomodus\nFormat: Karussell (6)\nSäule: Nutzergewinnung · Serie: 
+ Kurz erklärt\nZiel: Neue Follower abholen\n\nHook: „Neu hier? Das ist F
+ angpunkt.“\n\nAblauf: Karussell 02 erneut\, Titelfolie aktualisiert\, gg
+ f. neue Funktion ergänzen.\n\nCTA: Speichern / Link in der Bio.\n\nMateri
+ al: posts/02-karussell/*\nVorbereitung: 15 min\nWiederverwendung: –\n\nC
+ aption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Wiederholung: App-Übersicht (neue Follower) (Karussell (6
+ ))
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-36-2027-01-23@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270123T090000Z
+DTEND:20270123T093000Z
+SUMMARY:📱 Update in den Gruppen\, in denen es erlaubt war (Text + Bild)
+DESCRIPTION:Plattform: Facebook-Gruppen / Foren (nur wo Eigenwerbung erlaub
+ t)\nFormat: Text + Bild\nSäule: Nutzergewinnung · Serie: Community\nZiel
+ : Tester zurückholen\, Feedback\n\nHook: „Danke für euer Feedback – 
+ das hat sich geändert.“\n\nAblauf: Nur in Gruppen\, in denen der erste 
+ Beitrag gut ankam. Konkrete Änderungen nennen.\n\nCTA: Wer noch nicht get
+ estet hat: gern.\n\nMaterial: Motiv 08 aktualisiert\nVorbereitung: 20 min\
+ nWiederverwendung: –\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Update in den Gruppen\, in denen es erlaubt war (Text + Bi
+ ld)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-37-2027-01-24@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270124T090000Z
+DTEND:20270124T093000Z
+SUMMARY:📱 Wochenausblick Wetter (Reel 20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Beißfenster-Chec
+ k\nZiel: Sonntagsformat\n\nHook: „Angelwetter der Woche.“\n\nAblauf: W
+ ie Woche 6.\n\nCTA: Wann geht's los?\n\nMaterial: Bildschirmaufnahme\nVorb
+ ereitung: 30 min\nWiederverwendung: TikTok\, Shorts\n\nCaption: marketing/
+ posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Wochenausblick Wetter (Reel 20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-38-2027-01-26@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270126T170000Z
+DTEND:20270126T173000Z
+SUMMARY:📱 Angeltermin planen und Wetter im Blick (Reel 30 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 30 s\nSäule: Reichweite · Serie: Problem am Wasser
+ \nZiel: Kalender-Funktion zeigen\n\nHook: „Samstag Zander – aber wie w
+ ird das Wetter am See?“\n\nAblauf: Angelkalender: Termin anlegen\, Wette
+ r am Gewässer für 7 Tage\, Export in den Handy-Kalender.\n\nCTA: Plan de
+ inen nächsten Ansitz.\n\nMaterial: Bildschirmaufnahme Kalender\nVorbereit
+ ung: 45 min\nWiederverwendung: TikTok\, Shorts\n\nCaption: marketing/posts
+ /CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Angeltermin planen und Wetter im Blick (Reel 30 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-39-2027-01-28@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270128T170000Z
+DTEND:20270128T173000Z
+SUMMARY:📱 Probier Fangpunkt aus (Bildbeitrag)
+DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
+ ldbeitrag\nSäule: Nutzergewinnung · Serie: Start\nZiel: Konversion\n\nHo
+ ok: „In 30 Sekunden startklar.“\n\nAblauf: Motiv 10. Caption mit Schri
+ tt-für-Schritt.\n\nCTA: Link in der Bio.\n\nMaterial: posts/10-ausprobier
+ en-feed-1080x1440.png\nVorbereitung: 10 min\nWiederverwendung: Story mit L
+ ink-Sticker\n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Probier Fangpunkt aus (Bildbeitrag)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-40-2027-01-31@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270131T090000Z
+DTEND:20270131T093000Z
+SUMMARY:📱 Wochenausblick Wetter (Reel 20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Beißfenster-Chec
+ k\nZiel: Sonntagsformat\n\nHook: „Angelwetter der Woche.“\n\nAblauf: W
+ ie Woche 6.\n\nCTA: Wann geht's los?\n\nMaterial: Bildschirmaufnahme\nVorb
+ ereitung: 30 min\nWiederverwendung: TikTok\, Shorts\n\nCaption: marketing/
+ posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Wochenausblick Wetter (Reel 20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-41-2027-02-02@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270202T170000Z
+DTEND:20270202T173000Z
+SUMMARY:📱 90 Tage Fangpunkt auf Instagram – ehrliche Bilanz (Reel 30 s
+ )
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 30 s\nSäule: Vertrauen · Serie: Werkstatt-Notiz\nZ
+ iel: Transparenz\, Bindung\n\nHook: „90 Tage\, null Werbebudget – so l
+ ief's wirklich.“\n\nAblauf: Nur echte Zahlen aus den Insights\; was funk
+ tioniert hat\, was nicht\, was als Nächstes kommt.\n\nCTA: Was soll ich a
+ ls Nächstes zeigen?\n\nMaterial: Insights-Screenshots (eigene)\nVorbereit
+ ung: 60 min\nWiederverwendung: Facebook\, Story\n\nCaption: marketing/post
+ s/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 90 Tage Fangpunkt auf Instagram – ehrliche Bilanz (Reel 
+ 30 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-42-2027-02-04@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270204T170000Z
+DTEND:20270204T173000Z
+SUMMARY:📱 Bestes Reel der 90 Tage neu aufgelegt (Karussell)
+DESCRIPTION:Plattform: Instagram Karussell → Facebook-Seite (Bilder) · T
+ ikTok-Fotomodus\nFormat: Karussell\nSäule: Reichweite · Serie: Wissen in
+  30 Sekunden\nZiel: Gewinnerformat wiederverwerten\n\nHook: „(Hook des b
+ esten Reels\, leicht verändert)“\n\nAblauf: Das bestlaufende Thema als 
+ Karussell oder neues Reel mit anderem Einstieg.\n\nCTA: Speichern.\n\nMate
+ rial: abhängig vom Gewinner\nVorbereitung: 40 min\nWiederverwendung: –\
+ n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Bestes Reel der 90 Tage neu aufgelegt (Karussell)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-43-2027-02-07@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270207T090000Z
+DTEND:20270207T093000Z
+SUMMARY:📱 Wochenausblick Wetter (Reel 20 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Beißfenster-Chec
+ k\nZiel: Sonntagsformat\n\nHook: „Angelwetter der Woche.“\n\nAblauf: W
+ ie Woche 6.\n\nCTA: Wann geht's los?\n\nMaterial: Bildschirmaufnahme\nVorb
+ ereitung: 30 min\nWiederverwendung: TikTok\, Shorts\n\nCaption: marketing/
+ posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:📱 Wochenausblick Wetter (Reel 20 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-01@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261115T190000Z
+DTEND:20261115T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 1)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 1)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-02@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261122T190000Z
+DTEND:20261122T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 2)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 2)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-03@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261129T190000Z
+DTEND:20261129T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 3)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 3)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-04@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261206T190000Z
+DTEND:20261206T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 4)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 4)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-05@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261213T190000Z
+DTEND:20261213T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 5)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 5)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-06@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261220T190000Z
+DTEND:20261220T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 6)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 6)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-07@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261227T190000Z
+DTEND:20261227T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 7)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 7)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-08@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270103T190000Z
+DTEND:20270103T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 8)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 8)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-09@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270110T190000Z
+DTEND:20270110T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 9)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 9)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-10@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270117T190000Z
+DTEND:20270117T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 10)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 10)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-11@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270124T190000Z
+DTEND:20270124T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 11)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 11)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-12@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270131T190000Z
+DTEND:20270131T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 12)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 12)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:auswertung-13@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20270207T190000Z
+DTEND:20270207T192000Z
+SUMMARY:Fangpunkt: Wochenauswertung (Woche 13)
+DESCRIPTION:Kennzahlen in content-calendar/auswertung-vorlage.csv eintragen
+  (Reichweite\, Ø Wiedergabedauer\, Speichern\, Teilen\, Profilaufrufe\, L
+ ink-Klicks). Wiederholen / verändern / stoppen entscheiden\, Funktionswü
+ nsche notieren\, nächste Woche anpassen.
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Fangpunkt: Wochenauswertung (Woche 13)
+TRIGGER:-PT15M
+END:VALARM
+END:VEVENT
+END:VCALENDAR
