@@ -114,8 +114,28 @@ Geprüft wurden `g5v4yjg24g-eng/angelkarte` (De-Witt-See, NRW) und `g5v4yjg24g-e
 | **Amtliche Unwetterwarnungen** | P1 | Wunsch Nutzer 2026-10-22 (Idee 2), Quelle Bright Sky freigegeben 2026-10-23. ✅ Wetter-Seite und Angeltermine (2026-10-23). Idee 3 Termine in den Handy-Kalender (.ics) ✅ 2026-10-23. Idee 1 Pegel/Wassertemperatur: Variante A (PEGELONLINE, nur Bundeswasserstraßen) ✅ 2026-10-23; Variante B1 (Landespegel NRW, OpenHygon-Tagesdatei) ✅ 2026-10-23. Pegel am Fang speichern + „Bisse nach Pegellage“ in den Beißfenstern ✅ 2026-10-23. |
 | Fischbestimmung per Foto | P3 | Nur Schnittstelle vorbereiten |
 | Konten und Cloud-Sync | P3 | Erst bei Bedarf (siehe ARCHITECTURE §9) |
+| Spots mit Freunden teilen | Idee | Nutzer 2026-10-23: **nur als Idee gespeichert**, nicht entschieden. Optionen und Kosten unten |
 
 ---
+
+### Idee: Spots mit Freunden teilen (Nutzer 2026-10-23, nicht entschieden)
+**Wunsch:** Freunde hinzufügen und Angelspots teilen; beide Seiten sehen die geteilten Spots.
+
+**Was dafür nötig wäre (B/C):** Server zum Abgleich, Identität je Person (Gerätekonto mit Einladungscode oder E-Mail-Login), Freundschaften (Einladen per Link/QR, annehmen, entfernen, blockieren), Freigabe pro Spot, Abgleich von Änderungen und Löschungen. Das wäre die erste Funktion, bei der Nutzerdaten das Gerät verlassen.
+
+| Option | Automatischer Abgleich | Laufende Kosten | Hinweise |
+|---|---|---|---|
+| **A: Teilen per Link/QR, ohne Server** | nein (einmaliger Stand) | 0 € | Daten nur im Link-Teil hinter `#`, kein Server dazwischen; ein PR |
+| **B: Supabase** | ja | Gratis-Stufe (500 MB, 50 000 aktive Nutzer/Monat, pausiert nach 1 Woche ohne Nutzung), Pro ab 25 $/Monat [V supabase.com/pricing, 2026-10-23] | EU-Standort auf der Preisseite nicht genannt [O] |
+| **C: eigener Server (Hetzner + PocketBase)** | ja | ab 6,49 € netto/Monat [V hetzner.com, 2026-10-23] + Domain ca. 10–20 €/Jahr [A] → ca. 80–110 €/Jahr [A] | Daten in Deutschland; PocketBase noch Version 0.x [V pocketbase.io] |
+
+Zusätzlich empfohlen: **Ende-zu-Ende-Verschlüsselung** (Server sieht nur verschlüsselte Spots), weil Spots für Angler heikel sind.
+
+**Rechtliches [A/O]:** Bei B/C ist der Betreiber nach DSGVO Verantwortlicher (Datenschutzerklärung, Auftragsverarbeitungsvertrag mit dem Hoster, Konto löschen, Auskunft). Impressumspflicht bei öffentlicher Veröffentlichung klären [O].
+
+**Empfehlung (noch nicht freigegeben):** erst A, bei Bedarf später C mit Ende-zu-Ende-Verschlüsselung.
+
+**Offene Fragen an den Nutzer:** Variante? Nur Freundeskreis oder öffentlich? Einzelne Spots oder alle, nur Orte oder auch Fänge? Bereitschaft für Server-Konto und laufende Kosten?
 
 ### Fangbuch nach Gewässern (Wunsch Nutzer 2026-10-22, ✅ umgesetzt)
 **Entschieden (Nutzer 2026-10-22):** unbekannte Gewässer im Umkreis von 200 m zusammenführen; Reiter ergänzen die Tagesliste, „Alle“ ist Standard. **Umsetzung:** `domain/waterGroups.ts` (bekannte nach Name + Ort, unbekannte über eine 200-m-Kette, Schlüssel aus dem ältesten Eintrag), Reiter `features/catches/WaterTabs.tsx` (umbrechend statt waagerecht scrollend, damit bei 390 px alle sichtbar sind), eigener Name als `waterSnapshot.customName` an den Einträgen der Gruppe (keine neue Tabelle, keine Migration), Ort als `waterSnapshot.place` (Flächen: Gemeinde, Fließgewässer: Kreis – wie im Suchindex); Bestandsfänge bekommen den Ort aus dem eigenen Suchindex (gleiche Gewässer-ID). Der bisherige Gewässer-Filter im Fangbuch entfällt (ersetzt durch die Reiter).
