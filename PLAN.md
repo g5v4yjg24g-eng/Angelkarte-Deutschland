@@ -306,7 +306,7 @@ Gerechnet in Arbeitstagen mit Claude Code und deinem Review. Unsicherheit ±50 %
 | **E2** | Basiskarte | **OpenFreeMap für MVP, eigene Protomaps-PMTiles ab M10** | Anbieter per Konfiguration austauschbar |
 | **E3** | Kommerziell? | **Nicht kommerziell** | Open-Meteo Free ist nutzbar (CC BY 4.0, Attribution). Bei späterer Kommerzialisierung muss Wetter neu bewertet werden. |
 | **E4** | Hosting | **GitHub Pages**; Gewässerdaten als GitHub-Release, beim Bauen eingebunden (Entscheidung M4, ARCHITECTURE §6.1a). Cloudflare R2 nur noch Option (Offline-Regionen M10) | Pages-Grenzen beobachten [O] |
-| **E5** | App-Name | **„Fangpunkt"** (Arbeitsname) | Markenrecherche (DPMA) vor öffentlichem Start [O] |
+| **E5** | App-Name | **„Fangpunkt"** (Arbeitsname) | Name bleibt (Nutzer 2026-10-23): DPMAregister ohne Treffer; `fangpunkt.de` von fremder Branche belegt → `fangpunkt.app` vorgesehen. EUIPO-Prüfung vor öffentlichem Start [O] |
 | **E6** | Tiefenkarten | **Kein Tiefen-Feature im MVP**; Schnittstelle vorbereiten; Anfragen an Garmin, LM M-V, Anglerverband HH parallel | M9 erst nach schriftlicher Lizenzklärung |
 | **E7** | Erstes Land für Rechtsinhalte | **NRW** | M7 erfasst NRW vollständig (neu geprüft am amtlichen Text). Weitere Länder in M8. Hamburg ist nicht mehr vorgezogen. |
 | **E8** | Konten/Cloud-Sync | **Später** | Datenmodell bleibt sync-fähig (UUID, `updatedAt`, `deletedAt`, `rev`) |
