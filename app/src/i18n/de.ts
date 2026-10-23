@@ -787,7 +787,7 @@ export const de = {
     locationHint:
       'Zeigt beim Öffnen der Karte deinen Standort. Dein Browser fragt einmal nach der Erlaubnis. Der Standort wird nur auf der Karte angezeigt und nicht übertragen.',
     weatherHint:
-      'Lädt zu jedem Fang mit Standort Modellwerte von Open-Meteo (Temperatur, Wind, Luftdruck, Bewölkung, Niederschlag). Dafür wird die auf etwa 100 m gerundete Position mit Datum und Stunde an Open-Meteo gesendet. Ohne Netz wird später nachgeladen. Verfügbar für Fänge ab 2022. Standard: an.',
+      'Lädt zu jedem Fang mit Standort Modellwerte von Open-Meteo (Temperatur, Wind, Luftdruck, Bewölkung, Niederschlag). Dafür wird die auf etwa 100 m gerundete Position mit Datum und Stunde an Open-Meteo gesendet. Ohne Netz wird später nachgeladen. Verfügbar für Fänge ab 2022. Außerdem wird der Wasserstand am nächsten Pegel (bis 15 km) zum Fangzeitpunkt gespeichert; dafür lädt die App ganze Stationslisten von PEGELONLINE bzw. dem Land NRW und überträgt keine Position. Standard: an.',
   },
   forecast: {
     title: 'Wetter',
@@ -867,6 +867,21 @@ export const de = {
       'Quelle: PEGELONLINE, Wasserstraßen- und Schifffahrtsverwaltung des Bundes (DL-DE->Zero-2.0) – ungeprüfte Rohdaten.',
     sourceNrw:
       'Quelle: Landesamt für Natur, Umwelt und Klima NRW (LANUK), OpenHygon über OpenGeoData.NRW (DL-DE->Zero-2.0) – ungeprüfte Rohdaten.',
+  },
+  catchGauge: {
+    title: 'Pegel am Fang',
+    pending: 'Wird gesucht, sobald eine Verbindung besteht.',
+    off: 'Wetter und Pegel sind ausgeschaltet. In den Einstellungen wieder einschalten.',
+    none: {
+      'no-station': 'Kein Pegel im Umkreis von 15 km.',
+      'too-old':
+        'Für diesen Zeitpunkt gibt es keine Messwerte mehr (Bundespegel 30 Tage, Landespegel NRW 6 Tage).',
+      'no-value': 'Der Pegel hatte um diese Zeit keinen Messwert.',
+    },
+    station: (name: string, water: string | undefined, km: number) =>
+      `${name}${water ? ` · ${water}` : ''} · ${km.toLocaleString('de-DE', { maximumFractionDigits: 1 })} km vom Fangort`,
+    measuredAt: (time: string) => `Messwert ${time}`,
+    source: (attribution: string) => `Quelle: ${attribution} – ungeprüfte Rohdaten.`,
   },
   alerts: {
     title: 'Amtliche Warnungen',
@@ -1015,6 +1030,20 @@ export const de = {
       falling: 'fallend (mehr als 1 hPa)',
       steady: 'gleichbleibend (±1 hPa)',
       rising: 'steigend (mehr als 1 hPa)',
+    },
+    gaugeTitle: 'Bisse nach Pegellage',
+    gaugeHint:
+      'Nur Einträge mit Pegel am Fang (Pegel bis 15 km entfernt, nicht unbedingt am selben Gewässer). Häufigkeiten, keine Raten. Wasserstand ist keine Wassertiefe.',
+    gaugeLevels: {
+      low: 'niedrig (bis mittleres Niedrigwasser)',
+      normal: 'normal',
+      high: 'hoch (ab mittlerem Hochwasser)',
+    },
+    gaugeTrendTitle: 'Bisse nach Pegel-Tendenz (24 h)',
+    gaugeTrends: {
+      falling: 'fallend (mehr als 2 cm)',
+      steady: 'gleichbleibend (±2 cm)',
+      rising: 'steigend (mehr als 2 cm)',
     },
     solunarTitle: 'Solunar-Zeiten (Theorie)',
     solunarDisclaimer:
@@ -1171,11 +1200,11 @@ export const de = {
       },
       {
         name: 'PEGELONLINE (www.pegelonline.wsv.de)',
-        what: 'nur wenn „Wetter am Fang“ an ist: die Liste aller Pegel mit aktuellen Werten und die 24-Stunden-Werte des nächstgelegenen Pegels. Es wird keine Position übertragen – den nächsten Pegel sucht die App auf dem Gerät.',
+        what: 'nur wenn „Wetter am Fang“ an ist: die Liste aller Pegel mit aktuellen Werten, die 24-Stunden-Werte des nächstgelegenen Pegels und für „Pegel am Fang“ die Messwerte dieses Pegels rund um den Fangzeitpunkt (Datum und Uhrzeit des Fangs, Fänge der letzten 30 Tage). Es wird keine Position übertragen – den nächsten Pegel sucht die App auf dem Gerät.',
       },
       {
         name: 'OpenGeoData.NRW (www.opengeodata.nrw.de)',
-        what: 'nur wenn „Wetter am Fang“ an ist und der gewählte Ort in NRW liegt: die Tagesdatei der Landespegel (etwa 1 MB, höchstens alle 6 Stunden). Es wird keine Position übertragen.',
+        what: 'nur wenn „Wetter am Fang“ an ist und der gewählte Ort oder ein Fang der letzten 6 Tage in NRW liegt: die Tagesdatei der Landespegel (etwa 1 MB, höchstens alle 6 Stunden). Es wird keine Position übertragen.',
       },
       {
         name: 'Bright Sky (api.brightsky.dev)',

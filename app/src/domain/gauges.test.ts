@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   changeOver,
+  gaugeForCatch,
+  gaugeSnapshot,
+  GaugeSnapshotSchema,
+  type GaugeStation,
   levelState,
   nearestGauge,
   parseHygonStations,
@@ -150,5 +154,56 @@ describe('Landespegel NRW (OpenHygon)', () => {
     expect(g[1]?.change24h).toBeUndefined();
     expect(levelState(42, 4, 42)).toBe('high');
     expect(levelState(10)).toBe('unknown');
+  });
+});
+
+describe('Pegel am Fang – Auswahl und Messwert (GAUGE-3)', () => {
+  const NOW = Date.parse('2026-10-23T12:00:00Z');
+  const st = (over: Partial<GaugeStation>): GaugeStation => ({
+    uuid: 'u',
+    source: 'pegelonline',
+    name: 'P',
+    water: 'Rhein',
+    lat: 51,
+    lng: 7.05,
+    series: [],
+    ...over,
+  });
+  const pos = { lat: 51, lng: 7 };
+
+  it('nimmt den nächsten Pegel, dessen Messreihe weit genug zurückreicht', () => {
+    const nrw = st({ uuid: 'hygon:1', source: 'hygon', lng: 7.01 });
+    const bund = st({ uuid: 'b' });
+    const fresh = NOW - 2 * 86_400_000;
+    const old = NOW - 10 * 86_400_000;
+    expect(gaugeForCatch([bund, nrw], pos, fresh, NOW)).toMatchObject({ station: { uuid: 'hygon:1' } });
+    expect(gaugeForCatch([bund, nrw], pos, old, NOW)).toMatchObject({ station: { uuid: 'b' } });
+    expect(gaugeForCatch([nrw], pos, old, NOW)).toBe('too-old');
+    expect(gaugeForCatch([st({ lat: 52 })], pos, fresh, NOW)).toBe('no-station');
+  });
+
+  it('Messwert höchstens 45 min neben dem Fang; Reihe noch zu kurz → später erneut', () => {
+    const at = NOW - 86_400_000;
+    const near = { station: st({}), km: 3.46 };
+    const pts = [
+      { t: at - 24 * 3_600_000, v: 280 },
+      { t: at + 30 * 60_000, v: 300 },
+      { t: at + 3 * 3_600_000, v: 310 },
+    ];
+    const ok = gaugeSnapshot(near, pts, at, new Date(NOW).toISOString());
+    expect(ok).toMatchObject({ status: 'ok', levelCm: 300, km: 3.5 });
+    expect(GaugeSnapshotSchema.safeParse(ok).success).toBe(true);
+    expect(gaugeSnapshot(near, [{ t: at - 2 * 3_600_000, v: 1 }], at, 'x')).toBe('later');
+    expect(
+      gaugeSnapshot(
+        near,
+        [
+          { t: at - 2 * 3_600_000, v: 1 },
+          { t: at + 2 * 3_600_000, v: 1 },
+        ],
+        at,
+        new Date(NOW).toISOString(),
+      ),
+    ).toMatchObject({ status: 'none', reason: 'no-value' });
   });
 });

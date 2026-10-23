@@ -132,3 +132,70 @@ test('WX-1: Wetter ist standardmäßig an; offline erfasst, online nachgeladen, 
   expect(requests).toHaveLength(1);
   expect(errors).toEqual([]);
 });
+
+test('GAUGE-3: Pegel am Fang – Wasserstand zum Fangzeitpunkt wird gespeichert, ohne Position zu senden', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await useLocalExternals(page);
+  await fakeOpenMeteo(page);
+  const HOUR = 3_600_000;
+  // Fang vor zwei Tagen (Messreihen reichen 30 Tage zurück), außerhalb von NRW
+  const at = Math.floor((Date.now() - 48 * HOUR) / HOUR) * HOUR;
+  const iso = new Date(at).toISOString().replace('.000Z', '+00:00');
+  const requests: URL[] = [];
+  await page.route('https://www.pegelonline.wsv.de/**', (route) => {
+    const u = new URL(route.request().url());
+    requests.push(u);
+    if (u.pathname.endsWith('/W/measurements.json')) {
+      const from = Date.parse(u.searchParams.get('start') ?? '');
+      const to = Date.parse(u.searchParams.get('end') ?? '');
+      const json = [];
+      for (let t = from; t <= to; t += 15 * 60_000)
+        json.push({ timestamp: new Date(t).toISOString(), value: 400 + Math.round((t - at) / HOUR) });
+      return route.fulfill({ json });
+    }
+    return route.fulfill({
+      json: [
+        {
+          uuid: 'test-hh',
+          longname: 'HAMBURG ST. PAULI',
+          latitude: 53.545,
+          longitude: 9.97,
+          water: { longname: 'ELBE' },
+          timeseries: [
+            { shortname: 'W', unit: 'cm', currentMeasurement: { value: 410, stateMnwMhw: 'normal' } },
+          ],
+        },
+      ],
+    });
+  });
+  await page.goto('/fangbuch');
+  await waitForApp(page);
+  await put(page, [
+    {
+      ...withPos,
+      id: 'g-1',
+      at: iso,
+      tz: 'UTC',
+      createdAt: iso,
+      updatedAt: iso,
+      position: { lat: 53.5512345, lng: 9.9934567, source: 'gps' },
+    },
+  ]);
+  await page.goto('/fangbuch/g-1');
+  await waitForApp(page);
+  const box = page.getByRole('region', { name: 'Pegel am Fang' });
+  await expect(box).toContainText('Hamburg St. Pauli · Elbe');
+  await expect(box).toContainText('km vom Fangort');
+  await expect(box).toContainText('400 cm · +24 cm in 24 h');
+  await expect(box).toContainText('keine Wassertiefe');
+  await expect(box).toContainText('PEGELONLINE');
+  // Lage zu MNW/MHW gibt es für vergangene Zeitpunkte nicht → nicht vom aktuellen Wert übernehmen
+  await expect(box).not.toContainText('normal');
+  // Keine Position in den Anfragen
+  for (const u of requests) expect(u.search).not.toMatch(/53\.|9\.9|lat|lon/);
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});

@@ -106,6 +106,31 @@ function OwnBites({
       ) : (
         <p>{t.tooFew(data.trend.n, data.trend.need)}</p>
       )}
+      <h4 className={styles.subhead}>{t.gaugeTitle}</h4>
+      <p className="muted">{t.gaugeHint}</p>
+      {data.gaugeState.ok ? (
+        <BarTable
+          caption={t.gaugeTitle}
+          rows={(['low', 'normal', 'high'] as const).map((k) => ({
+            label: t.gaugeLevels[k],
+            value: (data.gaugeState.ok && data.gaugeState.value[k]) || 0,
+          }))}
+        />
+      ) : (
+        <p>{t.tooFew(data.gaugeState.n, data.gaugeState.need)}</p>
+      )}
+      <h4 className={styles.subhead}>{t.gaugeTrendTitle}</h4>
+      {data.gaugeTrend.ok ? (
+        <BarTable
+          caption={t.gaugeTrendTitle}
+          rows={(['falling', 'steady', 'rising'] as const).map((k) => ({
+            label: t.gaugeTrends[k],
+            value: (data.gaugeTrend.ok && data.gaugeTrend.value[k]) || 0,
+          }))}
+        />
+      ) : (
+        <p>{t.tooFew(data.gaugeTrend.n, data.gaugeTrend.need)}</p>
+      )}
     </>
   );
 }

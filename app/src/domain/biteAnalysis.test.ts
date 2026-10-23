@@ -91,3 +91,37 @@ describe('Persönliche Beißzeiten', () => {
     expect(a.bites).toBe(0);
   });
 });
+
+describe('Bisse nach Pegellage (GAUGE-4)', () => {
+  const gauge = (state: 'low' | 'normal' | 'high' | undefined, change24h?: number) => ({
+    gauge: {
+      status: 'ok' as const,
+      source: 'hygon' as const,
+      stationId: 'hygon:1',
+      name: 'Pegel',
+      km: 2,
+      levelCm: 120,
+      at: '2026-06-01T04:00:00.000Z',
+      ...(state ? { state } : {}),
+      ...(change24h !== undefined ? { change24h } : {}),
+      fetchedAt: meta.createdAt,
+      attribution: 'LANUK NRW',
+    },
+  });
+
+  it('Lage und Tendenz nur aus Einträgen mit Pegel; ab der Mindestmenge', () => {
+    const few = analyzeBites([bite('2026-06-01T06:00:00+02:00', gauge('high', 5))], []);
+    expect(few.gaugeState).toEqual({ ok: false, n: 1, need: MIN_EVENTS });
+    const list = [
+      ...Array.from({ length: 12 }, () => bite('2026-06-01T06:00:00+02:00', gauge('normal', -3))),
+      ...Array.from({ length: 8 }, () => bite('2026-06-01T06:00:00+02:00', gauge('high', 1))),
+      bite('2026-06-01T06:00:00+02:00', gauge(undefined, 10)), // Bundespegel: Lage unbekannt
+      bite('2026-06-01T06:00:00+02:00', {
+        gauge: { status: 'none', reason: 'no-station', checkedAt: meta.createdAt },
+      }),
+    ];
+    const a = analyzeBites(list, []);
+    expect(a.gaugeState).toEqual({ ok: true, n: 20, value: { low: 0, normal: 12, high: 8 } });
+    expect(a.gaugeTrend).toEqual({ ok: true, n: 21, value: { falling: 12, steady: 8, rising: 1 } });
+  });
+});

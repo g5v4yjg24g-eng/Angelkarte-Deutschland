@@ -149,6 +149,7 @@ interface Catch extends Meta {
 
   conditions?: Conditions;           // Nutzereingaben
   weather?: WeatherSnapshot;         // automatisch geholt (P1)
+  gauge?: GaugeSnapshot;             // Pegel am Fang, automatisch geholt (P1, 2026-10-23)
   notes?: string;                    // max 4000
   photoIds?: string[];
 }
@@ -172,6 +173,19 @@ interface WeatherSnapshot {           // umgesetzt (P1): domain/weather.ts
   attribution: string;
 }
 ```
+```ts
+type GaugeSnapshot =                  // umgesetzt (P1, 2026-10-23): domain/gauges.ts
+  | { status: 'ok'; source: 'pegelonline' | 'hygon'; stationId: string; name: string;
+      water?: string; area?: string;  // Gewässer (Bund) bzw. Einzugsgebiet (Landespegel NRW)
+      km: number;                     // Luftlinie Fangort → Pegel, höchstens 15
+      levelCm: number;                // Wasserstand über Pegelnull – keine Wassertiefe
+      at: string;                     // Zeitpunkt des Messwerts (höchstens 45 min neben dem Fang)
+      state?: 'low' | 'normal' | 'high' | …;  // nur Landespegel NRW (MNW/MHW der Station)
+      change24h?: number;             // cm in den 24 h vor dem Messwert
+      fetchedAt: string; attribution: string }
+  | { status: 'none'; reason: 'no-station' | 'too-old' | 'no-value'; checkedAt: string };
+```
+Pegel am Fang: gesucht wird der nächste Pegel bis 15 km, dessen Messreihe den Fangzeitpunkt noch enthält (Bund 30 Tage, Landespegel NRW 6 Tage aus der Tagesdatei). `none` wird gespeichert, damit nicht bei jedem Start neu gesucht wird. Liegt der Messwert noch nicht vor (Tagesdatei von heute früh), bleibt der Fang offen. Lage zu MNW/MHW liefert PEGELONLINE nur für den aktuellen Wert, daher bei Bundespegeln leer. Neues optionales Feld ohne Index → keine DB-Migration nötig. Zeit- oder Ortsänderung verwirft den Pegel (`gaugeStillValid`).
 Wetter wird verworfen und neu geladen, wenn sich beim Bearbeiten die Stunde oder der gerundete Ort ändert (`data/catchService.ts`). `pressureTrend3h` = Druck der Fangstunde minus Druck 3 h vorher; `gustMs` und `precipMm` beziehen sich auf die Stunde davor (Open-Meteo-Definition).
 Indizes: `id, at, outcome, speciesId, waterId, sessionId, placeId, method, updatedAt, deletedAt`.
 Zusätzlich (P1, 2026-10-22): `waterSnapshot.place?` (Ort des Gewässers: Flächen Gemeinde, Fließgewässer Kreis) und `waterSnapshot.customName?` (eigener Name eines unbekannten Gewässers, nur im Fangbuch, nie bei bekanntem Namen) für „Fangbuch nach Gewässern“.

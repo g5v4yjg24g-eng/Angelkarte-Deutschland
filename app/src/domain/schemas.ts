@@ -2,6 +2,7 @@
 // Datenbank-Schreibzugriffen, Import und (ab M5) Formularen.
 import { z } from 'zod';
 import { WeatherSnapshotSchema } from './weather';
+import { GaugeSnapshotSchema } from './gauges';
 import { pauseIssue } from './session';
 import { STATE_CODES } from './water';
 
@@ -133,6 +134,8 @@ export const CatchSchema = MetaSchema.extend({
   conditions: ConditionsSchema.optional(),
   /** automatisch geholt, Modellwert (domain/weather.ts) */
   weather: WeatherSnapshotSchema.optional(),
+  /** automatisch geholt: Wasserstand am nächsten Pegel zum Fangzeitpunkt (domain/gauges.ts) */
+  gauge: GaugeSnapshotSchema.optional(),
   notes: text(4000).optional(),
   photoIds: z.array(id).optional(),
   legacy: LegacySchema.optional(),

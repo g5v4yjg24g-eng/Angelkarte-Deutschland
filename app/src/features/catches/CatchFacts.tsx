@@ -8,6 +8,7 @@ import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
 import { CatchPhotos } from './CatchPhotos';
 import { CatchWeather } from '../weather/CatchWeather';
+import { CatchGauge } from '../weather/CatchGauge';
 import { LawCheckPanel } from '../law/LawCheckPanel';
 import { useLawCheck, useStateResolution } from '../law/useLawCheck';
 import { repo } from '../../data/repository';
@@ -104,6 +105,7 @@ export function CatchFacts({ item }: { item: Catch }) {
         onChooseState={(code) => void repo('catches').update(item.id, { stateCode: code })}
       />
       <CatchWeather item={item} />
+      <CatchGauge item={item} />
     </>
   );
 }

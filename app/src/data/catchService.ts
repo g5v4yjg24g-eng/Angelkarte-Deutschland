@@ -4,6 +4,7 @@ import { PhotoSchema } from '../domain/schemas';
 import { newId } from '../domain/id';
 import { nowIso } from '../domain/time';
 import { weatherStillValid } from '../domain/weather';
+import { gaugeStillValid } from '../domain/gauges';
 import { getDb, type FangpunktDB } from './db';
 import { repo, type NewEntity } from './repository';
 import { ValidationError } from './errors';
@@ -58,9 +59,11 @@ export async function saveCatch(
       const next = { ...cur, ...args.changes };
       // Wetter gehört zu Zeit und Ort; ändert sich eins davon, wird es neu geladen.
       const weather = cur.weather && weatherStillValid(cur, next) ? cur.weather : undefined;
+      const gauge = cur.gauge && gaugeStillValid(cur, next) ? cur.gauge : undefined;
       return r.update(args.id, {
         ...args.changes,
         weather,
+        gauge,
         photoIds: photoIds.length ? photoIds : undefined,
       });
     }

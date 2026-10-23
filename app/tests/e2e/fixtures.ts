@@ -17,7 +17,8 @@ export const test = base.extend<{ noRealWeather: undefined }>({
       );
       // Pegel: ohne eigene Route keine Stationen
       await page.route('https://www.pegelonline.wsv.de/**', (r) => r.fulfill({ json: [] }));
-      await page.route('https://www.opengeodata.nrw.de/**', (r) => r.fulfill({ status: 404, body: '' }));
+      // Landespegel NRW: leere Antwort (die App meldet „nicht abrufbar“, ohne 404 in der Konsole)
+      await page.route('https://www.opengeodata.nrw.de/**', (r) => r.fulfill({ body: '' }));
       await use(undefined);
     },
     { auto: true },
