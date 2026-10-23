@@ -32,6 +32,21 @@ describe('Open-Meteo-Adapter', () => {
   });
 });
 
+describe('Open-Meteo: jüngste Stunden (WX-3)', () => {
+  afterEach(() => vi.unstubAllGlobals());
+  it('fragt die letzten 48 h bei der Forecast-API ab, ältere im Archiv', async () => {
+    const fetchMock = vi.fn<(url: string) => Promise<Response>>(
+      async () => new Response(JSON.stringify({ hourly: { time: [] } })),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const now = Date.parse('2026-10-20T14:00:00Z');
+    await openMeteo(undefined, undefined, () => now).fetchHour(q);
+    expect(new URL(String(fetchMock.mock.calls[0]?.[0])).host).toBe('api.open-meteo.com');
+    await openMeteo(undefined, undefined, () => now + 5 * 86_400_000).fetchHour(q);
+    expect(new URL(String(fetchMock.mock.calls[1]?.[0])).host).toBe('historical-forecast-api.open-meteo.com');
+  });
+});
+
 describe('Open-Meteo-Vorhersage', () => {
   it('sendet nur gerundete Koordinaten, Zeiten als Unix-Zeit, deutsche Zeitzone', async () => {
     const { openMeteoForecastUrl } = await import('./openMeteo');

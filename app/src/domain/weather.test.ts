@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import type { Catch } from './schemas';
 import {
   compassIndex,
+  beaufort,
+  isRecentQuery,
   needsWeather,
+  skyFromCode,
   parseOpenMeteoHourly,
   roundCoord,
   weatherQuery,
@@ -107,5 +110,31 @@ describe('Wetter am Fang (WX)', () => {
 
   it('Windrichtung in Achteln', () => {
     expect([0, 44, 46, 101, 180, 350, 360].map(compassIndex)).toEqual([0, 1, 1, 2, 4, 0, 0]);
+  });
+});
+
+describe('Wetter für gerade erfasste Fänge (WX-3)', () => {
+  const now = Date.parse('2026-10-23T12:40:00Z');
+  it('auch die nächste volle Stunde zählt (12:40 → 13:00), weiter in der Zukunft nicht', () => {
+    expect(needsWeather(catchAt('2026-10-23T14:40:00+02:00'), now)).toBe(true);
+    expect(needsWeather(catchAt('2026-10-23T15:40:00+02:00'), now)).toBe(false);
+  });
+  it('die letzten 48 h gehen an die Forecast-API, ältere ans Archiv', () => {
+    expect(isRecentQuery(weatherQuery('2026-10-23T14:40:00+02:00', { lat: 51, lng: 7 }), now)).toBe(true);
+    expect(isRecentQuery(weatherQuery('2026-10-20T14:40:00+02:00', { lat: 51, lng: 7 }), now)).toBe(false);
+  });
+  it('Beaufort nach der WMO-Skala, Himmel aus dem Wettercode', () => {
+    expect([0, 0.3, 3.77, 5.5, 13.9, 40].map(beaufort)).toEqual([0, 1, 3, 4, 7, 12]);
+    expect([0, 2, 3, 45, 61, 81, 95, 71, undefined].map(skyFromCode)).toEqual([
+      'sunny',
+      'mixed',
+      'cloudy',
+      'cloudy',
+      'rain',
+      'rain',
+      'rain',
+      undefined,
+      undefined,
+    ]);
   });
 });

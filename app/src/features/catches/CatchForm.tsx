@@ -40,6 +40,9 @@ import {
 } from '../../domain/catchDraft';
 import { markerDataUrl } from '../map/markerIcons';
 import { LawCheckPanel } from '../law/LawCheckPanel';
+import { FormWeather } from '../weather/FormWeather';
+import { useFormWeather, weatherKey } from '../weather/useFormWeather';
+import { beaufort, skyFromCode, type WeatherSnapshot } from '../../domain/weather';
 import { useLawCheck, useStateResolution } from '../law/useLawCheck';
 import type { StateCode } from '../../domain/water';
 import styles from './CatchForm.module.css';
@@ -196,6 +199,15 @@ export function CatchForm({
     return fields ?? { outcome: draft.outcome, at: '' };
   }, [draft, initial]);
   const lawCheck = useLawCheck(lawInput, lawInput.at ? resolution : { kind: 'unknown' });
+  // Wetter am Fangort schon im Formular (Modellwert); wird mit dem Eintrag gespeichert
+  const formWeather = useFormWeather(lawInput.at || undefined, position);
+  const applyWeather = (w: WeatherSnapshot) =>
+    setDraft((d) => ({
+      ...d,
+      sky: skyFromCode(w.code) ?? d.sky,
+      airTempC: w.tempC === undefined ? d.airTempC : String(Math.round(w.tempC * 10) / 10).replace('.', ','),
+      windBft: w.windMs === undefined ? d.windBft : String(beaufort(w.windMs)),
+    }));
 
   async function save(e?: React.FormEvent, { withPhotos = true } = {}) {
     e?.preventDefault();
@@ -211,13 +223,18 @@ export function CatchForm({
       return;
     }
     const resolvedState = resolution?.kind === 'state' ? resolution.code : undefined;
+    // Nur Wetter, das zu Zeit und Ort des gespeicherten Eintrags passt
+    const weather =
+      formWeather.status === 'ok' && position && formWeather.key === weatherKey(fields.at, position)
+        ? formWeather.snap
+        : undefined;
     setBusy(true);
     try {
       const addPhotos = withPhotos ? pending.map((p) => p.photo) : [];
       const saved = initial
         ? await saveCatch({
             id: initial.id,
-            changes: { ...fields, position, stateCode: resolvedState },
+            changes: { ...fields, position, stateCode: resolvedState, ...(weather ? { weather } : {}) },
             addPhotos,
             removePhotoIds: removedPhotos,
           })
@@ -226,6 +243,7 @@ export function CatchForm({
               ...fields,
               ...(position ? { position } : {}),
               ...(resolvedState ? { stateCode: resolvedState } : {}),
+              ...(weather ? { weather } : {}),
               ...(chosenWater
                 ? {
                     waterId: chosenWater.wid,
@@ -513,6 +531,7 @@ export function CatchForm({
 
           <fieldset className={styles.group}>
             <legend>{t.conditions}</legend>
+            <FormWeather state={formWeather} onApply={applyWeather} />
             <SelectField
               label={t.sky}
               options={optionsOf(t.skies)}
