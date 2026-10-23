@@ -47,7 +47,7 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Säule / Serie:** Reichweite · Kurz erklärt
 - **Ziel:** Reichweite über Nicht-Follower; Kernnutzen zeigen
 - **Hook:** „Fang eintragen, bevor der Fisch zurück im Wasser ist.“
-- **Ablauf:** Bildschirmaufnahme: Fang erfassen → Stelle tippen → Art → Speichern. Stoppuhr-Einblendung. Siehe Video-Konzept V1.
+- **Ablauf:** Fertiges Video hochladen: Fisch in der Hand → App in 4 Schritten (Fang erfassen, Stelle antippen, Fischart, Speichern) → Freilassen → Schluss-Karte. Musik aus der Plattform-Bibliothek leise dazulegen.
 - **CTA:** Link in der Bio.
 - **Material:** Fertiges Video videos/v1-fang-eintragen-1080x1920.mp4 (Lizenz des Fisch-Clips vorher bestätigen)
 - **Vorbereitung:** 10 min
@@ -356,7 +356,7 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Säule / Serie:** Reichweite · Beißfenster-Check
 - **Ziel:** Sonntagsformat
 - **Hook:** „Angelwetter der Woche in 20 Sekunden.“
-- **Ablauf:** Wie Woche 6.
+- **Ablauf:** Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung. Vorhersage = Modellwert, keine Garantie.
 - **CTA:** Wann geht's los?
 - **Material:** Bildschirmaufnahme
 - **Vorbereitung:** 30 min
@@ -434,7 +434,7 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Säule / Serie:** Reichweite · Beißfenster-Check
 - **Ziel:** Sonntagsformat
 - **Hook:** „Angelwetter der Woche.“
-- **Ablauf:** Wie Woche 6.
+- **Ablauf:** Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung. Vorhersage = Modellwert, keine Garantie.
 - **CTA:** Wann geht's los?
 - **Material:** Bildschirmaufnahme
 - **Vorbereitung:** 30 min
@@ -485,7 +485,7 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Säule / Serie:** Reichweite · Beißfenster-Check
 - **Ziel:** Sonntagsformat
 - **Hook:** „Angelwetter der Woche.“
-- **Ablauf:** Wie Woche 6.
+- **Ablauf:** Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung. Vorhersage = Modellwert, keine Garantie.
 - **CTA:** Wann geht's los?
 - **Material:** Bildschirmaufnahme
 - **Vorbereitung:** 30 min
@@ -524,7 +524,7 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Säule / Serie:** Reichweite · Beißfenster-Check
 - **Ziel:** Sonntagsformat
 - **Hook:** „Angelwetter der Woche.“
-- **Ablauf:** Wie Woche 6.
+- **Ablauf:** Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung. Vorhersage = Modellwert, keine Garantie.
 - **CTA:** Wann geht's los?
 - **Material:** Bildschirmaufnahme
 - **Vorbereitung:** 30 min
@@ -563,7 +563,7 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Säule / Serie:** Reichweite · Beißfenster-Check
 - **Ziel:** Sonntagsformat
 - **Hook:** „Angelwetter der Woche.“
-- **Ablauf:** Wie Woche 6.
+- **Ablauf:** Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung. Vorhersage = Modellwert, keine Garantie.
 - **CTA:** Wann geht's los?
 - **Material:** Bildschirmaufnahme
 - **Vorbereitung:** 30 min

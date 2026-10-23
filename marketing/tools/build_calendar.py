@@ -44,7 +44,7 @@ P = [
     (1, "So", IG_R, "Reel 15–20 s", "Reichweite", "Kurz erklärt", "Fang in 10 Sekunden eintragen",
      "Reichweite über Nicht-Follower; Kernnutzen zeigen",
      "Fang eintragen, bevor der Fisch zurück im Wasser ist.",
-     "Bildschirmaufnahme: Fang erfassen → Stelle tippen → Art → Speichern. Stoppuhr-Einblendung. Siehe Video-Konzept V1.",
+     "Fertiges Video hochladen: Fisch in der Hand → App in 4 Schritten (Fang erfassen, Stelle antippen, Fischart, Speichern) → Freilassen → Schluss-Karte. Musik aus der Plattform-Bibliothek leise dazulegen.",
      "Link in der Bio.", "Fertiges Video videos/v1-fang-eintragen-1080x1920.mp4 (Lizenz des Fisch-Clips vorher bestätigen)", "10 min",
      "TikTok, YouTube Shorts, Story"),
     # --- Woche 2 ---
@@ -185,7 +185,7 @@ P = [
      "Was fehlt dir? Kommentar.", "posts/08-entwicklung-feed-1080x1440.png (aktualisieren)", "20 min", "Story"),
     (8, "So", IG_R, "Reel 20 s", "Reichweite", "Beißfenster-Check", "Wochenausblick Wetter",
      "Sonntagsformat", "Angelwetter der Woche in 20 Sekunden.",
-     "Wie Woche 6.", "Wann geht's los?", "Bildschirmaufnahme", "30 min", "TikTok, Shorts"),
+     "Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung. Vorhersage = Modellwert, keine Garantie.", "Wann geht's los?", "Bildschirmaufnahme", "30 min", "TikTok, Shorts"),
     # --- Woche 9 ---
     (9, "Di", IG_R, "Reel 30–45 s", "Reichweite", "Fangbuch-Freitag", "Mein Angeljahr in Zahlen",
      "Persönliche Geschichte mit eigenen echten Daten (Jahresrückblick)",
@@ -213,7 +213,7 @@ P = [
      "Bildschirmaufnahme iPhone und Android: hinzufügen, starten, ohne Internet Fang eintragen. Siehe V5.",
      "Probier's aus – Link in der Bio.", "Bildschirmaufnahmen auf 2 Geräten", "60 min", "TikTok, Shorts, Story"),
     (10, "So", IG_R, "Reel 20 s", "Reichweite", "Beißfenster-Check", "Wochenausblick Wetter",
-     "Sonntagsformat", "Angelwetter der Woche.", "Wie Woche 6.", "Wann geht's los?", "Bildschirmaufnahme",
+     "Sonntagsformat", "Angelwetter der Woche.", "Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung. Vorhersage = Modellwert, keine Garantie.", "Wann geht's los?", "Bildschirmaufnahme",
      "30 min", "TikTok, Shorts"),
     # --- Woche 11 ---
     (11, "Di", IG_R, "Reel 30 s", "Reichweite", "Wissen in 30 Sekunden", "Fehlbisse aufschreiben – warum?",
@@ -232,7 +232,7 @@ P = [
      "Nur in Gruppen, in denen der erste Beitrag gut ankam. Konkrete Änderungen nennen.",
      "Wer noch nicht getestet hat: gern.", "Motiv 08 aktualisiert", "20 min", "–"),
     (11, "So", IG_R, "Reel 20 s", "Reichweite", "Beißfenster-Check", "Wochenausblick Wetter",
-     "Sonntagsformat", "Angelwetter der Woche.", "Wie Woche 6.", "Wann geht's los?", "Bildschirmaufnahme",
+     "Sonntagsformat", "Angelwetter der Woche.", "Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung. Vorhersage = Modellwert, keine Garantie.", "Wann geht's los?", "Bildschirmaufnahme",
      "30 min", "TikTok, Shorts"),
     # --- Woche 12 ---
     (12, "Di", IG_R, "Reel 30 s", "Reichweite", "Problem am Wasser", "Angeltermin planen und Wetter im Blick",
@@ -246,7 +246,7 @@ P = [
      "Motiv 10. Caption mit Schritt-für-Schritt.",
      "Link in der Bio.", "posts/10-ausprobieren-feed-1080x1440.png", "10 min", "Story mit Link-Sticker"),
     (12, "So", IG_R, "Reel 20 s", "Reichweite", "Beißfenster-Check", "Wochenausblick Wetter",
-     "Sonntagsformat", "Angelwetter der Woche.", "Wie Woche 6.", "Wann geht's los?", "Bildschirmaufnahme",
+     "Sonntagsformat", "Angelwetter der Woche.", "Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung. Vorhersage = Modellwert, keine Garantie.", "Wann geht's los?", "Bildschirmaufnahme",
      "30 min", "TikTok, Shorts"),
     # --- Woche 13 ---
     (13, "Di", IG_R, "Reel 30 s", "Vertrauen", "Werkstatt-Notiz", "90 Tage Fangpunkt auf Instagram – ehrliche Bilanz",
@@ -260,7 +260,7 @@ P = [
      "Das bestlaufende Thema als Karussell oder neues Reel mit anderem Einstieg.",
      "Speichern.", "abhängig vom Gewinner", "40 min", "–"),
     (13, "So", IG_R, "Reel 20 s", "Reichweite", "Beißfenster-Check", "Wochenausblick Wetter",
-     "Sonntagsformat", "Angelwetter der Woche.", "Wie Woche 6.", "Wann geht's los?", "Bildschirmaufnahme",
+     "Sonntagsformat", "Angelwetter der Woche.", "Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung. Vorhersage = Modellwert, keine Garantie.", "Wann geht's los?", "Bildschirmaufnahme",
      "30 min", "TikTok, Shorts"),
 ]
 
