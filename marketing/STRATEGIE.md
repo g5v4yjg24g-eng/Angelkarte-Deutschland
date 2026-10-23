@@ -6,7 +6,7 @@ Kennzeichnung wie im Projekt: **[V]** verifiziert (mit Quelle/Datum), **[A]** An
 > **Bevor der erste Beitrag online geht, sind vier Punkte zu klären** (Details in §11 und in der [README](README.md#offen)):
 > 1. **Die App ist bisher als privat geführt** (PLAN.md M11: „App bleibt privat, daher kein Impressum“). Eine Social-Media-Kampagne macht sie öffentlich. Das ist deine Entscheidung.
 > 2. **Impressum und Datenschutzerklärung** für App und Profile, sobald öffentlich geworben wird.
-> 3. **Markenrecherche „Fangpunkt“** beim DPMA steht noch aus (PLAN.md E5 [O]). `fangpunkt.de` ist bereits vergeben (leitet auf eine fremde Website weiter, geprüft 2026-10-23) [V].
+> 3. **Name „Fangpunkt“ bleibt:** DPMAregister ohne Treffer (Suche durch dich, 2026-10-23); EUIPO noch nicht geprüft [O]. `fangpunkt.de` ist vergeben, gehört aber zu einer Website für Architektur-Visualisierung (fremde Branche, geprüft 2026-10-23) [V] → Domain `fangpunkt.app` vorgesehen.
 > 4. **Stabiler Link** statt der GitHub-Pages-Vorschauadresse (§9).
 
 ---
@@ -292,7 +292,7 @@ Hinweise: Bezahlte Anzeigen und Kooperationen ändern nichts an „nicht kommerz
 | **Kartendaten** | Screenshots der Karte zeigen OpenStreetMap-Daten (ODbL) und OpenFreeMap: Vermerk „© OpenStreetMap-Mitwirkende“ in Caption oder Bild nennen. Wetter: Open-Meteo (CC BY 4.0), Warnungen: DWD (CC BY 4.0) – in Captions der Wetter-Motive genannt. |
 | **Werbekennzeichnung** | Eigene App im eigenen Profil: keine Kennzeichnung nötig, aber offen sagen, dass du sie entwickelst. Kooperationen mit Gegenleistung: „Werbung“/„Anzeige“ + Plattform-Tool. |
 | **Gewinnspiele** | Teilnahmebedingungen, Datenschutzhinweis, Ausschluss der Plattform-Haftung, Altersgrenze – siehe §10.7. |
-| **Marke** | „Fangpunkt“ beim DPMA (DPMAregister) und EUIPO auf ähnliche Marken in Klassen 9/42 prüfen, bevor Profile groß beworben werden; Social-Handles früh sichern [O]. |
+| **Marke** | DPMAregister: kein Treffer für „Fangpunkt“ (Suche durch dich, 2026-10-23). Offen: EUIPO (eingetragene Unionsmarken gelten auch in Deutschland) und ähnlich klingende Marken in Klassen 9/42 [O]. Eine Anmeldung der eigenen Marke ist optional (Kosten, DPMA-Gebühr prüfen). Social-Handles früh sichern [O]. Eine Websuche fand keine Angel-App dieses Namens; „Fangpoint“ und „Angelpunkt“ wurden verworfen. |
 | **Fremde Marken** | Keine Logos von Fishbrain & Co. in Motiven; Vergleiche nur sachlich und ohne Herabsetzung (§ 6 UWG) [A]. |
 | **Angelrecht** | In jedem Beitrag mit Regeln: „Keine Rechtsauskunft. Maßgeblich sind der amtliche Text und dein Erlaubnisschein.“ |
 | **Tierschutz** | Fische schonend behandeln und zeigen; keine Szenen, die gegen das Tierschutzgesetz verstoßen könnten. |

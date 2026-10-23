@@ -54,7 +54,7 @@ Texte der Motive stehen in `MOTIFS` in `tools/render.mjs`.
 ### Entscheidungen von dir (vor dem ersten Beitrag)
 1. **App öffentlich bewerben – ja oder nein?** In PLAN.md steht „App bleibt privat (Nutzer 2026-10-22), daher kein Impressum“. Eine Kampagne ändert das.
 2. **Impressum** auf App/Landingpage und in den Profilen (§ 5 DDG prüfen; keine Rechtsauskunft).
-3. **Markenrecherche „Fangpunkt“** (DPMA/EUIPO) – laut PLAN.md E5 noch offen. `fangpunkt.de` gehört bereits jemand anderem.
+3. **Name „Fangpunkt“ bleibt** – DPMAregister ohne Treffer (2026-10-23). Noch kurz prüfen: EUIPO (eSearch plus). `fangpunkt.de` gehört einer fremden Branche → `fangpunkt.app` registrieren.
 4. **Stabile Adresse:** eigene Domain (Kosten ca. 10–25 €/Jahr [A]) oder Bestätigung, dass die GitHub-Pages-Adresse bleibt.
 5. **Zugriffsmessung** auf der Website ja/nein (Datenschutz-Entscheidung; ohne sie sind nur Plattform-Statistiken messbar).
 6. **Feedback-Weg** in der App (z. B. Link „Feedback geben“ unter „Mehr“) – wäre eine kleine App-Änderung in einem eigenen PR.
@@ -62,7 +62,7 @@ Texte der Motive stehen in `MOTIFS` in `tools/render.mjs`.
 ### Fehlende Informationen
 - **QR-Code nicht erstellt** – die endgültige Zieladresse fehlt (siehe STRATEGIE §9). Es braucht: die Domain *oder* deine Bestätigung der jetzigen Adresse, plus die Kampagnen-Unterseite (z. B. `/flyer`).
 - Verfügbarkeit der Handles `@fangpunkt` auf Instagram, TikTok, YouTube, Facebook (aus dieser Umgebung nicht prüfbar).
-- Verfügbarkeit von `fangpunkt.app` (nur DNS geprüft: kein Eintrag).
+- Ob `fangpunkt.app` registrierbar ist (nur DNS geprüft: kein Eintrag). Danach: QR-Code und Kampagnen-Links.
 - Ob du dein Gesicht/deine Stimme zeigen möchtest (beeinflusst Video-Konzepte V2–V4).
 - Eigene Fangfotos und echte eigene Statistik für Jahresrückblick (V3) und „Mein Angeljahr“.
 
