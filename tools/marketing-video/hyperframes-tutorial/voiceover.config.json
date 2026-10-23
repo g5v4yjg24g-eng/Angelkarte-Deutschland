@@ -1,0 +1,20 @@
+{
+  "engine": "elevenlabs",
+  "voice": "Hans – Deep Warm German (43H9TfBpRZiNdzjX9Acg), eleven_v4",
+  "flow": "https://elevenlabs.io/app/flows/YUFSdtKmvl5lYnRb12LB",
+  "voiceover": [
+    { "id": "t01", "text": "Morgen geht's ans Wasser." },
+    { "id": "t02", "text": "Schon am Abend zeigt dir Fangpunkt das Wetter am See und den Pegel in der Nähe." },
+    { "id": "t03", "text": "Am Morgen suchst du dein Gewässer." },
+    { "id": "t04", "text": "Ein Tipp aufs Wasser – und du siehst Lage, Fläche und das Landesrecht." },
+    { "id": "t05", "text": "Den Steg markierst du direkt auf der Karte: antippen, Angelsteg wählen, speichern." },
+    { "id": "t06", "text": "Dann startest du deine Session." },
+    { "id": "t07", "text": "Biss!" },
+    { "id": "t08", "text": "Tippe auf „Fang erfassen“ und dann auf die Fangstelle." },
+    { "id": "t09", "text": "Fischart und Länge eintragen – speichern." },
+    { "id": "t10", "text": "Dabei zeigt dir Fangpunkt, ob nach den erfassten Landesregeln Schonzeit oder Mindestmaß betroffen sind." },
+    { "id": "t11", "text": "Alle Fänge landen im Fangbuch – sortiert nach Gewässern, mit dem Wetter zum Fangzeitpunkt." },
+    { "id": "t12", "text": "Und am Saisonende siehst du, welcher Köder bei dir am besten läuft." },
+    { "id": "t13", "text": "Fangpunkt. Kostenlos im Browser – jetzt scannen und ausprobieren." }
+  ]
+}

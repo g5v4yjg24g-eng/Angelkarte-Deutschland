@@ -1,0 +1,380 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    @font-face {
+      font-family: "Fraunces Variable";
+      font-weight: 100 900;
+      src: url("assets/fonts/fraunces-latin-wght-normal.woff2") format("woff2-variations");
+    }
+    @font-face {
+      font-family: "Fraunces Variable";
+      font-weight: 100 900;
+      src: url("assets/fonts/fraunces-latin-ext-wght-normal.woff2") format("woff2-variations");
+      unicode-range: U+0100-024F;
+    }
+    @font-face {
+      font-family: "Inter Variable";
+      font-weight: 100 900;
+      src: url("assets/fonts/inter-latin-wght-normal.woff2") format("woff2-variations");
+    }
+    @font-face {
+      font-family: "Inter Variable";
+      font-weight: 100 900;
+      src: url("assets/fonts/inter-latin-ext-wght-normal.woff2") format("woff2-variations");
+      unicode-range: U+0100-024F;
+    }
+    :root {
+      --deep: #0b2a33;
+      --glow: #12404b;
+      --ripple: #5cc4d6;
+      --ripple-light: #a8ecf5;
+      --accent: #f2994a;
+      --fish: #e8f4f5;
+    }
+    .layer {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .full {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1080px;
+      height: 1920px;
+      object-fit: cover;
+    }
+    /* Tiefblau mit örtlichem Schimmer (radial – lineare Verläufe banden in H.264) */
+    .ground {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(60% 45% at 50% 48%, var(--glow) 0%, rgba(11, 42, 51, 0) 100%), var(--deep);
+    }
+    .title {
+      position: absolute;
+      top: 190px;
+      left: 70px;
+      right: 70px;
+      text-align: center;
+      font-family: "Fraunces Variable", Georgia, serif;
+      font-weight: 640;
+      font-size: 80px;
+      line-height: 1.12;
+      color: #fff;
+      text-shadow: 0 2px 22px rgba(0, 0, 0, 0.45);
+    }
+    .w {
+      display: inline-block;
+    }
+    .title .accent {
+      color: var(--ripple-light);
+    }
+    .scrim-top {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(6, 20, 25, 0.82) 0%, rgba(6, 20, 25, 0.55) 20%, rgba(6, 20, 25, 0) 38%, rgba(6, 20, 25, 0) 75%, rgba(6, 20, 25, 0.35) 100%);
+    }
+    
+    /* 1 – Nebelsee */
+    #hook-push {
+      position: absolute;
+      inset: 0;
+    }
+    #hook-video {
+      object-position: 62% 50%;
+    }
+    .ring-water {
+      position: absolute;
+      left: 300px;
+      top: 1120px;
+      width: 40px;
+      height: 14px;
+      margin: -7px 0 0 -20px;
+      border: 3px solid rgba(232, 244, 245, 0.85);
+      border-radius: 50%;
+    }
+    
+    /* App-Welt: öffnet sich als Kreis aus den Wellenringen */
+    #world-iris {
+      clip-path: circle(0px at 300px 1120px);
+    }
+    .head {
+      position: absolute;
+      top: 236px;
+      left: 40px;
+      right: 40px;
+      text-align: center;
+      font-family: "Fraunces Variable", Georgia, serif;
+      font-weight: 640;
+      font-size: 80px;
+      line-height: 1.12;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .head .accent {
+      color: var(--ripple);
+    }
+    .head .num {
+      display: inline-block;
+      width: 64px;
+      height: 64px;
+      margin-right: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--deep);
+      font: 700 36px/64px "Inter Variable", Inter, sans-serif;
+      text-align: center;
+      vertical-align: 10px;
+    }
+    /* Handy: steht still (Wunsch Nutzer), 520 px breit; Bildschirm 393 × 798 CSS-px × 1,2306 */
+    #phone {
+      position: absolute;
+      top: 410px;
+      left: 280px;
+      width: 520px;
+      height: 1085px;
+      padding: 18.2px;
+      border-radius: 80px;
+      background: linear-gradient(145deg, #3a4246, #15191b 45%, #2b3236);
+      box-shadow:
+        0 40px 90px rgba(0, 0, 0, 0.45),
+        0 10px 30px rgba(0, 0, 0, 0.35),
+        inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+    }
+    .screen {
+      position: relative;
+      width: 483.6px;
+      height: 1048.4px;
+      border-radius: 65px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .status {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 66.4px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 42px 0;
+      font: 600 21px "Inter Variable", Inter, sans-serif;
+      color: #000;
+      z-index: 3;
+    }
+    .status svg {
+      fill: #000;
+    }
+    .island {
+      position: absolute;
+      top: 13.5px;
+      left: 165.5px;
+      width: 152.6px;
+      height: 44.3px;
+      border-radius: 22px;
+      background: #000;
+      z-index: 4;
+    }
+    #area {
+      position: absolute;
+      left: 0;
+      top: 66.4px;
+      width: 483.6px;
+      height: 982px;
+      overflow: hidden;
+    }
+    .scr-wrap {
+      position: absolute;
+      inset: 0;
+    }
+    .scr-wrap img,
+    .scr-wrap video {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 483.6px;
+      height: 982px;
+      object-fit: cover;
+      object-position: top;
+    }
+    .note {
+      position: absolute;
+      top: 1528px;
+      left: 50px;
+      right: 50px;
+      text-align: center;
+      font: 500 24px/1.4 "Inter Variable", Inter, sans-serif;
+      color: rgba(232, 244, 245, 0.8);
+    }
+    /* Fingertipp als Wasserring: weißer Ring 3 px, 0 → 90 px (mit dunkler Kante, damit er auch auf Weiß lesbar ist) */
+    .tap {
+      position: absolute;
+      width: 0;
+      height: 0;
+    }
+    .tap i {
+      position: absolute;
+      border-radius: 50%;
+    }
+    .tap .ring {
+      left: -45px;
+      top: -45px;
+      width: 90px;
+      height: 90px;
+      border: 3px solid #fff;
+      box-shadow:
+        0 0 0 1.5px rgba(11, 42, 51, 0.55),
+        inset 0 0 0 1.5px rgba(11, 42, 51, 0.55);
+    }
+    .tap .dot {
+      left: -23px;
+      top: -23px;
+      width: 46px;
+      height: 46px;
+      background: rgba(11, 42, 51, 0.28);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+    }
+    
+    /* 6 – Biss */
+    #bite-video {
+      object-position: 50% 45%;
+    }
+    #bite-word {
+      position: absolute;
+      top: 560px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: "Fraunces Variable", Georgia, serif;
+      font-weight: 700;
+      font-size: 230px;
+      line-height: 1;
+      color: var(--ripple-light);
+      text-shadow: 0 4px 40px rgba(0, 0, 0, 0.5);
+    }
+    #bite-dip {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+    }
+    
+    /* 8 – Freilassen: Querformat-Clip als Quadrat vor derselben Szene unscharf */
+    #release-square {
+      position: absolute;
+      left: 90px;
+      top: 430px;
+      width: 900px;
+      height: 900px;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+    }
+    #release-fish {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 900px;
+      height: 900px;
+      object-fit: cover;
+      object-position: 27% 50%;
+    }
+    #release-bgwrap {
+      position: absolute;
+      inset: 0;
+    }
+    
+    /* 11 – Abschluss */
+    #brand {
+      position: absolute;
+      top: 240px;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+    }
+    #mark {
+      width: 160px;
+      height: 160px;
+      overflow: visible;
+    }
+    #word {
+      font-family: "Fraunces Variable", Georgia, serif;
+      font-weight: 650;
+      font-size: 108px;
+      line-height: 1;
+      color: var(--fish);
+    }
+    #word .l {
+      display: inline-block;
+    }
+    #slogan {
+      position: absolute;
+      top: 445px;
+      left: 90px;
+      right: 90px;
+      text-align: center;
+      font: 500 42px/1.3 "Inter Variable", Inter, sans-serif;
+      color: var(--ripple);
+    }
+    /* QR-Code: reines Schwarz auf Weiß, Ruhezone im SVG, 45 Module × 11 px – wird nie bewegt oder skaliert */
+    #qr-card {
+      position: absolute;
+      top: 600px;
+      left: 292px;
+      width: 495px;
+      height: 495px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      background: #fff;
+    }
+    #qr {
+      display: block;
+      width: 495px;
+      height: 495px;
+      image-rendering: pixelated;
+    }
+    #cta {
+      position: absolute;
+      top: 1135px;
+      left: 60px;
+      right: 60px;
+      text-align: center;
+      font: 650 48px "Inter Variable", Inter, sans-serif;
+      color: #fff;
+    }
+    #url {
+      position: absolute;
+      top: 1205px;
+      left: 60px;
+      right: 60px;
+      text-align: center;
+      font: 500 29px "Inter Variable", Inter, sans-serif;
+      color: rgba(232, 244, 245, 0.78);
+    }
+  </style>
+  <div id="root" data-composition-id="bite" data-width="1080" data-height="1920">
+    <video id="bite-video" class="full clip" data-color-grading="{&quot;preset&quot;:null,&quot;intensity&quot;:0.8,&quot;adjust&quot;:{&quot;exposure&quot;:0,&quot;contrast&quot;:0.08,&quot;highlights&quot;:-0.12,&quot;shadows&quot;:0.04,&quot;whites&quot;:0,&quot;blacks&quot;:-0.04,&quot;temperature&quot;:-0.06,&quot;tint&quot;:0,&quot;vibrance&quot;:0.06,&quot;saturation&quot;:-0.02},&quot;details&quot;:{&quot;vignette&quot;:0.14,&quot;vignetteMidpoint&quot;:0.5,&quot;vignetteRoundness&quot;:0,&quot;vignetteFeather&quot;:0.65,&quot;grain&quot;:0.06,&quot;grainSize&quot;:0.22,&quot;grainRoughness&quot;:0.5},&quot;effects&quot;:{&quot;blur&quot;:0,&quot;pixelate&quot;:0,&quot;chromaBleed&quot;:0,&quot;tapeDamage&quot;:0,&quot;tapeTracking&quot;:0,&quot;tapeNoise&quot;:1,&quot;tapeSpeed&quot;:0.5,&quot;filmArtifacts&quot;:0,&quot;halftone&quot;:0,&quot;halftoneSize&quot;:0,&quot;twoInkPrint&quot;:0,&quot;twoInkPrintSize&quot;:0,&quot;ascii&quot;:0,&quot;asciiSize&quot;:0.06578947368421052,&quot;asciiInvert&quot;:0,&quot;asciiStyle&quot;:0,&quot;asciiColor&quot;:1,&quot;asciiRotation&quot;:0,&quot;dither&quot;:0,&quot;ditherSize&quot;:0,&quot;bloom&quot;:0,&quot;bloomRadius&quot;:8,&quot;monoScreen&quot;:0,&quot;monoScreenSize&quot;:0,&quot;monoScreenAngle&quot;:0,&quot;monoScreenSpread&quot;:0,&quot;monoScreenShape&quot;:0,&quot;monoScreenInvert&quot;:0,&quot;scanlines&quot;:0,&quot;scanlineCount&quot;:0,&quot;scanlineSoftness&quot;:0,&quot;chromaticAberration&quot;:0,&quot;chromaticAngle&quot;:0,&quot;crtCurvature&quot;:0,&quot;digitalGlitch&quot;:0,&quot;digitalGlitchColorSplit&quot;:0,&quot;digitalGlitchLineTear&quot;:0,&quot;digitalGlitchPixelate&quot;:0,&quot;digitalGlitchBlockAmount&quot;:0,&quot;digitalGlitchBlockDisplacement&quot;:0,&quot;digitalGlitchBlockOpacity&quot;:0,&quot;digitalGlitchSpeed&quot;:0,&quot;engraving&quot;:0,&quot;engravingSpacing&quot;:0.4117647058823529,&quot;engravingMinThickness&quot;:0.2,&quot;engravingMaxThickness&quot;:0.4571428571428572,&quot;engravingAngle&quot;:0.25,&quot;engravingContrast&quot;:0.4666666666666667,&quot;engravingSharpness&quot;:0.59,&quot;engravingWave&quot;:0.2,&quot;engravingWaveFrequency&quot;:0.2222222222222222,&quot;crosshatch&quot;:0,&quot;crosshatchSpacing&quot;:0.28,&quot;crosshatchThickness&quot;:0.25,&quot;crosshatchAngle&quot;:0.25,&quot;crosshatchContrast&quot;:0.3333333333333333,&quot;crosshatchEdges&quot;:0.5,&quot;crosshatchLineWeight&quot;:0,&quot;crosshatchWave&quot;:0.33,&quot;crosshatchWaveFrequency&quot;:0.2222222222222222,&quot;kuwahara&quot;:0,&quot;kuwaharaRadius&quot;:0.14285714285714285,&quot;kuwaharaSharpness&quot;:0.3125,&quot;kuwaharaSaturation&quot;:0.5},&quot;lut&quot;:null,&quot;colorSpace&quot;:&quot;rec709&quot;}" src="assets/fishing-scenes/jetty-cast-pexels-12544249.mp4" data-start="0" data-duration="2.2" data-media-start="3.6" data-track-index="1" muted playsinline></video>
+    <div id="bite-word" class="clip" data-start="0.3" data-duration="1.9" data-track-index="2"><span class="w">Biss!</span></div>
+    <div id="bite-dip"></div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const D = 2.2;
+    // das Wort springt groß herein und steht; kurzer Abblende-Schnitt zurück ins Handy
+    tl.fromTo("#bite-word .w", { scale: 1.35, opacity: 0, filter: "blur(10px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.32, ease: "expo.out" }, 0.3);
+    tl.fromTo("#bite-dip", { opacity: 0 }, { opacity: 0.45, duration: 0.1, ease: "none" }, D - 0.1);
+    tl.to({}, { duration: D }, 0);
+    window.__timelines["bite"] = tl;
+  </script>
+</template>

@@ -1,0 +1,55 @@
+<template>
+  <style>
+{{CSS}}
+  </style>
+  <div id="root" data-composition-id="world" data-width="1080" data-height="1920">
+    <div id="world-iris" class="layer">
+      <div class="ground"></div>
+{{HEADS}}
+      <div id="phone">
+        <div class="screen">
+          {{STATUS}}
+          <div class="island"></div>
+          <div id="area">
+{{SCREENS}}
+          </div>
+        </div>
+      </div>
+{{NOTES}}
+{{RINGS}}
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const T = {{TIMELINE}};
+    const tl = gsap.timeline({ paused: true });
+    const blurIn = { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power2.out", stagger: 0.067, immediateRender: false };
+    const blurOut = { opacity: 0, filter: "blur(8px)", duration: 0.15, ease: "power2.in", immediateRender: false };
+
+    // Iris: die App-Welt öffnet sich als Kreis aus den Wellenringen des Nebelsees
+    tl.fromTo("#world-iris", { clipPath: "circle(0px at 300px 1120px)" }, { clipPath: "circle(2300px at 300px 1120px)", duration: 0.62, ease: "power2.in" }, 0);
+
+    // Überschrift wird an derselben Stelle getauscht; der Bildschirm schiebt sich wie in der App von rechts herein.
+    // Nach einem Angelclip (Biss, Freilassen) harter Schnitt statt Wischen.
+    T.apps.forEach((s, i) => {
+      tl.fromTo(`#head-${s.id} .w`, { opacity: 0, filter: "blur(6px)" }, blurIn, s.start + (i === 0 ? 0.35 : 0.05));
+      tl.fromTo(`#head-${s.id} .w`, { opacity: 1, filter: "blur(0px)" }, blurOut, s.start + s.dur - 0.15);
+      tl.fromTo(`#note-${s.id}`, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power1.out", immediateRender: false }, s.start);
+      if (i === 0 || s.afterClip) return;
+      const prev = T.apps[i - 1];
+      tl.fromTo(`#wrap-${s.id}`, { xPercent: 100 }, { xPercent: 0, duration: T.SLIDE, ease: "power3.out", immediateRender: false }, s.start);
+      tl.fromTo(`#wrap-${prev.id}`, { xPercent: 0 }, { xPercent: -28, duration: T.SLIDE, ease: "power3.out", immediateRender: false }, s.start);
+    });
+    // Ausgangslage: spätere Bildschirme warten rechts außerhalb (außer nach Clips: die stehen direkt)
+    T.apps.forEach((s, i) => { if (i > 0 && !s.afterClip) tl.set(`#wrap-${s.id}`, { xPercent: 100 }, 0); });
+
+    // Fingertipp: Druckpunkt, dann Wasserring 0 → 90 px in 0,45 s
+    T.taps.forEach((t, i) => {
+      tl.fromTo(`#tap-${i} .dot`, { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.08, ease: "power2.out" }, t);
+      tl.to(`#tap-${i} .dot`, { opacity: 0, duration: 0.25, ease: "power2.in" }, t + 0.18);
+      tl.fromTo(`#tap-${i} .ring`, { scale: 0, opacity: 1 }, { scale: 1, opacity: 0, duration: 0.45, ease: "expo.out" }, t);
+    });
+    tl.to({}, { duration: T.dur }, 0);
+    window.__timelines["world"] = tl;
+  </script>
+</template>

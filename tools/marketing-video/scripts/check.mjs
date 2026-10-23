@@ -1,17 +1,20 @@
 // Technische Prüfung eines gerenderten Videos: Abmessungen, Dauer, Tonspur, Lautheit, QR-Code in mehreren
 // Einzelbildern (dekodieren + mit der Ziel-URL vergleichen) und Stillstand des QR-Bereichs.
-// Aufruf: pnpm check output/<datei>.mp4 [Breite Höhe]
+// Aufruf: pnpm check output/<datei>.mp4 [Breite Höhe] [--qr-from=<s>] [--min=<s>] [--max=<s>]
+// Erklärvideo: --qr-from aus hyperframes-tutorial/timing.txt („QR unbewegt ab“), --min=55 --max=80
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { decodePng } from './decode.mjs';
 
-const [file, w = '1080', h = '1920'] = process.argv.slice(2);
+const opt = Object.fromEntries(process.argv.slice(2).filter((a) => a.startsWith('--')).map((a) => a.slice(2).split('=')));
+const [file, w = '1080', h = '1920'] = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 if (!file) throw new Error('Aufruf: pnpm check <video.mp4> [Breite Höhe]');
 const root = new URL('..', import.meta.url);
 const { targetUrl } = JSON.parse(readFileSync(new URL('video.config.json', root), 'utf8'));
-const QR_FROM = 33; // muss zu T.qrStill in src/config.ts passen
+const QR_FROM = Number(opt['qr-from'] ?? 33); // Standard muss zu T.qrStill in src/config.ts passen
+const [MIN, MAX] = [Number(opt.min ?? 35), Number(opt.max ?? 45)];
 let ok = true;
 const report = (pass, msg) => {
   console.log(`${pass ? '✓' : '✗'} ${msg}`);
@@ -23,7 +26,7 @@ const v = probe.streams.find((s) => s.codec_type === 'video');
 const a = probe.streams.find((s) => s.codec_type === 'audio');
 const duration = Number(v?.duration ?? probe.format.duration);
 report(v && String(v.width) === w && String(v.height) === h, `Abmessungen ${v?.width} × ${v?.height} (erwartet ${w} × ${h})`);
-report(duration >= 35 && duration <= 45, `Dauer ${duration.toFixed(2)} s`);
+report(duration >= MIN && duration <= MAX, `Dauer ${duration.toFixed(2)} s (erlaubt ${MIN}–${MAX} s)`);
 report(v?.codec_name === 'h264' && v?.pix_fmt === 'yuv420p', `Video ${v?.codec_name} ${v?.pix_fmt}, ${v?.r_frame_rate} fps`);
 report(!!a, `Tonspur ${a ? `${a.codec_name} ${a.sample_rate} Hz ${a.channels} Kanäle` : 'fehlt'}`);
 

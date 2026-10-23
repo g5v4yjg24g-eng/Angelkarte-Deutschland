@@ -1,12 +1,15 @@
 """Eigene Musik und Geräusche per Code erzeugen (keine fremden Rechte).
 Aufruf: python3 scripts/music.py   → assets/music/music.wav, assets/music/ambience.wav, assets/graphics/sfx-*.wav
+Erklärvideo: python3 scripts/music.py --dur=<s> --suffix=-tutorial → music-tutorial.wav, ambience-tutorial.wav (ohne Effekte)
 Musik: ruhiges Ambient in a-Moll (Am7 – Fmaj7 – C – G), 80 BPM, 42 s, Pad + gezupfte Arpeggios."""
-import wave
+import sys, wave
 from pathlib import Path
 import numpy as np
 
 SR = 44100
-DUR = 42.0
+opt = dict(a[2:].split('=', 1) for a in sys.argv[1:] if a.startswith('--'))
+DUR = float(opt.get('dur', 42.0))
+SUFFIX = opt.get('suffix', '')
 root = Path(__file__).resolve().parent.parent
 rng = np.random.default_rng(7)
 
@@ -87,7 +90,7 @@ music = pad + arp + bass[:, None]
 master = np.minimum(t / 1.0, 1) * np.clip((DUR - t) / 4.0, 0, 1)  # Ein- und Ausblenden
 music *= master[:, None]
 music /= np.abs(music).max() / 0.7
-write(root / 'assets/music/music.wav', music)
+write(root / f'assets/music/music{SUFFIX}.wav', music)
 
 # --- Natur: Wasserplätschern (gefiltertes Rauschen mit langsamer Welle) + vereinzelte Vogelrufe
 noise = rng.normal(0, 1, n)
@@ -103,9 +106,11 @@ for at, f0, pan in [(0.9, 3600, 0.2), (1.05, 3900, 0.2), (2.6, 4200, 0.8), (2.75
     bird(at, f0, pan)
 amb *= (np.minimum(t / 0.3, 1) * np.clip((DUR - t) / 3, 0, 1))[:, None]
 amb /= np.abs(amb).max() / 0.5
-write(root / 'assets/music/ambience.wav', amb)
+write(root / f'assets/music/ambience{SUFFIX}.wav', amb)
 
-# --- Kurze Geräusche
+# --- Kurze Geräusche (nur im Standardlauf)
+if SUFFIX:
+    print('✓ Musik und Natur erzeugt'); sys.exit()
 def env_noise(L, cutoff, decay):
     tt = np.arange(int(L * SR)) / SR
     return lowpass(rng.normal(0, 1, len(tt)), cutoff) * np.exp(-tt * decay)

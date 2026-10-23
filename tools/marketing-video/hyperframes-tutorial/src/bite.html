@@ -1,0 +1,20 @@
+<template>
+  <style>
+{{CSS}}
+  </style>
+  <div id="root" data-composition-id="bite" data-width="1080" data-height="1920">
+    <video id="bite-video" class="full clip" data-color-grading="{{GRADE}}" src="assets/fishing-scenes/jetty-cast-pexels-12544249.mp4" data-start="0" data-duration="{{bite.dur}}" data-media-start="3.6" data-track-index="1" muted playsinline></video>
+    <div id="bite-word" class="clip" data-start="0.3" data-duration="{{BITE_WORD}}" data-track-index="2"><span class="w">Biss!</span></div>
+    <div id="bite-dip"></div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const D = {{bite.dur}};
+    // das Wort springt groß herein und steht; kurzer Abblende-Schnitt zurück ins Handy
+    tl.fromTo("#bite-word .w", { scale: 1.35, opacity: 0, filter: "blur(10px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: 0.32, ease: "expo.out" }, 0.3);
+    tl.fromTo("#bite-dip", { opacity: 0 }, { opacity: 0.45, duration: 0.1, ease: "none" }, D - 0.1);
+    tl.to({}, { duration: D }, 0);
+    window.__timelines["bite"] = tl;
+  </script>
+</template>

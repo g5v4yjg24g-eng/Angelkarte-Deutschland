@@ -92,6 +92,29 @@ pnpm check output/fangpunkt-werbevideo-hyperframes-1080x1920.mp4
 
 Texte stehen direkt in `hyperframes/compositions/*.html`; Farben sind Variablen in `hyperframes/index.html`. Der Farblook der Angelclips ist als `data-color-grading` an den `<video>`-Elementen gespeichert (ändern mit `npx hyperframes media-treatment`). Die anonyme Nutzungsstatistik der HyperFrames-CLI ist abgeschaltet (`hyperframes telemetry disable`).
 
+## Erklärvideo „Ein Angeltag mit Fangpunkt“ (HyperFrames, Hochformat, ca. 68 s)
+
+Zeigt in sieben Schritten, wie man die App an einem Angeltag benutzt (Plan: `hyperframes-tutorial/SPEC.md`, Storyline A aus `STORYLINES.md`): Wetter & Pegel → Gewässer finden → Steg markieren → Session starten → Fang erfassen (mit Landesrecht-Hinweis, „Keine Rechtsauskunft“) → Fangbuch → Statistik → QR-Abschluss.
+
+```bash
+cd tools/marketing-video
+node scripts/record-tutorial.mjs                     # echte Abläufe in der veröffentlichten App aufnehmen → assets/tutorial/
+                                                     #   (--only=weather,catch … einzelne; --dry = Probelauf in Echtzeit mit Bild)
+python3 scripts/split-voiceover.py assets/voiceover/elevenlabs/<erklaervideo>.mp3 \
+  --config=hyperframes-tutorial/voiceover.config.json --out=assets/voiceover/tutorial
+cd hyperframes-tutorial && node build.mjs             # Zeiten aus Sprecher + Aufnahmen → index.html, compositions/, timing.txt
+python3 ../scripts/music.py --dur=<Gesamt aus timing.txt> --suffix=-tutorial
+npx --yes hyperframes@0.8.188 check
+npx --yes hyperframes@0.8.188 render --quality delivery --output ../output/raw-tutorial.mp4
+cd .. && node scripts/finalize.mjs output/raw-tutorial.mp4 output/fangpunkt-erklaervideo-1080x1920.mp4
+node scripts/check.mjs output/fangpunkt-erklaervideo-1080x1920.mp4 1080 1920 --qr-from=<„QR unbewegt ab“ aus timing.txt> --min=55 --max=80
+```
+
+- **Aufnahmen:** `scripts/record-tutorial.mjs` spielt die Beispieldaten ein und bedient die App wie ein Nutzer (Handy-Ansicht 393 × 798 CSS-px, doppelte Pixeldichte). Die Seitenuhr steht während der Aufnahme still und wird je Bild um 1/30 s weitergestellt, damit Kartenflüge flüssig sind. Jeder Tipp landet mit Zeit und Ort in `<name>.taps.json`; daraus zeichnet das Video den Fingerring genau an diese Stelle.
+- **Sprecher:** ElevenLabs „Hans – Deep Warm German“ (eleven_v4), Text in `hyperframes-tutorial/voiceover.config.json` (Flow https://elevenlabs.io/app/flows/YUFSdtKmvl5lYnRb12LB). Ohne geschnittene Aufnahme schätzt `build.mjs` die Satzlängen und lässt den Sprecher weg (nur zum Ansehen).
+- **Nicht von Hand ändern:** `index.html` und `compositions/` werden aus `src/` erzeugt. Texte, Überschriften und Fußnoten stehen in `src/*.html` bzw. `build.mjs` (`plan`, `notes`).
+- Die Fußnote unter dem Handy nennt je Bildschirm „Beispieldaten“ und die Quellen (Karte, Open-Meteo, PEGELONLINE); bei Fang und Fangbuch zusätzlich „Keine Rechtsauskunft“.
+
 ## Echte App, Beispieldaten
 
 Alle Bildschirme sind Aufnahmen der veröffentlichten App (Handy-Ansicht 393 × 798 CSS-px bei 3-facher Pixeldichte, deutsche Spracheinstellung). Es werden ausschließlich Handy-Ansichten gezeigt. Fangbuch, Sessions, Orte und Statistik zeigen **Beispieldaten** (`scripts/demo-data.mjs`, eingespielt über den normalen Import der App) am Hohendeicher See (OSM-Relation 9075175); das Video kennzeichnet sie mit „Beispieldaten“. Wetter, Warnungen und Gewässerprofil sind echte Antworten der App zum Aufnahmezeitpunkt (Wetter vom 23.10.2026).

@@ -1,0 +1,24 @@
+<template>
+  <style>
+{{CSS}}
+  </style>
+  <div id="root" data-composition-id="release" data-width="1080" data-height="1920">
+    <div id="release-bgwrap">
+      <video id="release-bg" class="full clip" data-color-grading="{{GRADE_BLUR}}" src="assets/fishing-scenes/fish-release-pexels-16588810.mp4" data-start="0" data-duration="{{release.dur}}" data-media-start="3.3" data-track-index="1" muted playsinline></video>
+    </div>
+    <div id="release-square">
+      <video id="release-fish" class="clip" data-color-grading="{{GRADE}}" src="assets/fishing-scenes/fish-release-pexels-16588810.mp4" data-start="0" data-duration="{{release.dur}}" data-media-start="3.3" data-track-index="2" muted playsinline></video>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const D = {{release.dur}};
+    // Quadrat setzt sich; am Ende schrumpft der Fang ins Handy, dort steht das Fangbuch
+    tl.fromTo("#release-square", { scale: 1.04 }, { scale: 1, duration: 0.6, ease: "expo.out" }, 0);
+    tl.to("#release-square", { scale: 0.5, y: 72, opacity: 0, duration: 0.45, ease: "power3.in" }, D - 0.5);
+    tl.to("#release-bgwrap", { opacity: 0, duration: 0.3, ease: "power2.inOut" }, D - 0.3);
+    tl.to({}, { duration: D }, 0);
+    window.__timelines["release"] = tl;
+  </script>
+</template>

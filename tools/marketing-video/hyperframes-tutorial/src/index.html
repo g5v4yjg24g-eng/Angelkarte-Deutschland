@@ -1,0 +1,53 @@
+<!doctype html>
+<!--
+  Fangpunkt – Erklärvideo „Ein Angeltag mit Fangpunkt“ (Storyline A, SPEC.md), Hochformat 1080 × 1920, 30 fps.
+  NICHT VON HAND ÄNDERN: index.html und compositions/ erzeugt build.mjs aus src/ (Zeiten aus Sprecher und App-Aufnahmen).
+-->
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #0b2a33;
+      }
+      #ground {
+        position: absolute;
+        inset: 0;
+        background: #0b2a33;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="{{TOTAL}}" data-width="1080" data-height="1920">
+      <div id="ground"></div>
+      <!-- 1 – Nebelsee: „Morgen geht's ans Wasser.“, Wellenringe öffnen die App-Welt -->
+      <div id="hook" data-composition-id="hook" data-composition-src="compositions/hook.html" data-start="0" data-duration="{{HOOKX}}" data-track-index="1" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <!-- 2–5, 7, 9, 10 – App-Welt: ein Handy, das stillsteht; echte Aufnahmen der veröffentlichten App -->
+      <div id="world" data-composition-id="world" data-composition-src="compositions/world.html" data-start="{{APP.start}}" data-duration="{{APP.dur}}" data-track-index="2" data-width="1080" data-height="1920" style="z-index: 2"></div>
+      <!-- 6 – Biss: Angler als Silhouette auf dem Steg -->
+      <div id="bite" data-composition-id="bite" data-composition-src="compositions/bite.html" data-start="{{bite.start}}" data-duration="{{bite.dur}}" data-track-index="3" data-width="1080" data-height="1920" style="z-index: 3"></div>
+      <!-- 8 – Freilassen -->
+      <div id="release" data-composition-id="release" data-composition-src="compositions/release.html" data-start="{{release.start}}" data-duration="{{release.dur}}" data-track-index="4" data-width="1080" data-height="1920" style="z-index: 4"></div>
+      <!-- 11 – Marke und QR-Code (ab Szene-Sekunde 3 unbewegt bis zum Ende) -->
+      <div id="outro" data-composition-id="outro" data-composition-src="compositions/outro.html" data-start="{{outro.start}}" data-duration="{{outro.dur}}" data-track-index="5" data-width="1080" data-height="1920" style="z-index: 5"></div>
+
+      <!-- Ton: Sprecher ElevenLabs „Hans“, eigene Musik und Naturgeräusche (unter dem Sprecher abgesenkt), Tipp-Geräusche -->
+{{AUDIO}}
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,642 @@
+{
+  "version": 1,
+  "historyId": "6f99d187-dd3a-46bd-ae31-ca531715eb1a",
+  "currentRevision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+  "pendingChanges": false,
+  "files": {
+    "CLAUDE.md": {
+      "hash": "1b36171117cb7c18f4100a0db6a3782ff2e096115995733200445cc2e80a4060",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/1b/1b36171117cb7c18f4100a0db6a3782ff2e096115995733200445cc2e80a4060"
+    },
+    "SPEC.md": {
+      "hash": "c70af51366d4256e396cb62cd753b30b80b80ef7ce86b896cc8be340abc59b20",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/c7/c70af51366d4256e396cb62cd753b30b80b80ef7ce86b896cc8be340abc59b20"
+    },
+    "STORYLINES.md": {
+      "hash": "c5bf36e34d83db2aab1d746b5d7d9ac8aa5fa2876bec4b4fa45f44764db2ed34",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/c5/c5bf36e34d83db2aab1d746b5d7d9ac8aa5fa2876bec4b4fa45f44764db2ed34"
+    },
+    "build.mjs": {
+      "hash": "4b480b3b20227277d8c7a01c1f4025043406a1c9f1bbcbd8fe3889e597e957a9",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/4b/4b480b3b20227277d8c7a01c1f4025043406a1c9f1bbcbd8fe3889e597e957a9"
+    },
+    "grade-blur.json": {
+      "hash": "2d9a0e2d2f4b21ada655cad885907678e1cab9fb33221575583cc76f0c756ae5",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/2d/2d9a0e2d2f4b21ada655cad885907678e1cab9fb33221575583cc76f0c756ae5"
+    },
+    "grade.json": {
+      "hash": "3e43ddf9ae498899b22ffa58bf55fb389369cf50c6ea4f3c2ef82dd038312983",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/3e/3e43ddf9ae498899b22ffa58bf55fb389369cf50c6ea4f3c2ef82dd038312983"
+    },
+    "hyperframes.json": {
+      "hash": "26a858693e26b433481c52853631d86c8fd399940455331efcd3b39db54c5b90",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/26/26a858693e26b433481c52853631d86c8fd399940455331efcd3b39db54c5b90"
+    },
+    "index.html": {
+      "hash": "b6c977b6d5d91f8c454c07354a52801d7f415494371b51e092a021319287074a",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/b6/b6c977b6d5d91f8c454c07354a52801d7f415494371b51e092a021319287074a"
+    },
+    "meta.json": {
+      "hash": "92ecd54c6984c8dd29baf3b3c972a03c46828b18cf669353b4ba4f77c5f998b4",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/92/92ecd54c6984c8dd29baf3b3c972a03c46828b18cf669353b4ba4f77c5f998b4"
+    },
+    "package.json": {
+      "hash": "307621b4a7b331a8bc2e33079d6559b3f10d40363479892c119bd49a7d87bff1",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/30/307621b4a7b331a8bc2e33079d6559b3f10d40363479892c119bd49a7d87bff1"
+    },
+    "timing.txt": {
+      "hash": "e1614f11adf5de315ac3693529f50491c1bc6db5f32afb5b8e20e3c0807bd171",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/e1/e1614f11adf5de315ac3693529f50491c1bc6db5f32afb5b8e20e3c0807bd171"
+    },
+    "voiceover.config.json": {
+      "hash": "a09faa1cbbfc17181f243a80e2fa1d1638c0e7e259af1f22e3bbf6f2ecddeb76",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/a0/a09faa1cbbfc17181f243a80e2fa1d1638c0e7e259af1f22e3bbf6f2ecddeb76"
+    },
+    "compositions/bite.html": {
+      "hash": "390dd0fcc7e78e4bcdb79a8d390424c763d585814d8ba83e946287518006075e",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/39/390dd0fcc7e78e4bcdb79a8d390424c763d585814d8ba83e946287518006075e"
+    },
+    "compositions/hook.html": {
+      "hash": "647bab74c405637346ed06c3d45fdf475a3af8c141dac13662fd2515f82b36ad",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/64/647bab74c405637346ed06c3d45fdf475a3af8c141dac13662fd2515f82b36ad"
+    },
+    "compositions/outro.html": {
+      "hash": "f4c0bf28175e162061c6eadbb84c5024ab42c4881fa480283207f5459ad220e5",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/f4/f4c0bf28175e162061c6eadbb84c5024ab42c4881fa480283207f5459ad220e5"
+    },
+    "compositions/release.html": {
+      "hash": "cafe11ef9990fd0600a627723f246c65ecce025ecc961d09ec7a90fa6674c09e",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ca/cafe11ef9990fd0600a627723f246c65ecce025ecc961d09ec7a90fa6674c09e"
+    },
+    "compositions/world.html": {
+      "hash": "78fe5caf5735e8f73aa5d28ca66141d65437c854c4384288ea65eca8796d1a42",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/78/78fe5caf5735e8f73aa5d28ca66141d65437c854c4384288ea65eca8796d1a42"
+    },
+    "src/bite.html": {
+      "hash": "ee2ae27abfd93266f2fe26b3221149690723c284695c54c91d0756bfd45d50df",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ee/ee2ae27abfd93266f2fe26b3221149690723c284695c54c91d0756bfd45d50df"
+    },
+    "src/hook.html": {
+      "hash": "7515c35ab44e343cdc7ee083cecb1b024d840ec1cb7c6406f8ab53e07f964be8",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/75/7515c35ab44e343cdc7ee083cecb1b024d840ec1cb7c6406f8ab53e07f964be8"
+    },
+    "src/index.html": {
+      "hash": "f6060f0e68b41fbe32a5c3c14e9e10057e7531fc73ed2fcb80a234715cce0e2d",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/f6/f6060f0e68b41fbe32a5c3c14e9e10057e7531fc73ed2fcb80a234715cce0e2d"
+    },
+    "src/outro.html": {
+      "hash": "89adbb42b6d68c02a01174dc8dbb4a1a1884fd143d8a43208753232cbb34f24f",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/89/89adbb42b6d68c02a01174dc8dbb4a1a1884fd143d8a43208753232cbb34f24f"
+    },
+    "src/release.html": {
+      "hash": "d3e9bad4d9953e4825e1fb4122ea836384670cf3cbe04b54d485a04f1ccdc5a4",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/d3/d3e9bad4d9953e4825e1fb4122ea836384670cf3cbe04b54d485a04f1ccdc5a4"
+    },
+    "src/style.css": {
+      "hash": "6e38184353f40d758a764d45fb230523999eb8613f5e91846cb8f1bd75c97c87",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/6e/6e38184353f40d758a764d45fb230523999eb8613f5e91846cb8f1bd75c97c87"
+    },
+    "src/world.html": {
+      "hash": "e8ed12684ef43224fc884e96a2c2795ee6dca35c77d47f7f4d87f8971a53521c",
+      "content": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/e8/e8ed12684ef43224fc884e96a2c2795ee6dca35c77d47f7f4d87f8971a53521c"
+    }
+  },
+  "revisions": {
+    "213f3b68-e5fd-427b-95c3-db102273cb77": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792758255095,
+      "endedAt": 1792758255229,
+      "files": {
+        "build.mjs": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/07/07b93c81a7acff2216481d0df289360b6e73b30631732bc107454fd45997d3db",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/4b/4b480b3b20227277d8c7a01c1f4025043406a1c9f1bbcbd8fe3889e597e957a9"
+        },
+        "compositions/bite.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/bc/bccb854908ecba4ec875ed127a4e605a44b38093b1b5d47b821f6e100cb12c52"
+        },
+        "compositions/hook.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/71/7199008ae269113b6fb8b5374f90710721356fc7e6e0f8b9244e28dd81ce13d2"
+        },
+        "compositions/outro.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/89/89e44e09c74164d7f468fb7585342a36414b1823da28d3db2ec46ae2aa0a5a32"
+        },
+        "compositions/release.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/a3/a3f4ff587aa5b3c136a8f4504318ed78d144a3fb078b9d103f29f6aef63ed17c"
+        },
+        "compositions/world.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/a8/a84ffe24c0aedbfbb1296ff4c8ac97e7164458b32c8a0f92e5fc8c56d32fd29c"
+        },
+        "index.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/74/74b38a2659d3338aa11dcf4d7028bc9790dfa739d792e7973e6240ea6a68997c",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/b6/b6c977b6d5d91f8c454c07354a52801d7f415494371b51e092a021319287074a"
+        },
+        "src/bite.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ab/ab366df7722d37641f35fdab4e6f3fd67cfbef451c91002897c490d2d3bff3a4"
+        },
+        "src/hook.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/a3/a3d480c52e6d4a1ee00bde3c168fdc1fa0b333e6cc03e25f5f06648209652d49"
+        },
+        "src/index.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/f6/f6060f0e68b41fbe32a5c3c14e9e10057e7531fc73ed2fcb80a234715cce0e2d"
+        },
+        "src/outro.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/56/567712a321b6e21aee3e7262eea311787ddf2d25cb7c1d83507d4ef7cf9a84d5"
+        },
+        "src/release.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/84/84b64c40365067134c607e14931abaded770229bf2b7d16854ff9e78d6c3e605"
+        },
+        "src/style.css": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ac/ac092e1759a556e8b3c30b045b7caff317748069a28118b26d8fba5c9b47d488"
+        },
+        "src/world.html": {
+          "before": null,
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/7b/7b24eb1328006d06cbe8f48b3ac3fb8c257091f014d8622479292bd29c3315cd"
+        },
+        "template.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/2e/2eeacc726d687af48539d16430c07d97e2ca3235b20d8f7eaa2f6106e58b3024",
+          "after": null
+        },
+        "timing.txt": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/9f/9fe07ae62a1d221500861e679872884f6e110ea3cd3f9b8b9a70600a730aeac1",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/e1/e1614f11adf5de315ac3693529f50491c1bc6db5f32afb5b8e20e3c0807bd171"
+        }
+      }
+    },
+    "ba36e9a9-2db8-494c-b973-802606d2faa4": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792758267533,
+      "endedAt": 1792758267556,
+      "files": {
+        "compositions/bite.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/bc/bccb854908ecba4ec875ed127a4e605a44b38093b1b5d47b821f6e100cb12c52",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/39/390dd0fcc7e78e4bcdb79a8d390424c763d585814d8ba83e946287518006075e"
+        },
+        "compositions/hook.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/71/7199008ae269113b6fb8b5374f90710721356fc7e6e0f8b9244e28dd81ce13d2",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/64/647bab74c405637346ed06c3d45fdf475a3af8c141dac13662fd2515f82b36ad"
+        },
+        "compositions/outro.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/89/89e44e09c74164d7f468fb7585342a36414b1823da28d3db2ec46ae2aa0a5a32",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/f4/f4c0bf28175e162061c6eadbb84c5024ab42c4881fa480283207f5459ad220e5"
+        },
+        "compositions/release.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/a3/a3f4ff587aa5b3c136a8f4504318ed78d144a3fb078b9d103f29f6aef63ed17c",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ca/cafe11ef9990fd0600a627723f246c65ecce025ecc961d09ec7a90fa6674c09e"
+        },
+        "compositions/world.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/a8/a84ffe24c0aedbfbb1296ff4c8ac97e7164458b32c8a0f92e5fc8c56d32fd29c",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/78/78fe5caf5735e8f73aa5d28ca66141d65437c854c4384288ea65eca8796d1a42"
+        },
+        "src/bite.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ab/ab366df7722d37641f35fdab4e6f3fd67cfbef451c91002897c490d2d3bff3a4",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ee/ee2ae27abfd93266f2fe26b3221149690723c284695c54c91d0756bfd45d50df"
+        },
+        "src/hook.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/a3/a3d480c52e6d4a1ee00bde3c168fdc1fa0b333e6cc03e25f5f06648209652d49",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/75/7515c35ab44e343cdc7ee083cecb1b024d840ec1cb7c6406f8ab53e07f964be8"
+        },
+        "src/outro.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/56/567712a321b6e21aee3e7262eea311787ddf2d25cb7c1d83507d4ef7cf9a84d5",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/89/89adbb42b6d68c02a01174dc8dbb4a1a1884fd143d8a43208753232cbb34f24f"
+        },
+        "src/release.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/84/84b64c40365067134c607e14931abaded770229bf2b7d16854ff9e78d6c3e605",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/d3/d3e9bad4d9953e4825e1fb4122ea836384670cf3cbe04b54d485a04f1ccdc5a4"
+        },
+        "src/style.css": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/ac/ac092e1759a556e8b3c30b045b7caff317748069a28118b26d8fba5c9b47d488",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/6e/6e38184353f40d758a764d45fb230523999eb8613f5e91846cb8f1bd75c97c87"
+        },
+        "src/world.html": {
+          "before": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/7b/7b24eb1328006d06cbe8f48b3ac3fb8c257091f014d8622479292bd29c3315cd",
+          "after": "/root/.cache/hyperframes/history/6f99d187-dd3a-46bd-ae31-ca531715eb1a/blobs/e8/e8ed12684ef43224fc884e96a2c2795ee6dca35c77d47f7f4d87f8971a53521c"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+      "id": "bee9f7f9-355b-45fe-ba07-bf92d590c56b"
+    },
+    "revisions": {
+      "213f3b68-e5fd-427b-95c3-db102273cb77": [
+        {
+          "id": "d39dd8db-d925-43f1-8812-7a490e2a12d0",
+          "scope": "project",
+          "report": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/checks/d39dd8db-d925-43f1-8812-7a490e2a12d0.json",
+          "metadata": {
+            "ok": false,
+            "browserSkipped": true,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792758256770,
+          "contentHash": "25353b63b4307c74c2c5c8ba9898a5dee1decaaee391d655a4ce63bc80081f85",
+          "revision": "213f3b68-e5fd-427b-95c3-db102273cb77",
+          "inputFingerprint": "ed0d8a60f9db13a68737f170f84fba9f60af142c1e2fa4df4770de1715158b06",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ],
+      "ba36e9a9-2db8-494c-b973-802606d2faa4": [
+        {
+          "id": "bee9f7f9-355b-45fe-ba07-bf92d590c56b",
+          "scope": "project",
+          "report": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/checks/bee9f7f9-355b-45fe-ba07-bf92d590c56b.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792758290440,
+          "contentHash": "5a971356b13e00cc97ead197108595e8f4351ea70a374d4e74d3f191999c38cb",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "27fbe254-4e58-4744-87bd-64188b96a30d",
+        "scope": "project",
+        "report": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/checks/27fbe254-4e58-4744-87bd-64188b96a30d.json",
+        "metadata": {
+          "ok": false,
+          "browserSkipped": true,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 3000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1792758135297,
+        "contentHash": "488df2d956214ab7663ba89351861663a92135d09aeae18f8478d68411477b49",
+        "revision": null,
+        "inputFingerprint": "479d96e7bbd42f3c4d92d8e8603c6368980f90c5bbfa106185f3f765d3227ef5",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": {
+      "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+      "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-14"
+    },
+    "revisions": {
+      "ba36e9a9-2db8-494c-b973-802606d2faa4": [
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-0",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-00-at-1.5s.png",
+          "time": 1.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337190,
+          "contentHash": "b37701a46490aa0f716630fda84667d55e45a44bde2e57250172233e97174462",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-1",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-01-at-3.75s.png",
+          "time": 3.75,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "31ef6ca9fc313a2cbda0858871c5b2287c986bc8175f699c460b7fa3d90b520b",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-2",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-02-at-6s.png",
+          "time": 6,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "029bdeb70ba474665802930db27da0866aeb1453e45a219e1af39c4fec0aef46",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-3",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-03-at-12.2s.png",
+          "time": 12.2,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "b16f71c0093b79bdcb0c10d27081a3d689af259e914cb3f6f8b47df1ab2acda5",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-4",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-04-at-17.5s.png",
+          "time": 17.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "3cbe5e497b4b6228cbbd436d0e1ee2a99d9cf2ebb16a408aed5569f97057b37f",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-5",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-05-at-24s.png",
+          "time": 24,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "f94b3e10a2dcbd3fac9df62c8869d14a6b9e25548ed5953d1e491e9300217812",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-6",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-06-at-28.3s.png",
+          "time": 28.3,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "d611655936b4a25ca01fcae7d3297058fa3d31fc655b88c37907971a5f0a5f53",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-7",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-07-at-31s.png",
+          "time": 31,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "dd101ddec9cf40272ec4b0a0c220e70cfc56150196aa5cf6031cceab11aab889",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-8",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-08-at-35.5s.png",
+          "time": 35.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "772f31596be4a1a72445f45cdc318afb567e1dc00a8a25630cbfac299a661c62",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-9",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-09-at-41s.png",
+          "time": 41,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "efcdaeaf5963361213a9c4a1a8655e342efd4385f21147abe2a7e7f57e49c9c7",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-10",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-10-at-46s.png",
+          "time": 46,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "3b8f30625e7af79ef9766541d1dc1fc1d7aea7bfe651180c91cbb10a0ed895bc",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-11",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-11-at-50.5s.png",
+          "time": 50.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "052d5d92f5f42b28dfc1469e18c6c8ab24e09361d96578a2c8960f45169068f1",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-12",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-12-at-57s.png",
+          "time": 57,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "d5c692f53dbf2a1e5f8c5b7219cfb0d6a01c0e9bc5943381a08475f3c2d303f8",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-13",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-13-at-63.5s.png",
+          "time": 63.5,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "2d2fe8dc7e9e28e972cb411ad5d889073d6fec99c5c05c029932f47a0b14f180",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "663347d9-fcfc-43b9-83ac-8a3bb3383741-14",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/snapshots/e7123c4b-2c35-4882-95b8-12b51af07f57/frame-14-at-65.766s.png",
+          "time": 65.766,
+          "metadata": {
+            "width": 1080,
+            "height": 1920,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792758337191,
+          "contentHash": "2d2fe8dc7e9e28e972cb411ad5d889073d6fec99c5c05c029932f47a0b14f180",
+          "revision": "ba36e9a9-2db8-494c-b973-802606d2faa4",
+          "inputFingerprint": "12d6f8107ec092bf16b00a2a6ad84bcad277be821ca4e0fe7e0a1152742b495a",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": []
+  }
+}

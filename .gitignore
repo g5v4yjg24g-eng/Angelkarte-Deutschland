@@ -23,3 +23,10 @@ tools/marketing-video/assets/graphics/sfx-*.wav
 tools/marketing-video/hyperframes/.hyperframes/artifacts/
 tools/marketing-video/hyperframes/renders/
 tools/marketing-video/hyperframes/.hyperframes/video-state-lock
+tools/marketing-video/hyperframes-tutorial/.hyperframes/artifacts/
+tools/marketing-video/hyperframes-tutorial/renders/
+tools/marketing-video/hyperframes-tutorial/.hyperframes/video-state-lock
+# Erklärvideo: Standbilder werden von build.mjs aus den Aufnahmen gezogen, Probe-/Fehlerbilder der Aufnahme
+tools/marketing-video/assets/tutorial/*-last.png
+tools/marketing-video/assets/tutorial/dry-*.png
+tools/marketing-video/assets/tutorial/fail-*.png

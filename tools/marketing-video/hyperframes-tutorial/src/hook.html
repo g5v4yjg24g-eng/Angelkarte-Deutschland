@@ -1,0 +1,34 @@
+<template>
+  <style>
+{{CSS}}
+  </style>
+  <div id="root" data-composition-id="hook" data-width="1080" data-height="1920">
+    <div id="hook-push">
+      <video id="hook-video" class="full clip" data-color-grading="{{GRADE}}" src="assets/fishing-scenes/lake-pexels-5236943.mp4" data-start="0" data-duration="{{HOOKX}}" data-media-start="0" data-track-index="1" muted playsinline></video>
+    </div>
+    <div class="scrim-top"></div>
+    <h1 id="hook-title" class="title clip" data-start="0" data-duration="{{hook.dur}}" data-track-index="2">
+      <span class="w">Morgen</span> <span class="w">geht's</span><br />
+      <span class="w">ans</span> <span class="w accent">Wasser.</span>
+    </h1>
+    <div id="hook-rings" class="clip" data-start="{{RINGS_AT}}" data-duration="1.4" data-track-index="3">
+      <div class="ring-water" id="ring-1"></div>
+      <div class="ring-water" id="ring-2"></div>
+      <div class="ring-water" id="ring-3"></div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const D = {{hook.dur}};
+    // leichte Fahrt aufs Wasser; Titel Wort für Wort aus der Unschärfe, Abgang vor den Ringen
+    tl.fromTo("#hook-push", { scale: 1 }, { scale: 1.035, duration: D + 0.7, ease: "none" }, 0);
+    tl.fromTo("#hook-title .w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power2.out", stagger: 0.067 }, 0.35);
+    tl.to("#hook-title .w", { opacity: 0, filter: "blur(8px)", duration: 0.18, ease: "power2.in", stagger: 0.03 }, D - 0.95);
+    ["#ring-1", "#ring-2", "#ring-3"].forEach((id, i) =>
+      tl.fromTo(id, { scale: 0.2, opacity: 0.95 }, { scale: 9 + i * 3, opacity: 0, duration: 1.0, ease: "expo.out" }, {{RINGS_AT}} + i * 0.12),
+    );
+    tl.to({}, { duration: D + 0.7 }, 0);
+    window.__timelines["hook"] = tl;
+  </script>
+</template>

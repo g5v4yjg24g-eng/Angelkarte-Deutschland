@@ -1,0 +1,47 @@
+<template>
+  <style>
+{{CSS}}
+  </style>
+  <div id="root" data-composition-id="outro" data-width="1080" data-height="1920">
+    <div id="outro-fade" class="layer">
+    <div class="ground"></div>
+    <div id="brand" data-hold class="clip" data-start="0" data-duration="{{outro.dur}}" data-track-index="1">
+      <!-- Fisch-Symbol aus dem Marken-Master app/src/design/brand/fish.json -->
+      <svg id="mark" viewBox="0 0 100 100" aria-label="Fangpunkt-Logo">
+        <path id="mark-ripple" d="M26 86q6-4.5 12 0t12 0t12 0t12 0t12 0" fill="none" stroke="#5CC4D6" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="80" />
+        <g id="mark-fish">
+          <path id="mark-tail" d="M31 45L12 30Q18 50 12 70L31 55Z" fill="#E8F4F5" />
+          <path d="M49 32Q56 20 67 24Q62 28 61 33Z" fill="#E8F4F5" />
+          <path d="M53 68Q57 77 65 76Q62 72 62 67Z" fill="#E8F4F5" />
+          <path d="M88 50C80 36 63 29.5 46 32C38 33.5 32 38 28 43L28 57C32 62 38 66.5 46 68C63 70.5 80 64 88 50Z" fill="#E8F4F5" />
+          <path d="M66 37Q59.5 50 66 63" fill="none" stroke="#0B2A33" stroke-width="2.6" stroke-linecap="round" />
+          <circle id="mark-eye" cx="75" cy="46" r="4.4" fill="#F2994A" />
+        </g>
+      </svg>
+      <div id="word"><span class="l">F</span><span class="l">a</span><span class="l">n</span><span class="l">g</span><span class="l">p</span><span class="l">u</span><span class="l">n</span><span class="l">k</span><span class="l">t</span></div>
+    </div>
+    <p id="slogan" data-hold class="clip" data-start="0" data-duration="{{outro.dur}}" data-track-index="2"><span class="w">Kostenlos</span> <span class="w">im</span> <span class="w">Browser.</span></p>
+    <div id="qr-block" data-hold class="clip" data-start="0" data-duration="{{outro.dur}}" data-track-index="3">
+      <div id="qr-card"><img id="qr" src="assets/qr/fangpunkt-qr.svg" alt="QR-Code zu Fangpunkt" /></div>
+      <p id="cta">Jetzt scannen und ausprobieren.</p>
+      <p id="url">g5v4yjg24g-eng.github.io/Angelkarte-Deutschland</p>
+    </div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    // Blende aus dem Handy; Welle, Fisch mit Flossenschlag, Name Buchstabe für Buchstabe; QR nur eingeblendet, ab 3 s unbewegt
+    tl.fromTo("#outro-fade", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 0);
+    tl.fromTo("#mark-ripple", { strokeDashoffset: 80 }, { strokeDashoffset: 0, duration: 0.6, ease: "power2.inOut" }, 0.15);
+    tl.fromTo("#mark-fish", { x: -40, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: "expo.out" }, 0.3);
+    tl.fromTo("#mark-tail", { rotation: 0, svgOrigin: "30 50" }, { keyframes: [{ rotation: -12, duration: 0.13 }, { rotation: 8, duration: 0.13 }, { rotation: 0, duration: 0.14 }], ease: "sine.inOut" }, 0.75);
+    tl.fromTo("#mark-eye", { scale: 0, svgOrigin: "75 46" }, { scale: 1, duration: 0.3, ease: "back.out(1.6)" }, 0.95);
+    tl.fromTo("#word .l", { opacity: 0, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power2.out", stagger: 0.07 }, 0.6);
+    tl.fromTo("#slogan .w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power2.out", stagger: 0.08 }, 1.45);
+    tl.fromTo("#qr-card", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power1.out" }, 2.0);
+    tl.fromTo(["#cta", "#url"], { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power1.out" }, 2.3);
+    tl.to({}, { duration: {{outro.dur}} }, 0);
+    window.__timelines["outro"] = tl;
+  </script>
+</template>

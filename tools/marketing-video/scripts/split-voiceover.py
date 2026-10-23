@@ -1,5 +1,6 @@
 """Eine durchgehende Sprecheraufnahme (z. B. von ElevenLabs) in die Sätze aus video.config.json teilen.
-Aufruf: python3 scripts/split-voiceover.py assets/voiceover/elevenlabs/<datei>.mp3
+Aufruf: python3 scripts/split-voiceover.py assets/voiceover/elevenlabs/<datei>.mp3 [--config=<datei.json>] [--out=<ordner>]
+(Erklärvideo: --config=hyperframes-tutorial/voiceover.config.json --out=assets/voiceover/tutorial)
 Die Satzgrenzen kommen aus der Spracherkennung (faster-whisper, Wort-Zeitstempel); geschnitten wird an der
 leisesten Stelle zwischen dem letzten Wort eines Satzes und dem ersten des nächsten, mit kurzen Blenden.
 Ergebnis: assets/voiceover/<id>.wav und voiceover.json (Dauer je Satz) – wie bei scripts/voiceover.py."""
@@ -9,8 +10,9 @@ import numpy as np
 from faster_whisper import WhisperModel
 
 root = Path(__file__).resolve().parent.parent
-cfg = json.loads((root / 'video.config.json').read_text())
-src = Path(sys.argv[1])
+opt = dict(a[2:].split('=', 1) for a in sys.argv[1:] if a.startswith('--'))
+cfg = json.loads((root / opt.get('config', 'video.config.json')).read_text())
+src = Path(next(a for a in sys.argv[1:] if not a.startswith('--')))
 SR = 48000
 raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', str(src), '-f', 's16le', '-ac', '1', '-ar', str(SR), '-'], capture_output=True, check=True).stdout
 audio = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
@@ -37,7 +39,8 @@ for l in lines:
     k += n
 cuts = [0.0] + [quietest(bounds[i][1] - 0.05, bounds[i + 1][0] + 0.05) for i in range(len(bounds) - 1)] + [len(audio) / SR]
 
-out = root / 'assets' / 'voiceover'
+out = root / opt.get('out', 'assets/voiceover')
+out.mkdir(parents=True, exist_ok=True)
 manifest = {}
 for i, l in enumerate(lines):
     a, b = cuts[i], cuts[i + 1]
