@@ -1,0 +1,80 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+/* Farben der DWD-Stufen: Gelb, Orange, Rot, Violett */
+.alert {
+  --level: #f2c200;
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-left: 6px solid var(--level);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--level) 10%, var(--color-surface));
+}
+.alert p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.minor {
+  --level: #f2c200;
+}
+.moderate {
+  --level: #f08a00;
+}
+.severe {
+  --level: #e0201b;
+}
+.extreme {
+  --level: #9b1fb5;
+}
+.level {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.headline {
+  font-weight: 650;
+}
+.details summary {
+  cursor: pointer;
+  min-height: var(--touch);
+  line-height: var(--touch);
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+.details p {
+  margin: 0 0 var(--space-2);
+  white-space: pre-line;
+}
+.instruction {
+  font-weight: 600;
+}
+.none {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.section {
+  display: grid;
+  gap: var(--space-2);
+}
+.title {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.place {
+  font-weight: 500;
+  color: var(--color-text-muted);
+  font-size: var(--text-md);
+}
+.source {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}

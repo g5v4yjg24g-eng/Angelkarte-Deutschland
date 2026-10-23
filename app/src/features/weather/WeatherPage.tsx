@@ -22,6 +22,7 @@ import { useCurrentPosition, useForecastChoice, useWaterOptions } from './useFor
 import { PressureChart } from './PressureChart';
 import { BiteWindows } from './BiteWindows';
 import { WeatherTabs } from './WeatherTabs';
+import { WeatherAlerts } from './AlertsList';
 import styles from './Weather.module.css';
 
 const t = de.forecast;
@@ -206,6 +207,8 @@ export function WeatherPage() {
           {waters?.length === 0 && <p className="muted">{t.noPlaces}</p>}
         </>
       )}
+      {/* Warnungen zuerst: Sicherheit vor allem anderen */}
+      {enabled && q && <WeatherAlerts lat={q.lat} lng={q.lng} nowMs={nowMs} />}
       {body}
     </Page>
   );

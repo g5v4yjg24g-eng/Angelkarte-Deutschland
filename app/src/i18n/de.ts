@@ -830,6 +830,27 @@ export const de = {
     note: 'Modellwerte, nicht am Gewässer gemessen.',
     source: (time: string) => `Quelle: Open-Meteo.com (CC BY 4.0) · Stand ${time}`,
   },
+  alerts: {
+    title: 'Amtliche Warnungen',
+    loading: 'Warnungen werden geladen …',
+    none: (place?: string) =>
+      place ? `Keine amtlichen Warnungen für ${place}.` : 'Keine amtlichen Warnungen.',
+    error: 'Warnungen sind gerade nicht abrufbar. Bei Gewitter am Wasser: Angel einpacken und Schutz suchen.',
+    stale: (time: string) => `Ohne Verbindung – Stand ${time}. Neuere Warnungen sind möglich.`,
+    for: (place: string) => `für ${place}`,
+    // Stufen laut DWD [V: dwd.de/DE/wetter/warnungen_aktuell/kriterien/warnstufen.html, 2026-10-23]
+    levels: {
+      minor: 'Stufe 1 · Amtliche Warnung',
+      moderate: 'Stufe 2 · Amtliche Warnung vor markantem Wetter',
+      severe: 'Stufe 3 · Amtliche Unwetterwarnung',
+      extreme: 'Stufe 4 · Amtliche Warnung vor extremem Unwetter',
+    },
+    period: (from: string, to?: string) => (to ? `${from} bis ${to}` : `ab ${from} bis auf Widerruf`),
+    details: 'Details und Hinweise',
+    source: 'Quelle: Deutscher Wetterdienst (CC BY 4.0), abgerufen über Bright Sky',
+    tripWarning: (n: number) =>
+      n === 1 ? 'Amtliche Warnung für diesen Tag:' : `${n} amtliche Warnungen für diesen Tag:`,
+  },
   calendar: {
     title: 'Angelkalender',
     tabForecast: 'Vorhersage',
@@ -1054,6 +1075,10 @@ export const de = {
       },
       { name: 'Wetter am Fang: Open-Meteo.com', license: 'CC BY 4.0' },
       {
+        name: 'Amtliche Warnungen: Deutscher Wetterdienst, abgerufen über Bright Sky (brightsky.dev)',
+        license: 'CC BY 4.0',
+      },
+      {
         name: 'Angelrecht: amtliche Texte der Länder',
         license: 'Quelle und Fassung je Land unter „Angelrecht der Länder“',
       },
@@ -1090,6 +1115,10 @@ export const de = {
       {
         name: 'Open-Meteo',
         what: 'nur wenn „Wetter am Fang“ an ist (Standard: an): Datum, Stunde und die auf etwa 100 m gerundete Position eines Fangs; im Bereich „Wetter“ die auf etwa 100 m gerundete Position des gewählten Orts (dein Standort oder ein Gewässer) für die Vorhersage. Abschalten: Mehr → Einstellungen.',
+      },
+      {
+        name: 'Bright Sky (api.brightsky.dev)',
+        what: 'nur wenn „Wetter am Fang“ an ist: die auf etwa 100 m gerundete Position des gewählten Orts bzw. des Gewässers eines Angeltermins, um die amtlichen Warnungen des Deutschen Wetterdienstes für diese Gemeinde abzurufen.',
       },
     ],
     linksTitle: 'Links',

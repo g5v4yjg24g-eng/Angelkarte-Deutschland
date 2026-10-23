@@ -5,12 +5,16 @@ export type { Page, Route } from '@playwright/test';
 
 /**
  * Für alle Tests: Open-Meteo nie wirklich abrufen (TEST_PLAN §1, Wetter ist standardmäßig an). Antwortet
- * „keine Werte"; weather.spec.ts legt eine eigene Route darüber.
+ * „keine Werte"; weather.spec.ts legt eine eigene Route darüber. Bright Sky (Warnungen) ebenso.
  */
 export const test = base.extend<{ noRealWeather: undefined }>({
   noRealWeather: [
     async ({ page }, use) => {
       await page.route('https://*.open-meteo.com/**', (r) => r.fulfill({ json: { hourly: { time: [] } } }));
+      // Amtliche Warnungen: ohne eigene Route „keine Warnungen“
+      await page.route('https://api.brightsky.dev/**', (r) =>
+        r.fulfill({ json: { alerts: [], location: null } }),
+      );
       await use(undefined);
     },
     { auto: true },

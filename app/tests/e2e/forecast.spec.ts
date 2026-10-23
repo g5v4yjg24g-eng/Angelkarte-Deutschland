@@ -378,3 +378,115 @@ test('CAL-2: Angelkalender – Ansicht Monat/Woche/Tag, blättern, „Heute“ s
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
+
+test('ALERT-1: Amtliche Warnungen auf der Wetter-Seite und am Angeltermin; ohne Warnung ein klarer Hinweis', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await useLocalExternals(page);
+  await stubGeolocation(page);
+  await fakeForecast(page);
+  const now = Date.now();
+  const iso = (ms: number) => new Date(ms).toISOString();
+  const requests: URL[] = [];
+  let withAlerts = true;
+  await page.route('https://api.brightsky.dev/**', (route: Route) => {
+    requests.push(new URL(route.request().url()));
+    return route.fulfill({
+      json: {
+        alerts: withAlerts
+          ? [
+              {
+                id: 1,
+                alert_id: 'a1',
+                status: 'actual',
+                response_type: 'prepare',
+                severity: 'minor',
+                event_de: 'WINDBÖEN',
+                headline_de: 'Amtliche WARNUNG vor WINDBÖEN',
+                description_de: 'Es treten Windböen auf.',
+                onset: iso(now - HOUR),
+                expires: iso(now + 5 * HOUR),
+              },
+              {
+                id: 2,
+                alert_id: 'a2',
+                status: 'actual',
+                response_type: 'prepare',
+                severity: 'severe',
+                event_de: 'SCHWERES GEWITTER',
+                headline_de: 'Amtliche UNWETTERWARNUNG vor SCHWEREM GEWITTER',
+                description_de: 'Es treten schwere Gewitter auf.',
+                instruction_de: 'Halten Sie sich nicht im Freien auf.',
+                onset: iso(now + 2 * 86_400_000 - 2 * HOUR),
+                expires: iso(now + 2 * 86_400_000 + 2 * HOUR),
+              },
+              {
+                id: 3,
+                alert_id: 'old',
+                status: 'actual',
+                response_type: 'prepare',
+                severity: 'extreme',
+                event_de: 'ALT',
+                headline_de: 'Abgelaufene Warnung',
+                onset: iso(now - 10 * HOUR),
+                expires: iso(now - 5 * HOUR),
+              },
+            ]
+          : [],
+        location: { name: 'Stadt Nettetal' },
+      },
+    });
+  });
+  await page.goto('/wetter');
+  await waitForApp(page);
+  const box = page.getByRole('region', { name: /Amtliche Warnungen/ });
+  await expect(box).toContainText('für Stadt Nettetal');
+  // höchste Stufe zuerst, abgelaufene nicht
+  await expect(box.getByRole('listitem').first()).toContainText('Stufe 3 · Amtliche Unwetterwarnung');
+  await expect(box.getByRole('listitem')).toHaveCount(2);
+  await expect(box).not.toContainText('Abgelaufene Warnung');
+  await box.getByText('Details und Hinweise').first().click();
+  await expect(box).toContainText('Halten Sie sich nicht im Freien auf.');
+  await expect(box).toContainText('Deutscher Wetterdienst (CC BY 4.0)');
+  // nur gerundete Position
+  expect(requests.at(-1)?.searchParams.get('lat')).toBe('51.326');
+  expect(requests.at(-1)?.searchParams.get('lon')).toBe('6.242');
+
+  // Termin übermorgen am Standort-Gewässer → Warnung am Termin
+  await page.evaluate(async (c) => {
+    const req = indexedDB.open('fangpunkt');
+    const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
+    await new Promise<void>((resolve) => {
+      const tx = db.transaction(['catches'], 'readwrite');
+      tx.objectStore('catches').put(c);
+      tx.oncomplete = () => resolve();
+    });
+    db.close();
+  }, wittsee);
+  await page.goto('/wetter/kalender');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Termin eintragen' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Neuer Angeltermin' });
+  await sheet
+    .getByLabel('Tag')
+    .fill(new Date(now + 2 * 86_400_000).toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' }));
+  await sheet.getByLabel('Gewässer').selectOption({ label: 'De Wittsee (Nettetal)' });
+  await sheet.getByRole('button', { name: 'Speichern' }).click();
+  const card = page.getByRole('region', { name: 'Nächste Termine' }).getByRole('listitem').first();
+  await expect(card).toContainText('Amtliche Warnung für diesen Tag:');
+  await expect(card).toContainText('Amtliche UNWETTERWARNUNG vor SCHWEREM GEWITTER');
+
+  // Keine Warnungen → klarer Hinweis
+  withAlerts = false;
+  await page.evaluate(() => {
+    for (const k of Object.keys(localStorage))
+      if (k.startsWith('fangpunkt.alerts:')) localStorage.removeItem(k);
+  });
+  await page.goto('/wetter');
+  await waitForApp(page);
+  await expect(page.getByText('Keine amtlichen Warnungen für Stadt Nettetal.')).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(errors.filter((e) => !e.includes('Failed to load resource'))).toEqual([]);
+});
