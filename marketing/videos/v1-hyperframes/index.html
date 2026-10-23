@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
   Video V1 „Fang eintragen, bevor er zurück im Wasser ist“ (marketing/videos/VIDEO-KONZEPTE.md), gebaut mit HyperFrames.
-  0–3,4 s Fisch in der Hand · 3,4–13,5 s echte App-Aufnahme (Beispieldaten) mit vier Schritten · 13,3–16,4 s Fisch wird
-  freigelassen · 16,2–18,8 s Schluss-Karte. Zeitpunkte der Tipps: assets/marks.json (aus tools/record-app.mjs).
+  0–3,4 s Fisch in der Hand · 3,2–12,9 s echte App-Aufnahme (Beispieldaten) mit vier Schritten · 12,7–15,8 s Fisch wird
+  freigelassen · 15,6–18,2 s Schluss-Karte. Zeitpunkte der Tipps: assets/marks.json (aus tools/record-app.mjs).
   Rendern (in diesem Ordner): siehe README.md
 -->
 <html lang="de" data-resolution="portrait">
@@ -184,7 +184,7 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="18.8" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="18.16" data-width="1080" data-height="1920">
       <!-- Szene 1: Fisch in der Hand -->
       <video id="intro-video" class="clip footage" src="assets/fisch-freilassen.mp4" style="object-position: 64% 50%"
         data-start="0" data-duration="3.4" data-media-start="0.2" data-has-audio="true" data-volume="0.8"
@@ -196,40 +196,40 @@
 
       <!-- Szene 2: App -->
       <video id="bg-video" class="clip footage" src="assets/fisch-freilassen.mp4" style="object-position: 64% 50%"
-        data-start="3.2" data-duration="10.3" data-media-start="3.4" muted data-track-index="0"></video>
-      <div id="app-shade" class="clip shade-full" data-start="3.2" data-duration="10.3" data-track-index="1"></div>
+        data-start="3.2" data-duration="9.66" data-media-start="3.4" muted data-track-index="0"></video>
+      <div id="app-shade" class="clip shade-full" data-start="3.2" data-duration="9.66" data-track-index="1"></div>
       <div id="phone" class="phone">
         <div class="screen">
-          <video id="app-video" src="assets/app-aufnahme.mp4" muted data-start="3.4" data-duration="10.1"></video>
+          <video id="app-video" src="assets/app-aufnahme.mp4" muted data-start="3.4" data-duration="8.96"></video>
         </div>
       </div>
-      <div id="cap1" class="clip cap" data-start="4.8" data-duration="1.62" data-track-index="3">
+      <div id="cap1" class="clip cap" data-start="4.8" data-duration="1.31" data-track-index="3">
         <div class="row"><span class="n">1</span><span class="t">Fang erfassen</span></div>
         <span class="s">1 von 4 Tipps</span>
       </div>
-      <div id="cap2" class="clip cap" data-start="6.42" data-duration="1.7" data-track-index="3">
+      <div id="cap2" class="clip cap" data-start="6.11" data-duration="1.62" data-track-index="3">
         <div class="row"><span class="n">2</span><span class="t">Stelle antippen</span></div>
         <span class="s">2 von 4 Tipps</span>
       </div>
-      <div id="cap3" class="clip cap" data-start="8.12" data-duration="2.34" data-track-index="3">
+      <div id="cap3" class="clip cap" data-start="7.73" data-duration="2.02" data-track-index="3">
         <div class="row"><span class="n">3</span><span class="t">Fischart wählen</span></div>
         <span class="s">3 von 4 Tipps</span>
       </div>
-      <div id="cap4" class="clip cap" data-start="10.46" data-duration="3.04" data-track-index="3">
+      <div id="cap4" class="clip cap" data-start="9.75" data-duration="3.11" data-track-index="3">
         <div class="row"><span class="n">4</span><span class="t">Speichern. <em>Fertig.</em></span></div>
         <span class="s">4 von 4 Tipps</span>
       </div>
 
       <!-- Szene 3: Fisch wird freigelassen -->
       <video id="release-video" class="clip footage" src="assets/fisch-freilassen.mp4" style="object-position: 65% 50%"
-        data-start="13.3" data-duration="3.1" data-media-start="8.4" data-has-audio="true" data-volume="0.9"
+        data-start="12.66" data-duration="3.1" data-media-start="8.4" data-has-audio="true" data-volume="0.9"
         data-fade-in="0.3" data-fade-out="0.5" data-track-index="0"></video>
-      <h2 id="release-text" class="clip release-text" data-start="13.6" data-duration="2.8" data-track-index="2">
+      <h2 id="release-text" class="clip release-text" data-start="12.96" data-duration="2.8" data-track-index="2">
         Und der Fisch ist wieder drin.
       </h2>
 
       <!-- Szene 4: Schluss-Karte -->
-      <div id="end" class="clip end" data-start="16.2" data-duration="2.6" data-track-index="4">
+      <div id="end" class="clip end" data-start="15.56" data-duration="2.6" data-track-index="4">
         <img src="assets/fisch.svg" alt="" />
         <div class="end-brand">Fangpunkt</div>
         <div class="end-title">Link in der <em>Bio</em></div>
@@ -247,19 +247,19 @@
       tl.fromTo('#phone', { opacity: 0, y: 160 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 3.2);
       // Schritte
       ['#cap1', '#cap2', '#cap3', '#cap4'].forEach((id, i) => {
-        const at = [4.8, 6.42, 8.12, 10.46][i];
+        const at = [4.8, 6.11, 7.73, 9.75][i];
         tl.fromTo(id, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, at);
       });
       // Übergang zum Freilassen
-      tl.to('#phone', { opacity: 0, y: 80, duration: 0.3, ease: 'power2.in' }, 13.2);
-      tl.to('#cap4', { opacity: 0, duration: 0.3 }, 13.2);
-      tl.fromTo('#release-video', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 13.3);
-      tl.fromTo('#release-text', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 13.7);
+      tl.to('#phone', { opacity: 0, y: 80, duration: 0.3, ease: 'power2.in' }, 12.56);
+      tl.to('#cap4', { opacity: 0, duration: 0.3 }, 12.56);
+      tl.fromTo('#release-video', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 12.66);
+      tl.fromTo('#release-text', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 13.06);
       // Schluss-Karte
-      tl.fromTo('#end', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 16.2);
-      tl.fromTo('#end img', { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }, 16.3);
-      tl.fromTo('.end-title', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 16.7);
-      tl.fromTo('.end-pill', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 17.0);
+      tl.fromTo('#end', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 15.56);
+      tl.fromTo('#end img', { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }, 15.66);
+      tl.fromTo('.end-title', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 16.06);
+      tl.fromTo('.end-pill', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 16.36);
       window.__timelines['main'] = tl;
       tl.seek(0);
     </script>

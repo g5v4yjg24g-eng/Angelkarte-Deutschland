@@ -11,7 +11,7 @@
 
 ## V1 · „Fang eintragen, bevor der Fisch zurück ist“
 
-> **Fertig (HyperFrames):** `videos/v1-fang-eintragen-1080x1920.mp4` – 18,8 s mit Wassergeräusch. Fisch in der Hand mit Hook → echte App-Aufnahme im Handy mit den Schritten 1–4 → Fisch wird freigelassen („Und der Fisch ist wieder drin.“) → Schluss-Karte. Projekt und Anleitung: `videos/v1-hyperframes/`. Fisch-Clip vom Nutzer (Lizenz bestätigen, siehe README dort). Ohne Musik und Sprecher; keine Sekundenangabe, weil die Aufnahme automatisiert ist.
+> **Fertig (HyperFrames):** `videos/v1-fang-eintragen-1080x1920.mp4` – 18,2 s mit Wassergeräusch. Fisch in der Hand mit Hook → echte App-Aufnahme im Handy mit den Schritten 1–4 → Fisch wird freigelassen („Und der Fisch ist wieder drin.“) → Schluss-Karte. Projekt und Anleitung: `videos/v1-hyperframes/`. Fisch-Clip vom Nutzer (Lizenz bestätigen, siehe README dort). Ohne Musik und Sprecher; keine Sekundenangabe, weil die Aufnahme automatisiert ist.
 - **Ziel / Zielgruppe:** Reichweite, Kernnutzen; Raubfischangler, Dokumentierer
 - **Dauer:** 18 s
 - **Hook (0–2 s):** Barsch/Zander in der Hand über dem Wasser (eigener Fang), Text: „Fang eintragen, bevor er zurück im Wasser ist.“

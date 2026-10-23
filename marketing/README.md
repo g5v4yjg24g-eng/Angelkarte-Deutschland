@@ -35,7 +35,7 @@ Stand 2026-10-23. Getrennt von der App: Nichts in diesem Ordner wird gebaut oder
 | `stories/reel-cover/cover-video-v1…v5-1080x1920.png` | 9:16 | Titelbilder für die fünf Video-Konzepte (Text mittig, übersteht den 3:4- und 4:5-Zuschnitt) |
 | `stories/reel-cover/cover-serie-…-1080x1920.png` | 9:16 | Titelbilder für wiederkehrende Serien (Beißfenster-Check, Wissen in 30 Sekunden, Werkstatt-Notiz, Frag die Runde, Euer Feedback) |
 | `brand/schlusskarte-1080x1920.png` | 9:16 | Schluss-Karte „Link in der Bio“ für alle Videos |
-| `videos/v1-fang-eintragen-1080x1920.mp4` | 9:16, 15 s | **Video V1 (HyperFrames, 18,8 s):** Fisch-Clip, App-Aufnahme in 4 Schritten, Freilassen, Schluss-Karte; mit Wassergeräusch |
+| `videos/v1-fang-eintragen-1080x1920.mp4` | 9:16, 15 s | **Video V1 (HyperFrames, 18,2 s):** Fisch-Clip, App-Aufnahme in 4 Schritten, Freilassen, Schluss-Karte; mit Wassergeräusch |
 | `videos/reel-fuenf-bilder-1080x1920.mp4` | 9:16, 17 s | **fertiges Slideshow-Reel** aus dem Karussell, ohne Ton (Musik in der Plattform-App wählen) |
 | `screenshots/{light,dark}-*.png` | 1170 × 2532 | echte Screenshots der Live-App mit **Beispieldaten** (hell und dunkel) |
 

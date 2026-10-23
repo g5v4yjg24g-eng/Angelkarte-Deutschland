@@ -1,18 +1,18 @@
 # Video V1 mit HyperFrames
 
-„Fang eintragen, bevor er zurück im Wasser ist“ – 18,8 s, 1080 × 1920, 30 fps, mit Wassergeräusch aus dem Fisch-Clip.
+„Fang eintragen, bevor er zurück im Wasser ist“ – 18,2 s, 1080 × 1920, 30 fps, mit Wassergeräusch aus dem Fisch-Clip.
 Ergebnis: `../v1-fang-eintragen-1080x1920.mp4`.
 
 | Zeit | Szene |
 |---|---|
 | 0–3,4 s | Fisch in der Hand, Hook „Fang eintragen, bevor er zurück im Wasser ist.“ |
-| 3,2–13,5 s | Echte App-Aufnahme (Beispieldaten) im Handy, Schritte 1–4 oben eingeblendet; Hintergrund: abgedunkelter Fisch-Clip |
-| 13,3–16,4 s | Fisch wird freigelassen, „Und der Fisch ist wieder drin.“ |
-| 16,2–18,8 s | Schluss-Karte: Fisch-Logo, „Link in der Bio“, „Kostenlos · ohne Konto“ |
+| 3,2–12,9 s | Echte App-Aufnahme (Beispieldaten) im Handy, Schritte 1–4 oben eingeblendet; Hintergrund: abgedunkelter Fisch-Clip |
+| 12,7–15,8 s | Fisch wird freigelassen, „Und der Fisch ist wieder drin.“ |
+| 15,6–18,2 s | Schluss-Karte: Fisch-Logo, „Link in der Bio“, „Kostenlos · ohne Konto“ |
 
 ## Dateien
 - `index.html` – Komposition (HTML + GSAP), Texte und Zeiten dort ändern.
-- `assets/app-aufnahme.mp4`, `assets/marks.json` – erzeugt mit `node marketing/tools/record-app.mjs` (Live-App, Beispieldaten, Uhrzeit im Formular auf 07:42 gesetzt). Ändern sich die Zeiten in `marks.json`, die `data-start`-Werte der Schritte in `index.html` anpassen (App-Video beginnt bei 3,4 s).
+- `assets/app-aufnahme.mp4`, `assets/marks.json` – erzeugt mit `node marketing/tools/record-app.mjs` (Live-App, Beispieldaten, Uhrzeit im Formular auf 07:42 gesetzt). Für flüssige Bewegung wird fünffach verlangsamt aufgenommen (CSS-Animationen über CDP, Timer der App, Pausen) und wieder beschleunigt – sonst liefert der Software-Renderer nur ca. 6 Bilder/s. Ändern sich die Zeiten in `marks.json`, die `data-start`-Werte der Schritte in `index.html` anpassen (App-Video beginnt bei 3,4 s).
 - `assets/fisch-freilassen.mp4` – **nicht im Repository** (fremdes Material, vom Nutzer hochgeladen am 2026-10-23; Dateiname `20594663-hd_1920_1080_24fps.mp4` deutet auf Pexels hin). **[O]** Quelle und Lizenz bestätigen, bevor das Video veröffentlicht wird. Zum Neurendern die Datei wieder unter diesem Namen ablegen.
 - `assets/fonts/` – Inter und Fraunces (SIL OFL 1.1), `assets/fisch.svg` aus dem Marken-Master.
 

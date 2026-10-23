@@ -21,7 +21,7 @@ const browser = await chromium.launch({
 
 // ---------- 1. Aufnahme ----------
 const ctx = await browser.newContext({
-  viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, locale: 'de-DE', timezoneId: 'Europe/Berlin',
+  viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: 'de-DE', timezoneId: 'Europe/Berlin',
   geolocation: HOME, permissions: ['geolocation'], colorScheme: 'light', serviceWorkers: 'block',
 });
 const page = await ctx.newPage();
@@ -39,6 +39,11 @@ await page.addInitScript(() => {
     }
   }
   globalThis.Date = ShiftedDate;
+  // Zeitlupe für die Aufnahme: Timer der App laufen um window.__fpSlow langsamer (Standard 1 = normal)
+  const st = setTimeout;
+  const si = setInterval;
+  globalThis.setTimeout = (fn, ms = 0, ...a) => st(fn, ms * (globalThis.__fpSlow ?? 1), ...a);
+  globalThis.setInterval = (fn, ms = 0, ...a) => si(fn, ms * (globalThis.__fpSlow ?? 1), ...a);
 });
 const go = async (path) => {
   await page.goto(new URL(path, BASE).href);
@@ -87,16 +92,20 @@ cdp.on('Page.screencastFrame', async ({ data, metadata, sessionId }) => {
   t0 ??= metadata.timestamp;
   const file = `${build}frames/${String(frames.length).padStart(5, '0')}.jpg`;
   writeFileSync(file, Buffer.from(data, 'base64'));
-  frames.push({ file, t: metadata.timestamp - t0 });
+  frames.push({ file, t: (metadata.timestamp - t0) / SLOW });
   await cdp.send('Page.screencastFrameAck', { sessionId }).catch(() => {});
 });
-await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92, maxWidth: 1170, maxHeight: 2532 });
+// Flüssig trotz Software-Rendering: alles SLOW-fach verlangsamt aufnehmen (CSS-/Web-Animationen über CDP,
+// Timer über __fpSlow, eigene Pausen) und beim Zusammensetzen wieder beschleunigen → effektiv ca. 30 Bilder/s.
+const SLOW = 5;
+await cdp.send('Animation.enable');
+await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 / SLOW });
+await page.evaluate((k) => (window.__fpSlow = k), SLOW);
+await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92, maxWidth: 780, maxHeight: 1688 });
 const startWall = Date.now();
 const mark = {};
-const stamp = (k) => (mark[k] = (Date.now() - startWall) / 1000);
-const pause = (ms) => page.waitForTimeout(ms);
-// Bewegung im Bild halten, damit der Screencast auch in ruhigen Momenten Bilder liefert
-const nudge = setInterval(() => page.evaluate(() => window.__fangpunktMap?.triggerRepaint()).catch(() => {}), 100);
+const stamp = (k) => (mark[k] = (Date.now() - startWall) / 1000 / SLOW);
+const pause = (ms) => page.waitForTimeout(ms * SLOW);
 
 await pause(1400);
 stamp('s1');
@@ -123,7 +132,6 @@ stamp('s4');
 await save.click();
 await pause(2600);
 stamp('end');
-clearInterval(nudge);
 await cdp.send('Page.stopScreencast');
 await ctx.close();
 if (frames.length < 20) throw new Error(`Zu wenige Bilder aufgenommen (${frames.length})`);
@@ -144,5 +152,5 @@ await browser.close();
 execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', `${build}frames.txt`,
   '-vf', 'fps=30,format=yuv420p', '-c:v', 'libx264', '-preset', 'slow', '-crf', '16', '-movflags', '+faststart',
   `${assets}app-aufnahme.mp4`], { stdio: 'inherit' });
-writeFileSync(`${assets}marks.json`, JSON.stringify({ ...mark, duration: +recLen.toFixed(2) }, null, 2) + '\n');
+writeFileSync(`${assets}marks.json`, JSON.stringify(Object.fromEntries(Object.entries({ ...mark, duration: recLen }).map(([k, v]) => [k, +v.toFixed(2)])), null, 2) + '\n');
 console.log(`${assets}app-aufnahme.mp4`);
