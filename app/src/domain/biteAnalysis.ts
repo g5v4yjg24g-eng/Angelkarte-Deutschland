@@ -4,6 +4,7 @@
 // Statistik. Gruppengrenzen sind Einteilungen zur Übersicht [A], keine Aussage über Fischverhalten.
 import type { Catch, Session } from './schemas';
 import { sessionValid } from './stats';
+import { gaugeTrend } from './gauges';
 
 export const MIN_EVENTS = 20;
 /** Tageszeit-Rate erst ab so viel Angelzeit im Zeitfenster */
@@ -43,7 +44,13 @@ export interface BiteAnalysis {
   slots: Gated<SlotRow[]>;
   pressure: Gated<Record<PressureBucket, number>>;
   trend: Gated<Record<TrendBucket, number>>;
+  /** Lage des Pegels zu MNW/MHW (nur Landespegel NRW liefern sie für vergangene Zeitpunkte) */
+  gaugeState: Gated<Record<GaugeLevel, number>>;
+  /** Pegel-Tendenz in den 24 h vor dem Fang */
+  gaugeTrend: Gated<Record<TrendBucket, number>>;
 }
+
+export type GaugeLevel = 'low' | 'normal' | 'high';
 
 /** Angelzeit je Zeitfenster aus den aktiven Abschnitten gültiger Sessions (15-Minuten-Raster, Ortszeit). */
 function slotHours(sessions: readonly Session[]): number[] {
@@ -95,8 +102,18 @@ export function analyzeBites(catches: readonly Catch[], sessions: readonly Sessi
   const trend: Record<TrendBucket, number> = { falling: 0, steady: 0, rising: 0 };
   for (const c of withTrend) trend[trendBucket(c.weather?.pressureTrend3h ?? 0)]++;
 
+  const gauged = bites.flatMap((c) => (c.gauge?.status === 'ok' ? [c.gauge] : []));
+  const withLevel = gauged.filter((g) => g.state === 'low' || g.state === 'normal' || g.state === 'high');
+  const level: Record<GaugeLevel, number> = { low: 0, normal: 0, high: 0 };
+  for (const g of withLevel) level[g.state as GaugeLevel]++;
+  const withGaugeTrend = gauged.filter((g) => g.change24h !== undefined);
+  const gTrend: Record<TrendBucket, number> = { falling: 0, steady: 0, rising: 0 };
+  for (const g of withGaugeTrend) gTrend[gaugeTrend(g.change24h ?? 0)]++;
+
   return {
     bites: n,
+    gaugeState: gate(withLevel.length, level),
+    gaugeTrend: gate(withGaugeTrend.length, gTrend),
     slots: gate(n, slots),
     pressure: gate(withWeather.length, pressure),
     trend: gate(withTrend.length, trend),

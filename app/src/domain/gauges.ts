@@ -4,6 +4,7 @@
 // Pegelnullpunkt, keine Wassertiefe.
 import { z } from 'zod';
 import { segmentDistanceM } from './geo';
+import type { Catch } from './schemas';
 
 /** Nur bis zu dieser Entfernung zeigt die App einen Pegel als „in der Nähe“ */
 export const GAUGE_RADIUS_KM = 15;
@@ -31,6 +32,9 @@ export const GaugeStationSchema = z.object({
   area: z.string().optional(),
   /** Änderung des Wasserstands in 24 h, wenn schon in den Daten enthalten (Landespegel NRW) */
   change24h: z.number().optional(),
+  /** Mittleres Niedrig-/Hochwasser (cm, Landespegel NRW) – für die Lage historischer Werte */
+  mnw: z.number().optional(),
+  mhw: z.number().optional(),
   lat: z.number(),
   lng: z.number(),
   series: z.array(SeriesSchema),
@@ -138,7 +142,7 @@ export function changeOver(points: readonly Point[], hours = 24): number | undef
 // OpenHygon-Pegel-aktuell_CSV.zip, einmal täglich gegen 3 Uhr erzeugt) [V: opengeodata.nrw.de …/hygon/,
 // Abruf 2026-10-23]. Lizenz DL-DE->Zero-2.0. Kein Gewässername in den Daten – nur das Einzugsgebiet.
 
-interface HygonStation {
+export interface HygonStation {
   no: string;
   name: string;
   lat: number;
@@ -198,8 +202,8 @@ export function levelState(v: number, mnw?: number, mhw?: number): GaugeState {
   return v <= mnw ? 'low' : v >= mhw ? 'high' : 'normal';
 }
 
-/** Messwerte (station_no;time;value(cm)) + Stationen → Stationen mit letztem Wert und 24-h-Änderung. */
-export function summarizeHygon(stations: readonly HygonStation[], measurements: string): GaugeStation[] {
+/** Messwerte (station_no;time;value(cm)) → Reihen je Station (zeitlich sortiert), nur für die genannten Stationen. */
+export function hygonSeries(stations: readonly HygonStation[], measurements: string): Map<string, Point[]> {
   const wanted = new Map(stations.map((s) => [s.no, [] as Point[]]));
   let start = measurements.indexOf('\n') + 1;
   while (start > 0 && start < measurements.length) {
@@ -216,9 +220,19 @@ export function summarizeHygon(stations: readonly HygonStation[], measurements: 
     const v = dec(line.slice(b + 1));
     if (Number.isFinite(t) && v !== undefined) pts.push({ t, v });
   }
+  for (const pts of wanted.values()) pts.sort((x, y) => x.t - y.t);
+  return wanted;
+}
+
+/** Stationen + Reihen → Stationen mit letztem Wert und 24-h-Änderung. */
+export function summarizeHygon(
+  stations: readonly HygonStation[],
+  measurements: string | Map<string, Point[]>,
+): GaugeStation[] {
+  const wanted = typeof measurements === 'string' ? hygonSeries(stations, measurements) : measurements;
   const out: GaugeStation[] = [];
   for (const s of stations) {
-    const pts = (wanted.get(s.no) ?? []).sort((x, y) => x.t - y.t);
+    const pts = wanted.get(s.no) ?? [];
     const last = pts.at(-1);
     if (!last) continue;
     const change = changeOver(pts);
@@ -229,6 +243,8 @@ export function summarizeHygon(stations: readonly HygonStation[], measurements: 
       water: '',
       ...(s.area ? { area: s.area } : {}),
       ...(change !== undefined ? { change24h: change } : {}),
+      ...(s.mnw !== undefined ? { mnw: s.mnw } : {}),
+      ...(s.mhw !== undefined ? { mhw: s.mhw } : {}),
       lat: s.lat,
       lng: s.lng,
       series: [
@@ -244,3 +260,134 @@ export function summarizeHygon(stations: readonly HygonStation[], measurements: 
   }
   return out;
 }
+
+// ---- Pegel am Fang -----------------------------------------------------------------------------------------
+/** PEGELONLINE liefert Messwerte bis 31 Tage zurück [V: dokuRestapi]; die NRW-Tagesdatei 7 Tage */
+export const GAUGE_HISTORY_DAYS = { pegelonline: 30, hygon: 6 } as const;
+/** Höchstens so weit darf der Messwert vom Fangzeitpunkt entfernt sein */
+export const GAUGE_MATCH_MS = 45 * 60_000;
+
+export const GaugeSnapshotSchema = z.discriminatedUnion('status', [
+  z.object({
+    status: z.literal('ok'),
+    source: z.enum(['pegelonline', 'hygon']),
+    stationId: z.string().max(100),
+    name: z.string().max(120),
+    water: z.string().max(120).optional(),
+    area: z.string().max(120).optional(),
+    km: z.number().min(0).max(GAUGE_RADIUS_KM),
+    levelCm: z.number().min(-2000).max(5000),
+    /** Zeitpunkt des Messwerts */
+    at: z.iso.datetime({ offset: true }),
+    state: z.enum(GAUGE_STATES).optional(),
+    /** Änderung in den 24 h vor dem Messwert (cm) */
+    change24h: z.number().min(-2000).max(2000).optional(),
+    fetchedAt: z.iso.datetime({ offset: true }),
+    attribution: z.string().min(1).max(200),
+  }),
+  z.object({
+    status: z.literal('none'),
+    /** kein Pegel in der Nähe, Fang zu alt für die Messreihe, oder kein Messwert um diese Zeit */
+    reason: z.enum(['no-station', 'too-old', 'no-value']),
+    checkedAt: z.iso.datetime({ offset: true }),
+  }),
+]);
+export type GaugeSnapshot = z.infer<typeof GaugeSnapshotSchema>;
+
+/** Messwert, der dem Zeitpunkt am nächsten liegt (höchstens GAUGE_MATCH_MS entfernt). */
+export function pointAt(points: readonly Point[], t: number): Point | undefined {
+  let best: Point | undefined;
+  for (const p of points) if (!best || Math.abs(p.t - t) < Math.abs(best.t - t)) best = p;
+  return best && Math.abs(best.t - t) <= GAUGE_MATCH_MS ? best : undefined;
+}
+
+/** Gruppen der Pegel-Tendenz für die Auswertung: mehr als ±2 cm in 24 h [A: Einteilung zur Übersicht] */
+export const GAUGE_TREND_LIMIT_CM = 2;
+export const gaugeTrend = (d: number): 'falling' | 'steady' | 'rising' =>
+  d < -GAUGE_TREND_LIMIT_CM ? 'falling' : d > GAUGE_TREND_LIMIT_CM ? 'rising' : 'steady';
+
+const DAY = 86_400_000;
+
+/** Fang braucht noch einen Pegelwert: Ort, nicht gelöscht, noch nicht geprüft, nicht in der Zukunft. */
+export function needsGauge(c: Catch, nowMs: number): boolean {
+  return !c.deletedAt && !c.gauge && !!c.position && Date.parse(c.at) <= nowMs;
+}
+
+/** Pegelwert gehört zu Zeit und Ort; ändert sich eins davon, wird neu gesucht. */
+export function gaugeStillValid(
+  before: Pick<Catch, 'at' | 'position'>,
+  after: Pick<Catch, 'at' | 'position'>,
+) {
+  return (
+    Date.parse(before.at) === Date.parse(after.at) &&
+    before.position?.lat === after.position?.lat &&
+    before.position?.lng === after.position?.lng
+  );
+}
+
+/** Reichen die Messreihen der Quelle bis zu diesem Fang zurück? */
+export const gaugeReachable = (source: GaugeStation['source'], atMs: number, nowMs: number) =>
+  nowMs - atMs <= GAUGE_HISTORY_DAYS[source] * DAY;
+
+/**
+ * Pegel, der für den Fang in Frage kommt: der nächste innerhalb von GAUGE_RADIUS_KM, dessen Messreihe noch so weit
+ * zurückreicht. Liegt nur ein Pegel mit zu kurzer Reihe in der Nähe → 'too-old'; gar keiner → 'no-station'.
+ */
+export function gaugeForCatch(
+  stations: readonly GaugeStation[],
+  pos: { lat: number; lng: number },
+  atMs: number,
+  nowMs: number,
+): NearestGauge | 'too-old' | 'no-station' {
+  const near = nearestGauge(
+    stations.filter((s) => gaugeReachable(s.source, atMs, nowMs)),
+    pos,
+  );
+  if (near && near.km <= GAUGE_RADIUS_KM) return near;
+  const any = nearestGauge(stations, pos);
+  return any && any.km <= GAUGE_RADIUS_KM ? 'too-old' : 'no-station';
+}
+
+/**
+ * Wasserstand zum Fangzeitpunkt aus der Messreihe des Pegels. 'later', wenn die Reihe den Zeitpunkt noch nicht
+ * erreicht (Tagesdatei von heute früh, Messwert noch nicht übertragen) – dann im nächsten Lauf erneut.
+ */
+export function gaugeSnapshot(
+  near: NearestGauge,
+  points: readonly Point[],
+  atMs: number,
+  fetchedAtIso: string,
+): GaugeSnapshot | 'later' {
+  const p = pointAt(points, atMs);
+  if (!p) {
+    const last = points.at(-1);
+    if (!last || last.t < atMs + GAUGE_MATCH_MS) return 'later';
+    return { status: 'none', reason: 'no-value', checkedAt: fetchedAtIso };
+  }
+  const s = near.station;
+  const change = changeOver(
+    points.filter((x) => x.t <= p.t),
+    24,
+  );
+  const state = s.source === 'hygon' ? levelState(p.v, s.mnw, s.mhw) : undefined;
+  return {
+    status: 'ok',
+    source: s.source,
+    stationId: s.uuid,
+    name: s.name.slice(0, 120),
+    ...(s.water ? { water: s.water.slice(0, 120) } : {}),
+    ...(s.area ? { area: s.area.slice(0, 120) } : {}),
+    km: Math.round(near.km * 10) / 10,
+    levelCm: p.v,
+    at: new Date(p.t).toISOString(),
+    ...(state && state !== 'unknown' ? { state } : {}),
+    ...(change !== undefined ? { change24h: change } : {}),
+    fetchedAt: fetchedAtIso,
+    attribution: s.source === 'hygon' ? GAUGE_ATTRIBUTION.hygon : GAUGE_ATTRIBUTION.pegelonline,
+  };
+}
+
+export const GAUGE_ATTRIBUTION = {
+  pegelonline: 'PEGELONLINE, WSV (DL-DE->Zero-2.0)',
+  hygon: 'LANUK NRW, OpenHygon (DL-DE->Zero-2.0)',
+} as const;
