@@ -1,5 +1,7 @@
 import { expect, test, type Page, type Route } from './fixtures';
 import type { Catch } from '../../src/domain/schemas';
+import { readFileSync } from 'node:fs';
+import { strToU8, zipSync } from 'fflate';
 import { collectErrors, useLocalExternals, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
@@ -601,8 +603,92 @@ test('GAUGE-1: Pegel in der Nähe mit Wasserstand, Tendenz, Wassertemperatur; oh
   await waitForApp(page);
   await expect(box).toContainText('Kein Pegel im Umkreis von 15 km.');
   await expect(box).toContainText(/Nächster Pegel: Testpegel Fern \(Ferner Fluss\), 37 km entfernt\./);
-  await expect(box).toContainText('nur an Bundeswasserstraßen');
+  await expect(box).toContainText('Pegel der Bundeswasserstraßen');
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(errors.filter((e) => !e.includes('Failed to load resource'))).toEqual([]);
+});
+
+test('GAUGE-2: Landespegel NRW aus der Tagesdatei, nur wenn der Ort in NRW liegt', async ({ page }) => {
+  const errors = collectErrors(page);
+  await useLocalExternals(page);
+  await stubGeolocation(page);
+  await fakeForecast(page);
+  // Landesgrenzen: Standort (51,33 / 6,24) liegt in einer NRW-Box
+  const manifest = JSON.parse(
+    readFileSync(new URL('../fixtures/water/water-manifest.json', import.meta.url), 'utf8'),
+  ) as Record<string, unknown>;
+  await page.route('**/data/water/water-manifest.json', (r) =>
+    r.fulfill({ json: { ...manifest, states: 'states.json' } }),
+  );
+  const ring = [
+    [5.8, 50.3],
+    [9.5, 50.3],
+    [9.5, 52.6],
+    [5.8, 52.6],
+    [5.8, 50.3],
+  ];
+  await page.route('**/data/water/states.json', (r) =>
+    r.fulfill({
+      json: {
+        format: 'fangpunkt-states',
+        formatVersion: 1,
+        dataDate: '2026-10-22T00:00:00Z',
+        toleranceM: 50,
+        marginM: 150,
+        states: [{ code: 'NW', bbox: [5.8, 50.3, 9.5, 52.6], polygons: [[ring]] }],
+      },
+    }),
+  );
+  // Tagesdatei: Landespegel 1 km vom Standort, Messwerte 24 h
+  const now = Date.now();
+  const iso = (ms: number) => new Date(ms).toISOString();
+  const stations = [
+    'station_latitude;station_longitude;station_name;station_no;catchment_no;catchment_name;LANUV_Info_1;LANUV_Info_2;LANUV_Info_3;LANUV_MNW;LANUV_MW;LANUV_MHW;station_carteasting;station_cartnorthing;CATCHMENT_SIZE;DIST_TO_CONFL',
+    '51.3353;6.2418;Test_Landespegel;123;286;Testeinzugsgebiet;;;;4.0;11.0;42.0;;;93.51 km²;18.03 km',
+  ].join('\r\n');
+  const values = [
+    'station_no;time;value(cm)',
+    `123;${iso(now - 30 * HOUR)};8.00`,
+    `123;${iso(now - 28 * HOUR)};8.50`,
+    `123;${iso(now - 4 * HOUR)};9.10`,
+  ].join('\n');
+  const zip = Buffer.from(zipSync({ 'messwerte.txt': strToU8(values) }));
+  const hygon: URL[] = [];
+  await page.route('https://www.opengeodata.nrw.de/**', (route: Route) => {
+    const u = new URL(route.request().url());
+    hygon.push(u);
+    if (u.pathname.endsWith('.txt')) return route.fulfill({ body: stations, contentType: 'text/plain' });
+    return route.fulfill({ body: zip, contentType: 'application/zip' });
+  });
+  await page.goto('/wetter');
+  await waitForApp(page);
+  const box = page.getByRole('region', { name: 'Pegel in der Nähe' });
+  await expect(box).toContainText('Test Landespegel · Testeinzugsgebiet · 1 km entfernt');
+  await expect(box).toContainText('9,1 cm · +0,6 cm in 24 h');
+  await expect(box).toContainText('normal');
+  await expect(box).toContainText('Tagesdatei des Landes');
+  await expect(box).toContainText('LANUK');
+  for (const u of hygon) expect(u.search).toBe('');
+
+  // Außerhalb von NRW (keine Landesgrenzen-Treffer): Landesdaten werden nicht geladen
+  await page.route('**/data/water/states.json', (r) =>
+    r.fulfill({
+      json: {
+        format: 'fangpunkt-states',
+        formatVersion: 1,
+        dataDate: '2026-10-22T00:00:00Z',
+        toleranceM: 50,
+        marginM: 150,
+        states: [{ code: 'BY', bbox: [5.8, 50.3, 9.5, 52.6], polygons: [[ring]] }],
+      },
+    }),
+  );
+  hygon.length = 0;
+  await page.evaluate(() => localStorage.removeItem('fangpunkt.gaugesNrw'));
+  await page.reload();
+  await waitForApp(page);
+  await expect(box).toContainText('Kein Pegel im Umkreis von 15 km.');
+  expect(hygon).toHaveLength(0);
   expect(errors.filter((e) => !e.includes('Failed to load resource'))).toEqual([]);
 });

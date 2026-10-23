@@ -841,7 +841,10 @@ export const de = {
     nearestFar: (name: string, water: string, km: number) =>
       `Nächster Pegel: ${name} (${water}), ${Math.round(km)} km entfernt.`,
     coverage:
-      'PEGELONLINE misst nur an Bundeswasserstraßen (große Flüsse und Kanäle). Für Seen und kleinere Gewässer gibt es hier meist keine Werte.',
+      'Berücksichtigt sind Pegel der Bundeswasserstraßen (große Flüsse und Kanäle) und in NRW zusätzlich die Landespegel. Für Seen gibt es meist keine Werte.',
+    nrwDaily: (time: string) =>
+      `Landespegel NRW: Werte aus der Tagesdatei des Landes (einmal täglich gegen 3 Uhr erstellt), letzter Messwert ${time}.`,
+    nrwNoWater: 'Gewässer nicht angegeben',
     level: 'Wasserstand',
     levelValue: (v: number, unit: string) =>
       `${v.toLocaleString('de-DE', { maximumFractionDigits: 1 })} ${unit}`,
@@ -862,6 +865,8 @@ export const de = {
     unnamedWater: 'Gewässer',
     source:
       'Quelle: PEGELONLINE, Wasserstraßen- und Schifffahrtsverwaltung des Bundes (DL-DE->Zero-2.0) – ungeprüfte Rohdaten.',
+    sourceNrw:
+      'Quelle: Landesamt für Natur, Umwelt und Klima NRW (LANUK), OpenHygon über OpenGeoData.NRW (DL-DE->Zero-2.0) – ungeprüfte Rohdaten.',
   },
   alerts: {
     title: 'Amtliche Warnungen',
@@ -1123,6 +1128,10 @@ export const de = {
         license: 'DL-DE->Zero-2.0 (ungeprüfte Rohdaten)',
       },
       {
+        name: 'Landespegel NRW: LANUK, OpenHygon über OpenGeoData.NRW',
+        license: 'DL-DE->Zero-2.0 (ungeprüfte Rohdaten)',
+      },
+      {
         name: 'Angelrecht: amtliche Texte der Länder',
         license: 'Quelle und Fassung je Land unter „Angelrecht der Länder“',
       },
@@ -1163,6 +1172,10 @@ export const de = {
       {
         name: 'PEGELONLINE (www.pegelonline.wsv.de)',
         what: 'nur wenn „Wetter am Fang“ an ist: die Liste aller Pegel mit aktuellen Werten und die 24-Stunden-Werte des nächstgelegenen Pegels. Es wird keine Position übertragen – den nächsten Pegel sucht die App auf dem Gerät.',
+      },
+      {
+        name: 'OpenGeoData.NRW (www.opengeodata.nrw.de)',
+        what: 'nur wenn „Wetter am Fang“ an ist und der gewählte Ort in NRW liegt: die Tagesdatei der Landespegel (etwa 1 MB, höchstens alle 6 Stunden). Es wird keine Position übertragen.',
       },
       {
         name: 'Bright Sky (api.brightsky.dev)',

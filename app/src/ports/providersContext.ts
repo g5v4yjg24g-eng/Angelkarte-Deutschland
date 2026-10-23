@@ -4,7 +4,7 @@ import type { WaterDataProvider } from './waterData';
 import type { WeatherProvider } from './weather';
 import type { ForecastProvider } from './forecast';
 import type { AlertsProvider } from './alerts';
-import type { GaugesProvider } from './gauges';
+import type { GaugesProvider, NrwGaugesProvider } from './gauges';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
@@ -14,6 +14,7 @@ export interface Providers {
   forecast: ForecastProvider;
   alerts: AlertsProvider;
   gauges: GaugesProvider;
+  gaugesNrw: NrwGaugesProvider;
 }
 
 export const ProvidersContext = createContext<Providers | null>(null);
