@@ -197,7 +197,7 @@ Eine Schonzeit oder ein Mindestmaß eines Landes – **nur aus den Landesdateien
 
 ## 7. 90-Tage-Plan (Überblick)
 
-Ausführlich: [content-calendar/REDAKTIONSPLAN-90-TAGE.md](content-calendar/REDAKTIONSPLAN-90-TAGE.md) und alle 43 Beiträge mit Hook, Ablauf, CTA, Material und Zeitbedarf in [content-calendar/beitraege-90-tage.md](content-calendar/beitraege-90-tage.md) bzw. als Tabelle [redaktionsplan-90-tage.csv](content-calendar/redaktionsplan-90-tage.csv).
+Ausführlich: [content-calendar/REDAKTIONSPLAN-90-TAGE.md](content-calendar/REDAKTIONSPLAN-90-TAGE.md) und alle 44 Beiträge mit Hook, Ablauf, CTA, Material und Zeitbedarf in [content-calendar/beitraege-90-tage.md](content-calendar/beitraege-90-tage.md) bzw. als Tabelle [redaktionsplan-90-tage.csv](content-calendar/redaktionsplan-90-tage.csv).
 
 - Rhythmus: **Di Reel · Do Bild/Karussell · So Reel („Beißfenster-Check“)** + 2–3 Stories pro Woche. Zeitbedarf ca. **3–4 Stunden pro Woche** [A].
 - Phase 1 (Woche 1–4): Vorstellen, Kernfunktionen, erste Tester.

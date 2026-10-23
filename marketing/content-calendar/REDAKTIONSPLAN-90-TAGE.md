@@ -1,10 +1,10 @@
 # Redaktionsplan – die ersten 90 Tage
 
 **Zeitraum:** Woche 0 (Vorbereitung) ab Mo 2026-11-02, Woche 1–13 vom 2026-11-09 bis 2027-02-07.
-Verschiebt sich der Start (z. B. weil Impressum oder Markenrecherche noch fehlen), in `marketing/tools/build_calendar.py` das Datum `START` ändern und neu erzeugen.
+Verschiebt sich der Start (z. B. weil Impressum, Domain oder EUIPO-Prüfung noch fehlen), in `marketing/tools/build_calendar.py` das Datum `START` ändern und neu erzeugen.
 
 **Dateien**
-- [beitraege-90-tage.md](beitraege-90-tage.md) – alle 43 Beiträge mit Datum, Plattform, Format, Säule, Thema, Ziel, Hook, Ablauf, CTA, Material, Zeitbedarf und Wiederverwendung.
+- [beitraege-90-tage.md](beitraege-90-tage.md) – alle 44 Beiträge mit Datum, Plattform, Format, Säule, Thema, Ziel, Hook, Ablauf, CTA, Material, Zeitbedarf und Wiederverwendung.
 - [redaktionsplan-90-tage.csv](redaktionsplan-90-tage.csv) – dieselben Daten als Tabelle (Semikolon, UTF-8; öffnet in Excel/Numbers/LibreOffice).
 - [auswertung-vorlage.csv](auswertung-vorlage.csv) – Wochenauswertung.
 

@@ -29,6 +29,18 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Vorbereitung:** 15 min
 - **Wiederverwendung:** angepinnt; Facebook-Album
 
+### 2026-11-14 (Sa) · Fangpunkt in 17 Sekunden (Slideshow)
+
+- **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel 17 s (fertig)
+- **Säule / Serie:** Erklärung · Kurz erklärt
+- **Ziel:** Karussell als Video an Nicht-Follower ausspielen, ohne Mehraufwand
+- **Hook:** „Fangpunkt in 17 Sekunden.“
+- **Ablauf:** Fertiges Reel videos/reel-fuenf-bilder-1080x1920.mp4 hochladen, ruhige Musik aus der Plattform-Bibliothek dazulegen.
+- **CTA:** Link in der Bio.
+- **Material:** videos/reel-fuenf-bilder-1080x1920.mp4
+- **Vorbereitung:** 10 min
+- **Wiederverwendung:** TikTok, YouTube Shorts
+
 ### 2026-11-15 (So) · Fang in 10 Sekunden eintragen
 
 - **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel 15–20 s
@@ -37,7 +49,7 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Hook:** „Fang eintragen, bevor der Fisch zurück im Wasser ist.“
 - **Ablauf:** Bildschirmaufnahme: Fang erfassen → Stelle tippen → Art → Speichern. Stoppuhr-Einblendung. Siehe Video-Konzept V1.
 - **CTA:** Link in der Bio.
-- **Material:** Bildschirmaufnahme (Handy), 1 Clip Wasser/Ufer
+- **Material:** Bildschirmaufnahme (Handy), 1 Clip Wasser/Ufer; Cover stories/reel-cover/cover-video-v1
 - **Vorbereitung:** 60 min
 - **Wiederverwendung:** TikTok, YouTube Shorts, Story
 
@@ -103,7 +115,7 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Hook:** „Du findest die Stelle vom letzten Mal nicht wieder?“
 - **Ablauf:** Szene: Ratlos am Ufer (eigene Aufnahme) → Karte → gespeicherte Angelstelle → Fang dort. Siehe V2.
 - **CTA:** Speichern und beim nächsten Mal ausprobieren.
-- **Material:** Uferclip, Bildschirmaufnahme Karte
+- **Material:** Uferclip, Bildschirmaufnahme Karte; Cover cover-video-v2
 - **Vorbereitung:** 60 min
 - **Wiederverwendung:** TikTok, Shorts
 
@@ -268,7 +280,7 @@ Woche 1 beginnt am 2026-11-09 (Montag). Vorbereitung (Woche 0) und Rhythmus: sie
 - **Hook:** „Dein Angelwetter für die Woche – in 20 Sekunden.“
 - **Ablauf:** Vorhersage „Die nächsten Tage“ scrollen, Luftdruck-Tendenz, ein Satz Einordnung.
 - **CTA:** Wann gehst du diese Woche ans Wasser?
-- **Material:** Bildschirmaufnahme Wetter
+- **Material:** Bildschirmaufnahme Wetter; Cover cover-serie-beissfenster-check
 - **Vorbereitung:** 30 min
 - **Wiederverwendung:** TikTok, Shorts
 

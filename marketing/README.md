@@ -7,11 +7,12 @@ Stand 2026-10-23. Getrennt von der App: Nichts in diesem Ordner wird gebaut oder
 | Was | Wo |
 |---|---|
 | **Strategie** – Analyse der App, Positionierung, Slogan, Zielgruppen, Konkurrenz, Plattformen, 9 Content-Serien, Link-/QR-Strategie, Community, Budget, Kennzahlen, Recht | [STRATEGIE.md](STRATEGIE.md) |
-| **90-Tage-Redaktionsplan** – Rhythmus, Vorbereitung, 43 Beiträge mit Hook, Ablauf, CTA, Material, Zeitbedarf | [content-calendar/](content-calendar/REDAKTIONSPLAN-90-TAGE.md) (Markdown + CSV) |
+| **90-Tage-Redaktionsplan** – Rhythmus, Vorbereitung, 44 Beiträge mit Hook, Ablauf, CTA, Material, Zeitbedarf | [content-calendar/](content-calendar/REDAKTIONSPLAN-90-TAGE.md) (Markdown + CSV) |
 | **Wochenauswertung** (Tabellenvorlage) | [content-calendar/auswertung-vorlage.csv](content-calendar/auswertung-vorlage.csv) |
 | **Captions und Hashtags** zu den 10 Motiven | [posts/CAPTIONS.md](posts/CAPTIONS.md) |
 | **5 Video-Konzepte** mit Szenenplan, Sprechertext, Untertiteln | [videos/VIDEO-KONZEPTE.md](videos/VIDEO-KONZEPTE.md) |
 | **Designsystem** und Regeln für das Fisch-Logo | [brand/DESIGNSYSTEM.md](brand/DESIGNSYSTEM.md) |
+| **Übersicht aller Bilder und Videos** (im Browser öffnen) | [UEBERSICHT.html](UEBERSICHT.html) |
 | **Kontaktvorlagen** (Creator, Vereine, Gruppen, Einwilligung) | [templates/KONTAKT-VORLAGEN.md](templates/KONTAKT-VORLAGEN.md) |
 
 ## Bilddateien
@@ -29,7 +30,11 @@ Stand 2026-10-23. Getrennt von der App: Nichts in diesem Ordner wird gebaut oder
 | `posts/NN-…-feed-1080x1440.png` | 3:4 | Instagram-Feed (passt zum 3:4-Profilraster) |
 | `posts/NN-…-feed-1080x1350.png` | 4:5 | Instagram/Facebook-Feed (klassisch) |
 | `posts/02-karussell/…-k1…k6` | 4:5 | Karussell „Fangpunkt in fünf Bildern“ |
-| `stories/NN-…-story-1080x1920.png` | 9:16 | Stories, Reel-Titelbilder, TikTok-Fotomodus |
+| `stories/NN-…-story-1080x1920.png` | 9:16 | Stories, TikTok-Fotomodus |
+| `stories/reel-cover/cover-video-v1…v5-1080x1920.png` | 9:16 | Titelbilder für die fünf Video-Konzepte (Text mittig, übersteht den 3:4- und 4:5-Zuschnitt) |
+| `stories/reel-cover/cover-serie-…-1080x1920.png` | 9:16 | Titelbilder für wiederkehrende Serien (Beißfenster-Check, Wissen in 30 Sekunden, Werkstatt-Notiz, Frag die Runde, Euer Feedback) |
+| `brand/schlusskarte-1080x1920.png` | 9:16 | Schluss-Karte „Link in der Bio“ für alle Videos |
+| `videos/reel-fuenf-bilder-1080x1920.mp4` | 9:16, 17 s | **fertiges Slideshow-Reel** aus dem Karussell, ohne Ton (Musik in der Plattform-App wählen) |
 | `screenshots/{light,dark}-*.png` | 1170 × 2532 | echte Screenshots der Live-App mit **Beispieldaten** (hell und dunkel) |
 
 **Die zehn Motive:** 01 Launch · 02 App-Übersicht (+ Karussell) · 03 Tiefenkarten – ehrlich „noch nicht“ · 04 Fangbuch · 05 Wetter & Beißfenster · 06 Statistik · 07 Angelstellen & Heatmap · 08 Hinter den Kulissen · 09 Community-Frage · 10 Ausprobieren.
@@ -44,7 +49,9 @@ Stand 2026-10-23. Getrennt von der App: Nichts in diesem Ordner wird gebaut oder
 ```bash
 # im Repo-Root, nach pnpm install
 node marketing/tools/screenshots.mjs        # Screenshots von der Live-App (ca. 3 min, braucht Internet)
-node marketing/tools/render.mjs             # Profilbilder, Banner, alle Motive
+node marketing/tools/render.mjs             # Profilbilder, Banner, Motive, Reel-Cover, Schluss-Karte
+bash marketing/tools/reel.sh                # Slideshow-Reel aus dem Karussell (ffmpeg)
+python3 marketing/tools/overview.py         # UEBERSICHT.html
 python3 marketing/tools/build_calendar.py   # Redaktionsplan (CSV + Markdown)
 ```
 Texte der Motive stehen in `MOTIFS` in `tools/render.mjs`.
@@ -67,7 +74,7 @@ Texte der Motive stehen in `MOTIFS` in `tools/render.mjs`.
 - Eigene Fangfotos und echte eigene Statistik für Jahresrückblick (V3) und „Mein Angeljahr“.
 
 ### Nicht umgesetzt
-- **Keine Videos produziert** – nur Konzepte (es fehlen eigene Aufnahmen und Bildschirmvideos vom Handy).
+- **Videos V1–V5 nicht produziert** – nur Konzepte plus fertige Titelbilder und Schluss-Karte (es fehlen eigene Aufnahmen und Bildschirmvideos vom Handy). Fertig ist nur das Slideshow-Reel aus dem Karussell.
 - **Keine KI-generierten Fotos** – kein Bildgenerator verfügbar; die Motive sind grafisch und mit echten Screenshots gebaut.
 - **Nichts veröffentlicht**, keine Konten angelegt, keine Dienste gebucht.
 - Motiv 08 nennt „Diese Woche neu“ (Stand 2026-10-23) – vor dem Posten aktualisieren.

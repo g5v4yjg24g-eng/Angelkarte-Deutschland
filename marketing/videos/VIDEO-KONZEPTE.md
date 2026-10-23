@@ -1,11 +1,11 @@
 # Fünf Konzepte für kurze vertikale Werbevideos
 
-**Status: Konzepte und Storyboards – es wurde kein Video produziert.** Bildmaterial für Einblendungen liegt in `screenshots/` (echte App, Beispieldaten), `brand/` und `stories/`.
+**Status: Konzepte und Storyboards; V1–V5 sind nicht produziert.** Fertig sind die Titelbilder (`stories/reel-cover/cover-video-v1…v5`), die Schluss-Karte (`brand/schlusskarte-1080x1920.png`) und ein Slideshow-Reel aus dem Karussell (siehe unten). Bildmaterial für Einblendungen liegt in `screenshots/` (echte App, Beispieldaten), `brand/` und `stories/`.
 
 **Technik für alle Videos:** 1080 × 1920, 30 fps, Untertitel eingebrannt (viele schauen ohne Ton), Text nicht in die oberen ~250 px und unteren ~340 px (Plattform-Bedienelemente). Bildschirmaufnahme: iPhone „Bildschirmaufnahme“ im Kontrollzentrum bzw. Android „Bildschirm aufnehmen“; vorher „Nicht stören“ an, Akku/Uhrzeit egal. Schnitt kostenlos mit CapCut, VN oder InShot [A, Nutzungsbedingungen/Lizenz der App-Vorlagen und -Musik prüfen].
 **Musik:** nur aus der Bibliothek der Plattform (bei Creator-/Unternehmenskonto „kommerziell nutzbar“) oder lizenzfrei mit Lizenznachweis; leise unter Sprecher. **Sprecher:** eigene Stimme (wirkt echter als KI-Stimme); Alternative: KI-Stimme nur mit Kennzeichnung.
 **Natur-/Angelaufnahmen:** selbst filmen. Keine fremden Fangvideos. Fisch nur kurz und nass zeigen.
-**Schluss-Karte (alle Videos, 2 s):** `brand/fisch-freigestellt-hell-1600.png` auf `#0B2A33`, darunter „Fangpunkt · Link in der Bio“.
+**Schluss-Karte (alle Videos, 2 s):** `brand/schlusskarte-1080x1920.png`. **Titelbild:** das passende `cover-video-v…` beim Hochladen als Cover wählen.
 
 ---
 
@@ -103,7 +103,14 @@
 
 ---
 
+## Fertig: Slideshow-Reel „Fangpunkt in fünf Bildern“
+- **Datei:** `videos/reel-fuenf-bilder-1080x1920.mp4` – 17 s, 1080 × 1920, 30 fps, H.264, **ohne Ton**. Gebaut mit `tools/reel.sh` (ffmpeg) aus den 9:16-Fassungen der Karussellbilder und der Schluss-Karte; weiche Überblendungen.
+- **Inhalt:** Titel → Karte → Fangbuch → Wetter → Statistik → Angelrecht → „Link in der Bio“. Screenshots zeigen Beispieldaten (im Bild vermerkt).
+- **Verwendung:** Instagram Reel, TikTok, YouTube Short. Musik in der jeweiligen App aus der Plattform-Bibliothek wählen (ruhig, 90–110 BPM). Titelbild: erstes Bild.
+- **Caption:** wie Karussell 02 in `posts/CAPTIONS.md`, Einstieg „Fangpunkt in 17 Sekunden.“
+- **Hinweis:** Ein Bildschirmvideo mit echter Bedienung wirkt meist stärker als eine Diashow [A]; das Reel eignet sich als schneller Start und als Test, ob das Thema zieht.
+
 ## Automatisierung – geprüft
-- In dieser Umgebung stehen `ffmpeg` und Chromium zur Verfügung; damit ließen sich z. B. Diashows aus den vorhandenen Motiven mit Schwenk und Text erzeugen. Für die Konzepte oben fehlen aber die eigentlichen Aufnahmen (Natur, Bildschirmaufnahmen vom Handy, Stimme), deshalb wurde **kein Video erstellt**.
+- In dieser Umgebung stehen `ffmpeg` und Chromium zur Verfügung; damit ließen sich z. B. Diashows aus den vorhandenen Motiven mit Schwenk und Text erzeugen. Für die Konzepte oben fehlen aber die eigentlichen Aufnahmen (Natur, Bildschirmaufnahmen vom Handy, Stimme), deshalb wurden V1–V5 **nicht erstellt** (nur das Slideshow-Reel oben).
 - Die verbundenen Dienste wurden geprüft: Der ElevenLabs-Zugang hier kann nur Sprache erzeugen (keine Bilder/Videos); HeyGen HyperFrames ist aus dieser Umgebung nur lesend nutzbar. Nichts davon wurde verwendet, um keine Kosten auszulösen.
 - Möglicher nächster Schritt: Du schickst Bildschirmaufnahmen und Naturclips, dann kann ein Rohschnitt mit eingebrannten Untertiteln per `ffmpeg` gebaut werden.

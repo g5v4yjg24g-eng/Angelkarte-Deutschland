@@ -326,5 +326,42 @@ for (const m of MOTIFS) {
 }
 for (const m of CAROUSEL) {
   await render(build(m, FEED), `${T}${m.id}.html`, `${carousel}${m.id}-1080x1350.png`, FEED.w, FEED.h);
+  // 9:16-Fassung als Einzelbilder für das Slideshow-Reel (tools/reel.sh)
+  await render(build(m, STORY), `${T}${m.id}-story.html`, `${dir('videos/_frames/')}${m.id}.png`, STORY.w, STORY.h);
 }
+
+// ---------- Reel-Titelbilder und Serien-Cover (9:16) ----------
+// Text sitzt in der Mitte (y 420–1500), damit er im 3:4-Profilraster und im 4:5-Feed-Zuschnitt sichtbar bleibt.
+function cover({ kicker, title, sub }) {
+  return page({
+    ...STORY,
+    body: `<div style="position:absolute;left:84px;right:84px;top:50%;transform:translateY(-50%);text-align:center;display:flex;flex-direction:column;align-items:center">
+      <span class="pill" style="font-size:30px">${kicker}</span>
+      <h1 style="--h1:118px;margin-top:40px">${title}</h1>
+      ${sub ? `<p class="sub" style="margin-top:30px;text-align:center">${sub}</p>` : ''}
+    </div>
+    <div class="brand" style="position:absolute;left:0;right:0;top:1500px;justify-content:center">${smallFish()}Fangpunkt</div>`,
+  });
+}
+const COVERS = [
+  ['video-v1', { kicker: 'Kurz erklärt', title: 'Fang eintragen, bevor er <em>zurück</em> im Wasser ist.' }],
+  ['video-v2', { kicker: 'Problem am Wasser', title: 'Wo war nochmal die <em>Stelle</em>?' }],
+  ['video-v3', { kicker: 'Fangbuch-Freitag', title: 'Mein Angeljahr – <em>ehrlich</em>.' }],
+  ['video-v4', { kicker: 'Ehrlich gesagt', title: 'Keine Tiefenkarten. <em>Absichtlich.</em>' }],
+  ['video-v5', { kicker: 'Kurz erklärt', title: 'Diese App gibt’s in <em>keinem</em> Store.' }],
+  ['serie-beissfenster-check', { kicker: 'Beißfenster-Check', title: 'Angelwetter der <em>Woche</em>', sub: 'Vorhersage = Modellwert. Keine Garantie.' }],
+  ['serie-wissen-30s', { kicker: 'Wissen in 30 Sekunden', title: 'Fänge pro <em>Stunde</em> statt pro Tag' }],
+  ['serie-werkstatt-notiz', { kicker: 'Werkstatt-Notiz', title: 'Warum es Fangpunkt <em>gibt</em>' }],
+  ['serie-frag-die-runde', { kicker: 'Frag die Runde', title: 'Morgens oder <em>abends</em>?' }],
+  ['serie-euer-feedback', { kicker: 'Euer Feedback', title: 'Ihr habt gefragt – das <em>kommt</em>.' }],
+];
+const covers = dir('stories/reel-cover/');
+for (const [id, c] of COVERS) {
+  await render(cover(c), `${T}cover-${id}.html`, `${covers}cover-${id}-1080x1920.png`, STORY.w, STORY.h);
+}
+// Schluss-Karte für alle Videos (2 s am Ende)
+await render(
+  cover({ kicker: 'Kostenlos · ohne Konto', title: 'Link in der <em>Bio</em>', sub: 'Gewässer finden. Fänge festhalten.' }),
+  `${T}schlusskarte.html`, `${brand}schlusskarte-1080x1920.png`, STORY.w, STORY.h,
+);
 await browser.close();
