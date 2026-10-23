@@ -36,5 +36,13 @@ export const C = {
 export const FONT_UI = "'Inter Variable', system-ui, sans-serif";
 export const FONT_DISPLAY = "'Fraunces Variable', Georgia, serif";
 
-/** Angelszenen: Dateiname in assets/fishing-scenes/ oder null (dann Platzhalter). */
-export const clips = cfg.clips as Record<'lake' | 'fight' | 'fish', string | null>;
+/** Angelszene: Datei in assets/fishing-scenes/, Startpunkt im Clip (s) und waagerechter Bildausschnitt
+ * für Hochformat (0 = linker Rand, 0.5 = Mitte, 1 = rechter Rand). null = Platzhalter. */
+export interface Clip {
+  file: string;
+  startFrom?: number;
+  focusX?: number;
+  /** senkrechter Bildausschnitt für Querformat bei Hochformat-Clips (0 = oben, 1 = unten) */
+  focusY?: number;
+}
+export const clips = cfg.clips as Record<'lake' | 'fight' | 'fish', Clip | null>;

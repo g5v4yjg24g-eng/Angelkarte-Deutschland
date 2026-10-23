@@ -2,7 +2,7 @@
 
 Werbeclip (42 s) für Fangpunkt, programmatisch mit [Remotion](https://www.remotion.dev) gebaut. Getrennt von der App: Hier wird nichts aus `app/` verändert, nur gelesen (Marken-Master `app/src/design/brand/fish.json`).
 
-**Stand:** Prototyp (Phase 3). Echte App-Ansichten, Logo, Sprecher, eigene Musik und QR-Abschluss sind fertig. Die drei **Angelszenen sind noch Platzhalter**, bis die Clips in `assets/fishing-scenes/` liegen (siehe dortige README).
+**Stand:** Vollständige Fassung (Phase 4). Echte App-Ansichten, Logo, Sprecher (ElevenLabs), eigene Musik, drei Angelszenen (Pexels) und QR-Abschluss. Die Clips liegen nicht im Repository (Größe, fremde Lizenz) – Liste und Herkunft in `assets/fishing-scenes/README.md`.
 
 **Ziel-URL des QR-Codes:** `https://g5v4yjg24g-eng.github.io/Angelkarte-Deutschland/` (GitHub Pages, Freigabe Nutzer 2026-10-23). Änderung nur in `video.config.json` → danach `pnpm qr` und neu rendern.
 
@@ -24,7 +24,7 @@ Videos liegen nicht im Repository (`output/` ist ignoriert); sie werden als Anha
 | 0–4,5 s | Leidenschaft | Angelszene „See im Morgennebel“, langsame Kamerafahrt | „Dein nächster Fang beginnt mit dem richtigen Überblick.“ |
 | 4,5–11 s | App entdecken | Handy fährt ein; echte Aufnahme (30 fps): Suche „Hohendeicher“ → Karte fliegt zum See | „Mit Fangpunkt entdeckst du Gewässer in ganz Deutschland.“ |
 | 11–23,5 s | Funktionen | 4 echte Ansichten: Spots & Stege · Fang erfassen · Wetter & Pegel · Statistik | je ein kurzer Satz pro Funktion |
-| 23,5–30 s | Fangmoment | Drill → Fisch über dem Wasser → echter Fangbuch-Eintrag | „Denn jeder Fang erzählt eine Geschichte.“ |
+| 23,5–30 s | Fangmoment | Angler auf dem Steg im Nebel → Forelle wird zurückgesetzt → echter Fangbuch-Eintrag | „Denn jeder Fang erzählt eine Geschichte.“ |
 | 30–42 s | Abschluss | Logo-Animation wie im App-Intro, Name, Slogan; **QR-Code ab 33 s unbewegt bis zum Ende (9 s)** | „Fangpunkt. Jetzt scannen und kostenlos entdecken.“ |
 
 Tiefenkarten kommen bewusst nicht vor: Sie sind in der App nicht umgesetzt (PLAN.md M9).

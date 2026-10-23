@@ -77,9 +77,21 @@
     }
   ],
   "clips": {
-    "lake": null,
-    "fight": null,
-    "fish": null
+    "lake": {
+      "file": "lake-pexels-5236943.mp4",
+      "startFrom": 0,
+      "focusX": 0.62
+    },
+    "fight": {
+      "file": "jetty-cast-pexels-12544249.mp4",
+      "startFrom": 3.6,
+      "focusY": 0.45
+    },
+    "fish": {
+      "file": "fish-release-pexels-16588810.mp4",
+      "startFrom": 3.8,
+      "focusX": 0.25
+    }
   },
   "screens": {
     "flight": "screenshots/light-flight.mp4",

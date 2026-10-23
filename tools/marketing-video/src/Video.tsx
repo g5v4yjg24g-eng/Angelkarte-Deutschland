@@ -49,7 +49,7 @@ export function FangpunktVideo({ format }: { format: Format }) {
     <AbsoluteFill style={{ background: C.deep }}>
       {/* Szene 1 – Leidenschaft */}
       <Sequence durationInFrames={dur(T.hook) + 15}>
-        <Footage clip={clips.lake} label="Morgennebel am See, Angler am Ufer" duration={dur(T.hook) + 15} />
+        <Footage clip={clips.lake} label="Morgennebel am See, Angler am Ufer" duration={dur(T.hook) + 15} scrim={L.enter === 'bottom' ? 'top' : 'left'} />
         <Caption text={tx.hook} from={12} to={dur(T.hook) + 4} size={L.captionSize} style={L.caption} />
       </Sequence>
 
@@ -72,12 +72,12 @@ export function FangpunktVideo({ format }: { format: Format }) {
 
       {/* Szene 4 – Fangmoment, dann der echte Fangbuch-Eintrag */}
       <Sequence from={S(T.story[0])} durationInFrames={dur(T.story)}>
-        <Sequence durationInFrames={sec(3.3)}>
-          <Footage clip={clips.fight} label="Angler im Drill, Rute gebogen" push={[1.04, 1.12]} duration={sec(3.3)} />
+        <Sequence durationInFrames={sec(2.7)}>
+          <Footage clip={clips.fight} label="Angler wirft vom Steg aus" push={[1.04, 1.12]} duration={sec(2.7)} scrim={L.enter === 'bottom' ? 'top' : 'left'} />
         </Sequence>
-        <Sequence from={sec(3.2)} durationInFrames={sec(1.6)}>
+        <Sequence from={sec(2.6)} durationInFrames={sec(2.2)}>
           <CrossFade>
-            <Footage clip={clips.fish} label="Fisch mit nassen Händen über dem Wasser" push={[1.06, 1.0]} duration={sec(1.6)} />
+            <Footage clip={clips.fish} label="Fisch mit nassen Händen über dem Wasser" push={[1.06, 1.0]} duration={sec(2.2)} scrim={L.enter === 'bottom' ? 'top' : 'left'} />
           </CrossFade>
         </Sequence>
         <Sequence from={sec(4.7)}>
@@ -87,7 +87,8 @@ export function FangpunktVideo({ format }: { format: Format }) {
           </PhoneStage>
           <DemoNote L={L} />
         </Sequence>
-        <Caption text={tx.story} from={sec(0.8)} to={dur(T.story)} size={L.captionSize} style={L.caption} />
+        {/* im Querformat oben, damit der Text den Angler auf dem Steg nicht verdeckt */}
+        <Caption text={tx.story} from={sec(0.8)} to={dur(T.story)} size={L.captionSize} style={L.enter === 'right' ? { ...L.caption, top: 110 } : L.caption} />
       </Sequence>
 
       {/* Szene 5 – Marke und QR-Code */}

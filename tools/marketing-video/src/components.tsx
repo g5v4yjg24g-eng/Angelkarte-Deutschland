@@ -1,7 +1,7 @@
 // Bausteine: Handy-Rahmen, Fisch-Logo, Texteinblendung, Angelszene, QR-Code.
 import type { CSSProperties, ReactNode } from 'react';
 import { AbsoluteFill, Img, OffthreadVideo, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
-import { C, FONT_DISPLAY, FONT_UI, cfg, fish, qr } from './config';
+import { C, FONT_DISPLAY, FONT_UI, cfg, fish, qr, sec, type Clip } from './config';
 
 const SCREEN_W = 393; // CSS-px der Aufnahmen
 const SCREEN_H = 852; // inkl. Statusleiste (54 px) – iPhone-Größe
@@ -144,20 +144,32 @@ export function Caption({ text, from, to, size, style }: { text: string; from: n
 }
 
 /** Angelszene: Clip aus assets/fishing-scenes/ mit langsamer Kamerafahrt; ohne Clip ein klar gekennzeichneter Platzhalter. */
-export function Footage({ clip, label, startFrom = 0, push = [1, 1.08], duration }: { clip: string | null; label: string; startFrom?: number; push?: [number, number]; duration: number }) {
+export function Footage({ clip, label, push = [1, 1.08], duration, scrim = 'top' }: { clip: Clip | null; label: string; push?: [number, number]; duration: number; scrim?: 'top' | 'left' }) {
   const f = useCurrentFrame();
   const scale = interpolate(f, [0, duration], push);
   return (
     <AbsoluteFill style={{ overflow: 'hidden', background: C.deep }}>
       <AbsoluteFill style={{ transform: `scale(${scale})` }}>
         {clip ? (
-          <OffthreadVideo src={staticFile(`fishing-scenes/${clip}`)} startFrom={startFrom} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <OffthreadVideo
+            src={staticFile(`fishing-scenes/${clip.file}`)}
+            startFrom={sec(clip.startFrom ?? 0)}
+            muted
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: `${(clip.focusX ?? 0.5) * 100}% ${(clip.focusY ?? 0.5) * 100}%` }}
+          />
         ) : (
           <Placeholder label={label} />
         )}
       </AbsoluteFill>
-      {/* leichte Abdunklung für lesbare Texte */}
-      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(6,20,25,0.55) 0%, rgba(6,20,25,0) 35%, rgba(6,20,25,0) 65%, rgba(6,20,25,0.5) 100%)' }} />
+      {/* Abdunklung dort, wo der Text steht (oben im Hochformat, links im Querformat) – auch über hellem Nebel lesbar */}
+      <AbsoluteFill
+        style={{
+          background:
+            scrim === 'top'
+              ? 'linear-gradient(180deg, rgba(6,20,25,0.78) 0%, rgba(6,20,25,0.45) 22%, rgba(6,20,25,0) 42%, rgba(6,20,25,0) 70%, rgba(6,20,25,0.45) 100%)'
+              : 'linear-gradient(90deg, rgba(6,20,25,0.78) 0%, rgba(6,20,25,0.5) 30%, rgba(6,20,25,0) 58%), linear-gradient(180deg, rgba(6,20,25,0) 70%, rgba(6,20,25,0.4) 100%)',
+        }}
+      />
     </AbsoluteFill>
   );
 }
