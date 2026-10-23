@@ -67,7 +67,7 @@ test('HEAT-1: Heatmap der gelandeten Fische ein- und ausschalten, Wahl bleibt, L
   expect(await visibility(page, 'fp-catches')).toBe('none');
   expect(
     await page.evaluate(() => window.__fangpunktMap?.getPaintProperty('fp-catch-heat', 'heatmap-opacity')),
-  ).toBe(0.85);
+  ).toBe(0.8);
 
   // Mit Fängen: nur gelandete zählen
   await put(page, [
@@ -97,7 +97,7 @@ test('HEAT-1: Heatmap der gelandeten Fische ein- und ausschalten, Wahl bleibt, L
   // Legende erklärt die Heatmap
   await page.getByRole('button', { name: 'Legende' }).click();
   await expect(page.getByRole('dialog', { name: 'Kartensymbole' })).toContainText(
-    'von Gelb (wenige) bis Rot (viele)',
+    'von Blau (wenige) über Grün und Gelb bis Rot (sehr viele)',
   );
   expect(errors).toEqual([]);
 });

@@ -1,4 +1,6 @@
 .wrap {
+  /* Unterkante für Knöpfe auf der Karte: über der Leiste und über der Sicherungs-Erinnerung (falls sichtbar) */
+  --map-bottom: calc(var(--nav-clearance) + var(--reminder-h, 0px));
   position: relative;
   height: 100%;
   min-height: 320px;
@@ -36,7 +38,7 @@
   top: var(--space-3);
 }
 .zoom {
-  bottom: calc(var(--nav-clearance) + var(--space-6) + var(--space-2));
+  bottom: calc(var(--map-bottom) + var(--space-6) + var(--space-2));
   display: none;
 }
 @media (min-width: 900px) and (hover: hover) {
@@ -65,7 +67,7 @@
 .accuracy {
   position: absolute;
   left: var(--space-3);
-  bottom: calc(var(--nav-clearance) + var(--space-6) + var(--space-3) + var(--touch) + 40px + var(--space-4));
+  bottom: calc(var(--map-bottom) + var(--space-6) + var(--space-3) + var(--touch) + 40px + var(--space-4));
   margin: 0;
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
@@ -78,7 +80,7 @@
 /* MapLibre-Attribution: sichtbar (OSM-Pflicht), aber kompakt und im Design */
 .wrap :global(.maplibregl-ctrl-bottom-right),
 .wrap :global(.maplibregl-ctrl-bottom-left) {
-  bottom: var(--nav-clearance);
+  bottom: var(--map-bottom);
 }
 .wrap :global(.maplibregl-ctrl-attrib) {
   font-size: 11px;
@@ -240,10 +242,13 @@
   border-radius: var(--radius-full);
   background: linear-gradient(
     90deg,
-    rgb(255 214 102 / 0.55),
-    rgb(244 140 40),
-    rgb(214 60 30),
-    rgb(160 20 40)
+    rgb(30 80 255 / 0.4),
+    rgb(30 80 255),
+    rgb(0 210 255),
+    rgb(40 220 90),
+    rgb(250 230 40),
+    rgb(250 140 30),
+    rgb(225 30 30)
   );
 }
 .legendHead {
@@ -355,7 +360,7 @@
 .fab {
   position: absolute;
   left: var(--space-3);
-  bottom: calc(var(--nav-clearance) + var(--space-6) + var(--space-3));
+  bottom: calc(var(--map-bottom) + var(--space-6) + var(--space-3));
   z-index: 2;
   display: inline-flex;
   align-items: center;
@@ -378,7 +383,7 @@
 .sessionFab {
   position: absolute;
   left: var(--space-3);
-  bottom: calc(var(--nav-clearance) + var(--space-6) + var(--space-3) + var(--touch) + var(--space-2));
+  bottom: calc(var(--map-bottom) + var(--space-6) + var(--space-3) + var(--touch) + var(--space-2));
   z-index: 2;
   display: inline-flex;
   align-items: center;

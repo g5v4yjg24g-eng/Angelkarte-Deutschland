@@ -106,14 +106,6 @@ export function CatchesPage() {
     if ((location.state as CatchesListState | null)?.deletedId)
       void navigate('.', { replace: true, state: null });
   }, [location.state, navigate]);
-  useEffect(() => {
-    if (!undoId && !restored) return;
-    const timer = setTimeout(() => {
-      setUndoId(undefined);
-      setRestored(false);
-    }, 7000);
-    return () => clearTimeout(timer);
-  }, [undoId, restored]);
 
   const active = useMemo(() => (all ?? []).filter((c) => !c.deletedAt), [all]);
   const list = useMemo(
@@ -139,6 +131,10 @@ export function CatchesPage() {
 
   const toast = (undoId || restored) && (
     <Toast
+      onDismiss={() => {
+        setUndoId(undefined);
+        setRestored(false);
+      }}
       actions={
         undoId && (
           <Button

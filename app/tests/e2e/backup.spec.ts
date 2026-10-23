@@ -122,3 +122,37 @@ test('Daten überstehen einen Neustart der App', async ({ page }) => {
     page.getByText('3 Einträge im Fangbuch · 2 Orte · 1 Sessions · 2 Termine · 1 Fotos'),
   ).toBeVisible();
 });
+
+test('BAK-6b: Erinnerung auf der Karte liegt über der Leiste und schiebt die Kartenknöpfe nach oben', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openBackup(page);
+  await importFile(page, legacyFile);
+  await page.getByRole('button', { name: /Datensätze importieren/ }).click();
+  await expect(page.getByText(/Datensätze importiert/)).toBeVisible();
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('link', { name: 'Karte' })
+    .click();
+  const reminder = page.getByRole('status').filter({ hasText: 'noch nicht gesichert' });
+  await expect(reminder).toBeVisible();
+  const box = async (l: ReturnType<Page['locator']>) => {
+    const b = await l.boundingBox();
+    if (!b) throw new Error('nicht sichtbar');
+    return b;
+  };
+  const r = await box(reminder);
+  const nav = await box(page.getByRole('navigation', { name: 'Hauptnavigation' }));
+  const fab = await box(page.getByRole('button', { name: 'Fang erfassen' }));
+  // ganz über der Leiste, und „Fang erfassen“ ganz darüber
+  expect(r.y + r.height).toBeLessThanOrEqual(nav.y);
+  expect(fab.y + fab.height).toBeLessThanOrEqual(r.y);
+  await expect(reminder.getByRole('button', { name: 'Später' })).toBeInViewport();
+  // Nach „Später“ rücken die Knöpfe wieder nach unten
+  await reminder.getByRole('button', { name: 'Später' }).click();
+  await expect(reminder).toHaveCount(0);
+  await expect
+    .poll(async () => (await box(page.getByRole('button', { name: 'Fang erfassen' }))).y)
+    .toBeGreaterThan(fab.y);
+});

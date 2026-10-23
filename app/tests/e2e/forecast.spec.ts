@@ -327,3 +327,54 @@ test('CAL-1: Angelkalender – Termin eintragen, Wetter am Gewässer, bearbeiten
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect(errors.filter((e) => !e.includes('Failed to load resource'))).toEqual([]);
 });
+
+test('CAL-2: Angelkalender – Ansicht Monat/Woche/Tag, blättern, „Heute“ springt zurück', async ({ page }) => {
+  await useLocalExternals(page);
+  await stubGeolocation(page);
+  await fakeForecast(page);
+  await page.goto('/wetter/kalender');
+  await waitForApp(page);
+  const berlin = (ms: number) => new Date(ms).toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' });
+  const today = berlin(Date.now());
+  const longDay = (d: string) =>
+    new Date(`${d}T12:00:00Z`).toLocaleDateString('de-DE', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  const title = page.locator('#cal-title');
+  const view = page.getByRole('group', { name: 'Ansicht' });
+
+  // Monat (Standard)
+  await expect(view.getByRole('radio', { name: 'Monat' })).toBeChecked();
+  await expect(page.getByRole('button', { name: /, / }).first()).toBeVisible();
+
+  // Woche: Kalenderwoche im Titel, nur eine Zeile Tage
+  await view.getByRole('radio', { name: 'Woche' }).check();
+  await expect(title).toContainText(/^KW \d+ · /);
+  await expect(page.locator('table tbody tr')).toHaveCount(1);
+  await page.getByRole('button', { name: 'Nächste Woche' }).click();
+  await page.getByRole('button', { name: 'Nächste Woche' }).click();
+  await expect(page.locator('button[aria-current="date"]')).toHaveCount(0);
+
+  // „Heute“ springt zurück
+  await page.getByRole('button', { name: 'Zum heutigen Tag springen' }).click();
+  await expect(page.locator('button[aria-current="date"]')).toHaveCount(1);
+
+  // Tag: Titel ist der Tag, blättern um einen Tag
+  await view.getByRole('radio', { name: 'Tag' }).check();
+  await expect(title).toHaveText(longDay(today));
+  await expect(page.locator('table')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Nächster Tag' }).click();
+  await expect(title).toHaveText(longDay(berlin(Date.now() + 86_400_000)));
+  await page.getByRole('button', { name: 'Zum heutigen Tag springen' }).click();
+  await expect(title).toHaveText(longDay(today));
+
+  // Ansicht bleibt nach dem Neuladen
+  await page.reload();
+  await waitForApp(page);
+  await expect(view.getByRole('radio', { name: 'Tag' })).toBeChecked();
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});

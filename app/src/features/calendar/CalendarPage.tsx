@@ -10,6 +10,7 @@ import { Notice } from '../../design/components/Notice';
 import { Sheet } from '../../design/components/Sheet';
 import { Toast } from '../../design/components/Toast';
 import { SelectField, TextArea, TextField } from '../../design/components/Field';
+import { SegmentedControl } from '../../design/components/SegmentedControl';
 import { ChevronLeftIcon, ChevronRightIcon, WeatherIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
 import { repo } from '../../data/repository';
@@ -17,8 +18,11 @@ import { userMessage } from '../../data/errors';
 import type { Trip } from '../../domain/schemas';
 import { DEFAULT_TZ } from '../../domain/time';
 import {
-  addMonths,
   emptyTripDraft,
+  isoWeek,
+  shiftDate,
+  weekDays,
+  type CalendarView,
   localDate,
   monthGrid,
   tripDraftFrom,
@@ -38,6 +42,16 @@ import styles from './Calendar.module.css';
 const t = de.calendar;
 /** Auswahlwert für ein Gewässer, das ein bestehender Termin trägt, aber nicht (mehr) in der Liste steht */
 const KEEP = 'keep';
+
+const VIEW_KEY = 'fangpunkt.calendarView';
+function readView(): CalendarView {
+  try {
+    const v = localStorage.getItem(VIEW_KEY);
+    return v === 'week' || v === 'day' ? v : 'month';
+  } catch {
+    return 'month';
+  }
+}
 
 const waterLabel = (name?: string, place?: string) => (place ? `${name ?? ''} (${place})` : (name ?? ''));
 const keyForTrip = (trip: Trip, options: PlaceOption[]) => {
@@ -204,8 +218,18 @@ export function CalendarPage() {
   const options = useWaterOptions();
   const weather = useWeatherEnabled();
   const [today] = useState(() => localDate(Date.now()));
-  const [month, setMonth] = useState(() => today.slice(0, 7));
+  // Gewählter Tag ist zugleich Anker der Ansicht (Monat/Woche/Tag)
   const [selected, setSelected] = useState(today);
+  const [view, setViewState] = useState<CalendarView>(readView);
+  const setView = (v: CalendarView) => {
+    setViewState(v);
+    try {
+      localStorage.setItem(VIEW_KEY, v);
+    } catch {
+      // nur Komfort
+    }
+  };
+  const month = selected.slice(0, 7);
   // 'new' oder id des bearbeiteten Termins
   const [editing, setEditing] = useState<string>();
   const [toast, setToast] = useState<{ text: string; undoId?: string }>();
@@ -218,6 +242,8 @@ export function CalendarPage() {
   }, [live]);
   const grid = useMemo(() => monthGrid(month), [month]);
   const dayTrips = tripsOn(live, selected);
+  const week = useMemo(() => weekDays(selected), [selected]);
+  const weekTrips = week.flatMap((d) => tripsOn(live, d));
   const upcoming = upcomingTrips(live, today).slice(0, 10);
 
   if (!trips || !options || weather === undefined)
@@ -250,75 +276,109 @@ export function CalendarPage() {
       <WeatherTabs />
       <p className="muted">{t.intro}</p>
 
-      <section className={styles.month} aria-labelledby="cal-month">
+      <div className={styles.toolbar}>
+        <SegmentedControl
+          label={t.viewLabel}
+          options={(['month', 'week', 'day'] as const).map((v) => ({ value: v, label: t.views[v] }))}
+          value={view}
+          onChange={setView}
+        />
+        <Button variant="secondary" onClick={() => setSelected(today)} aria-label={t.goTodayLabel}>
+          {t.goToday}
+        </Button>
+      </div>
+
+      <section className={styles.month} aria-labelledby="cal-title">
         <div className={styles.monthHead}>
           <IconButton
-            label={t.prevMonth}
+            label={view === 'month' ? t.prevMonth : view === 'week' ? t.prevWeek : t.prevDay}
             icon={<ChevronLeftIcon />}
-            onClick={() => setMonth((m) => addMonths(m, -1))}
+            onClick={() => setSelected((d) => shiftDate(d, view, -1))}
           />
-          <h2 id="cal-month" className={styles.monthTitle} aria-live="polite">
-            {t.monthTitle(month)}
+          <h2 id="cal-title" className={styles.monthTitle} aria-live="polite">
+            {view === 'month'
+              ? t.monthTitle(month)
+              : view === 'week'
+                ? t.weekTitle(isoWeek(selected), week[0] ?? selected, week[6] ?? selected)
+                : t.dayTitle(selected)}
           </h2>
           <IconButton
-            label={t.nextMonth}
+            label={view === 'month' ? t.nextMonth : view === 'week' ? t.nextWeek : t.nextDay}
             icon={<ChevronRightIcon />}
-            onClick={() => setMonth((m) => addMonths(m, 1))}
+            onClick={() => setSelected((d) => shiftDate(d, view, 1))}
           />
         </div>
-        <table className={styles.grid}>
-          <thead>
-            <tr>
-              {t.weekdays.map((d) => (
-                <th key={d} scope="col">
-                  {d}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {grid.map((week) => (
-              <tr key={week[0]?.date}>
-                {week.map((c) => {
-                  const n = count.get(c.date) ?? 0;
-                  return (
-                    <td key={c.date}>
-                      <button
-                        type="button"
-                        className={[
-                          styles.day,
-                          c.inMonth ? '' : styles.outside,
-                          c.date === today ? styles.today : '',
-                          c.date === selected ? styles.selected : '',
-                        ].join(' ')}
-                        aria-pressed={c.date === selected}
-                        aria-label={t.dayLabel(c.date, n)}
-                        aria-current={c.date === today ? 'date' : undefined}
-                        onClick={() => {
-                          setSelected(c.date);
-                          if (!c.inMonth) setMonth(c.date.slice(0, 7));
-                        }}
-                      >
-                        <span>{Number(c.date.slice(8))}</span>
-                        {n > 0 && <span className={styles.dot} aria-hidden="true" />}
-                      </button>
-                    </td>
-                  );
-                })}
+        {view !== 'day' && (
+          <table className={styles.grid}>
+            <thead>
+              <tr>
+                {t.weekdays.map((d) => (
+                  <th key={d} scope="col">
+                    {d}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(view === 'month' ? grid : [week.map((date) => ({ date, inMonth: true }))]).map((row) => (
+                <tr key={row[0]?.date}>
+                  {row.map((c) => {
+                    const n = count.get(c.date) ?? 0;
+                    return (
+                      <td key={c.date}>
+                        <button
+                          type="button"
+                          className={[
+                            styles.day,
+                            c.inMonth ? '' : styles.outside,
+                            c.date === today ? styles.today : '',
+                            c.date === selected ? styles.selected : '',
+                          ].join(' ')}
+                          aria-pressed={c.date === selected}
+                          aria-label={t.dayLabel(c.date, n)}
+                          aria-current={c.date === today ? 'date' : undefined}
+                          onClick={() => setSelected(c.date)}
+                        >
+                          <span>{Number(c.date.slice(8))}</span>
+                          {n > 0 && <span className={styles.dot} aria-hidden="true" />}
+                        </button>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </section>
 
-      <Section title={selected === today ? `${t.today}, ${t.dayTitle(selected)}` : t.dayTitle(selected)}>
-        {dayTrips.length === 0 ? (
-          <p className="muted">{t.noTripsDay}</p>
-        ) : (
-          <ul className={styles.trips}>{dayTrips.map((x) => card(x, false))}</ul>
-        )}
-        <Button onClick={() => setEditing('new')}>{t.add}</Button>
-      </Section>
+      {view === 'week' ? (
+        <Section title={t.weekTrips}>
+          {weekTrips.length === 0 ? (
+            <p className="muted">{t.noTripsWeek}</p>
+          ) : (
+            <ul className={styles.trips}>{weekTrips.map((x) => card(x, true))}</ul>
+          )}
+          <Button onClick={() => setEditing('new')}>{t.add}</Button>
+        </Section>
+      ) : (
+        <Section
+          title={
+            view === 'day'
+              ? t.dayTrips
+              : selected === today
+                ? `${t.today}, ${t.dayTitle(selected)}`
+                : t.dayTitle(selected)
+          }
+        >
+          {dayTrips.length === 0 ? (
+            <p className="muted">{t.noTripsDay}</p>
+          ) : (
+            <ul className={styles.trips}>{dayTrips.map((x) => card(x, false))}</ul>
+          )}
+          <Button onClick={() => setEditing('new')}>{t.add}</Button>
+        </Section>
+      )}
 
       <Section title={t.upcoming}>
         {upcoming.length === 0 ? (
@@ -344,10 +404,7 @@ export function CalendarPage() {
             options={options}
             onDone={(saved) => {
               setEditing(undefined);
-              if (saved) {
-                setSelected(saved.date);
-                setMonth(saved.date.slice(0, 7));
-              }
+              if (saved) setSelected(saved.date);
             }}
           />
         )}
@@ -355,6 +412,7 @@ export function CalendarPage() {
 
       {toast && (
         <Toast
+          onDismiss={() => setToast(undefined)}
           actions={
             toast.undoId && (
               <Button
@@ -363,10 +421,7 @@ export function CalendarPage() {
                   const id = toast.undoId ?? '';
                   void repo('trips')
                     .restore(id)
-                    .then(() => {
-                      setToast({ text: t.restored });
-                      setTimeout(() => setToast((x) => (x?.undoId ? x : undefined)), 4000);
-                    });
+                    .then(() => setToast({ text: t.restored }));
                 }}
               >
                 {t.undo}
