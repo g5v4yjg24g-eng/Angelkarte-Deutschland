@@ -1,0 +1,79 @@
+<template>
+  <style>
+    @font-face { font-family: "Fraunces Variable"; font-weight: 100 900; src: url("assets/fonts/fraunces-latin-wght-normal.woff2") format("woff2-variations"); }
+    @font-face { font-family: "Fraunces Variable"; font-weight: 100 900; src: url("assets/fonts/fraunces-latin-ext-wght-normal.woff2") format("woff2-variations"); unicode-range: U+0100-024F; }
+    @font-face { font-family: "Inter Variable"; font-weight: 100 900; src: url("assets/fonts/inter-latin-wght-normal.woff2") format("woff2-variations"); }
+    @font-face { font-family: "Inter Variable"; font-weight: 100 900; src: url("assets/fonts/inter-latin-ext-wght-normal.woff2") format("woff2-variations"); unicode-range: U+0100-024F; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(55% 60% at 70% 50%, #12404b 0%, rgba(11, 42, 51, 0) 100%), #0b2a33; font-family: "Inter Variable", Inter, sans-serif; }
+    #ph-fade { position: absolute; inset: 0; }
+    .kicker { position: absolute; left: 160px; top: 230px; font: 650 28px "Inter Variable", Inter, sans-serif; letter-spacing: 3px; color: #5cc4d6; }
+    .big { position: absolute; left: 160px; top: 280px; width: 860px; font-family: "Fraunces Variable", Georgia, serif; font-weight: 640; font-size: 76px; line-height: 1.1; color: #fff; }
+    .big .w { display: inline-block; }
+    .big .accent { color: #7fd1c7; }
+    #steps { position: absolute; left: 160px; top: 500px; list-style: none; font: 600 34px "Inter Variable", Inter, sans-serif; color: rgba(232, 244, 245, 0.45); }
+    #steps li { display: flex; align-items: center; gap: 18px; margin-bottom: 26px; }
+    #steps .n { width: 52px; height: 52px; border-radius: 50%; background: rgba(232, 244, 245, 0.12); color: #e8f4f5; font: 700 28px/52px "Inter Variable", Inter, sans-serif; text-align: center; }
+    #note { position: absolute; left: 160px; top: 880px; width: 860px; font: 500 28px/1.4 "Inter Variable", Inter, sans-serif; color: rgba(232, 244, 245, 0.7); }
+    /* Handy wie in den anderen Videos (520 px breit), für das Querformat auf 86 % verkleinert; es steht still */
+    #ph-wrap { position: absolute; left: 1160px; top: 73px; width: 520px; height: 1085px; transform: scale(0.86); transform-origin: 0 0; }
+    #ph { position: absolute; inset: 0; padding: 18.2px; border-radius: 80px; background: linear-gradient(145deg, #3a4246, #15191b 45%, #2b3236); box-shadow: 0 40px 90px rgba(0, 0, 0, 0.45), 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(255, 255, 255, 0.08); }
+    .screen { position: relative; width: 483.6px; height: 1048.4px; border-radius: 65px; overflow: hidden; background: #fff; }
+    .status { position: absolute; left: 0; top: 0; width: 100%; height: 66.4px; background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 7px 42px 0; font: 600 21px "Inter Variable", Inter, sans-serif; color: #000; z-index: 3; }
+    .status svg { fill: #000; }
+    .island { position: absolute; top: 13.5px; left: 165.5px; width: 152.6px; height: 44.3px; border-radius: 22px; background: #000; z-index: 4; }
+    #rec, #rec-hold { position: absolute; left: 0; top: 66.4px; width: 483.6px; height: 982px; object-fit: cover; object-position: top; }
+    .tap { position: absolute; width: 0; height: 0; }
+    .tap i { position: absolute; border-radius: 50%; }
+    .tap .ring { left: -45px; top: -45px; width: 90px; height: 90px; border: 3px solid #fff; box-shadow: 0 0 0 1.5px rgba(11, 42, 51, 0.55), inset 0 0 0 1.5px rgba(11, 42, 51, 0.55); }
+    .tap .dot { left: -23px; top: -23px; width: 46px; height: 46px; background: rgba(11, 42, 51, 0.28); border: 2px solid rgba(255, 255, 255, 0.9); }
+  </style>
+  <div id="root" data-composition-id="phone" data-width="1920" data-height="1080">
+    <div id="ph-fade">
+      <div class="kicker">IN DER APP</div>
+      <h2 class="big"><span class="w">So</span> <span class="w">sieht</span> <span class="w">dein</span> <span class="w accent">Rückblick</span> <span class="w">aus.</span></h2>
+      <ol id="steps">
+        <li id="st-0"><span class="n">1</span>Session beenden antippen</li>
+        <li id="st-1"><span class="n">2</span>Route abspielen – hier mit 4×</li>
+        <li id="st-2"><span class="n">3</span>Deine Highlights</li>
+        <li id="st-3"><span class="n">4</span>Fang-Highlights und Besondere Momente</li>
+      </ol>
+      <p id="note" data-layout-ignore>Echte Aufnahme der App mit Beispieldaten · Karte: OpenFreeMap © OpenMapTiles, Daten © OpenStreetMap-Mitwirkende</p>
+      <div id="ph-wrap" data-layout-allow-overflow>
+        <div id="ph">
+          <div class="screen">
+            <div class="status" data-layout-ignore><span>9:41</span><svg width="84" height="17" viewBox="0 0 70 14"><rect x="0" y="10" width="3.4" height="4" rx="0.8"/><rect x="5" y="7" width="3.4" height="7" rx="0.8"/><rect x="10" y="4" width="3.4" height="10" rx="0.8"/><rect x="15" y="1" width="3.4" height="13" rx="0.8"/><path d="M28 5.2a10 10 0 0 1 14 0l-1.6 1.6a7.6 7.6 0 0 0-10.8 0zM31.4 8.6a5.2 5.2 0 0 1 7.2 0L35 12.2z"/><rect x="46" y="1.5" width="21" height="11" rx="3" fill="none" stroke="#000" stroke-opacity="0.4"/><rect x="48" y="3.5" width="15" height="7" rx="1.6"/><rect x="68" y="5" width="1.6" height="4" rx="0.6" fill-opacity="0.4"/></svg></div>
+            <div class="island"></div>
+            <video id="rec" class="clip" src="assets/tutorial/review.mp4" data-start="0.5" data-duration="17.5" data-media-start="0" data-track-index="2" muted playsinline></video>
+            <img id="rec-hold" class="clip" src="assets/tutorial/review-last.png" data-start="18" data-duration="1" data-track-index="3" alt="" />
+          </div>
+        </div>
+        <div id="ph-tap-0" class="tap clip" data-start="1.1" data-duration="0.5" data-track-index="5" style="left:250.8px;top:421.8px"><i class="dot"></i><i class="ring"></i></div>
+        <div id="ph-tap-1" class="tap clip" data-start="3.5" data-duration="0.5" data-track-index="6" style="left:174.4px;top:751.5px"><i class="dot"></i><i class="ring"></i></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#ph-fade", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 0);
+    tl.fromTo(".big .w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power2.out", stagger: 0.067 }, 0.3);
+    tl.fromTo([".kicker", "#steps li", "#note"], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out", stagger: 0.06 }, 0.5);
+    // der gerade gezeigte Schritt leuchtet auf, die anderen bleiben gedämpft
+    const steps = [1.1,3.5,9.7,13.9];
+    steps.forEach((t, i) => {
+      tl.to("#st-" + i, { color: "#ffffff", duration: 0.2, ease: "power2.out" }, t);
+      tl.to("#st-" + i + " .n", { backgroundColor: "#f2994a", color: "#0b2a33", duration: 0.2, ease: "power2.out" }, t);
+      if (i < steps.length - 1) {
+        tl.to("#st-" + i, { color: "rgba(232, 244, 245, 0.45)", duration: 0.2 }, steps[i + 1]);
+        tl.to("#st-" + i + " .n", { backgroundColor: "rgba(232, 244, 245, 0.12)", color: "#e8f4f5", duration: 0.2 }, steps[i + 1]);
+      }
+    });
+    [1.1,3.5].forEach((t, i) => {
+      tl.fromTo("#ph-tap-" + i + " .dot", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.08, ease: "power2.out" }, t);
+      tl.to("#ph-tap-" + i + " .dot", { opacity: 0, duration: 0.25, ease: "power2.in" }, t + 0.18);
+      tl.fromTo("#ph-tap-" + i + " .ring", { scale: 0, opacity: 1 }, { scale: 1, opacity: 0, duration: 0.45, ease: "expo.out" }, t);
+    });
+    tl.to({}, { duration: 19 }, 0);
+    window.__timelines["phone"] = tl;
+  </script>
+</template>

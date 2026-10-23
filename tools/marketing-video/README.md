@@ -116,14 +116,16 @@ node scripts/check.mjs output/fangpunkt-erklaervideo-1080x1920.mp4 1080 1920 --q
 - **Ergebnis (2026-10-23):** `output/fangpunkt-erklaervideo-1080x1920.mp4`, 65,2 s; `check.mjs` bestanden (−14,5 LUFS, Spitze −1,3 dBFS, QR ab 59,65 s unbewegt und aus drei Bildern dekodiert). Spracherkennung (faster-whisper small) findet alle 13 Sätze. Der Schnitt gleicht Text und erkannte Wörter an, weil die Erkennung z. B. „Schonzeit“ als „schon Zeit“ hört.
 - Die Fußnote unter dem Handy nennt je Bildschirm „Beispieldaten“ und die Quellen (Karte, Open-Meteo, PEGELONLINE); bei Fang und Fangbuch zusätzlich „Keine Rechtsauskunft“.
 
-## Funktionsanimation „Session-Rückblick mit GPS-Route“ (HyperFrames, 1920 × 1080, ca. 34 s)
+## Funktionsanimation „Session-Rückblick mit GPS-Route“ (HyperFrames, 1920 × 1080, ca. 58 s)
 
-Kein Werbevideo: eine schematische Animation, wie die Route einer Session entsteht und was der Rückblick zeigt (Plan: `hyperframes-route/SPEC.md`, Funktion aus PR #69). Der Angler läuft in Schlangenlinien am Ufer; die GPS-Punkte kommen aus einer Simulation mit denselben Regeln wie `app/src/domain/track.ts`: höchstens alle 10 s, erst ab 8 m Bewegung, ungenaue Fixe (> 50 m) und Sprünge (> 15 m/s) werden verworfen, nach „App im Hintergrund“ beginnt ein neuer Abschnitt und die Lücke bleibt offen. Rauschen mit festem Startwert, deshalb ist jeder Lauf gleich. Dauer, Strecke und Einträge im Rückblick stammen aus dieser Simulation und sind als Beispielwerte gekennzeichnet.
+Kein Werbevideo: eine schematische Animation, wie die Route einer Session entsteht und was der Rückblick zeigt (Plan: `hyperframes-route/SPEC.md`, Funktion aus PR #69). Der Angler läuft in Schlangenlinien am Ufer; die GPS-Punkte kommen aus einer Simulation mit denselben Regeln wie `app/src/domain/track.ts`: höchstens alle 10 s, erst ab 8 m Bewegung, ungenaue Fixe (> 50 m) und Sprünge (> 15 m/s) werden verworfen, nach „App im Hintergrund“ beginnt ein neuer Abschnitt und die Lücke bleibt offen. Rauschen mit festem Startwert, deshalb ist jeder Lauf gleich. Die Highlights sind aufgebaut wie im Rückblick der App (`ReviewHighlights.tsx`): Kennzahlen, Zähler, Fang-Highlights und Besondere Momente. Ihre Werte stammen aus dieser Simulation und sind als Beispielwerte gekennzeichnet.
+
+Zum Schluss zeigt ein Handy die **echte App**: `node scripts/record-tutorial.mjs --only=review` spielt eine laufende Beispiel-Session mit Route am Hohendeicher See ein (Route-ID `track-<sessionId>` wie in `data/trackService.ts`) und gibt einen Standort am Ufer frei. Danach tippt es „Session beenden“, wählt im Rückblick 4× und scrollt zu den Highlights. `build.mjs` liest `assets/tutorial/review.taps.json` für die Fingerringe.
 
 ```bash
 cd tools/marketing-video/hyperframes-route
 node build.mjs                                        # → index.html, compositions/route.html, timing.txt
-python3 ../scripts/music.py --dur=<Gesamt aus timing.txt> --suffix=-route
+python3 ../scripts/music.py --dur=<Gesamt aus timing.txt> --suffix=-route   # vorher: node ../scripts/record-tutorial.mjs --only=review
 npx --yes hyperframes@0.8.188 check
 npx --yes hyperframes@0.8.188 render --quality delivery --output ../output/raw-route.mp4
 cd .. && node scripts/finalize.mjs output/raw-route.mp4 output/fangpunkt-session-rueckblick-1920x1080.mp4

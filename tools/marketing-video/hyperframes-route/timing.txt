@@ -1,4 +1,5 @@
-Gesamt 34.2 s · Session 508 s echt (8 min), Zeitraffer ×35
+Gesamt 58 s · Session 508 s echt (8 min), Zeitraffer ×35
 Weg 467 m, gespeicherte Route 385 m (0,38 km), 34 Punkte in 2 Abschnitten
 Verworfen gezeigt: tooClose, inaccurate, tooClose, tooClose, tooClose, tooClose, tooClose, tooClose, tooClose, tooClose, jump, tooClose, tooClose, tooClose, tooClose, tooClose
-Rückblick ab 17.96 s, Wiedergabe 18.96–26.96 s (4× ab 22.96 s), Highlights 27.36 s, Schluss 29.96 s
+Handy mit echtem Rückblick ab 38.96 s (19 s)
+Rückblick ab 17.96 s, Wiedergabe 18.96–26.96 s (4× ab 22.96 s), Highlights 27.36 s, Schluss 35.96 s

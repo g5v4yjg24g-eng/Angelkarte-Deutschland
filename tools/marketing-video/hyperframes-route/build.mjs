@@ -2,7 +2,8 @@
 // Die GPS-Punkte kommen aus einer Simulation mit denselben Regeln wie app/src/domain/track.ts (decideFix):
 // Genauigkeit ≤ 50 m, höchstens alle 10 s, Abstand ≥ max(8 m, Ungenauigkeit), ≤ 15 m/s, Neustart = neuer Abschnitt.
 // Rauschen mit festem Startwert, damit jeder Lauf dasselbe Bild ergibt. Aufruf: node build.mjs
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
 const here = new URL('./', import.meta.url);
 const fx = (x, d = 2) => +x.toFixed(d);
@@ -65,11 +66,11 @@ function at(len) {
 // --- Ablauf in echter Zeit (s): Gehen, Stehen (Angeln), App im Hintergrund
 const phases = [
   { kind: 'walk', to: 0.3 },
-  { kind: 'stop', dur: 77, event: { id: 'hecht', label: 'Fang · Hecht' } },
+  { kind: 'stop', dur: 77, event: { id: 'hecht', label: 'Fang · Hecht', species: 'Hecht', cm: 68 } },
   { kind: 'walk', to: 0.6 },
   { kind: 'walk', to: 0.77, background: true },
   { kind: 'walk', to: 0.89 },
-  { kind: 'stop', dur: 42, event: { id: 'barsch', label: 'Fang · Barsch' } },
+  { kind: 'stop', dur: 42, event: { id: 'barsch', label: 'Fang · Barsch', species: 'Barsch', cm: 31 } },
   { kind: 'walk', to: 1.0 },
 ];
 let tReal = 0, pos = 0;
@@ -152,8 +153,15 @@ const SLOW = 4.0, SLOW_FRAC = 0.2, FAST_FRAC_PER_S = 0.2; // 1× für 20 % der Z
 const FAST_AT = fx(PLAY + SLOW);
 const PLAY_END = fx(FAST_AT + (1 - SLOW_FRAC) / FAST_FRAC_PER_S);
 const HIGHLIGHTS = fx(PLAY_END + 0.4);
-const OUTRO = fx(HIGHLIGHTS + 2.6);
-const TOTAL = fx(OUTRO + 4.2, 1);
+const H2 = fx(HIGHLIGHTS + 4.2); // Fang-Highlights und Besondere Momente
+const OUTRO = fx(H2 + 4.4);
+const ROUTE_END = fx(OUTRO + 3.4);
+// Zum Schluss: echte Aufnahme des Rückblicks im Handy (scripts/record-tutorial.mjs --only=review)
+const reviewRec = JSON.parse(readFileSync(new URL('../assets/tutorial/review.taps.json', import.meta.url), 'utf8'));
+execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-sseof', '-0.1', '-i', new URL('../assets/tutorial/review.mp4', import.meta.url).pathname, '-frames:v', '1', '-update', '1', new URL('../assets/tutorial/review-last.png', import.meta.url).pathname]);
+const PHONE = fx(ROUTE_END - 0.4);
+const PHONE_DUR = fx(reviewRec.durationS + 1.5);
+const TOTAL = fx(PHONE + PHONE_DUR, 1);
 const replayT = (t) => {
   const f = t / REAL_END;
   return fx(f <= SLOW_FRAC ? PLAY + (f / SLOW_FRAC) * SLOW : FAST_AT + (f - SLOW_FRAC) / FAST_FRAC_PER_S, 3);
@@ -215,7 +223,7 @@ for (let v = 0; v <= REC_END - T0 + 1e-9; v += STEP) {
   wk.x.push(fx(p.x, 1)); wk.y.push(fx(p.y, 1)); wk.l.push(fx(trueLen * (1 - len / L), 1));
 }
 const D = {
-  T0, REC_END, STOP_TAP, REVIEW, PLAY, FAST_AT, PLAY_END, HIGHLIGHTS, OUTRO, TOTAL, STEP, C,
+  T0, REC_END, STOP_TAP, REVIEW, PLAY, FAST_AT, PLAY_END, HIGHLIGHTS, H2, OUTRO, TOTAL: ROUTE_END, STEP, C,
   walk: wk,
   trueLen: fx(trueLen, 1),
   pts: points.map((p) => ({ t: vt(p.t), r: replayT(p.t) })),
@@ -228,6 +236,9 @@ const D = {
   count: points.map((p) => vt(p.t)),
 };
 const minutes = Math.round(REAL_END / 60);
+// Highlights wie im Rückblick der App (ReviewHighlights.tsx / domain/sessionReview.ts), aus der Simulation
+const burstMin = Math.round((events.at(-1).t - events[0].t) / 60); // beide Fänge liegen im 30-min-Fenster
+const longestEv = events.reduce((a, b) => (b.cm > a.cm ? b : a));
 const km = (distM / 1000).toLocaleString('de-DE', { maximumFractionDigits: 2 });
 
 const html = `<template>
@@ -282,14 +293,19 @@ const html = `<template>
     .chip.play { width: 58px; height: 58px; padding: 0; display: flex; align-items: center; justify-content: center; background: #7fd1c7; }
     #bar { position: relative; margin-top: 26px; width: 530px; height: 10px; border-radius: 5px; background: rgba(232, 244, 245, 0.16); overflow: hidden; }
     #bar-fill { position: absolute; left: 0; top: 0; width: 530px; height: 10px; background: #7fd1c7; transform-origin: 0 50%; }
-    #hl { position: absolute; left: 0; top: 600px; width: 530px; }
-    #hl h3 { font: 650 28px "Inter Variable", Inter, sans-serif; letter-spacing: 3px; color: #5cc4d6; margin-bottom: 16px; }
-    .tiles { display: flex; gap: 14px; }
-    .tile { flex: 1; padding: 18px 16px; border-radius: 18px; background: rgba(232, 244, 245, 0.08); }
-    .tile b { display: block; font: 500 28px "Inter Variable", Inter, sans-serif; color: rgba(232, 244, 245, 0.72); }
-    .tile span { display: block; margin-top: 6px; white-space: nowrap; font: 650 36px "Inter Variable", Inter, sans-serif; color: #fff; }
-    .hl-note { margin-top: 12px; font: 500 28px "Inter Variable", Inter, sans-serif; color: rgba(232, 244, 245, 0.6); }
-    #outro-line { position: absolute; left: 0; top: 880px; width: 530px; font: 500 28px/1.4 "Inter Variable", Inter, sans-serif; color: #e8f4f5; }
+    .hl { position: absolute; left: 0; top: 400px; width: 540px; }
+    .hl h3 { font: 650 28px "Inter Variable", Inter, sans-serif; letter-spacing: 3px; color: #5cc4d6; margin-bottom: 14px; }
+    .hl h3 em { font-style: normal; letter-spacing: 0; font-weight: 500; color: rgba(232, 244, 245, 0.6); }
+    .hl h3.sub { margin-top: 22px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .tile { padding: 14px 18px; border-radius: 16px; background: rgba(232, 244, 245, 0.08); border: 1.5px solid rgba(232, 244, 245, 0.14); }
+    .tile span { display: block; white-space: nowrap; font-family: "Fraunces Variable", Georgia, serif; font-weight: 700; font-size: 44px; line-height: 1.1; color: #fff; }
+    .tile b { display: block; margin-top: 4px; font: 600 28px "Inter Variable", Inter, sans-serif; color: #e8f4f5; }
+    .tile small { display: block; font: 500 28px "Inter Variable", Inter, sans-serif; color: rgba(232, 244, 245, 0.7); }
+    .counts { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-top: 16px; font: 500 28px "Inter Variable", Inter, sans-serif; color: #e8f4f5; }
+    .counts i { display: inline-block; width: 18px; height: 18px; border-radius: 50%; margin-right: 10px; vertical-align: -1px; }
+    .moment { padding: 14px 20px; border-radius: 14px; background: rgba(242, 182, 90, 0.16); font: 600 28px "Inter Variable", Inter, sans-serif; color: #fff; }
+    #outro-line { position: absolute; left: 0; top: 940px; width: 530px; font: 500 28px/1.4 "Inter Variable", Inter, sans-serif; color: #e8f4f5; }
     #footnote { position: absolute; left: 60px; bottom: 28px; font: 500 28px "Inter Variable", Inter, sans-serif; color: rgba(232, 244, 245, 0.55); }
   </style>
   <div id="root" data-composition-id="route" data-width="1920" data-height="1080">
@@ -339,7 +355,7 @@ const html = `<template>
         <div id="count">Gespeicherte Punkte: 0</div>
         <div id="stop-btn">Session beenden</div>
       </div>
-      <div id="rev-side" class="clip" data-start="${REVIEW}" data-duration="${fx(TOTAL - REVIEW)}" data-track-index="3">
+      <div id="rev-side" class="clip" data-start="${REVIEW}" data-duration="${fx(ROUTE_END - REVIEW)}" data-track-index="3">
         <div class="kicker">NACH DEM BEENDEN</div>
         <h1 class="big" id="big-rev"><span class="w">Dein</span> <span class="w">Angeltrip</span> <span class="w">im</span> <span class="w accent">Rückblick</span></h1>
         <div id="controls">
@@ -351,16 +367,33 @@ const html = `<template>
           </div>
           <div id="bar"><div id="bar-fill"></div></div>
         </div>
-        <div id="hl">
-          <h3>DEINE HIGHLIGHTS</h3>
-          <div class="tiles">
-            <div class="tile" id="tl-dur"><b>Dauer</b><span>${minutes} min</span></div>
-            <div class="tile" id="tl-dist"><b>Strecke</b><span>${km} km</span></div>
-            <div class="tile" id="tl-ev"><b>Einträge</b><span>${events.length}</span></div>
+        <div id="hl1" class="hl">
+          <h3>DEINE HIGHLIGHTS <em>· Beispielwerte</em></h3>
+          <div class="grid">
+            <div class="tile"><span>${minutes} min</span><b>Dauer</b></div>
+            <div class="tile"><span>${km} km</span><b>Strecke</b></div>
+            <div class="tile"><span>${events.length}</span><b>Einträge</b></div>
+            <div class="tile"><span>${events.length}</span><b>Bisse gesamt</b></div>
           </div>
-          <div class="hl-note">Beispielwerte aus dieser Animation</div>
+          <ul class="counts">
+            <li><i style="background:#f2994a"></i>${events.length} Gefangen</li>
+            <li><i style="background:#b8742a"></i>0 Verloren</li>
+            <li><i style="background:#9aa9ad"></i>0 Bisse ohne Haken</li>
+            <li><i style="background:#5cc4d6"></i>0 Gesichtet</li>
+          </ul>
         </div>
-        <p id="outro-line">Aufgezeichnet wird nur, solange Fangpunkt geöffnet ist. Die Route bleibt auf deinem Gerät.</p>
+        <div id="hl2" class="hl" data-hold>
+          <h3>FANG-HIGHLIGHTS <em>· Beispielwerte</em></h3>
+          <div class="grid">
+            <div class="tile"><span>${longestEv.cm} cm</span><b>Größter Fisch</b><small>${longestEv.species}</small></div>
+            <div class="tile"><span>${events.length}</span><b>Arten</b></div>
+            <div class="tile"><span>${clock(events[0].t)}</span><b>Erster Fang</b><small>${events[0].species}</small></div>
+            <div class="tile"><span>${clock(events.at(-1).t)}</span><b>Letzter Fang</b><small>${events.at(-1).species}</small></div>
+          </div>
+          <h3 class="sub">BESONDERE MOMENTE</h3>
+          <div class="moment">${events.length} Fänge innerhalb von ${burstMin} Minuten</div>
+        </div>
+        <p id="outro-line">Nur bei geöffneter App aufgezeichnet · die Route bleibt auf deinem Gerät.</p>
       </div>
     </div>
     <div id="tap" style="left:1480px;top:857px" class="clip" data-start="${STOP_TAP}" data-duration="0.5" data-track-index="4"></div>
@@ -444,7 +477,7 @@ const html = `<template>
     tl.set(D.lines.flatMap((l) => ["#casing-" + l.id, "#route-" + l.id]), { opacity: 0, attr: { "stroke-dashoffset": (i, el) => el.getAttribute("stroke-dasharray") } }, D.REVIEW + 0.32);
     tl.fromTo("#big-rev .w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power2.out", stagger: 0.067 }, D.REVIEW + 0.05);
     tl.fromTo(["#rev-side .kicker", "#controls"], { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out", stagger: 0.1 }, D.REVIEW + 0.3);
-    tl.set("#hl", { opacity: 0 }, 0);
+    tl.set(["#hl1", "#hl2"], { opacity: 0 }, 0);
     tl.set("#outro-line", { opacity: 0 }, 0);
     // Geschwindigkeit: erst 1×, dann 4×
     tl.set("#sp-1", { backgroundColor: "#7fd1c7", color: "#0b2a33" }, D.REVIEW);
@@ -469,8 +502,13 @@ const html = `<template>
     tl.to("#head", { opacity: 0, duration: 0.2 }, D.PLAY_END);
     tl.to("#mk-end", { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.6)" }, D.PLAY_END);
     // Highlights und Schlusszeile
-    tl.fromTo("#hl", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out", immediateRender: false }, D.HIGHLIGHTS);
-    tl.fromTo([".tile"], { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power2.out", stagger: 0.1 }, D.HIGHLIGHTS + 0.1);
+    // Highlights in zwei Takten an derselben Stelle (Unschärfe-Tausch); die Wiedergabe-Steuerung macht Platz
+    tl.to("#controls", { opacity: 0, filter: "blur(8px)", duration: 0.18, ease: "power2.in" }, D.HIGHLIGHTS - 0.2);
+    tl.set("#hl1", { opacity: 1 }, D.HIGHLIGHTS);
+    tl.fromTo(["#hl1 h3", "#hl1 .tile", "#hl1 .counts li"], { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power2.out", stagger: 0.08 }, D.HIGHLIGHTS);
+    tl.to("#hl1", { opacity: 0, filter: "blur(8px)", duration: 0.18, ease: "power2.in" }, D.H2 - 0.2);
+    tl.set("#hl2", { opacity: 1 }, D.H2);
+    tl.fromTo(["#hl2 h3", "#hl2 .tile", "#hl2 .moment"], { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power2.out", stagger: 0.08 }, D.H2);
     tl.fromTo("#outro-line", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out", immediateRender: false }, D.OUTRO);
     tl.to({}, { duration: D.TOTAL }, 0);
     window.__timelines["route"] = tl;
@@ -493,10 +531,12 @@ const index = `<!doctype html>
   </head>
   <body>
     <div id="root" data-composition-id="main" data-start="0" data-duration="${TOTAL}" data-width="1920" data-height="1080">
-      <div id="route" data-composition-id="route" data-composition-src="compositions/route.html" data-start="0" data-duration="${TOTAL}" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <div id="route" data-composition-id="route" data-composition-src="compositions/route.html" data-start="0" data-duration="${ROUTE_END}" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
       <audio id="music" class="clip" src="assets/music/music-route.wav" data-start="0" data-duration="${TOTAL}" data-track-index="10" data-volume="0.22" data-audio-group="music"></audio>
 ${events.map((e, i) => `      <audio id="sfx-ev-${i}" class="clip" src="assets/graphics/sfx-tap.wav" data-start="${vt(e.t)}" data-duration="0.06" data-track-index="${11 + i}" data-volume="0.45" data-audio-group="sfx"></audio>`).join('\n')}
 ${events.map((e, i) => `      <audio id="sfx-rev-${i}" class="clip" src="assets/graphics/sfx-tap.wav" data-start="${replayT(e.t)}" data-duration="0.06" data-track-index="${14 + i}" data-volume="0.45" data-audio-group="sfx"></audio>`).join('\n')}
+      <div id="phone" data-composition-id="phone" data-composition-src="compositions/phone.html" data-start="${PHONE}" data-duration="${PHONE_DUR}" data-track-index="2" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
+${reviewRec.taps.map((p, i) => `      <audio id="sfx-ph-${i}" class="clip" src="assets/graphics/sfx-tap.wav" data-start="${fx(PHONE + 0.5 + p.t)}" data-duration="0.06" data-track-index="${20 + i}" data-volume="0.45" data-audio-group="sfx"></audio>`).join('\n')}
       <audio id="sfx-stop" class="clip" src="assets/graphics/sfx-tap.wav" data-start="${STOP_TAP}" data-duration="0.06" data-track-index="17" data-volume="0.5" data-audio-group="sfx"></audio>
       <audio id="sfx-review" class="clip" src="assets/graphics/sfx-whoosh.wav" data-start="${fx(REVIEW - 0.25)}" data-duration="0.7" data-track-index="18" data-volume="0.3" data-audio-group="sfx"></audio>
     </div>
@@ -510,11 +550,105 @@ ${events.map((e, i) => `      <audio id="sfx-rev-${i}" class="clip" src="assets/
 mkdirSync(new URL('compositions/', here), { recursive: true });
 writeFileSync(new URL('compositions/route.html', here), html);
 writeFileSync(new URL('index.html', here), index);
+writeFileSync(new URL('compositions/phone.html', here), phoneHtml());
 const summary = [
   `Gesamt ${TOTAL} s · Session ${REAL_END.toFixed(0)} s echt (${minutes} min), Zeitraffer ×${C}`,
   `Weg ${fx(L * M_PER_PX, 0)} m, gespeicherte Route ${fx(distM, 0)} m (${km} km), ${points.length} Punkte in ${segments.length} Abschnitten`,
   `Verworfen gezeigt: ${shown.map((r) => r.why).join(', ')}`,
+  `Handy mit echtem Rückblick ab ${PHONE} s (${PHONE_DUR} s)`,
   `Rückblick ab ${REVIEW} s, Wiedergabe ${PLAY}–${PLAY_END} s (4× ab ${FAST_AT} s), Highlights ${HIGHLIGHTS} s, Schluss ${OUTRO} s`,
 ];
 writeFileSync(new URL('timing.txt', here), summary.join('\n') + '\n');
 console.log(summary.join('\n'));
+
+// Schluss-Szene: Handy mit der echten Aufnahme „Session beenden“ → „Dein Angeltrip im Rückblick“
+function phoneHtml() {
+  const k = 483.6 / 393;
+  const LEAD = 0.5; // Aufnahme startet kurz nach der Blende
+  const steps = [
+    { t: 0.6, text: 'Session beenden antippen' },
+    { t: 3.0, text: 'Route abspielen – hier mit 4×' },
+    { t: 9.2, text: 'Deine Highlights' },
+    { t: 13.4, text: 'Fang-Highlights und Besondere Momente' },
+  ];
+  const rings = reviewRec.taps
+    .map((p, i) => `<div id="ph-tap-${i}" class="tap clip" data-start="${fx(LEAD + p.t, 3)}" data-duration="0.5" data-track-index="${5 + i}" style="left:${fx(18.2 + p.x * k, 1)}px;top:${fx(18.2 + 66.4 + p.y * k, 1)}px"><i class="dot"></i><i class="ring"></i></div>`)
+    .join('\n        ');
+  const stepEls = steps.map((st, i) => `<li id="st-${i}"><span class="n">${i + 1}</span>${st.text}</li>`).join('\n        ');
+  return `<template>
+  <style>
+    @font-face { font-family: "Fraunces Variable"; font-weight: 100 900; src: url("assets/fonts/fraunces-latin-wght-normal.woff2") format("woff2-variations"); }
+    @font-face { font-family: "Fraunces Variable"; font-weight: 100 900; src: url("assets/fonts/fraunces-latin-ext-wght-normal.woff2") format("woff2-variations"); unicode-range: U+0100-024F; }
+    @font-face { font-family: "Inter Variable"; font-weight: 100 900; src: url("assets/fonts/inter-latin-wght-normal.woff2") format("woff2-variations"); }
+    @font-face { font-family: "Inter Variable"; font-weight: 100 900; src: url("assets/fonts/inter-latin-ext-wght-normal.woff2") format("woff2-variations"); unicode-range: U+0100-024F; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: radial-gradient(55% 60% at 70% 50%, #12404b 0%, rgba(11, 42, 51, 0) 100%), #0b2a33; font-family: "Inter Variable", Inter, sans-serif; }
+    #ph-fade { position: absolute; inset: 0; }
+    .kicker { position: absolute; left: 160px; top: 230px; font: 650 28px "Inter Variable", Inter, sans-serif; letter-spacing: 3px; color: #5cc4d6; }
+    .big { position: absolute; left: 160px; top: 280px; width: 860px; font-family: "Fraunces Variable", Georgia, serif; font-weight: 640; font-size: 76px; line-height: 1.1; color: #fff; }
+    .big .w { display: inline-block; }
+    .big .accent { color: #7fd1c7; }
+    #steps { position: absolute; left: 160px; top: 500px; list-style: none; font: 600 34px "Inter Variable", Inter, sans-serif; color: rgba(232, 244, 245, 0.45); }
+    #steps li { display: flex; align-items: center; gap: 18px; margin-bottom: 26px; }
+    #steps .n { width: 52px; height: 52px; border-radius: 50%; background: rgba(232, 244, 245, 0.12); color: #e8f4f5; font: 700 28px/52px "Inter Variable", Inter, sans-serif; text-align: center; }
+    #note { position: absolute; left: 160px; top: 880px; width: 860px; font: 500 28px/1.4 "Inter Variable", Inter, sans-serif; color: rgba(232, 244, 245, 0.7); }
+    /* Handy wie in den anderen Videos (520 px breit), für das Querformat auf 86 % verkleinert; es steht still */
+    #ph-wrap { position: absolute; left: 1160px; top: 73px; width: 520px; height: 1085px; transform: scale(0.86); transform-origin: 0 0; }
+    #ph { position: absolute; inset: 0; padding: 18.2px; border-radius: 80px; background: linear-gradient(145deg, #3a4246, #15191b 45%, #2b3236); box-shadow: 0 40px 90px rgba(0, 0, 0, 0.45), 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(255, 255, 255, 0.08); }
+    .screen { position: relative; width: 483.6px; height: 1048.4px; border-radius: 65px; overflow: hidden; background: #fff; }
+    .status { position: absolute; left: 0; top: 0; width: 100%; height: 66.4px; background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 7px 42px 0; font: 600 21px "Inter Variable", Inter, sans-serif; color: #000; z-index: 3; }
+    .status svg { fill: #000; }
+    .island { position: absolute; top: 13.5px; left: 165.5px; width: 152.6px; height: 44.3px; border-radius: 22px; background: #000; z-index: 4; }
+    #rec, #rec-hold { position: absolute; left: 0; top: 66.4px; width: 483.6px; height: 982px; object-fit: cover; object-position: top; }
+    .tap { position: absolute; width: 0; height: 0; }
+    .tap i { position: absolute; border-radius: 50%; }
+    .tap .ring { left: -45px; top: -45px; width: 90px; height: 90px; border: 3px solid #fff; box-shadow: 0 0 0 1.5px rgba(11, 42, 51, 0.55), inset 0 0 0 1.5px rgba(11, 42, 51, 0.55); }
+    .tap .dot { left: -23px; top: -23px; width: 46px; height: 46px; background: rgba(11, 42, 51, 0.28); border: 2px solid rgba(255, 255, 255, 0.9); }
+  </style>
+  <div id="root" data-composition-id="phone" data-width="1920" data-height="1080">
+    <div id="ph-fade">
+      <div class="kicker">IN DER APP</div>
+      <h2 class="big"><span class="w">So</span> <span class="w">sieht</span> <span class="w">dein</span> <span class="w accent">Rückblick</span> <span class="w">aus.</span></h2>
+      <ol id="steps">
+        ${stepEls}
+      </ol>
+      <p id="note" data-layout-ignore>Echte Aufnahme der App mit Beispieldaten · Karte: OpenFreeMap © OpenMapTiles, Daten © OpenStreetMap-Mitwirkende</p>
+      <div id="ph-wrap" data-layout-allow-overflow>
+        <div id="ph">
+          <div class="screen">
+            <div class="status" data-layout-ignore><span>9:41</span><svg width="84" height="17" viewBox="0 0 70 14"><rect x="0" y="10" width="3.4" height="4" rx="0.8"/><rect x="5" y="7" width="3.4" height="7" rx="0.8"/><rect x="10" y="4" width="3.4" height="10" rx="0.8"/><rect x="15" y="1" width="3.4" height="13" rx="0.8"/><path d="M28 5.2a10 10 0 0 1 14 0l-1.6 1.6a7.6 7.6 0 0 0-10.8 0zM31.4 8.6a5.2 5.2 0 0 1 7.2 0L35 12.2z"/><rect x="46" y="1.5" width="21" height="11" rx="3" fill="none" stroke="#000" stroke-opacity="0.4"/><rect x="48" y="3.5" width="15" height="7" rx="1.6"/><rect x="68" y="5" width="1.6" height="4" rx="0.6" fill-opacity="0.4"/></svg></div>
+            <div class="island"></div>
+            <video id="rec" class="clip" src="assets/tutorial/review.mp4" data-start="${LEAD}" data-duration="${fx(reviewRec.durationS)}" data-media-start="0" data-track-index="2" muted playsinline></video>
+            <img id="rec-hold" class="clip" src="assets/tutorial/review-last.png" data-start="${fx(LEAD + reviewRec.durationS)}" data-duration="${fx(PHONE_DUR - LEAD - reviewRec.durationS)}" data-track-index="3" alt="" />
+          </div>
+        </div>
+        ${rings}
+      </div>
+    </div>
+  </div>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo("#ph-fade", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 0);
+    tl.fromTo(".big .w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.13, ease: "power2.out", stagger: 0.067 }, 0.3);
+    tl.fromTo([".kicker", "#steps li", "#note"], { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out", stagger: 0.06 }, 0.5);
+    // der gerade gezeigte Schritt leuchtet auf, die anderen bleiben gedämpft
+    const steps = ${JSON.stringify(steps.map((st) => fx(LEAD + st.t, 3)))};
+    steps.forEach((t, i) => {
+      tl.to("#st-" + i, { color: "#ffffff", duration: 0.2, ease: "power2.out" }, t);
+      tl.to("#st-" + i + " .n", { backgroundColor: "#f2994a", color: "#0b2a33", duration: 0.2, ease: "power2.out" }, t);
+      if (i < steps.length - 1) {
+        tl.to("#st-" + i, { color: "rgba(232, 244, 245, 0.45)", duration: 0.2 }, steps[i + 1]);
+        tl.to("#st-" + i + " .n", { backgroundColor: "rgba(232, 244, 245, 0.12)", color: "#e8f4f5", duration: 0.2 }, steps[i + 1]);
+      }
+    });
+    ${JSON.stringify(reviewRec.taps.map((p) => fx(LEAD + p.t, 3)))}.forEach((t, i) => {
+      tl.fromTo("#ph-tap-" + i + " .dot", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.08, ease: "power2.out" }, t);
+      tl.to("#ph-tap-" + i + " .dot", { opacity: 0, duration: 0.25, ease: "power2.in" }, t + 0.18);
+      tl.fromTo("#ph-tap-" + i + " .ring", { scale: 0, opacity: 1 }, { scale: 1, opacity: 0, duration: 0.45, ease: "expo.out" }, t);
+    });
+    tl.to({}, { duration: ${PHONE_DUR} }, 0);
+    window.__timelines["phone"] = tl;
+  </script>
+</template>
+`;
+}

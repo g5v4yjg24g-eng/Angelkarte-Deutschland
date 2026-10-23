@@ -144,6 +144,7 @@ async function record(name, timeline, durationS) {
       t = a.at;
       tNow = a.at;
       await a.run();
+      if (a.shot) await page.screenshot({ path: join(out, `dry-${name}-${a.at}.png`) });
     }
     await page.waitForTimeout(Math.max(0, (durationS - t) * 1000));
     await page.screenshot({ path: join(out, `dry-${name}.png`) });
@@ -371,7 +372,7 @@ const steps = {
       entry(3, 82, spots.b, fish('pike', 68, 'spinning', { name: 'Wobbler 12 cm', type: 'crankbait' })),
       entry(4, 104, spots.c, fish('perch', 27, 'dropshot', { name: 'Gummifisch 7 cm', type: 'softbait' })),
     ];
-    const track = { ...m0, id: 'demo-review-track', sessionId: session.id, segments: segments.filter((s) => s.length) };
+    const track = { ...m0, id: `track-${session.id}`, sessionId: session.id, segments: segments.filter((s) => s.length) };
     const data = { catches, places: [], sessions: [session], baitPresets: [], trips: [], tracks: [track], photos: [] };
     const file = join(tmpdir(), 'fangpunkt-review-backup.json');
     writeFileSync(file, JSON.stringify({ ...buildBackup(data), schemaVersion: 3 }));
@@ -379,12 +380,20 @@ const steps = {
     await page.locator('input[type="file"]').setInputFiles(file);
     await page.getByRole('button', { name: /Datensätze? importieren/ }).click();
     await page.getByText(/importiert/).first().waitFor();
+    // Standort am letzten Platz freigeben, damit die Session „GPS aktiv“ zeigt (statt „Standort nicht freigegeben“)
+    await ctx.grantPermissions(['geolocation'], { origin: new URL(targetUrl).origin });
+    await ctx.setGeolocation({ latitude: toLngLat(way[14]).lat, longitude: toLngLat(way[14]).lng, accuracy: 6 });
     await open(`fangbuch/sessions/${session.id}`, 2500);
     await record(
       'review',
       [
         { at: 0.6, run: () => tap(page.getByRole('button', { name: 'Session beenden' })) },
+        { at: 2.4, shot: true, run: () => {} },
+        // Steuerung liegt unter der Karte: kurz hinscrollen, 4× wählen, zurück zur Karte
+        ...scrollToSteps(page.getByText('4×', { exact: true }), 2.2, 0.6, 520),
         { at: 3.0, run: () => tap(page.getByText('4×', { exact: true })) },
+        ...scrollToSteps(page.getByLabel('Karte mit der Route der Session'), 3.4, 0.6, 40),
+        { at: 5.0, shot: true, run: () => {} },
         ...scrollToSteps(page.getByRole('heading', { name: 'Deine Highlights' }), 9.2, 1.2, 70),
         ...scrollToSteps(page.getByRole('heading', { name: 'Fang-Highlights' }), 13.4, 1.2, 70),
       ],
