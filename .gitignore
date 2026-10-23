@@ -30,3 +30,6 @@ tools/marketing-video/hyperframes-tutorial/.hyperframes/video-state-lock
 tools/marketing-video/assets/tutorial/*-last.png
 tools/marketing-video/assets/tutorial/dry-*.png
 tools/marketing-video/assets/tutorial/fail-*.png
+tools/marketing-video/hyperframes-route/.hyperframes/artifacts/
+tools/marketing-video/hyperframes-route/renders/
+tools/marketing-video/hyperframes-route/.hyperframes/video-state-lock

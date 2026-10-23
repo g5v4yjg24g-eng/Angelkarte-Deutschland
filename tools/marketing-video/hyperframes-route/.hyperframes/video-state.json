@@ -1,0 +1,697 @@
+{
+  "version": 1,
+  "historyId": "95588920-4968-4205-9bc7-b01c596d701d",
+  "currentRevision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+  "pendingChanges": false,
+  "files": {
+    "CLAUDE.md": {
+      "hash": "1b36171117cb7c18f4100a0db6a3782ff2e096115995733200445cc2e80a4060",
+      "content": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/1b/1b36171117cb7c18f4100a0db6a3782ff2e096115995733200445cc2e80a4060"
+    },
+    "SPEC.md": {
+      "hash": "19db5f8edfc3dfc9b63aaff64c13c5426db9476ecbfa535b83f9c3fd8aebb50e",
+      "content": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/19/19db5f8edfc3dfc9b63aaff64c13c5426db9476ecbfa535b83f9c3fd8aebb50e"
+    },
+    "build.mjs": {
+      "hash": "d1702f02a1609f23969cfcdd44ed0c2e54b4b1b8f31189ef6ecd25f38cbd4a05",
+      "content": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/d1/d1702f02a1609f23969cfcdd44ed0c2e54b4b1b8f31189ef6ecd25f38cbd4a05"
+    },
+    "compositions/route.html": {
+      "hash": "3f9680c009c7186d32de851ff7f5c35bfc75689c1e0f072a450bc09ebf547db2",
+      "content": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/3f/3f9680c009c7186d32de851ff7f5c35bfc75689c1e0f072a450bc09ebf547db2"
+    },
+    "hyperframes.json": {
+      "hash": "26a858693e26b433481c52853631d86c8fd399940455331efcd3b39db54c5b90",
+      "content": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/26/26a858693e26b433481c52853631d86c8fd399940455331efcd3b39db54c5b90"
+    },
+    "index.html": {
+      "hash": "f37defdf7deba482445a3f43a6259c50804c690c3901179de43dc5f8d7378cd4",
+      "content": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/f3/f37defdf7deba482445a3f43a6259c50804c690c3901179de43dc5f8d7378cd4"
+    },
+    "package.json": {
+      "hash": "d1cf13989b08cf469c1aa5c2d47c3156ca9e7d56a107b8b0133f9c2e04b9965a",
+      "content": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/d1/d1cf13989b08cf469c1aa5c2d47c3156ca9e7d56a107b8b0133f9c2e04b9965a"
+    },
+    "timing.txt": {
+      "hash": "62b7d13d26dd6c644062cdbb8b41646808f160e9883d2b46a102c14b74098bab",
+      "content": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/62/62b7d13d26dd6c644062cdbb8b41646808f160e9883d2b46a102c14b74098bab"
+    }
+  },
+  "revisions": {
+    "607b3316-dab4-4dbf-a4fc-e9145fa87cc9": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792786245870,
+      "endedAt": 1792786245887,
+      "files": {
+        "build.mjs": {
+          "before": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/82/82a6ab33b458a5222aea5a2b11c681e985ea2a279a9ea2f12b90655bcf898c61",
+          "after": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/17/1704b537e974d5176751f4a5706a8d219e9e9f8e0dbec918e12df81a4566be52"
+        },
+        "compositions/route.html": {
+          "before": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/b7/b71d6687a410018c6ecaecb4595c0292bf69abc3c0faa426a12e5bf51a160dda",
+          "after": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/40/40e28ebd98cae1bc11d04024cf6197bde66da0f59b9e849ea2ad9dfaf41082d8"
+        }
+      }
+    },
+    "6decf19f-a750-49ca-a6a6-46866b29b924": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792786305208,
+      "endedAt": 1792786305219,
+      "files": {
+        "build.mjs": {
+          "before": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/17/1704b537e974d5176751f4a5706a8d219e9e9f8e0dbec918e12df81a4566be52",
+          "after": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/d1/d1702f02a1609f23969cfcdd44ed0c2e54b4b1b8f31189ef6ecd25f38cbd4a05"
+        },
+        "compositions/route.html": {
+          "before": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/40/40e28ebd98cae1bc11d04024cf6197bde66da0f59b9e849ea2ad9dfaf41082d8",
+          "after": "/root/.cache/hyperframes/history/95588920-4968-4205-9bc7-b01c596d701d/blobs/3f/3f9680c009c7186d32de851ff7f5c35bfc75689c1e0f072a450bc09ebf547db2"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+      "id": "ddb6ad63-ae0c-4d3f-8db4-9593dcfc17ee"
+    },
+    "revisions": {
+      "607b3316-dab4-4dbf-a4fc-e9145fa87cc9": [
+        {
+          "id": "e18c509f-de1d-4e9a-ad54-8e4a3a8e20ac",
+          "scope": "project",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792786254434,
+          "contentHash": "ba98bc31bfcfd5449118f5a2e46b0b8dc928f945f0ea82373f39002b68416630",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        }
+      ],
+      "6decf19f-a750-49ca-a6a6-46866b29b924": [
+        {
+          "id": "ddb6ad63-ae0c-4d3f-8db4-9593dcfc17ee",
+          "scope": "project",
+          "report": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/checks/ddb6ad63-ae0c-4d3f-8db4-9593dcfc17ee.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792786313653,
+          "contentHash": "b89657db3766510a0df05cb20ec5fef6774fd98074b8a81af13606aaf350d14d",
+          "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+          "inputFingerprint": "67b7f433ad8e346fdb59aa488e6348e30cdf7eda774e5c3e5b4742245bd1f1b5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "02c20d60-f17b-4655-b9b3-ba074860e1a8",
+        "scope": "project",
+        "report": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/checks/02c20d60-f17b-4655-b9b3-ba074860e1a8.json",
+        "metadata": {
+          "ok": false,
+          "browserSkipped": false,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 3000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1792786230621,
+        "contentHash": "21bb2e8b49d7bb5e622560b8cc7ab14b5c89660659143e5cf44265ea65d2a422",
+        "revision": null,
+        "inputFingerprint": "e5c8f7980b9ed19102f30a2f0e9221c58adf6f9423b7b699b84084844deb730a",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": {
+      "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+      "id": "6849246f-f277-4082-8ec8-53000c807bb3-8"
+    },
+    "revisions": {
+      "607b3316-dab4-4dbf-a4fc-e9145fa87cc9": [
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-0",
+          "time": 0,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269725,
+          "contentHash": "b72756cda0d7ea740ac45cba42e0bd3091182a11e6ab7bb3e9d1809e0c856f9e",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-1",
+          "time": 3.6,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269725,
+          "contentHash": "6adf5670a0f0a5746220a2b114b13a67c5c3f80af227dbfd775ceb95e8365d19",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-2",
+          "time": 5.2,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "863a6b961e0022a8853135f19dc4ee282821bb8e2d5503366d796ef541d27cf7",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-3",
+          "time": 6.9,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "2f9da1b2a083f7900e61efa5815051aa7c3fb8e0c67b73660ce62822c29b0c73",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-4",
+          "time": 9.6,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "4c40e174591bab0f2af8520c08c71a07103984ae20442fb358f2968f856c58c2",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-5",
+          "time": 11.6,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "df5a29915028645101dd98b9f36435a6f5ecbc07deaa71bfa11d5d6c488a1414",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-6",
+          "time": 13.6,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "9aaeccb3266eb57b0d6e9c52bb064d46d0d454235d1466862ac9469cbffc7bcf",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-7",
+          "time": 15.8,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "d416be1926abb428df03e9003bcf5c7b01616474e05db0d4731a2b4705288c8f",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-8",
+          "time": 18.3,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "61ebb42031009f91931da02d46d99dbcdc21fe2c376bbd75cc1f34204bcef410",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-9",
+          "time": 21,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "2eb42b8827359ece365f14f9ce161e30608899d478e8446147a8fedeb3990730",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-10",
+          "time": 24.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "3b771667f741dfa13d0a4252e0dc1f1014255e518c8c410ba41233496601f4cc",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-11",
+          "time": 28,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "39a8dc3411786c163af2c6c088dd15bd2da2f231fc89e3bacecc82206e181e3c",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-12",
+          "time": 31.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "546039309721197b836167b1de06552ad55018998c5979b9f1060ea7276c17b0",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-13",
+          "time": 34,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "546039309721197b836167b1de06552ad55018998c5979b9f1060ea7276c17b0",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        },
+        {
+          "scope": "full",
+          "id": "0bc58b2e-4aeb-40aa-9053-2dd402ebe04e-14",
+          "time": 33.174,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786269726,
+          "contentHash": "546039309721197b836167b1de06552ad55018998c5979b9f1060ea7276c17b0",
+          "revision": "607b3316-dab4-4dbf-a4fc-e9145fa87cc9",
+          "inputFingerprint": "edce9015346db023d8e7640a47a44ff27e8f89c9dc69bce7c846e9fe9484d251",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "8ab5010c-966a-4044-be7a-410aa9897424"
+        }
+      ],
+      "6decf19f-a750-49ca-a6a6-46866b29b924": [
+        {
+          "scope": "full",
+          "id": "6849246f-f277-4082-8ec8-53000c807bb3-0",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/snapshots/2e3521bd-deb2-45ab-934b-8068fe1ab7cc/frame-00-at-0s.png",
+          "time": 0,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786317759,
+          "contentHash": "52850dd661837f3d3d5f6a3655a7de7d58ba776d4b1ba5797e0486dd876d4829",
+          "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+          "inputFingerprint": "67b7f433ad8e346fdb59aa488e6348e30cdf7eda774e5c3e5b4742245bd1f1b5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "6849246f-f277-4082-8ec8-53000c807bb3-1",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/snapshots/2e3521bd-deb2-45ab-934b-8068fe1ab7cc/frame-01-at-4s.png",
+          "time": 4,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786317759,
+          "contentHash": "4a6743375b54bc0f65a9f88885f179e7b3718a721e188b184461807d6b1d0e0d",
+          "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+          "inputFingerprint": "67b7f433ad8e346fdb59aa488e6348e30cdf7eda774e5c3e5b4742245bd1f1b5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "6849246f-f277-4082-8ec8-53000c807bb3-2",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/snapshots/2e3521bd-deb2-45ab-934b-8068fe1ab7cc/frame-02-at-6.9s.png",
+          "time": 6.9,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786317759,
+          "contentHash": "80fbd663bccfd3b6dcb0724bce1f1a76829fff88e499b02dd2ae7097c5aa4eed",
+          "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+          "inputFingerprint": "67b7f433ad8e346fdb59aa488e6348e30cdf7eda774e5c3e5b4742245bd1f1b5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "6849246f-f277-4082-8ec8-53000c807bb3-3",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/snapshots/2e3521bd-deb2-45ab-934b-8068fe1ab7cc/frame-03-at-11.2s.png",
+          "time": 11.2,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786317759,
+          "contentHash": "3ed0d3ee88f8a37172bbcda086ccc0c665a0ceeae11c7a3512d5e383ea6d90c8",
+          "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+          "inputFingerprint": "67b7f433ad8e346fdb59aa488e6348e30cdf7eda774e5c3e5b4742245bd1f1b5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "6849246f-f277-4082-8ec8-53000c807bb3-4",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/snapshots/2e3521bd-deb2-45ab-934b-8068fe1ab7cc/frame-04-at-12.9s.png",
+          "time": 12.9,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786317759,
+          "contentHash": "5809aefed3c128d6e73f5d5b83621a28a5753bb7b02a7736f7d8f598d436d06e",
+          "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+          "inputFingerprint": "67b7f433ad8e346fdb59aa488e6348e30cdf7eda774e5c3e5b4742245bd1f1b5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "6849246f-f277-4082-8ec8-53000c807bb3-5",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/snapshots/2e3521bd-deb2-45ab-934b-8068fe1ab7cc/frame-05-at-15.9s.png",
+          "time": 15.9,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786317759,
+          "contentHash": "dae737cc1ac83ad364c191a044545a9b6c7011fe27c5ff164b75d795ff862270",
+          "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+          "inputFingerprint": "67b7f433ad8e346fdb59aa488e6348e30cdf7eda774e5c3e5b4742245bd1f1b5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "6849246f-f277-4082-8ec8-53000c807bb3-6",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/snapshots/2e3521bd-deb2-45ab-934b-8068fe1ab7cc/frame-06-at-21s.png",
+          "time": 21,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786317759,
+          "contentHash": "c36c55052ca63506f4bd921498a6fe20e06b7ea420d1d2a63f7f49950f8c75d6",
+          "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+          "inputFingerprint": "67b7f433ad8e346fdb59aa488e6348e30cdf7eda774e5c3e5b4742245bd1f1b5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "6849246f-f277-4082-8ec8-53000c807bb3-7",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/snapshots/2e3521bd-deb2-45ab-934b-8068fe1ab7cc/frame-07-at-28.5s.png",
+          "time": 28.5,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786317759,
+          "contentHash": "d70a392d8ed43062f3652da46a92ef3bf73807c76923f6008ccef6f6dfaecd01",
+          "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+          "inputFingerprint": "67b7f433ad8e346fdb59aa488e6348e30cdf7eda774e5c3e5b4742245bd1f1b5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        },
+        {
+          "scope": "full",
+          "id": "6849246f-f277-4082-8ec8-53000c807bb3-8",
+          "image": "/home/user/angelkarte-deutschland/tools/marketing-video/hyperframes-route/.hyperframes/artifacts/snapshots/2e3521bd-deb2-45ab-934b-8068fe1ab7cc/frame-08-at-33.174s.png",
+          "time": 33.174,
+          "metadata": {
+            "width": 1920,
+            "height": 1080,
+            "zoomScale": 1,
+            "browserGpuMode": "auto",
+            "warnings": [],
+            "partial": false
+          },
+          "createdAt": 1792786317759,
+          "contentHash": "d0d73c35e8246c725f701e76a57f74eb24cea74bca0528cf77e7e119502f4b37",
+          "revision": "6decf19f-a750-49ca-a6a6-46866b29b924",
+          "inputFingerprint": "67b7f433ad8e346fdb59aa488e6348e30cdf7eda774e5c3e5b4742245bd1f1b5",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "8ab5010c-966a-4044-be7a-410aa9897424",
+      "completedAt": 1792786409976,
+      "output": "/home/user/angelkarte-deutschland/tools/marketing-video/output/raw-route.mp4",
+      "status": "completed",
+      "revision": "6decf19f-a750-49ca-a6a6-46866b29b924"
+    },
+    "retainedRevisions": [
+      "6decf19f-a750-49ca-a6a6-46866b29b924"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}

@@ -116,6 +116,19 @@ node scripts/check.mjs output/fangpunkt-erklaervideo-1080x1920.mp4 1080 1920 --q
 - **Ergebnis (2026-10-23):** `output/fangpunkt-erklaervideo-1080x1920.mp4`, 65,2 s; `check.mjs` bestanden (−14,5 LUFS, Spitze −1,3 dBFS, QR ab 59,65 s unbewegt und aus drei Bildern dekodiert). Spracherkennung (faster-whisper small) findet alle 13 Sätze. Der Schnitt gleicht Text und erkannte Wörter an, weil die Erkennung z. B. „Schonzeit“ als „schon Zeit“ hört.
 - Die Fußnote unter dem Handy nennt je Bildschirm „Beispieldaten“ und die Quellen (Karte, Open-Meteo, PEGELONLINE); bei Fang und Fangbuch zusätzlich „Keine Rechtsauskunft“.
 
+## Funktionsanimation „Session-Rückblick mit GPS-Route“ (HyperFrames, 1920 × 1080, ca. 34 s)
+
+Kein Werbevideo: eine schematische Animation, wie die Route einer Session entsteht und was der Rückblick zeigt (Plan: `hyperframes-route/SPEC.md`, Funktion aus PR #69). Der Angler läuft in Schlangenlinien am Ufer; die GPS-Punkte kommen aus einer Simulation mit denselben Regeln wie `app/src/domain/track.ts`: höchstens alle 10 s, erst ab 8 m Bewegung, ungenaue Fixe (> 50 m) und Sprünge (> 15 m/s) werden verworfen, nach „App im Hintergrund“ beginnt ein neuer Abschnitt und die Lücke bleibt offen. Rauschen mit festem Startwert, deshalb ist jeder Lauf gleich. Dauer, Strecke und Einträge im Rückblick stammen aus dieser Simulation und sind als Beispielwerte gekennzeichnet.
+
+```bash
+cd tools/marketing-video/hyperframes-route
+node build.mjs                                        # → index.html, compositions/route.html, timing.txt
+python3 ../scripts/music.py --dur=<Gesamt aus timing.txt> --suffix=-route
+npx --yes hyperframes@0.8.188 check
+npx --yes hyperframes@0.8.188 render --quality delivery --output ../output/raw-route.mp4
+cd .. && node scripts/finalize.mjs output/raw-route.mp4 output/fangpunkt-session-rueckblick-1920x1080.mp4
+```
+
 ## Echte App, Beispieldaten
 
 Alle Bildschirme sind Aufnahmen der veröffentlichten App (Handy-Ansicht 393 × 798 CSS-px bei 3-facher Pixeldichte, deutsche Spracheinstellung). Es werden ausschließlich Handy-Ansichten gezeigt. Fangbuch, Sessions, Orte und Statistik zeigen **Beispieldaten** (`scripts/demo-data.mjs`, eingespielt über den normalen Import der App) am Hohendeicher See (OSM-Relation 9075175); das Video kennzeichnet sie mit „Beispieldaten“. Wetter, Warnungen und Gewässerprofil sind echte Antworten der App zum Aufnahmezeitpunkt (Wetter vom 23.10.2026).

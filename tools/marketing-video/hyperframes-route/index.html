@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- Fangpunkt – Funktionsanimation „Session-Rückblick mit GPS-Route“ (SPEC.md), 1920 × 1080, 30 fps.
+     NICHT VON HAND ÄNDERN: erzeugt von build.mjs. -->
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0b2a33; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="34.2" data-width="1920" data-height="1080">
+      <div id="route" data-composition-id="route" data-composition-src="compositions/route.html" data-start="0" data-duration="34.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080"></div>
+      <audio id="music" class="clip" src="assets/music/music-route.wav" data-start="0" data-duration="34.2" data-track-index="10" data-volume="0.22" data-audio-group="music"></audio>
+      <audio id="sfx-ev-0" class="clip" src="assets/graphics/sfx-tap.wav" data-start="6.833" data-duration="0.06" data-track-index="11" data-volume="0.45" data-audio-group="sfx"></audio>
+      <audio id="sfx-ev-1" class="clip" src="assets/graphics/sfx-tap.wav" data-start="15.088" data-duration="0.06" data-track-index="12" data-volume="0.45" data-audio-group="sfx"></audio>
+      <audio id="sfx-rev-0" class="clip" src="assets/graphics/sfx-tap.wav" data-start="23.488" data-duration="0.06" data-track-index="14" data-volume="0.45" data-audio-group="sfx"></audio>
+      <audio id="sfx-rev-1" class="clip" src="assets/graphics/sfx-tap.wav" data-start="26.332" data-duration="0.06" data-track-index="15" data-volume="0.45" data-audio-group="sfx"></audio>
+      <audio id="sfx-stop" class="clip" src="assets/graphics/sfx-tap.wav" data-start="17.26" data-duration="0.06" data-track-index="17" data-volume="0.5" data-audio-group="sfx"></audio>
+      <audio id="sfx-review" class="clip" src="assets/graphics/sfx-whoosh.wav" data-start="17.71" data-duration="0.7" data-track-index="18" data-volume="0.3" data-audio-group="sfx"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>
