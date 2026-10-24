@@ -18,6 +18,11 @@ const LOCATION_OPTIONS = [
   { value: 'on', label: de.settings.locationOn },
 ] as const;
 
+const USAGE_OPTIONS = [
+  { value: 'off', label: de.settings.usageOff },
+  { value: 'on', label: de.settings.usageOn },
+] as const;
+
 const TRACKING_OPTIONS = [
   { value: 'off', label: de.settings.trackingOff },
   { value: 'on', label: de.settings.trackingOn },
@@ -33,6 +38,7 @@ export function SettingsPage() {
   const weather = useWeatherEnabled();
   const locateOnStart = useBoolSetting('locateOnStart', true);
   const trackSessions = useBoolSetting('trackSessions', true);
+  const usageCount = useBoolSetting('usageCount', true);
   return (
     <Page title={de.settings.title} back="/mehr">
       <Section title={de.settings.theme}>
@@ -68,6 +74,17 @@ export function SettingsPage() {
           />
         )}
         <p className="muted">{de.settings.trackingHint}</p>
+      </Section>
+      <Section title={de.settings.usage}>
+        {usageCount !== undefined && (
+          <SegmentedControl
+            label={de.settings.usage}
+            options={USAGE_OPTIONS}
+            value={usageCount ? 'on' : 'off'}
+            onChange={(v) => void setSetting('usageCount', v === 'on')}
+          />
+        )}
+        <p className="muted">{de.settings.usageHint}</p>
       </Section>
       <Section title={de.settings.weather}>
         {weather !== undefined && (

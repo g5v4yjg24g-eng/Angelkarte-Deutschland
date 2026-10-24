@@ -11,6 +11,8 @@ export interface Settings {
   locateOnStart: boolean;
   /** Route laufender Sessions aufzeichnen (bleibt auf dem Gerät); Standard: an */
   trackSessions: boolean;
+  /** Anonyme Nutzungszählung (GoatCounter, nur Bereichspfade); Standard: an (Entscheidung Nutzer 2026-10-24) */
+  usageCount: boolean;
 }
 
 export async function getSetting<K extends keyof Settings>(

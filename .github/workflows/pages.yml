@@ -46,6 +46,9 @@ jobs:
       - run: pnpm build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
+          # Anonyme Nutzungszählung (GoatCounter): Code als Repository-Variable (Settings → Secrets and variables →
+          # Actions → Variables → GOATCOUNTER_CODE). Leer = es wird nichts gezählt.
+          VITE_GOATCOUNTER_CODE: ${{ vars.GOATCOUNTER_CODE }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: app/dist

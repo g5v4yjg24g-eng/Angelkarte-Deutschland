@@ -175,6 +175,9 @@ Wetterwerte werden als **Modell- bzw. Stationswerte** gekennzeichnet („nicht a
 
 ---
 
+### 6a. Nutzungszählung (Entscheidung Nutzer 2026-10-24)
+**GoatCounter** (goatcounter.com): „offered for free for reasonable public usage“, keine Cookies, keine eindeutige Kennung; Anbieter: kein GDPR-Hinweis nötig [V: goatcounter.com, 2026-10-24]. IP und User-Agent nur im Arbeitsspeicher (Sitzungsschlüssel, 8 h), nie auf Platte gespeichert [V: goatcounter.com/help/sessions, 2026-10-24]. Zählpixel `https://<code>.goatcounter.com/count?p=…` [V: goatcounter.com/help/pixel, 2026-10-24]. Die App sendet nur `p` (Bereichspfad ohne IDs) und einen Cache-Brecher. Serverstandort laut Startseite nicht genannt [O]. Ob für dieses Projekt ein Hinweis/Einwilligung rechtlich nötig ist, ist nicht geprüft [O]; die Zählung ist in den Einstellungen abschaltbar und auf der Datenschutzseite beschrieben.
+
 ## 7. Hosting
 
 | Option | Eignung | Offene Punkte |
