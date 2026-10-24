@@ -1,7 +1,7 @@
 # Veröffentlichungstexte zu den zehn Startmotiven
 
 Bilddateien: `posts/<Nr>-…-feed-1080x1440.png` (Instagram 3:4, empfohlen), `…-feed-1080x1350.png` (4:5), `stories/<Nr>-…-story-1080x1920.png`.
-Alle Motive mit Screenshots zeigen die **echte App mit Beispieldaten** (im Bild vermerkt). Ton: Ich-Form des Entwicklers.
+Alle Motive mit Screenshots zeigen die **echte App mit Beispieldaten** (ohne Vermerk im Bild, Entscheidung Nutzer 2026-10-24). Ton: Ich-Form des Entwicklers.
 
 **Hashtag-Regel:** 5–8 passende statt 30 generische. Grundset, je nach Thema ergänzt:
 `#angeln #angler #fangbuch #angelapp #petriheil` · Raubfisch: `#zanderangeln #barschangeln #hechtangeln #spinnfischen #raubfischangeln` · Daten/Technik: `#fangstatistik #angelwetter`
@@ -160,7 +160,7 @@ Auf TikTok höchstens 3–5 Hashtags, auf YouTube Shorts `#shorts` + 2 Themen-Ha
 >
 > Wie viele Stellen hast du im Kopf statt auf dem Handy?
 >
-> Kartendaten © OpenStreetMap-Mitwirkende · Beispieldaten im Bild
+> Kartendaten © OpenStreetMap-Mitwirkende
 
 **CTA:** Kommentar: Wie viele Stellen hast du nur im Kopf?
 **Hashtags:** `#angeln #angelstelle #raubfischangeln #spinnfischen #angelapp #angler`

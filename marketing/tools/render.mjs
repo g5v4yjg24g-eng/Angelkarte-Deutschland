@@ -75,8 +75,6 @@ p.sub{margin-top:26px;font:400 var(--sub)/1.38 Inter;color:#BFD8DC;max-width:880
 .light{color:${C.text}} .light p.sub{color:${C.muted}}
 .phone{position:absolute;width:var(--pw);aspect-ratio:390/844;border-radius:calc(var(--pw)*.13);background:#05161B;padding:calc(var(--pw)*.035);box-shadow:0 40px 90px rgba(0,0,0,.45),0 0 0 2px rgba(92,196,214,.25)}
 .phone img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:calc(var(--pw)*.1);display:block}
-.badge{position:absolute;font:600 24px/1 Inter;padding:14px 22px;border-radius:999px;background:rgba(5,22,27,.82);color:${C.fish};border:1.5px solid rgba(92,196,214,.5);white-space:nowrap}
-.badge b{color:${C.eye};font-weight:700}
 .foot{margin-top:auto;display:flex;flex-wrap:wrap;gap:14px}
 .pill{font:600 27px/1 Inter;padding:16px 24px;border-radius:999px;background:rgba(92,196,214,.14);border:1.5px solid rgba(92,196,214,.4);color:${C.fish}}
 .light .pill{background:#fff;border-color:#CFDCDE;color:${C.text}}
@@ -121,7 +119,6 @@ const head = (m, light) =>
    ${m.sub ? `<p class="sub">${m.sub}</p>` : ''}`;
 
 const shotPath = (name) => `../screenshots/${name}.png`;
-const BADGE = 'Echte App · <b>Beispieldaten</b>';
 
 // ---------- Layouts ----------
 function layoutPhone(m, { w, h }) {
@@ -132,14 +129,12 @@ function layoutPhone(m, { w, h }) {
   let phones = '';
   if (shots.length === 1) {
     const top = story ? 900 : h - ph * 0.62;
-    phones = `<div class="phone" style="--pw:${pw}px;left:${(w - pw) / 2}px;top:${top}px"><img src="${shotPath(shots[0])}"></div>
-      <div class="badge" style="left:${(w - pw) / 2 - 30}px;top:${top + 70}px;transform:translateX(-50%) rotate(-4deg)">${BADGE}</div>`;
+    phones = `<div class="phone" style="--pw:${pw}px;left:${(w - pw) / 2}px;top:${top}px"><img src="${shotPath(shots[0])}"></div>`;
   } else {
     const p2 = pw * 0.9;
     const top = story ? 930 : h - ph * 0.6;
     phones = `<div class="phone" style="--pw:${p2}px;left:${w / 2 - p2 - 10}px;top:${top + 90}px;transform:rotate(-5deg)"><img src="${shotPath(shots[0])}"></div>
-      <div class="phone" style="--pw:${p2}px;left:${w / 2 + 10}px;top:${top}px;transform:rotate(4deg)"><img src="${shotPath(shots[1])}"></div>
-      <div class="badge" style="left:60px;bottom:${story ? 300 : 50}px">${BADGE}</div>`;
+      <div class="phone" style="--pw:${p2}px;left:${w / 2 + 10}px;top:${top}px;transform:rotate(4deg)"><img src="${shotPath(shots[1])}"></div>`;
   }
   return `${phones}<div class="content" style="${story ? '' : 'padding-bottom:0'}">${head(m, m.light)}</div>`;
 }

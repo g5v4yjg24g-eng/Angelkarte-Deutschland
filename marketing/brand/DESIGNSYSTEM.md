@@ -41,7 +41,7 @@ Kontraste stammen aus der App, dort WCAG-AA-geprüft. Orange nur für **ein** he
 ## Bildsprache
 - **Echt vor schön:** eigene Aufnahmen vom Wasser, Hände an Rute und Handy, nasse Fische kurz gezeigt, graues Novemberlicht ist in Ordnung.
 - **Keine** Stock-Hochglanzbilder mit Trophäen-Posen, keine fremden Logos, keine Echolot-/Tiefenkarten-Optik (gibt es in der App nicht).
-- **App-Screenshots:** nur echte Screenshots der Live-App; Beispieldaten immer mit Plakette „Echte App · Beispieldaten“ kennzeichnen. Oberfläche nicht nachbearbeiten.
+- **App-Screenshots:** nur echte Screenshots der Live-App; ohne Vermerk-Plakette (Entscheidung Nutzer 2026-10-24); Beispieldaten nie als eigene echte Fänge oder Statistik ausgeben. Oberfläche nicht nachbearbeiten.
 - **Grafische Natur:** Wellenlinien aus der Welle des Logos (gleiche Strichform, runde Enden) statt Fotos, wenn kein eigenes Bild da ist.
 
 ## Komposition und Layouts

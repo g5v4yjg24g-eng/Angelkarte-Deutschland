@@ -44,7 +44,7 @@ Stand 2026-10-23. Getrennt von der App: Nichts in diesem Ordner wird gebaut oder
 
 ### Woher die Bilder kommen
 - **Fisch:** unverändert aus dem Marken-Master der App (`app/src/design/brand/fish.json`, dieselbe Figur wie in der Ladeanimation). Für helle Hintergründe sind nur die Farben getauscht.
-- **Screenshots:** automatisch von der Live-App aufgenommen (`tools/screenshots.mjs`) mit ausgedachten Beispieldaten am Möhnesee. Wetter, Warnungen und Pegel darin sind echte Werte vom 2026-10-23. Jedes Motiv mit Screenshot trägt die Plakette „Echte App · Beispieldaten“. Die Kopfzeile „Genauigkeit ca. 0 m“ auf der Karte kommt vom simulierten Standort im Testbrowser.
+- **Screenshots:** automatisch von der Live-App aufgenommen (`tools/screenshots.mjs`) mit ausgedachten Beispieldaten am Möhnesee. Wetter, Warnungen und Pegel darin sind echte Werte vom 2026-10-23. Die Motive tragen keinen Beispieldaten-Vermerk (Entscheidung Nutzer 2026-10-24). Die Kopfzeile „Genauigkeit ca. 0 m“ auf der Karte kommt vom simulierten Standort im Testbrowser.
 - **Gestaltung:** HTML-Vorlagen (`templates/`), mit Chromium in exakter Pixelgröße gerendert. Ein Bildgenerator war nicht verfügbar; Naturbezug entsteht über die Wellenlinien aus dem Logo statt über Fotos. **Es wurden keine KI-Fotos und keine Stockfotos verwendet.**
 - **Schriften:** Fraunces und Inter (SIL OFL 1.1), Lizenztexte in `brand/fonts/`.
 
