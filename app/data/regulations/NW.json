@@ -1,0 +1,618 @@
+{
+  "stateCode": "NW",
+  "status": "draft",
+  "missing": [
+    "Äschen-Gewässerabschnitte nach § 1a (Verwaltungsvorschrift im Ministerialblatt)",
+    "Prüfungsordnung für die Fischerprüfung",
+    "Gebühren für den Fischereischein"
+  ],
+  "checkedAt": "2026-10-24",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude) am 2026-10-24; Gegenprüfung durch den Nutzer offen",
+  "legalBasis": [
+    {
+      "id": "LFischG",
+      "title": "Fischereigesetz für das Land Nordrhein-Westfalen (Landesfischereigesetz – LFischG)",
+      "version": "in der Fassung der Bekanntmachung vom 22. Juni 1994 (GV. NRW. S. 516, ber. S. 864), zuletzt geändert durch Artikel 1 des Gesetzes vom 22. Juni 2026 (GV. NRW. S. 383); gültig ab 01.07.2026",
+      "url": "https://recht.nrw.de/lrgv/gesetz/01072026-landesfischereigesetz-bekanntmachung-der-neufassung",
+      "retrievedAt": "2026-10-24"
+    },
+    {
+      "id": "LFischVO",
+      "title": "Landesfischereiverordnung (LFischVO)",
+      "version": "vom 9. März 2010 (GV. NRW. S. 172), zuletzt geändert durch Artikel 2 der Verordnung vom 1. Juli 2026 (GV. NRW. S. 414); gültig ab 03.07.2026",
+      "url": "https://recht.nrw.de/lrgv/rechtsverordnung/03072026-landesfischereiverordnung-lfischvo",
+      "retrievedAt": "2026-10-24"
+    }
+  ],
+  "closedSeasons": [
+    {
+      "taxon": {
+        "de": "Seeforelle",
+        "sci": "Salmo trutta forma lacustris"
+      },
+      "from": {
+        "month": 10,
+        "day": 20
+      },
+      "to": {
+        "month": 3,
+        "day": 15
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 2 Nr. 1"
+    },
+    {
+      "taxon": {
+        "de": "Bachforelle",
+        "sci": "Salmo trutta forma fario"
+      },
+      "speciesId": "brown_trout",
+      "from": {
+        "month": 10,
+        "day": 20
+      },
+      "to": {
+        "month": 3,
+        "day": 15
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 2 Nr. 1"
+    },
+    {
+      "taxon": {
+        "de": "Seesaibling",
+        "sci": "Salvelinus alpinus"
+      },
+      "speciesId": "arctic_char",
+      "from": {
+        "month": 10,
+        "day": 20
+      },
+      "to": {
+        "month": 3,
+        "day": 15
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 2 Nr. 1"
+    },
+    {
+      "taxon": {
+        "de": "Aal",
+        "sci": "Anguilla anguilla"
+      },
+      "speciesId": "eel",
+      "from": {
+        "month": 10,
+        "day": 1
+      },
+      "to": {
+        "month": 3,
+        "day": 1
+      },
+      "scope": "nur im Rheinhauptstrom (ohne Nebengewässer)",
+      "basisId": "LFischVO",
+      "basisRef": "§ 2 Nr. 2"
+    },
+    {
+      "taxon": {
+        "de": "Äsche",
+        "sci": "Thymallus thymallus"
+      },
+      "speciesId": "grayling",
+      "from": {
+        "month": 3,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 2 Nr. 3"
+    },
+    {
+      "taxon": {
+        "de": "Nase",
+        "sci": "Chondrostoma nasus"
+      },
+      "speciesId": "nase",
+      "from": {
+        "month": 3,
+        "day": 1
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 2 Nr. 3"
+    },
+    {
+      "taxon": {
+        "de": "Zander",
+        "sci": "Sander lucioperca"
+      },
+      "speciesId": "zander",
+      "from": {
+        "month": 4,
+        "day": 1
+      },
+      "to": {
+        "month": 5,
+        "day": 31
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 2 Nr. 4"
+    },
+    {
+      "taxon": {
+        "de": "Barbe",
+        "sci": "Barbus barbus"
+      },
+      "speciesId": "barbel",
+      "from": {
+        "month": 5,
+        "day": 15
+      },
+      "to": {
+        "month": 6,
+        "day": 15
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 2 Nr. 5"
+    },
+    {
+      "taxon": {
+        "de": "Hecht",
+        "sci": "Esox lucius"
+      },
+      "speciesId": "pike",
+      "from": {
+        "month": 2,
+        "day": 15
+      },
+      "to": {
+        "month": 4,
+        "day": 30
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 2 Nr. 6"
+    }
+  ],
+  "minSizes": [
+    {
+      "taxon": {
+        "de": "Aal",
+        "sci": "Anguilla anguilla"
+      },
+      "speciesId": "eel",
+      "minCm": 50,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Barbe",
+        "sci": "Barbus barbus"
+      },
+      "speciesId": "barbel",
+      "minCm": 35,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Nase",
+        "sci": "Chondrostoma nasus"
+      },
+      "speciesId": "nase",
+      "minCm": 30,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Karpfen",
+        "sci": "Cyprinus carpio"
+      },
+      "speciesId": "carp",
+      "minCm": 35,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Hecht",
+        "sci": "Esox lucius"
+      },
+      "speciesId": "pike",
+      "minCm": 45,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Aland",
+        "sci": "Leuciscus idus"
+      },
+      "speciesId": "ide",
+      "minCm": 25,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Bachforelle",
+        "sci": "Salmo trutta forma fario"
+      },
+      "speciesId": "brown_trout",
+      "minCm": 25,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Seeforelle",
+        "sci": "Salmo trutta forma lacustris"
+      },
+      "minCm": 50,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Seesaibling",
+        "sci": "Salvelinus alpinus"
+      },
+      "speciesId": "arctic_char",
+      "minCm": 30,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Zander",
+        "sci": "Sander lucioperca"
+      },
+      "speciesId": "zander",
+      "minCm": 40,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Äsche",
+        "sci": "Thymallus thymallus"
+      },
+      "speciesId": "grayling",
+      "minCm": 30,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "taxon": {
+        "de": "Schleie",
+        "sci": "Tinca tinca"
+      },
+      "speciesId": "tench",
+      "minCm": 25,
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    }
+  ],
+  "protectedSpecies": [
+    {
+      "taxon": {
+        "de": "Stör",
+        "sci": "Acipenser sturio"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Schneider",
+        "sci": "Alburnoides bipunctatus"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Maifisch",
+        "sci": "Alosa alosa"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Finte",
+        "sci": "Alosa fallax"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Steinbeißer",
+        "sci": "Cobitis sp."
+      },
+      "note": "In NRW: Cobitis taenia mit Hybriden aus C. taenia und C. elongatoides (Fußnote 1).",
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Nordseeschnäpel, Wandermaräne",
+        "sci": "Coregonus oxyrinchus"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Groppe, Koppe",
+        "sci": "Cottus sp."
+      },
+      "note": "In NRW: Cottus gobio, C. perifretum und C. rhenanus (Fußnote 2).",
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Moderlieschen",
+        "sci": "Leucaspius delineatus"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Quappe",
+        "sci": "Lota lota"
+      },
+      "speciesId": "burbot",
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Schlammpeitzger",
+        "sci": "Misgurnus fossilis"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Schmerle",
+        "sci": "Barbatula barbatula"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Elritze",
+        "sci": "Phoxinus phoxinus"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Zwergstichling",
+        "sci": "Pungitius pungitius"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Bitterling",
+        "sci": "Rhodeus amarus"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Lachs",
+        "sci": "Salmo salar"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Meerforelle",
+        "sci": "Salmo trutta forma trutta"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Flussneunauge",
+        "sci": "Lampetra fluviatilis"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Bachneunauge",
+        "sci": "Lampetra planeri"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Meerneunauge",
+        "sci": "Petromyzon marinus"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Edelkrebs, Europäischer Flusskrebs",
+        "sci": "Astacus astacus"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Steinkrebs",
+        "sci": "Austropotamobius torrentium"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Flache Teichmuschel",
+        "sci": "Anodonta anatina"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Gemeine Teichmuschel",
+        "sci": "Anodonta cygnea"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Flussperlmuschel",
+        "sci": "Margaritifera margaritifera"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Kleine Teichmuschel",
+        "sci": "Pseudanodonta complanata"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Bachmuschel",
+        "sci": "Unio crassus"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Malermuschel",
+        "sci": "Unio pictorum"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Flussmuschel",
+        "sci": "Unio tumidus"
+      },
+      "basisId": "LFischVO",
+      "basisRef": "§ 1"
+    },
+    {
+      "taxon": {
+        "de": "Äsche",
+        "sci": "Thymallus thymallus"
+      },
+      "speciesId": "grayling",
+      "scope": "nur in den Gewässerabschnitten, die die oberste Fischereibehörde durch Verwaltungsvorschrift (Ministerialblatt) zum Schutz der heimischen Äschenbestände festlegt",
+      "basisId": "LFischVO",
+      "basisRef": "§ 1a"
+    }
+  ],
+  "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Wer die Fischerei ausübt, muss Inhaberin oder Inhaber eines gültigen Fischereischeins sein und ihn auf Verlangen der Polizei, den Ordnungsbehörden oder der amtlichen Fischereiaufsicht aushändigen oder elektronisch vorzeigen; auf Verlangen ist die Identität mit einem amtlichen Lichtbildausweis nachzuweisen (bei Jugendlichen auch Schülerausweis). Der Fischereischein ist nur gültig, wenn der Nachweis über die entrichtete Fischereiabgabe erbracht ist.",
+      "basisId": "LFischG",
+      "basisRef": "§ 31 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Der Fischereischein wird auf Lebenszeit erteilt und nur nach erfolgreich abgelegter Fischerprüfung (Ausnahmen u. a. für ausgebildete Fischer). Gültig wird er nach Abführung der nordrhein-westfälischen Fischereiabgabe und Ausstellung des Nachweises für ein Kalenderjahr oder fünf aufeinander folgende Kalenderjahre; die Voraussetzungen müssen zum Zeitpunkt der Fischerei vorliegen.",
+      "basisId": "LFischG",
+      "basisRef": "§ 31 Abs. 2 und 4, § 34"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Ein in einem anderen Bundesland ausgestellter Fischereischein gilt in NRW, soweit der ständige Wohnsitz in diesem Land liegt; zusätzlich ist die nordrhein-westfälische Fischereiabgabe zu entrichten und der Nachweis vorzuhalten. In anderen Ländern abgelegte Fischerprüfungen werden nach § 31 Abs. 5 anerkannt.",
+      "basisId": "LFischG",
+      "basisRef": "§ 31 Abs. 5 und 8"
+    },
+    {
+      "kind": "levy",
+      "text": "Die Fischereiabgabe beträgt 10 Euro für ein Kalenderjahr bzw. 30 Euro für fünf Kalenderjahre und kann für bis zu fünf Jahre im Voraus entrichtet werden. Der Nachweis über die Entrichtung ist beim Fischen mitzuführen und auf Verlangen ausgedruckt oder lesbar auf einem elektronischen Gerät vorzuzeigen.",
+      "basisId": "LFischVO",
+      "basisRef": "§ 22a Abs. 1, § 22b"
+    },
+    {
+      "kind": "youth",
+      "text": "Kinder und Jugendliche ab dem vollendeten 10. bis vor dem vollendeten 16. Lebensjahr brauchen keinen Fischereischein, dürfen aber nur in Begleitung einer Inhaberin oder eines Inhabers eines gültigen Fischereischeins fischen; die Begleitperson weist ihr Alter auf Verlangen mit Schülerausweis oder amtlichem Lichtbildausweis nach. Einen Erlaubnisschein brauchen auch sie (§ 37 Abs. 1 Satz 2). Ein Fischereischein wird erst ab dem vollendeten 12. Lebensjahr erteilt (§ 33 Abs. 1 Nr. 1).",
+      "basisId": "LFischG",
+      "basisRef": "§ 31 Abs. 3 Nr. 3"
+    },
+    {
+      "kind": "tourist",
+      "text": "Personen, die nicht oder nicht länger als ein Jahr in Deutschland gemeldet sind, kann ohne Fischerprüfung ein Jahresfischereischein (Ausländerfischereischein) erteilt werden, wenn sie in anderer Weise die notwendigen Kenntnisse besitzen.",
+      "basisId": "LFischG",
+      "basisRef": "§ 31 Abs. 6"
+    },
+    {
+      "kind": "permit",
+      "text": "Wer in einem Gewässer fischt, in dem er nicht Fischereiberechtigter oder Fischereipächter ist, muss unabhängig vom Fischereischein einen Erlaubnisschein bei sich führen und ihn auf Verlangen aushändigen oder elektronisch vorzeigen. Nicht erforderlich u. a. bei Helfern der Berechtigten (ohne Handangel), Eigentümern von Privatgewässern und genehmigten fischereilichen Veranstaltungen.",
+      "basisId": "LFischG",
+      "basisRef": "§ 37"
+    }
+  ],
+  "otherRules": [
+    {
+      "topic": "Messen",
+      "text": "Gemessen wird von der Kopfspitze bis zum Ende des längsten Teiles der Schwanzflosse.",
+      "basisId": "LFischVO",
+      "basisRef": "§ 3"
+    },
+    {
+      "topic": "Zurücksetzen",
+      "text": "Die in den §§ 1 bis 3 genannten Arten sind, wenn sie während der Schonzeiten oder vor Erreichen der Mindestmaße lebend dem Wasser entnommen werden, unverzüglich mit der gebotenen Sorgfalt ins Fanggewässer zurückzusetzen. Muss mit ihrem Eingehen gerechnet werden, sind sie zu töten und unverzüglich zu vergraben, sofern am Fanggewässer eine anderweitige Beseitigung nicht vorgeschrieben ist. Ihre Verwertung ist auch dann verboten, wenn sie tot angelandet werden.",
+      "basisId": "LFischVO",
+      "basisRef": "§ 4 Abs. 1"
+    },
+    {
+      "topic": "Meldepflicht Lachs und Meerforelle",
+      "text": "Fänge von Lachs und Meerforelle sind innerhalb von sieben Tagen mit Angabe des Fundortes der unteren Fischereibehörde zu melden; die Pflicht zum Zurücksetzen bleibt unberührt.",
+      "basisId": "LFischVO",
+      "basisRef": "§ 4 Abs. 2"
+    },
+    {
+      "topic": "Köderfische",
+      "text": "Köderfische dürfen nur in dem Gewässer verwendet werden, aus dem sie stammen (oder einem damit verbundenen Gewässer). Lebende Köderfische dürfen nicht mitgeführt und nicht zum Fang verwendet werden. Die in den §§ 1 bis 3 genannten Arten dürfen als Köderfische weder feilgeboten noch abgegeben werden.",
+      "basisId": "LFischVO",
+      "basisRef": "§ 5 Abs. 1, § 6"
+    },
+    {
+      "topic": "Aal-Fanglisten",
+      "text": "Die Hegeverpflichteten (Fischereiberechtigte, -pächter und -genossenschaften) dokumentieren den Fang von Aalen anhand von Fanglisten der Freizeitfischer.",
+      "basisId": "LFischVO",
+      "basisRef": "§ 21 Abs. 1"
+    }
+  ]
+}
