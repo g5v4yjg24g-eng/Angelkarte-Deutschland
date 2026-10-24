@@ -70,7 +70,10 @@ test('PRIV-1: nur App-Server, OpenFreeMap und Open-Meteo; Fänge und Notizen ver
   }
   const app = new URL(baseURL ?? 'http://localhost').host;
   const hosts = [...new Set(requests.filter((u) => /^https?:$/.test(u.protocol)).map((u) => u.host))];
-  expect(hosts.filter((h) => h !== app && !ALLOWED_EXTERNAL.includes(h))).toEqual([]);
+  // GoatCounter (<code>.goatcounter.com) ist auf der Datenschutzseite genannt; in Tests ohne Code ohnehin aus
+  expect(
+    hosts.filter((h) => h !== app && !ALLOWED_EXTERNAL.includes(h) && !h.endsWith('.goatcounter.com')),
+  ).toEqual([]);
   // Wetter: nur gerundete Position, nie Notizen oder Fang-IDs
   for (const u of requests.filter((x) => x.host === 'historical-forecast-api.open-meteo.com')) {
     expect(u.searchParams.get('latitude')).toBe('51.325');

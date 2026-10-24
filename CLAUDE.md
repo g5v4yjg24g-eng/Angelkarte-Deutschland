@@ -57,7 +57,7 @@ Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`,
 - Kennzeichnung in Doku: **[V]** verifiziert (mit Link und Datum), **[A]** Annahme, **[O]** offen.
 
 ## Datenschutz
-- Persönliche Daten bleiben lokal. Kein Analytics/Tracking ohne ausdrückliche Entscheidung.
+- Persönliche Daten bleiben lokal. Kein Analytics/Tracking ohne ausdrückliche Entscheidung. Entschieden (Nutzer 2026-10-24): anonyme Nutzungszählung über GoatCounter – nur Bereichspfade ohne IDs (`domain/usage.ts`), Port `ports/usage.ts`, Adapter `adapters/goatCounter.ts`, `features/usage/UsageTracker.tsx`, Einstellung `usageCount` (Standard an), Code über Repository-Variable `GOATCOUNTER_CODE` (Pages-Workflow); ohne Code wird nichts gesendet.
 - Standort: beim Kartenstart standardmäßig an (Entscheidung Nutzer 2026-10-22, Einstellung `locateOnStart`, Browser fragt um Erlaubnis); verlässt das Gerät nur gerundet (Wetter).
 - Foto-EXIF beim Speichern entfernen.
 

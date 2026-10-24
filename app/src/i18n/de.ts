@@ -889,6 +889,11 @@ export const de = {
     themeLight: 'Hell',
     themeDark: 'Dunkel',
     themeHint: 'Wird nur auf diesem Gerät gespeichert.',
+    usage: 'Anonyme Nutzungszählung',
+    usageOff: 'Aus',
+    usageOn: 'An',
+    usageHint:
+      'Zählt, wie oft welcher Bereich der App geöffnet wird (z. B. „/fangbuch“) – über GoatCounter, ohne Cookies und ohne Kennung. Es werden keine Fänge, Orte, Notizen oder IDs übertragen. Standard: an.',
     tracking: 'Route bei Sessions',
     trackingOff: 'Aus',
     trackingOn: 'Aufzeichnen',
@@ -1287,7 +1292,7 @@ export const de = {
   privacy: {
     title: 'Datenschutz',
     intro:
-      'Fangpunkt ist eine private App ohne Konto, ohne Werbung und ohne Tracking oder Analyse-Dienste. So gehen die Daten:',
+      'Fangpunkt ist eine private App ohne Konto, ohne Werbung und ohne Tracking. Gezählt wird nur anonym, welche Bereiche geöffnet werden (abschaltbar). So gehen die Daten:',
     localTitle: 'Bleibt auf diesem Gerät',
     local: [
       'Fänge, Kontakte, Beobachtungen, Orte, Sessions mit ihren GPS-Routen, Köder-Favoriten und Einstellungen liegen nur im Speicher dieses Browsers.',
@@ -1321,6 +1326,10 @@ export const de = {
       {
         name: 'OpenGeoData.NRW (www.opengeodata.nrw.de)',
         what: 'nur wenn „Wetter am Fang“ an ist und der gewählte Ort oder ein Fang der letzten 6 Tage in NRW liegt: die Tagesdatei der Landespegel (etwa 1 MB, höchstens alle 6 Stunden). Es wird keine Position übertragen.',
+      },
+      {
+        name: 'GoatCounter (goatcounter.com)',
+        what: 'nur wenn „Anonyme Nutzungszählung“ an ist (Standard: an): der geöffnete Bereich der App ohne IDs (z. B. „/fangbuch“ oder „/fangbuch/:id“). Keine Cookies, keine Kennung; IP-Adresse und Browserkennung nutzt der Dienst laut eigener Angabe nur kurz im Arbeitsspeicher und speichert sie nicht. Abschalten: Mehr → Einstellungen.',
       },
       {
         name: 'Bright Sky (api.brightsky.dev)',
