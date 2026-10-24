@@ -1,0 +1,152 @@
+<!doctype html>
+<!--
+  Instagram-Story „See → Fangpunkt-Logo“ (Wunsch Nutzer 2026-10-24), gebaut mit HyperFrames.
+  0–6,5 s See (eigene Aufnahme des Nutzers, HDR → SDR, 9:16) · ab 6,3 s kommt der Fisch vom Horizont näher
+  · ab 8 s Wortmarke, Slogan und Aufruf „Link antippen“ · Platz unten für den Instagram-Link-Sticker.
+  Rendern: siehe README.md
+-->
+<html lang="de" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        font-weight: 100 900;
+        src: url('assets/fonts/inter-latin-wght-normal.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Fraunces';
+        font-weight: 100 900;
+        src: url('assets/fonts/fraunces-latin-wght-normal.woff2') format('woff2');
+      }
+      :root {
+        --deep: #0b2a33;
+        --fish: #e8f4f5;
+        --eye: #f2994a;
+        --muted: #bfd8dc;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--deep);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        font-family: 'Inter', sans-serif;
+        color: var(--fish);
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+      #lake {
+        width: 1080px;
+        height: 1920px;
+        object-fit: cover;
+      }
+      /* Abdunklung hinter dem Logo, damit Fisch und Text auf dem hellen Himmel lesbar sind */
+      #shade {
+        opacity: 0;
+        background:
+          radial-gradient(70% 45% at 50% 46%, rgb(11 42 51 / 0.86) 0%, rgb(11 42 51 / 0.6) 55%, rgb(11 42 51 / 0.25) 100%),
+          linear-gradient(180deg, rgb(11 42 51 / 0.35), rgb(11 42 51 / 0.55));
+      }
+      /* Fisch: Mittelpunkt liegt auf dem Horizont (y 1035) und wandert beim Näherkommen nach oben */
+      #fish {
+        position: absolute;
+        left: 340px;
+        top: 560px;
+        width: 400px;
+        height: 400px;
+        opacity: 0;
+        transform-origin: 50% 50%;
+      }
+      #fish img {
+        width: 100%;
+        height: 100%;
+      }
+      .word {
+        top: 990px;
+        bottom: auto;
+        text-align: center;
+        font: 650 112px/1 'Fraunces', serif;
+        letter-spacing: 0.01em;
+        opacity: 0;
+      }
+      .slogan {
+        top: 1130px;
+        bottom: auto;
+        text-align: center;
+        font: 500 42px/1.3 'Inter', sans-serif;
+        color: var(--muted);
+        opacity: 0;
+      }
+      .cta {
+        top: 1250px;
+        bottom: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        opacity: 0;
+      }
+      .cta .pill {
+        font: 700 40px/1 'Inter', sans-serif;
+        padding: 26px 44px;
+        border-radius: 999px;
+        background: var(--eye);
+        color: #2b1600;
+      }
+      .cta .hint {
+        font: 600 34px/1 'Inter', sans-serif;
+        color: var(--fish);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="13" data-width="1080" data-height="1920">
+      <video id="lake" class="clip" src="assets/see.mp4" muted data-start="0" data-duration="13" data-media-start="0"
+        data-track-index="0"></video>
+      <div id="shade" class="clip" data-start="0" data-duration="13" data-track-index="1"></div>
+      <div id="fish"><img src="assets/fisch.svg" alt="" /></div>
+      <div id="word" class="clip word" data-start="0" data-duration="13" data-track-index="3">Fangpunkt</div>
+      <div id="slogan" class="clip slogan" data-start="0" data-duration="13" data-track-index="3">
+        Gewässer finden. Fänge festhalten.
+      </div>
+      <div id="cta" class="clip cta" data-start="0" data-duration="13" data-track-index="3">
+        <span class="pill">Kostenlos ausprobieren</span>
+        <span class="hint">Link antippen ↓</span>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      // Der See läuft; ganz leichter Zoom für Bewegung
+      tl.fromTo('#lake', { scale: 1 }, { scale: 1.07, duration: 13, ease: 'none' }, 0);
+      // Fisch taucht klein am Horizont auf und kommt näher
+      tl.set('#fish', { opacity: 0, scale: 0.04, y: 275 }, 0);
+      tl.to('#fish', { opacity: 1, duration: 0.5, ease: 'power1.out' }, 6.3);
+      tl.to('#fish', { scale: 1, y: 0, duration: 1.9, ease: 'power2.inOut' }, 6.3);
+      tl.to('#shade', { opacity: 1, duration: 1.6, ease: 'power1.inOut' }, 6.4);
+      // Schwanzschlag am Ende der Anfahrt (wie in der Ladeanimation)
+      tl.fromTo('#fish img', { rotation: 0 }, { rotation: -6, duration: 0.18, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 8.0);
+      // Wortmarke, Slogan, Aufruf
+      tl.fromTo('#word', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 8.2);
+      tl.fromTo('#slogan', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 8.6);
+      tl.fromTo('#cta', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: 'back.out(1.6)' }, 9.2);
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
