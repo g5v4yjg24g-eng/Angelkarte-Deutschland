@@ -266,7 +266,7 @@ Abhängig von: M4
 - Rechtsdaten-Schema, Validierungsskript, Veraltungslogik, Anzeige pro Land und im Gewässerprofil.
 - Inhalte für **NRW** (E7), neu am amtlichen Text geprüft (Altprojekt-Stand 2026-10-18 nur als Ausgangspunkt).
 - ✅ **M7.1 Struktur (2026-10-22):** Schema mit Prüfregeln (`domain/regulations.ts`), Landesdateien in `app/data/regulations/` (im Build enthalten, also mit der App offline), Prüfung in `pnpm test`/`validate:data`, Übersicht „Angelrecht der Länder" mit Status je Land, Landesseite mit Schonzeiten („heute in Schonzeit"), Mindestmaßen, geschützten Arten, Erlaubnissen, Fundstellen und Quellen, Veraltungsbanner (180/365 Tage), Leerzustand mit Link zum Landesportal, Link im Gewässerprofil. Hinweis „keine Rechtsauskunft" auf jeder Rechtsansicht.
-- ⏳ **M7.2 NRW-Inhalt:** wartet auf den amtlichen Text (recht.nrw.de am 2026-10-22 nachts im Wartungsmodus, DATA_SOURCES §5.2).
+- ⏳ **M7.2 NRW-Inhalt:** recht.nrw.de seit 2026-10-24 wieder erreichbar. Entwurf `app/data/regulations/NW.json` aus LFischG (ab 01.07.2026) und LFischVO (ab 03.07.2026) erfasst: Schonzeiten, Mindestmaße, ganzjährig geschützte Arten, Fischereischein/Abgabe/Erlaubnisschein, weitere Regeln. Wartet auf Gegenprüfung durch den Nutzer über `?pruefung=1`.
 - **Entscheidung 2026-10-22 (Vier-Augen-Prüfung):** Eine Landesdatei wird zuerst als `draft` erfasst (in der App unsichtbar). `verified` bzw. `partial` erst, nachdem du sie gegen den amtlichen Text gegengeprüft hast. Das gilt auch für NRW.
 - *Abnahme:* NRW-Datei mit Status `verified`; jede Regel hat Quelle, Paragraf, Prüfdatum; der Schema-Check in CI schlägt bei fehlender Quelle fehl; der Hinweis „keine Rechtsberatung" ist sichtbar.
 
