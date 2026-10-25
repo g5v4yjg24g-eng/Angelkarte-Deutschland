@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-25-7',
+    title: 'Alle Knoten animiert',
+    items: [
+      'Knoten: Jetzt zeigen alle neun Knoten Schritt für Schritt, wie die Schnur läuft – neu sind Doppelter Uni-Knoten, FG-Knoten, Chirurgenknoten, Perfection Loop, Spulenknoten und Snell-Knoten. Bei Verbindungsknoten ist das Vorfach orange.',
+    ],
+  },
+  {
     id: '2026-10-25-6',
     title: 'Knoten',
     items: [

@@ -8,7 +8,12 @@ import styles from './Knots.module.css';
 
 const t = de.knots;
 const LAYER_CLASS = { halo: 'layerHalo', line: 'layerLine', inner: 'layerInner' } as const;
-const STYLE_CLASS = { line: 'styleLine', double: 'styleDouble', hardware: 'styleHardware' } as const;
+const STYLE_CLASS = {
+  line: 'styleLine',
+  line2: 'styleLine2',
+  double: 'styleDouble',
+  hardware: 'styleHardware',
+} as const;
 /** Pause nach einem fertig gezeichneten Schritt, bevor die Wiedergabe weiterschaltet */
 export const STEP_HOLD_MS = 1800;
 

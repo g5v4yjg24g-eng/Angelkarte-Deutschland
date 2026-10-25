@@ -47,6 +47,7 @@
   stroke: var(--color-surface);
 }
 .layerHalo.styleLine,
+.layerHalo.styleLine2,
 .layerHalo.styleHardware {
   stroke-width: 11px;
 }
@@ -55,6 +56,11 @@
 }
 .layerLine.styleLine {
   stroke: var(--color-primary);
+  stroke-width: 4.5px;
+}
+/* zweite Schnur (Vorfach): Orange mit ausreichendem Kontrast in hell und dunkel */
+.layerLine.styleLine2 {
+  stroke: var(--color-focus);
   stroke-width: 4.5px;
 }
 .layerLine.styleDouble {

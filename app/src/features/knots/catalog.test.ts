@@ -22,7 +22,7 @@ describe('Knoten-Katalog (KNT-2)', () => {
     });
   }
 
-  it('Pilot: Clinch, Palomar und Uni sind animiert', () => {
-    expect(KNOTS.filter((k) => k.diagram).map((k) => k.id)).toEqual(['clinch', 'palomar', 'uni']);
+  it('alle neun Knoten sind animiert', () => {
+    expect(KNOTS.filter((k) => !k.diagram)).toEqual([]);
   });
 });

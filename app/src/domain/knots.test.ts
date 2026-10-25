@@ -82,6 +82,14 @@ describe('Knoten-Zeichenkern (KNT-1)', () => {
     expect(ops.filter((o) => o.timing).length).toBeGreaterThan(0);
   });
 
+  it('Kreuzung erst anheben, wenn beide Teile gezeichnet sind', () => {
+    // b kreuzt a erst in Schritt 1 (unten): vorher kein angehobenes Stück auf a
+    const d = buildDiagram(spec('U'));
+    expect(drawOps(d, 0).some((o) => o.butt && o.layer !== 'halo')).toBe(false);
+    expect(drawOps(d, 1).some((o) => o.butt && o.layer !== 'halo')).toBe(true);
+    expect(d.crossings[0]?.steps).toEqual([1, 0]);
+  });
+
   it('Ersatzbild: eigene Zeichnung, eingeblendet, eigene Prüfung', () => {
     const d = buildDiagram({ ...spec('O'), scenes: { 2: { ...spec('U') } } });
     expect(d.steps).toBe(3);

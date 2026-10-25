@@ -593,7 +593,7 @@ export const de = {
   knots: {
     title: 'Knoten',
     intro:
-      'Die wichtigsten Angelknoten mit Einsatzzweck. Bei den animierten Knoten zeigt eine Zeichnung Schritt für Schritt, wie die Schnur läuft.',
+      'Die wichtigsten Angelknoten mit Einsatzzweck. Eine Zeichnung zeigt Schritt für Schritt, wie die Schnur läuft.',
     filterLabel: 'Nach Einsatz filtern',
     all: 'Alle',
     uses: {
@@ -618,7 +618,7 @@ export const de = {
     goToStep: (n: number) => `Zu Schritt ${n}`,
     drawingLabel: (name: string, step: string) => `${name}: ${step}`,
     schematic:
-      'Schematische Zeichnung: Abstände und Windungen sind zur Übersicht vergrößert. Hauptschnur und Ende sind gleich gefärbt; das Öhr ist grau.',
+      'Schematische Zeichnung: Abstände und Windungen sind zur Übersicht vergrößert. Die Hauptschnur ist blau, eine zweite Schnur (Vorfach) orange; Öhr, Haken und Spule sind grau.',
     commonTips: [
       'Vor dem Zuziehen anfeuchten – trocken erhitzt die Reibung die Schnur und schwächt sie.',
       'Langsam und gleichmäßig zuziehen, dann mit Zug prüfen.',
@@ -662,26 +662,81 @@ export const de = {
       doubleUni: {
         name: 'Doppelter Uni-Knoten',
         short: 'Verbindet zwei Schnüre, auch unterschiedlicher Stärke.',
+        steps: [
+          'Die beiden Schnurenden etwa 15 cm überlappend nebeneinanderlegen.',
+          'Mit dem einen Ende eine Schlaufe über beide Schnüre legen und es 4- bis 5-mal durch die Schlaufe um beide Schnüre wickeln.',
+          'Mit dem anderen Ende genauso einen Uni-Knoten in die Gegenrichtung binden.',
+          'Beide Knoten anfeuchten und einzeln zuziehen, dann an den Hauptschnüren ziehen, bis sie aneinanderstoßen; Enden kürzen.',
+        ],
+        tips: [
+          'Auf der Seite einer geflochtenen Schnur mehr Windungen legen – Geflecht ist glatter als Mono.',
+        ],
       },
       fg: {
         name: 'FG-Knoten',
         short: 'Schlanke Verbindung von geflochtener Hauptschnur und Vorfach aus Fluorocarbon oder Mono.',
+        steps: [
+          'Die Geflochtene straff halten und das Vorfach mit dem Ende an die Geflochtene legen.',
+          'Das Vorfach abwechselnd vor und hinter der gespannten Geflochtenen hindurchführen, sodass sich die Geflochtene kreuzweise um das Vorfach legt – etwa 20 Kreuzungen.',
+          'Mit dem Ende der Geflochtenen zwei halbe Schläge um das Vorfach legen und festziehen.',
+          'Das Vorfach dicht am Knoten abschneiden, mit der Geflochtenen noch einige halbe Schläge um die Hauptschnur legen und kürzen.',
+        ],
+        tips: [
+          'Die Kreuzwicklungen dicht und gleichmäßig legen und die Geflochtene dabei gespannt halten.',
+          'Sehr schlank – läuft gut durch die Rutenringe.',
+        ],
       },
       surgeon: {
         name: 'Chirurgenknoten',
         short: 'Schnelle Verbindung zweier Schnüre, z. B. Vorfach an Hauptschnur.',
+        steps: [
+          'Hauptschnur und Vorfach etwa 15 cm überlappend nebeneinanderlegen.',
+          'Mit beiden Schnüren zusammen eine Schlaufe legen.',
+          'Das Vorfach samt dem Ende der Hauptschnur zweimal durch die Schlaufe führen.',
+          'Anfeuchten, an allen vier Enden gleichmäßig zuziehen; Enden kürzen.',
+        ],
+        tips: [
+          'Das ganze Vorfach muss durch die Schlaufe – darum eher für kurze Vorfächer.',
+          'In der Zeichnung ist das Schnurpaar als Doppellinie dargestellt.',
+        ],
       },
       perfection: {
         name: 'Perfection Loop',
         short: 'Kleine, gerade Endschlaufe, z. B. am Vorfach.',
+        steps: [
+          'Mit dem Ende eine Schlaufe legen; das Ende läuft hinter der Hauptschnur hindurch.',
+          'Mit dem Ende eine zweite, kleinere Schlaufe vor die erste legen.',
+          'Das Ende zwischen den beiden Schlaufen hindurchführen.',
+          'Die zweite Schlaufe durch die erste ziehen.',
+          'Anfeuchten, an der Schlaufe und der Hauptschnur zuziehen; Ende kürzen.',
+        ],
+        tips: ['Die fertige Schlaufe steht gerade in Verlängerung der Schnur.'],
       },
       arbor: {
         name: 'Spulenknoten (Arbor)',
         short: 'Befestigt die Schnur an der Spule der Rolle.',
+        steps: [
+          'Die Schnur einmal um die Spule führen.',
+          'Mit dem Ende einen einfachen Knoten um die Hauptschnur binden.',
+          'Ganz am Ende einen zweiten einfachen Knoten als Stopper binden.',
+          'An der Hauptschnur ziehen, bis beide Knoten an der Spule anliegen; Ende kürzen.',
+        ],
+        tips: [
+          'Geflochtene Schnur rutscht auf einer glatten Spule leicht durch – vorher eine Lage Monofil oder Klebeband als Unterlage aufbringen.',
+        ],
       },
       snell: {
         name: 'Snell-Knoten',
         short: 'Bindet Öhrhaken so, dass der Zug gerade über den Schenkel läuft.',
+        steps: [
+          'Die Schnur durch das Öhr führen und das Ende am Hakenschenkel entlang Richtung Bogen legen.',
+          'Das Ende zurück Richtung Öhr legen, sodass über Schenkel und Schnur eine Schlaufe entsteht.',
+          'Das Ende 5- bis 7-mal durch die Schlaufe um Schenkel und Schnur wickeln.',
+          'Anfeuchten, am Ende und an der Hauptschnur zuziehen, bis die Windungen fest am Schenkel liegen; Ende kürzen.',
+        ],
+        tips: [
+          'Der Zug läuft gerade über den Schenkel; die Schnur soll auf der Innenseite des Hakens aus den Windungen kommen.',
+        ],
       },
     },
   },

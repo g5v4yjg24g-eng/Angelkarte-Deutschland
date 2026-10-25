@@ -1,7 +1,17 @@
-// Knoten-Katalog (Wunsch Nutzer 2026-10-25, Pilot: drei animierte Knoten). Texte in i18n/de.ts (knots.items),
-// Zeichnungen in diagrams.ts. Inhalte sind redaktionell (Gegenprüfung durch den Nutzer, siehe PLAN.md).
+// Knoten-Katalog (Wunsch Nutzer 2026-10-25): alle neun Knoten animiert. Texte in i18n/de.ts (knots.items),
+// Zeichnungen in diagrams.ts. Inhalte sind redaktionell (Pilot vom Nutzer gegengeprüft 2026-10-25, Rest siehe PLAN.md).
 import type { KnotDiagramSpec } from '../../domain/knots';
-import { clinchDiagram, palomarDiagram, uniDiagram } from './diagrams';
+import {
+  arborDiagram,
+  clinchDiagram,
+  doubleUniDiagram,
+  fgDiagram,
+  palomarDiagram,
+  perfectionDiagram,
+  snellDiagram,
+  surgeonDiagram,
+  uniDiagram,
+} from './diagrams';
 
 export type KnotUse = 'attach' | 'join' | 'loop' | 'spool';
 export const KNOT_USES: readonly KnotUse[] = ['attach', 'join', 'loop', 'spool'];
@@ -18,12 +28,12 @@ export const KNOTS: readonly KnotEntry[] = [
   { id: 'clinch', slug: 'clinch', uses: ['attach'], diagram: clinchDiagram },
   { id: 'palomar', slug: 'palomar', uses: ['attach'], diagram: palomarDiagram },
   { id: 'uni', slug: 'uni', uses: ['attach'], diagram: uniDiagram },
-  { id: 'doubleUni', slug: 'doppelter-uni', uses: ['join'] },
-  { id: 'fg', slug: 'fg', uses: ['join'] },
-  { id: 'surgeon', slug: 'chirurgen', uses: ['join', 'loop'] },
-  { id: 'perfection', slug: 'perfection-loop', uses: ['loop'] },
-  { id: 'arbor', slug: 'spulenknoten', uses: ['spool'] },
-  { id: 'snell', slug: 'snell', uses: ['attach'] },
+  { id: 'doubleUni', slug: 'doppelter-uni', uses: ['join'], diagram: doubleUniDiagram },
+  { id: 'fg', slug: 'fg', uses: ['join'], diagram: fgDiagram },
+  { id: 'surgeon', slug: 'chirurgen', uses: ['join', 'loop'], diagram: surgeonDiagram },
+  { id: 'perfection', slug: 'perfection-loop', uses: ['loop'], diagram: perfectionDiagram },
+  { id: 'arbor', slug: 'spulenknoten', uses: ['spool'], diagram: arborDiagram },
+  { id: 'snell', slug: 'snell', uses: ['attach'], diagram: snellDiagram },
 ];
 
 export const knotBySlug = (slug: string) => KNOTS.find((k) => k.slug === slug);

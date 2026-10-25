@@ -47,8 +47,8 @@ describe('Knoten-Anleitung (KNT-3)', () => {
     expect(screen.getByRole('button', { name: 'Von vorn' })).toBeInTheDocument();
   });
 
-  it('unbekannter oder noch nicht animierter Knoten', () => {
-    open('fg');
+  it('unbekannter Knoten', () => {
+    open('gibt-es-nicht');
     expect(screen.getByText('Diesen Knoten gibt es nicht.')).toBeInTheDocument();
   });
 });
