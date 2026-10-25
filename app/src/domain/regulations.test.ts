@@ -3,6 +3,8 @@ import { regulationFixture as fx } from '../test/fixtures/regulations';
 import {
   berlinDay,
   closedSeasonsOn,
+  filterSpeciesRules,
+  matchesSpecies,
   freshness,
   inClosedSeason,
   isShown,
@@ -99,5 +101,55 @@ describe('Prüfstand (LAW-2)', () => {
     expect(freshness('2026-01-01', at('2026-06-29'))).toBe('current'); // 179 Tage
     expect(freshness('2026-01-01', at('2026-07-01'))).toBe('stale'); // 181 Tage
     expect(freshness('2026-01-01', at('2027-01-02'))).toBe('outdated');
+  });
+});
+
+describe('Suche und „nur Schonzeit“ (LAW-6)', () => {
+  const names = (r: ReturnType<typeof filterSpeciesRules>) => ({
+    closed: r.closedSeasons.map((x) => x.taxon.de),
+    sizes: r.minSizes.map((x) => x.taxon.de),
+    protectedSpecies: r.protectedSpecies.map((x) => x.taxon.de),
+  });
+
+  it('findet Arten über Namen, wissenschaftlichen Namen, Synonyme, ohne Groß/Klein und Umlaute', () => {
+    const hecht = one(fx.closedSeasons);
+    expect(matchesSpecies(hecht, 'hec')).toBe(true);
+    expect(matchesSpecies(hecht, 'esox')).toBe(true);
+    expect(matchesSpecies(hecht, 'zander')).toBe(false);
+    expect(matchesSpecies(hecht, '  ')).toBe(true);
+    expect(matchesSpecies({ taxon: { de: 'Äsche' } }, 'aesche')).toBe(true);
+    expect(matchesSpecies({ taxon: { de: 'Äsche' } }, 'Äsch')).toBe(true);
+    // Synonym aus der Fangbuch-Artenliste
+    expect(matchesSpecies({ taxon: { de: 'Wels' }, speciesId: 'wels' }, 'waller')).toBe(true);
+  });
+
+  it('Suche filtert alle Artlisten', () => {
+    expect(names(filterSpeciesRules(fx, { query: 'Hecht' }))).toEqual({
+      closed: ['Hecht'],
+      sizes: ['Hecht'],
+      protectedSpecies: [],
+    });
+    expect(names(filterSpeciesRules(fx, { query: '' })).closed).toEqual(['Hecht', 'Bachforelle']);
+  });
+
+  it('„nur Schonzeit“: Schonzeiten des Tages, Maße derselben Arten, ganzjährig geschonte', () => {
+    // 10.03.: Hecht in Schonzeit, Bachforelle (01.10.–01.03.) nicht mehr
+    expect(names(filterSpeciesRules(fx, { query: '', closedOn: { month: 3, day: 10 } }))).toEqual({
+      closed: ['Hecht'],
+      sizes: ['Hecht'],
+      protectedSpecies: ['Nase'],
+    });
+    // 15.01.: nur die jahresübergreifende Bachforellen-Schonzeit
+    expect(names(filterSpeciesRules(fx, { query: '', closedOn: { month: 1, day: 15 } }))).toEqual({
+      closed: ['Bachforelle'],
+      sizes: [],
+      protectedSpecies: ['Nase'],
+    });
+    // beides zusammen
+    expect(names(filterSpeciesRules(fx, { query: 'forelle', closedOn: { month: 3, day: 10 } }))).toEqual({
+      closed: [],
+      sizes: [],
+      protectedSpecies: [],
+    });
   });
 });

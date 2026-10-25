@@ -58,3 +58,35 @@ test('Gegengeprüftes Land (Bayern): Status, Fundstellen, Fischereischein-Regeln
   await expect(page.getByRole('link', { name: /Bayerisches Fischereigesetz/ })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
+
+test('LAW-6: Hamburg – Fischart suchen, „Nur Fische in der Schonzeit“', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2027-03-10T10:00:00+01:00'));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/mehr/recht/HH');
+  await waitForApp(page);
+  const search = page.getByRole('searchbox', { name: 'Fischart suchen' });
+  await search.fill('zander');
+  await expect(page.getByRole('listitem').filter({ hasText: 'Zander' }).first()).toContainText(
+    '01.02.–31.05.',
+  );
+  await expect(page.getByRole('listitem').filter({ hasText: 'Hecht' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Fischereischein und Erlaubnisse' })).toHaveCount(0);
+  await search.fill('');
+
+  // 10.03.: Hecht, Zander, Äsche in Schonzeit; Bachforelle (15.10.–15.02.) nicht
+  await page.getByRole('button', { name: 'Nur Fische in der Schonzeit' }).click();
+  const closed = page.getByRole('heading', { name: 'Schonzeiten' }).locator('..');
+  await expect(closed).toContainText('Hecht');
+  await expect(closed).toContainText('Äsche');
+  await expect(closed).not.toContainText('Bachforelle');
+  await expect(page.getByText(/Stand heute \(10\.03\.\)/)).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(
+    await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze()
+      .then((r) =>
+        r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+      ),
+  ).toEqual([]);
+});

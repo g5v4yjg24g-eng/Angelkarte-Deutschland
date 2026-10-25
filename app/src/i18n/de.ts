@@ -691,6 +691,20 @@ export const de = {
     dailyLimit: (n: number) => `höchstens ${n} Stück pro Tag`,
     ref: (ref: string, basis: string) => `${ref} ${basis}`,
     version: (v: string, date: string) => `${v} · abgerufen am ${date}`,
+    filter: {
+      label: 'Fischarten filtern',
+      search: 'Fischart suchen',
+      placeholder: 'z. B. Hecht, Zander, Aal',
+      closedOnly: 'Nur Fische in der Schonzeit',
+      closedOnlyHint: (date: string) =>
+        `Stand heute (${date}): Schonzeiten, die heute gelten, mit den Maßen dieser Arten, dazu ganzjährig geschonte Arten.`,
+      result: (n: number) => (n === 1 ? '1 Angabe gefunden' : `${n} Angaben gefunden`),
+      none: 'Keine passende Fischart in den Angaben für dieses Land.',
+      noneClosed: 'Heute hat laut den Angaben für dieses Land keine Fischart Schonzeit.',
+      noneInSection: 'Keine Treffer.',
+      reset: 'Filter zurücksetzen',
+      otherHidden: 'Fischereischein, weitere Regeln: Filter zurücksetzen, um sie zu sehen.',
+    },
     licenceKinds: {
       fishing_licence: 'Fischereischein',
       permit: 'Erlaubnisschein',

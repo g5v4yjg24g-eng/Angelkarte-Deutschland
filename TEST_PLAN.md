@@ -133,6 +133,7 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | LAW-4 | Land ohne Daten | „Für <Land> noch keine geprüften Angaben" + Link zum Landesportal |
 | LAW-5 | Gelandeter Fisch in Schonzeit / unter Mindestmaß / außerhalb des Fensters | Warnung mit Fundstelle im Formular (live) und am Eintrag, Speichern möglich; Land aus Fangort; Grenznähe → Land wählen (gespeichert); NRW „keine Prüfung möglich“ (✅ `law-check.spec.ts`, `regulationCheck.test.ts`, `geo.test.ts`) |
 | LAW-6 | Daten ohne Landesgrenzen | „Bundesland unbekannt – keine Prüfung möglich“ (✅ `law-check.spec.ts`) |
+| LAW-6 | Land öffnen, Fischart suchen, „Nur Fische in der Schonzeit“ | Suche nach deutschem/wissenschaftlichem Namen und Synonym, ohne Groß/Klein und Umlaute; Knopf zeigt Schonzeiten des Tages, Maße dieser Arten und ganzjährig geschonte; Fischereischein/weitere Regeln beim Filtern ausgeblendet mit Hinweis; leerer Treffer mit „Filter zurücksetzen“ (✅ `regulations.test.ts`, `RegulationView.test.tsx`, `law.spec.ts` Hamburg) |
 | LAW-5 | Gewässer mit Landesrecht + Gewässerregeln (P3) | Getrennte Abschnitte, Quellen je Abschnitt |
 
 ### 3.7 Datensicherung

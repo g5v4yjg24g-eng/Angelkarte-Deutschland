@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { STATE_CODES, type StateCode } from './water';
 import { speciesById } from './species';
 import { toZonedIso } from './time';
+import { normalize } from './search';
 
 export const STALE_DAYS = 180;
 export const OUTDATED_DAYS = 365;
@@ -162,6 +163,50 @@ export function closedSeasonsOn(set: RegulationSet, speciesId: string, day: Mont
 /** Anzeigename einer Regel-Art: immer der Name aus dem Rechtstext. */
 export function taxonLabel(r: { taxon: { de: string; sci?: string | undefined } }): string {
   return r.taxon.de;
+}
+
+type SpeciesRule = { taxon: { de: string; sci?: string | undefined }; speciesId?: string | undefined };
+
+/** Gleiche Art über Listen hinweg: Fangbuch-Art, sonst der Name aus dem Rechtstext. */
+const speciesKey = (r: SpeciesRule) => r.speciesId ?? normalize(r.taxon.de);
+
+/** Passt die Suche zur Art? Name im Rechtstext, wissenschaftlicher Name, Fangbuch-Name und Synonyme. */
+export function matchesSpecies(r: SpeciesRule, query: string): boolean {
+  const q = normalize(query);
+  if (!q) return true;
+  const sp = r.speciesId ? speciesById(r.speciesId) : undefined;
+  const names = [r.taxon.de, r.taxon.sci, sp?.de, sp?.sci, ...(sp?.aliases ?? [])];
+  return names.some((n) => n !== undefined && normalize(n).includes(q));
+}
+
+export interface SpeciesFilter {
+  query: string;
+  /** nur Arten, die an diesem Tag Schonzeit haben (dazu ganzjährig geschonte) */
+  closedOn?: MonthDay | undefined;
+}
+
+export type FilteredSpeciesRules = Pick<RegulationSet, 'closedSeasons' | 'minSizes' | 'protectedSpecies'>;
+
+/**
+ * Artbezogene Regeln nach Suche und „nur Schonzeit“ filtern. Bei „nur Schonzeit“ bleiben die Schonzeiten des Tages,
+ * die Maße derselben Arten und die ganzjährig geschonten Arten.
+ */
+export function filterSpeciesRules(set: RegulationSet, f: SpeciesFilter): FilteredSpeciesRules {
+  const hit = (r: SpeciesRule) => matchesSpecies(r, f.query);
+  if (!f.closedOn)
+    return {
+      closedSeasons: set.closedSeasons.filter(hit),
+      minSizes: set.minSizes.filter(hit),
+      protectedSpecies: set.protectedSpecies.filter(hit),
+    };
+  const day = f.closedOn;
+  const closedSeasons = set.closedSeasons.filter((r) => inClosedSeason(r, day) && hit(r));
+  const closed = new Set(closedSeasons.map(speciesKey));
+  return {
+    closedSeasons,
+    minSizes: set.minSizes.filter((r) => closed.has(speciesKey(r))),
+    protectedSpecies: set.protectedSpecies.filter(hit),
+  };
 }
 
 export function isStateCode(s: string): s is StateCode {

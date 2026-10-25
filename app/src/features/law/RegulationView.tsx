@@ -1,10 +1,14 @@
 // Landesrecht eines Landes (DATA_MODEL §7): jede Angabe mit Fundstelle, Prüfstand und Quellen.
 // Zeigt nur, was in der geprüften Datei steht; nichts wird berechnet oder ergänzt.
+import { useState } from 'react';
 import { de } from '../../i18n/de';
 import { Badge } from '../../design/components/Badge';
 import { Notice } from '../../design/components/Notice';
+import { Button } from '../../design/components/Button';
+import { TextField } from '../../design/components/Field';
 import {
   berlinDay,
+  filterSpeciesRules,
   freshness,
   inClosedSeason,
   type RegulationSet,
@@ -36,11 +40,21 @@ export function Disclaimer() {
   return <Notice tone="warning">{t.disclaimer}</Notice>;
 }
 
-function Section({ title, empty, children }: { title: string; empty: boolean; children: React.ReactNode }) {
+function Section({
+  title,
+  empty,
+  emptyText = t.noEntries,
+  children,
+}: {
+  title: string;
+  empty: boolean;
+  emptyText?: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className={styles.section}>
       <h2>{title}</h2>
-      {empty ? <p className={styles.note}>{t.noEntries}</p> : children}
+      {empty ? <p className={styles.note}>{emptyText}</p> : children}
     </section>
   );
 }
@@ -63,6 +77,18 @@ export function RegulationView({ set, nowMs }: { set: RegulationSet; nowMs: numb
   const today = berlinDay(nowMs);
   const bySpecies = <T extends Taxon>(list: T[]) =>
     [...list].sort((a, b) => taxonLabel(a).localeCompare(taxonLabel(b), 'de'));
+  // Suche nach Fischarten und „nur Schonzeit“ (Wunsch Nutzer 2026-10-25)
+  const [query, setQuery] = useState('');
+  const [closedOnly, setClosedOnly] = useState(false);
+  const filtering = query.trim() !== '' || closedOnly;
+  const shown = filterSpeciesRules(set, { query, closedOn: closedOnly ? today : undefined });
+  const noHits =
+    filtering && !shown.closedSeasons.length && !shown.minSizes.length && !shown.protectedSpecies.length;
+  const emptyText = filtering ? t.filter.noneInSection : t.noEntries;
+  const reset = () => {
+    setQuery('');
+    setClosedOnly(false);
+  };
 
   return (
     <div className={styles.stack}>
@@ -86,9 +112,46 @@ export function RegulationView({ set, nowMs }: { set: RegulationSet; nowMs: numb
         )}
       </div>
 
-      <Section title={t.closedSeasons} empty={set.closedSeasons.length === 0}>
+      <div role="search" className={styles.filterBar} aria-label={t.filter.label}>
+        <TextField
+          label={t.filter.search}
+          type="search"
+          placeholder={t.filter.placeholder}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <button
+          type="button"
+          className={styles.toggle}
+          aria-pressed={closedOnly}
+          onClick={() => setClosedOnly((v) => !v)}
+        >
+          {t.filter.closedOnly}
+        </button>
+        {closedOnly && <p className={styles.note}>{t.filter.closedOnlyHint(md(today))}</p>}
+        <p className="visually-hidden" role="status">
+          {filtering
+            ? t.filter.result(
+                shown.closedSeasons.length + shown.minSizes.length + shown.protectedSpecies.length,
+              )
+            : ''}
+        </p>
+      </div>
+
+      {noHits && (
+        <div className={styles.section}>
+          <Notice>{closedOnly && !query.trim() ? t.filter.noneClosed : t.filter.none}</Notice>
+          <div>
+            <Button variant="secondary" onClick={reset}>
+              {t.filter.reset}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <Section title={t.closedSeasons} empty={shown.closedSeasons.length === 0} emptyText={emptyText}>
         <ul className={styles.list}>
-          {bySpecies(set.closedSeasons).map((r, i) => (
+          {bySpecies(shown.closedSeasons).map((r, i) => (
             <li key={i} className={styles.rule}>
               <div className={styles.ruleHead}>
                 <span>
@@ -104,9 +167,9 @@ export function RegulationView({ set, nowMs }: { set: RegulationSet; nowMs: numb
         </ul>
       </Section>
 
-      <Section title={t.minSizes} empty={set.minSizes.length === 0}>
+      <Section title={t.minSizes} empty={shown.minSizes.length === 0} emptyText={emptyText}>
         <ul className={styles.list}>
-          {bySpecies(set.minSizes).map((r, i) => (
+          {bySpecies(shown.minSizes).map((r, i) => (
             <li key={i} className={styles.rule}>
               <div className={styles.ruleHead}>
                 <span>
@@ -125,9 +188,9 @@ export function RegulationView({ set, nowMs }: { set: RegulationSet; nowMs: numb
         </ul>
       </Section>
 
-      <Section title={t.protectedSpecies} empty={set.protectedSpecies.length === 0}>
+      <Section title={t.protectedSpecies} empty={shown.protectedSpecies.length === 0} emptyText={emptyText}>
         <ul className={styles.list}>
-          {bySpecies(set.protectedSpecies).map((r, i) => (
+          {bySpecies(shown.protectedSpecies).map((r, i) => (
             <li key={i}>
               <Species r={r} /> <span className={styles.ref}>{ref(r)}</span>
               <Scope scope={r.scope} note={r.note} />
@@ -136,17 +199,22 @@ export function RegulationView({ set, nowMs }: { set: RegulationSet; nowMs: numb
         </ul>
       </Section>
 
-      <Section title={t.licences} empty={set.licences.length === 0}>
-        <ul className={styles.list}>
-          {set.licences.map((r, i) => (
-            <li key={i}>
-              <strong>{t.licenceKinds[r.kind]}:</strong> {r.text} <span className={styles.ref}>{ref(r)}</span>
-            </li>
-          ))}
-        </ul>
-      </Section>
+      {filtering && <p className={styles.note}>{t.filter.otherHidden}</p>}
 
-      {set.otherRules.length > 0 && (
+      {!filtering && (
+        <Section title={t.licences} empty={set.licences.length === 0}>
+          <ul className={styles.list}>
+            {set.licences.map((r, i) => (
+              <li key={i}>
+                <strong>{t.licenceKinds[r.kind]}:</strong> {r.text}{' '}
+                <span className={styles.ref}>{ref(r)}</span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      {!filtering && set.otherRules.length > 0 && (
         <Section title={t.otherRules} empty={false}>
           <ul className={styles.list}>
             {set.otherRules.map((r, i) => (

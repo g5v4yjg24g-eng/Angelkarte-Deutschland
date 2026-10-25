@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { regulationFixture as fx } from '../../test/fixtures/regulations';
 import { RegulationView } from './RegulationView';
 
@@ -69,5 +70,32 @@ describe('RegulationView', () => {
     expect(screen.getByText('höchstens 2 Stück pro Tag')).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('ungeprüfter Entwurf');
     expect(screen.getByText('Entwurf')).toBeInTheDocument();
+  });
+
+  it('LAW-6: Fischart suchen und „Nur Fische in der Schonzeit“', async () => {
+    const user = userEvent.setup();
+    render(<RegulationView set={fx} nowMs={at('2027-03-10')} />);
+    const search = screen.getByRole('searchbox', { name: 'Fischart suchen' });
+    await user.type(search, 'forelle');
+    expect(screen.getByText('Bachforelle')).toBeInTheDocument();
+    expect(screen.queryByText('Hecht')).not.toBeInTheDocument();
+    expect(screen.queryByText('Testregel.')).not.toBeInTheDocument(); // weitere Regeln ausgeblendet
+    expect(screen.getByText('1 Angabe gefunden')).toHaveAttribute('role', 'status');
+
+    await user.clear(search);
+    await user.type(search, 'karpfen');
+    expect(screen.getByText('Keine passende Fischart in den Angaben für dieses Land.')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Filter zurücksetzen' }));
+    expect(search).toHaveValue('');
+    expect(screen.getByText('Testregel.')).toBeInTheDocument();
+
+    const toggle = screen.getByRole('button', { name: 'Nur Fische in der Schonzeit' });
+    expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText(/Stand heute \(10\.03\.\)/)).toBeInTheDocument();
+    expect(screen.getAllByText('Hecht').length).toBe(2); // Schonzeit + Mindestmaß
+    expect(screen.queryByText('Bachforelle')).not.toBeInTheDocument();
+    expect(screen.getByText('Nase')).toBeInTheDocument();
   });
 });
