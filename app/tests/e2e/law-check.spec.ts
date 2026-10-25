@@ -113,11 +113,12 @@ test('LAW-5: Warnung bei Schonzeit und Mindestmaß, Bundesland aus dem Fangort, 
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await expect(panel).toContainText('Nach den erfassten Regeln für Bayern');
 
-  // NRW: keine Daten
+  // NRW (gegengeprüft 2026-10-25): Hecht am 10.03. in der Schonzeit, 45 cm genau am Mindestmaß
   await open(page, 'nw');
-  await expect(page.getByRole('region', { name: 'Landesrecht Nordrhein-Westfalen' })).toContainText(
-    'Nordrhein-Westfalen: keine Prüfung möglich',
-  );
+  const nw = page.getByRole('region', { name: 'Landesrecht Nordrhein-Westfalen' });
+  await expect(nw).toContainText('Schonzeit: Hecht 15.02.–30.04.');
+  await expect(nw).toContainText('§ 2 Nr. 6 Landesfischereiverordnung (LFischVO)');
+  await expect(nw).not.toContainText('Unter dem Mindestmaß');
 
   // Grenznähe (≈ 35 m von der Grenze BW/BY): nachfragen statt raten, Wahl wird gespeichert
   await open(page, 'grenze');

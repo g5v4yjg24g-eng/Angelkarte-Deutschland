@@ -1,13 +1,13 @@
 {
   "stateCode": "NW",
-  "status": "draft",
+  "status": "partial",
   "missing": [
     "Äschen-Gewässerabschnitte nach § 1a (Verwaltungsvorschrift im Ministerialblatt)",
     "Prüfungsordnung für die Fischerprüfung",
     "Gebühren für den Fischereischein"
   ],
-  "checkedAt": "2026-10-24",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude) am 2026-10-24; Gegenprüfung durch den Nutzer offen",
+  "checkedAt": "2026-10-25",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude) am 2026-10-24; gegengeprüft vom Nutzer am 2026-10-25",
   "legalBasis": [
     {
       "id": "LFischG",

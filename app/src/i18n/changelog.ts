@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-25-2',
+    title: 'Angelrecht NRW',
+    items: [
+      'Angelrecht NRW: Schonzeiten, Mindestmaße, ganzjährig geschützte Arten und die Regeln zu Fischereischein, Fischereiabgabe und Erlaubnisschein – aus dem amtlichen Text (Landesfischereigesetz und -verordnung, Stand Juli 2026).',
+      'Warnung beim Erfassen jetzt auch in NRW: Liegt ein Fang in der Schonzeit oder unter dem Mindestmaß, weist Fangpunkt darauf hin. Keine Rechtsauskunft.',
+    ],
+  },
+  {
     id: '2026-10-25',
     title: 'Oktober 2026',
     items: [

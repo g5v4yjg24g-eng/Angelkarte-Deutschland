@@ -11,6 +11,17 @@ test.beforeEach(async ({ page }) => {
 });
 
 const dialog = (page: Page) => page.getByRole('dialog', { name: 'Neu in Fangpunkt' });
+const lastSeen = (page: Page) =>
+  page.evaluate(async () => {
+    const req = indexedDB.open('fangpunkt');
+    const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
+    const v = await new Promise<unknown>((r) => {
+      const g = db.transaction('settings').objectStore('settings').get('lastSeenChangelog');
+      g.onsuccess = () => r((g.result as { value?: unknown } | undefined)?.value);
+    });
+    db.close();
+    return v;
+  });
 const introDone = (page: Page) =>
   page.waitForFunction(() => document.documentElement.dataset.intro !== 'shown');
 
@@ -51,6 +62,8 @@ test('NEWS-1: neue Installation ohne Fenster; nach Update einmal „Neu in Fangp
   await expect(dialog(page).getByRole('button', { name: 'Alles klar' })).toBeInViewport();
   await dialog(page).getByRole('button', { name: 'Alles klar' }).click();
   await expect(dialog(page)).toHaveCount(0);
+  // Stand ist gespeichert, bevor neu geladen wird
+  await expect.poll(() => lastSeen(page)).not.toBe('2000-01-01');
 
   // Nur einmal
   await page.reload();

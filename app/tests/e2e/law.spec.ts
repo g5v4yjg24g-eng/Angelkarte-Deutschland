@@ -4,7 +4,7 @@ import { collectErrors, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
-test('M7: Übersicht der Länder, Land ohne geprüfte Angaben (LAW-4), Hinweis „keine Rechtsauskunft"', async ({
+test('M7: Übersicht der Länder, alle mit geprüften Angaben, Hinweis „keine Rechtsauskunft"', async ({
   page,
 }) => {
   const errors = collectErrors(page);
@@ -22,16 +22,10 @@ test('M7: Übersicht der Länder, Land ohne geprüfte Angaben (LAW-4), Hinweis �
 
   await expect(states.filter({ hasText: 'Bayern' })).toContainText('Teilweise geprüft');
   await expect(states.filter({ hasText: 'Niedersachsen' })).toContainText('Teilweise geprüft');
-  // LAW-4: erstes Land ohne Datei → erklärender Zustand mit Link zum Landesrechtsportal
-  const empty = states.filter({ hasText: 'Noch keine Angaben' }).first();
-  const name = ((await empty.textContent()) ?? '').replace('Noch keine Angaben', '').trim();
-  expect(name.length).toBeGreaterThan(0);
-  await empty.click();
-  await expect(page.getByRole('heading', { name: `Für ${name} noch keine geprüften Angaben` })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Zum Landesrechtsportal' })).toHaveAttribute(
-    'href',
-    /^https:\/\//,
-  );
+  // Seit 2026-10-25 haben alle 16 Länder geprüfte Angaben (LAW-4, Land ohne Angaben: StateLawPage.test.tsx)
+  await expect(states.filter({ hasText: 'Teilweise geprüft' })).toHaveCount(16);
+  await states.filter({ hasText: 'Nordrhein-Westfalen' }).click();
+  await expect(page.getByText('Hecht').first()).toBeVisible();
   await expect(page.getByText(/^Keine Rechtsauskunft\./)).toBeVisible();
   expect(
     await new AxeBuilder({ page })
