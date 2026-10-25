@@ -1,0 +1,40 @@
+.stack {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+.form {
+  display: grid;
+  gap: var(--space-3);
+}
+.form p,
+.stack p {
+  margin: 0;
+}
+.h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.profile {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-4);
+}
+.displayName {
+  font-size: var(--text-lg);
+}
+.small {
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.danger {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}

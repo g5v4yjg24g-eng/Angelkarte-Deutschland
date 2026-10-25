@@ -5,6 +5,7 @@ import { brightSkyAlerts } from '../adapters/brightSky';
 import { pegelonline } from '../adapters/pegelonline';
 import { hygonNrw } from '../adapters/hygonNrw';
 import { goatCounter } from '../adapters/goatCounter';
+import { supabaseAccount } from '../adapters/supabaseAccount';
 import type { Providers } from '../ports/providersContext';
 
 /** Zusammenstecken der Anbieter (einzige Stelle, die Adapter kennt). */
@@ -18,5 +19,10 @@ export const providers: Providers = {
   gaugesNrw: hygonNrw(),
   // Nur im Produktionsbuild und nur mit Code (Repository-Variable GOATCOUNTER_CODE im Pages-Workflow)
   usage: goatCounter(import.meta.env.PROD ? import.meta.env.VITE_GOATCOUNTER_CODE : undefined),
+  // Freiwilliges Konto (Supabase-Projekt „Fangpunkt“, EU). Öffentlicher Schlüssel – Schutz über RLS in der Datenbank.
+  account: supabaseAccount(
+    import.meta.env.VITE_SUPABASE_URL ?? 'https://sgnyymciwnwjgvojptwu.supabase.co',
+    import.meta.env.VITE_SUPABASE_KEY ?? 'sb_publishable_OqbYE0xAGayAkr478v3GhQ_43tZhk7j',
+  ),
   water: staticWaterData(import.meta.env.VITE_WATER_BASE_URL ?? `${import.meta.env.BASE_URL}data/water/`),
 };

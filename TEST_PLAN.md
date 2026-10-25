@@ -150,6 +150,13 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | KNT-4 | Mehr → Knoten | Liste (9 animiert), Filter, Wiedergabe, Verbindungsknoten mit zweiter Schnurfarbe, 390 px, axe (✅ `knots.spec.ts`) |
 | KNT-5 | Reduzierte Bewegung | Keine Zeichenanimation, Bilder sofort (✅ `knots.spec.ts`) |
 
+### 3.6b Konto
+| ID | Testfall | Erwartung |
+|---|---|---|
+| ACC-1 | Regeln | E-Mail, Code (6–10 Ziffern), Nutzername wie in der Datenbank-Regel, Anzeigename, Fehlerarten, Wartezeit (✅ `domain/account.test.ts`) |
+| ACC-2 | Kontoseite | Code anfordern, falscher/richtiger Code, Profil mit Verfügbarkeitsprüfung, Anzeigename ändern, abmelden, löschen nur nach Eingabe des Nutzernamens, nicht eingerichtet, Ladefehler (✅ `AccountPage.test.tsx`) |
+| ACC-3 | Mehr → Konto mit nachgebildetem Supabase | ganzer Ablauf, Anmeldung bleibt nach Neuladen, nur Auth/Profil-Aufrufe, nach Löschen keine Sitzung, 390 px, axe (✅ `account.spec.ts`); ohne Anmeldung keine Anfrage an Supabase (✅ `privacy.spec.ts`) |
+
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |
 |---|---|---|

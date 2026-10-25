@@ -207,6 +207,12 @@ Online-Status: Ein Indikator in der Kopfzeile erscheint nur offline. Online-pfli
 - Sync bedeutet Backend, Authentifizierung, Konfliktlösung, DSGVO-Verarbeitungsverzeichnis, AV-Verträge, Kosten.
 - Vorbereitung jetzt (kostet wenig): UUIDs, `createdAt`/`updatedAt`, `deletedAt` (Soft-Delete) und `rev`-Zähler in allen Nutzerentitäten. Damit ist ein späterer Sync (z. B. CRDT-frei mit Last-Writer-Wins pro Feld) möglich, ohne Migration der IDs.
 
+**Entscheidung Nutzer 2026-10-25 – Konten (Etappe 1 umgesetzt):** Ziel ist ein späteres kommerzielles Angebot; vorerst kostenlos, mit **freiwilligem** Konto als Grundlage für Freunde.
+- Backend: Supabase-Projekt „Fangpunkt“ (Region eu-west-1/Irland). Schema im Repo unter `supabase/migrations/` (Etappe 1: `profiles` mit RLS – jeder liest/ändert nur sein Profil, Nutzername fest; Funktionen `username_available`, `delete_my_account`). Nur der öffentliche Schlüssel (`sb_publishable_…`) steht in der App; der geheime Schlüssel nie.
+- Anmeldung per E-Mail-Code (OTP), nicht per Link (Links öffnen auf iOS Safari statt der installierten PWA). E-Mail-Vorlage „Magic Link“ muss `{{ .Token }}` enthalten. Der eingebaute Mailversand von Supabase stellt nur an Team-Mitglieder zu [V: supabase.com/docs/guides/auth/auth-smtp, 2026-10-25] – für echte Nutzer eigener SMTP-Anbieter nötig **[O]**.
+- App: Port `ports/account.ts`, Adapter `adapters/supabaseAccount.ts` (supabase-js, nur bei Bedarf geladen; Sitzung in localStorage `fangpunkt.auth`), Regeln `domain/account.ts`, Ansicht `features/account` (Mehr → Konto). Ohne Anmeldung kein Kontakt zu Supabase.
+- Fangbuch, Fotos, Orte und Routen bleiben lokal. Etappe 2: Freunde (Suche nach Nutzername, Anfragen). Etappe 3: gezieltes Teilen, optional Cloud-Sicherung.
+
 ## 10. Erweiterungspunkt Fischbestimmung (P3)
 
 ```ts
@@ -232,6 +238,7 @@ interface SpeciesIdResult {
 - Keine Tracker und kein Analytics im MVP. Falls doch gewünscht: nur ein cookieloses, selbst gehostetes Werkzeug nach gesonderter Entscheidung.
 - Content-Security-Policy: `default-src 'self'`, erlaubte Hosts explizit (Kartenanbieter, Wetter).
 - Fremddaten (Import, Rechts-JSON, Gewässer-JSON) werden per Zod validiert und **nie** als HTML gerendert (kein `innerHTML`).
+- Konto (freiwillig, seit 2026-10-25): Server speichert nur E-Mail (Supabase Auth), Nutzername und Anzeigename; Zugriff über RLS; Konto-Löschung in der App.
 - Standort wird nicht übertragen. Ausnahme: gerundete Koordinaten (3 Nachkommastellen ≈ 100 m) an den Wetteranbieter, wenn Wetter aktiv ist (Standard: an, abschaltbar). Das steht in der Datenschutzerklärung.
 - EXIF-Daten (GPS) aus Fotos werden beim Speichern entfernt (Re-Encoding über Canvas), die Position steht ja im Fang.
 

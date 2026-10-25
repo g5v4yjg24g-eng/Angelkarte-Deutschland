@@ -187,3 +187,9 @@ export const StepForwardIcon = (p: IconProps) => (
     <path d="M18 5v14M6 5l9 7-9 7z" />
   </Icon>
 );
+export const UserIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
+  </Icon>
+);

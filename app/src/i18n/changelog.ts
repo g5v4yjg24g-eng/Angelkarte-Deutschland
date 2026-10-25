@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-25-8',
+    title: 'Konto',
+    items: [
+      'Konto (freiwillig): Unter Mehr → Konto meldest du dich mit einem Code per E-Mail an und legst deinen Nutzernamen fest – die Grundlage, um bald Freunde hinzuzufügen. Fangbuch, Fotos und Angelstellen bleiben weiter nur auf deinem Gerät.',
+    ],
+  },
+  {
     id: '2026-10-25-7',
     title: 'Alle Knoten animiert',
     items: [

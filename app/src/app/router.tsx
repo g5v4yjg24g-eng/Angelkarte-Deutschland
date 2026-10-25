@@ -19,6 +19,7 @@ import { KnotsPage } from '../features/knots/KnotsPage';
 import { KnotDetailPage } from '../features/knots/KnotDetailPage';
 import { AboutPage } from '../features/about/AboutPage';
 import { LazyBackupPage } from '../features/backup/LazyBackupPage';
+import { LazyAccountPage } from '../features/account/LazyAccountPage';
 import { LawPage } from '../features/law/LawPage';
 import { StateLawPage } from '../features/law/StateLawPage';
 
@@ -48,6 +49,7 @@ export const routes = [
           { path: 'mehr/info', element: <AboutPage /> },
           { path: 'mehr/datenschutz', element: <PrivacyPage /> },
           { path: 'mehr/daten', element: <LazyBackupPage /> },
+          { path: 'mehr/konto', element: <LazyAccountPage /> },
           { path: 'mehr/recht', element: <LawPage /> },
           { path: 'mehr/recht/:state', element: <StateLawPage /> },
           { path: '*', element: <NotFound /> },
