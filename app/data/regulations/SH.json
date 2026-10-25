@@ -99,6 +99,7 @@
         "de": "Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)",
       "from": {
@@ -115,6 +116,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta trutta"
       },
+      "speciesId": "sea_trout",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)",
       "from": {
@@ -276,6 +278,7 @@
         "de": "Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)",
       "minCm": 60
@@ -285,6 +288,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta trutta"
       },
+      "speciesId": "sea_trout",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)",
       "minCm": 40

@@ -73,6 +73,7 @@
       "taxon": {
         "de": "Lachs"
       },
+      "speciesId": "salmon",
       "from": {
         "month": 10,
         "day": 15
@@ -88,6 +89,7 @@
       "taxon": {
         "de": "Meerforelle"
       },
+      "speciesId": "sea_trout",
       "from": {
         "month": 10,
         "day": 15
@@ -202,6 +204,7 @@
         "de": "Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "minCm": 50,
       "note": "soweit der Fang nach § 2 Abs. 2 zulässig ist",
       "basisId": "BiFischO",
@@ -212,6 +215,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta"
       },
+      "speciesId": "sea_trout",
       "minCm": 40,
       "note": "soweit der Fang nach § 2 Abs. 2 zulässig ist",
       "basisId": "BiFischO",
@@ -364,6 +368,7 @@
         "de": "Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "note": "Lachse, Meerforellen, Nasen, Rapfen und Störe dürfen in Gewässern, in die sie als Besatz eingebracht worden sind, gefangen werden (§ 2 Abs. 2).",
       "basisId": "BiFischO",
       "basisRef": "§ 2 Abs. 1"
@@ -373,6 +378,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta"
       },
+      "speciesId": "sea_trout",
       "note": "Lachse, Meerforellen, Nasen, Rapfen und Störe dürfen in Gewässern, in die sie als Besatz eingebracht worden sind, gefangen werden (§ 2 Abs. 2).",
       "basisId": "BiFischO",
       "basisRef": "§ 2 Abs. 1"

@@ -297,6 +297,7 @@
         "de": "Lachs",
         "sci": "Salmo salar L."
       },
+      "speciesId": "salmon",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },
@@ -305,6 +306,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta L."
       },
+      "speciesId": "sea_trout",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },

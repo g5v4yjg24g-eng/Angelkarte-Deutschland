@@ -613,6 +613,7 @@
         "de": "Atlantischer Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "scope": "nur Flussgebietseinheit Elbe, Rhein, Weser",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.3 (ganzjährige Schonzeit)"
@@ -718,6 +719,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta forma trutta"
       },
+      "speciesId": "sea_trout",
       "scope": "nur Flussgebietseinheit Elbe, Rhein, Weser",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.15 (ganzjährige Schonzeit)"

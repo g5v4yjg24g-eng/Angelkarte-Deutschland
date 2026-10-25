@@ -43,6 +43,7 @@
         "de": "Atlantischer Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "basisId": "SächsFischVO",
       "basisRef": "Anlage Nr. 5 (zu § 2 Abs. 1)",
       "from": {
@@ -160,6 +161,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta trutta"
       },
+      "speciesId": "sea_trout",
       "basisId": "SächsFischVO",
       "basisRef": "Anlage Nr. 24 (zu § 2 Abs. 1)",
       "from": {
@@ -331,6 +333,7 @@
         "de": "Atlantischer Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "basisId": "SächsFischVO",
       "basisRef": "Anlage Nr. 5 (zu § 2 Abs. 1)",
       "minCm": 60
@@ -409,6 +412,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta trutta"
       },
+      "speciesId": "sea_trout",
       "basisId": "SächsFischVO",
       "basisRef": "Anlage Nr. 24 (zu § 2 Abs. 1)",
       "minCm": 60

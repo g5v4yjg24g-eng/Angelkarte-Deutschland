@@ -364,7 +364,7 @@ Umsetzung (M6, 2026-10-22):
 ## 9a. Umsetzungsstand (M2, 2026-10-21)
 
 - Schemas: `app/src/domain/schemas.ts` (Zod 4). Methoden: spinning, jigging, dropshot, bottom, float, feeder, fly, trolling, other. Ködertypen: softbait, crankbait, spinner, spoon, spinnerbait, chatterbait, jigspinner, natural, other.
-- Artenliste: `app/src/domain/species.ts`, 31 Arten + „Andere Art", **Entwurf**: wissenschaftliche Namen noch nicht gegen GBIF geprüft [O].
+- Artenliste: `app/src/domain/species.ts`, 34 Arten + „Andere Art" (Lachs, Meerforelle, Stör ergänzt 2026-10-25; Stör als Gattung, nicht mit dem geschützten Europäischen Stör verknüpft), **Entwurf**: wissenschaftliche Namen noch nicht gegen GBIF geprüft [O].
 - Datenbank: `app/src/data/db.ts` (Dexie 4, Name `fangpunkt`, Version 1) mit Tabellen catches, places, sessions, baitPresets, photos, settings, snapshots.
 - Fotos: `thumb` ist optional (wird ab M5 beim Anlegen erzeugt); Alt-App-Fotos werden als Blob übernommen.
 - Snapshots: vollständiger Stand inkl. Fotos vor jedem Import, die letzten 2 bleiben erhalten; in der App über „Stand vor dem Import wiederherstellen" nutzbar.

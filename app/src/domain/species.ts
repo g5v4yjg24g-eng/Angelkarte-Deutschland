@@ -39,6 +39,11 @@ export const SPECIES: readonly Species[] = [
   { id: 'brook_trout', de: 'Bachsaibling', sci: 'Salvelinus fontinalis' },
   { id: 'whitefish', de: 'Renke/Maräne', sci: 'Coregonus spp.', aliases: ['Renke', 'Maräne', 'Felchen'] },
   { id: 'round_goby', de: 'Schwarzmundgrundel', sci: 'Neogobius melanostomus' },
+  // Ergänzt 2026-10-25 (Wunsch Nutzer). Stör als Gattung: geangelt werden oft Zuchtstöre (z. B. Sterlet,
+  // Sibirischer Stör); deshalb keine Gleichsetzung mit dem geschützten Europäischen Stör (Acipenser sturio).
+  { id: 'salmon', de: 'Lachs', sci: 'Salmo salar', aliases: ['Atlantischer Lachs'] },
+  { id: 'sea_trout', de: 'Meerforelle', sci: 'Salmo trutta trutta' },
+  { id: 'sturgeon', de: 'Stör', sci: 'Acipenser spp.' },
   { id: 'other', de: 'Andere Art' },
 ];
 
