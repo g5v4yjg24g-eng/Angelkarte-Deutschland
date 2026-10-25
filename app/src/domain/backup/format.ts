@@ -9,6 +9,7 @@ import {
   type Session,
   type Track,
   type Trip,
+  type WaterLink,
 } from '../schemas';
 
 export const BACKUP_FORMAT = 'fangpunkt-backup';
@@ -22,6 +23,8 @@ export interface BackupData {
   trips: Trip[];
   /** GPS-Routen der Sessions (seit DB v3) */
   tracks: Track[];
+  /** eigene Links zur Angelkarte (seit DB v4) */
+  waterLinks: WaterLink[];
   /** Nur Metadaten; die Bilddateien liegen im ZIP unter photos/<id>.<ext> oder fehlen (photos: 'omitted'). */
   photos: PhotoMeta[];
 }
@@ -56,6 +59,8 @@ export const BackupEnvelopeSchema = z.object({
     trips: z.array(z.unknown()).default([]),
     /** seit DB v3; ältere Sicherungen haben keine Routen */
     tracks: z.array(z.unknown()).default([]),
+    /** seit DB v4; ältere Sicherungen haben keine eigenen Gewässer-Links */
+    waterLinks: z.array(z.unknown()).default([]),
     photos: z.array(z.unknown()),
   }),
 });
@@ -89,6 +94,7 @@ export async function buildBackup(
       baitPresets: data.baitPresets.length,
       trips: data.trips.length,
       tracks: data.tracks.length,
+      waterLinks: data.waterLinks.length,
       photos: data.photos.length,
     },
     photos: meta.withPhotos ? 'zip-sidecar' : 'omitted',

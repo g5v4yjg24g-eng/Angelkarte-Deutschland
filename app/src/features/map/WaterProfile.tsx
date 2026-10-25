@@ -4,6 +4,7 @@ import { de } from '../../i18n/de';
 import { Badge } from '../../design/components/Badge';
 import { Button } from '../../design/components/Button';
 import { osmUrl, type WaterInfo, type WaterManifest } from '../../domain/water';
+import { WaterPermitSection } from '../permits/WaterPermitSection';
 import styles from './MapView.module.css';
 
 const fmtDate = (iso: string) =>
@@ -63,6 +64,7 @@ export function WaterProfile({
         <dt>{de.water.yourData}</dt>
         <dd className="tabular">{de.water.yourDataValue(counts.places, counts.catches)}</dd>
       </dl>
+      <WaterPermitSection waterId={info.wid} state={info.state} />
       {info.isLine && <p className="muted">{de.water.lineHint}</p>}
       <p className="muted">
         {de.water.sourceTitle}: {de.water.source(fmtDate(manifest?.dataDate ?? ''))}

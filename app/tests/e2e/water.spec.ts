@@ -229,3 +229,52 @@ test('Suchergebnisse für Orte und Flüsse sind sinnvoll sortiert', async ({ pag
   await expect(sheet.getByText('Nettetal', { exact: true })).toBeVisible();
   await expect(sheet.getByText(/Gemeinde · Kreis Viersen/)).toBeVisible();
 });
+
+test('PRM-5: Gewässerkarte – Landesverbände in NRW, eigener Link wird gespeichert und bleibt', async ({
+  page,
+}) => {
+  await openMapAt(page, 6.2425, 51.3245, 14.3);
+  await tapWater(page, 6.2418, 51.3263);
+  const profile = page.getByRole('dialog', { name: 'De Wittsee' });
+  const section = profile.getByRole('region', { name: 'Gewässerkarte' });
+  await expect(section.getByText('Noch kein geprüfter Eintrag für dieses Gewässer.')).toBeVisible();
+  const assoc = section.getByRole('link', { name: 'Angelkarten des Verbands' });
+  await expect(assoc).toHaveCount(2);
+  await expect(assoc.first()).toHaveAttribute('href', /^https:\/\/www\.lfv-westfalen\.de\//);
+  await expect(assoc.first()).toHaveAttribute('target', '_blank');
+
+  await section.getByRole('button', { name: 'Eigenen Link speichern' }).click();
+  const url = section.getByRole('textbox', { name: 'Link zur Seite mit der Angelkarte' });
+  await url.fill('kein link');
+  await section.getByRole('button', { name: 'Speichern' }).click();
+  await expect(section.getByText(/Bitte eine Internetadresse eingeben/)).toBeVisible();
+  await url.fill('asv-nettetal.example/gastkarten');
+  await section.getByRole('textbox', { name: 'Bezeichnung (optional)' }).fill('ASV Test');
+  await section.getByRole('button', { name: 'Speichern' }).click();
+  await expect(section.getByRole('link', { name: 'ASV Test' })).toHaveAttribute(
+    'href',
+    'https://asv-nettetal.example/gastkarten',
+  );
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(
+    await new AxeBuilder({ page })
+      .include('section[aria-labelledby="permit-title"]')
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze()
+      .then((r) =>
+        r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+      ),
+  ).toEqual([]);
+
+  // nach dem Neuladen noch da; Entfernen
+  await page.keyboard.press('Escape');
+  await page.reload();
+  await waitForApp(page);
+  await tapWater(page, 6.2418, 51.3263);
+  const again = page
+    .getByRole('dialog', { name: 'De Wittsee' })
+    .getByRole('region', { name: 'Gewässerkarte' });
+  await expect(again.getByRole('link', { name: 'ASV Test' })).toBeVisible();
+  await again.getByRole('button', { name: 'Entfernen' }).click();
+  await expect(again.getByRole('button', { name: 'Eigenen Link speichern' })).toBeVisible();
+});

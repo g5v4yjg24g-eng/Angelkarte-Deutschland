@@ -22,13 +22,14 @@ async function collect(
   db: FangpunktDB,
   withPhotos: boolean,
 ): Promise<{ data: BackupData; blobs: Record<string, Blob> }> {
-  const [catches, places, sessions, baitPresets, trips, tracks, photos] = await Promise.all([
+  const [catches, places, sessions, baitPresets, trips, tracks, waterLinks, photos] = await Promise.all([
     db.catches.toArray(),
     db.places.toArray(),
     db.sessions.toArray(),
     db.baitPresets.toArray(),
     db.trips.toArray(),
     db.tracks.toArray(),
+    db.waterLinks.toArray(),
     withPhotos ? db.photos.toArray() : Promise.resolve([] as Photo[]),
   ]);
   const blobs: Record<string, Blob> = {};
@@ -37,7 +38,10 @@ async function collect(
     blobs[meta.id] = blob;
     return meta;
   });
-  return { data: { catches, places, sessions, baitPresets, trips, tracks, photos: metas }, blobs };
+  return {
+    data: { catches, places, sessions, baitPresets, trips, tracks, waterLinks, photos: metas },
+    blobs,
+  };
 }
 
 export interface ExportResult {
@@ -171,7 +175,7 @@ export async function applyImport(
   let written = 0;
   await db.transaction(
     'rw',
-    [db.sessions, db.places, db.baitPresets, db.catches, db.trips, db.tracks, db.photos],
+    [db.sessions, db.places, db.baitPresets, db.catches, db.trips, db.tracks, db.waterLinks, db.photos],
     async () => {
       for (const table of PLAN_TABLES) {
         let rows = writes[table] as object[];
@@ -221,7 +225,7 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
   const d = snap.backup.data;
   await db.transaction(
     'rw',
-    [db.sessions, db.places, db.baitPresets, db.catches, db.trips, db.tracks, db.photos],
+    [db.sessions, db.places, db.baitPresets, db.catches, db.trips, db.tracks, db.waterLinks, db.photos],
     async () => {
       await Promise.all([
         db.sessions.clear(),
@@ -230,6 +234,7 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
         db.catches.clear(),
         db.trips.clear(),
         db.tracks.clear(),
+        db.waterLinks.clear(),
         db.photos.clear(),
       ]);
       await db.sessions.bulkPut(d.sessions);
@@ -240,6 +245,8 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
       await db.trips.bulkPut(d.trips ?? []);
       // Snapshots vor DB v3 haben keine Routen
       await db.tracks.bulkPut(d.tracks ?? []);
+      // Snapshots vor DB v4 haben keine eigenen Gewässer-Links
+      await db.waterLinks.bulkPut(d.waterLinks ?? []);
       await db.photos.bulkPut(
         d.photos.flatMap((m) =>
           snap.photoBlobs[m.id] ? [{ ...m, blob: snap.photoBlobs[m.id] as Blob }] : [],
