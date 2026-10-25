@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Steg-Clip 03-pause (erzeugt von marketing/tools/clips-steg-build.mjs – dort ändern). Aufnahme: assets/pause.mp4 -->
+<!-- Steg-Clip 05-feierabend (erzeugt von marketing/tools/clips-steg-build.mjs – dort ändern). Aufnahme: assets/feierabend.mp4 -->
 <html lang="de" data-resolution="portrait">
 <head>
 <meta charset="UTF-8" />
@@ -31,14 +31,14 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:var(--deep)}
 </style>
 </head>
 <body>
-<div id="root" data-composition-id="main" data-start="0" data-duration="13.6" data-width="1080" data-height="1920">
-  <video id="footage" class="clip" src="assets/pause.mp4" data-has-audio="true" data-volume="0.6" data-fade-in="0.3" data-fade-out="0.6" data-start="0" data-duration="11" data-media-start="0" data-track-index="0"></video>
-  <div id="shade" class="clip" data-start="0" data-duration="11" data-track-index="1"></div>
-  <div id="kicker" class="clip kicker" data-start="0" data-duration="11" data-track-index="2">Session-Pausen</div>
-  <div id="title" class="clip title" data-start="0" data-duration="11" data-track-index="3">Kurz <em>hinsetzen</em>.</div>
-  <div id="sub" class="clip sub" style="top:540px" data-start="0" data-duration="11" data-track-index="4">Pause drücken – zählt nicht als Angelzeit.</div>
+<div id="root" data-composition-id="main" data-start="0" data-duration="9.6" data-width="1080" data-height="1920">
+  <video id="footage" class="clip" src="assets/feierabend.mp4" data-has-audio="true" data-volume="0.6" data-fade-in="0.3" data-fade-out="0.6" data-start="0" data-duration="7" data-media-start="0" data-track-index="0"></video>
+  <div id="shade" class="clip" data-start="0" data-duration="7" data-track-index="1"></div>
+  <div id="kicker" class="clip kicker" data-start="0" data-duration="7" data-track-index="2">Session beenden</div>
+  <div id="title" class="clip title" data-start="0" data-duration="7" data-track-index="3"><em>Feierabend.</em></div>
+  <div id="sub" class="clip sub" style="top:440px" data-start="0" data-duration="7" data-track-index="4">Alles gespeichert – nur auf deinem Handy.</div>
   
-  <div id="end" class="clip end" data-start="10.7" data-duration="2.9" data-track-index="6">
+  <div id="end" class="clip end" data-start="6.7" data-duration="2.9" data-track-index="6">
     <img src="assets/fisch.svg" alt="" />
     <div class="brand">Fangpunkt</div>
     <div class="end-title">Link in der <em>Bio</em></div>
@@ -48,17 +48,17 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:var(--deep)}
 <script>
   window.__timelines = window.__timelines || {};
   const tl = gsap.timeline({ paused: true });
-  tl.fromTo('#footage', { scale: 1 }, { scale: 1.05, duration: 11, ease: 'none' }, 0);
-  tl.fromTo('#kicker', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.6);
-  tl.fromTo('#title', { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, 0.75);
-  tl.fromTo('#sub', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 4);
+  tl.fromTo('#footage', { scale: 1 }, { scale: 1.05, duration: 7, ease: 'none' }, 0);
+  tl.fromTo('#kicker', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.5);
+  tl.fromTo('#title', { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, 0.65);
+  tl.fromTo('#sub', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 2);
   
   
-  tl.to(['#kicker', '#title', '#sub'], { opacity: 0, y: -16, duration: 0.3, ease: 'power2.in' }, 10.4);
-  tl.fromTo('#end', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 10.7);
-  tl.fromTo('#end img', { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }, 10.8);
-  tl.fromTo('#end .end-title', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 11.25);
-  tl.fromTo('#end .pill', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 11.55);
+  tl.to(['#kicker', '#title', '#sub'], { opacity: 0, y: -16, duration: 0.3, ease: 'power2.in' }, 6.4);
+  tl.fromTo('#end', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 6.7);
+  tl.fromTo('#end img', { x: -60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }, 6.8);
+  tl.fromTo('#end .end-title', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 7.25);
+  tl.fromTo('#end .pill', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 7.55);
   window.__timelines['main'] = tl;
   tl.seek(0);
 </script>

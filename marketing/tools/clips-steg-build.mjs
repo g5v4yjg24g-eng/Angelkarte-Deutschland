@@ -2,7 +2,7 @@
 // Jeder Clip: Aufnahme des Nutzers (assets/<name>.mp4, aus tools/clips-steg-prep.sh) + Kicker, Überschrift, Unterzeile
 // + Schluss-Karte mit Fisch-Logo. Texte nennen nur Funktionen, die es in der App gibt.
 // Aufruf (Repo-Root): node marketing/tools/clips-steg-build.mjs   → danach rendern (siehe videos/clips-steg/README.md)
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 
 const dir = new URL('../videos/clips-steg/', import.meta.url).pathname;
 const END = 2.6; // Länge der Schluss-Karte
@@ -67,7 +67,8 @@ html,body{width:1080px;height:1920px;overflow:hidden;background:var(--deep)}
 
 function html(c) {
   const total = +(c.len + (c.noEnd ? 0 : END)).toFixed(2);
-  const subTop = c.title.length > 34 ? 640 : 540;
+  const plain = c.title.replace(/<[^>]+>/g, '');
+  const subTop = plain.length > 16 ? 550 : 440; // eine oder zwei Zeilen Überschrift
   const audio = c.sound ? `data-has-audio="true" data-volume="0.6" data-fade-in="0.3" data-fade-out="0.6"` : 'muted';
   return `<!doctype html>
 <!-- Steg-Clip ${c.id} (erzeugt von marketing/tools/clips-steg-build.mjs – dort ändern). Aufnahme: assets/${c.src}.mp4 -->
@@ -115,6 +116,8 @@ function html(c) {
 `;
 }
 
-for (const c of CLIPS) writeFileSync(`${dir}${c.id}.html`, html(c));
+// Szenen liegen in szenen/; zum Rendern wird jeweils eine nach index.html kopiert (HyperFrames erlaubt nur eine Hauptdatei)
+mkdirSync(`${dir}szenen`, { recursive: true });
+for (const c of CLIPS) writeFileSync(`${dir}szenen/${c.id}.html`, html(c));
 writeFileSync(`${dir}clips.json`, JSON.stringify(CLIPS.map(({ id, src, len }) => ({ id, src, len })), null, 2) + '\n');
 console.log(CLIPS.map((c) => c.id).join('\n'));

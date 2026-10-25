@@ -37,8 +37,8 @@ cut_clip ankommen 1153 24.5 7 "" "$full" ja
 cut_clip wurf 1159 426.8 5.6 "setpts=2*PTS" "$zoom,fps=30" nein
 # 3 Pause: hinsetzen
 cut_clip pause 1159 440.5 11 "" "$full" ja
-# 4 Schneidertag: 7 Minuten Werfen und Einkurbeln als Zeitraffer (60×)
-cut_clip zeitraffer 1159 0 420 "select='not(mod(n\,60))',setpts=N/30/TB" "$full" nein
+# 4 Schneidertag: 7 Minuten Werfen und Einkurbeln als Zeitraffer (60×, jedes 120. Bild bei 60 fps → 7 s)
+cut_clip zeitraffer 1159 0 420 "select='not(mod(n\,120))',setpts=N/30/TB" "$full" nein
 # 5 Feierabend: kommt nach dem letzten Wurf zur Kamera zurück
 cut_clip feierabend 1153 252.5 7 "" "$full" ja
 # 6 Hintergrund für das Sonntags-Intro: sitzt am Steg, viel Himmel
