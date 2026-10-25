@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-25-3',
+    title: 'Suche im Angelrecht',
+    items: [
+      'Fischart suchen: In jedem Bundesland unter Mehr → Angelrecht findest du eine Art schnell über das Suchfeld (auch mit wissenschaftlichem Namen oder z. B. „Waller“).',
+      'Nur Fische in der Schonzeit: Ein Knopf zeigt nur die Arten, die heute Schonzeit haben – mit ihren Maßen und den ganzjährig geschonten Arten.',
+    ],
+  },
+  {
     id: '2026-10-25-2',
     title: 'Angelrecht NRW',
     items: [
