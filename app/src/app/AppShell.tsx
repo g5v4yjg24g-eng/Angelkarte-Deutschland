@@ -8,6 +8,7 @@ import { UpdatePrompt } from './UpdatePrompt';
 import { BackupReminder } from '../features/backup/BackupReminder';
 import { SessionChip } from '../features/sessions/SessionChip';
 import { WeatherSync } from '../features/weather/WeatherSync';
+import { WhatsNew } from '../features/whatsNew/WhatsNew';
 import { UsageTracker } from '../features/usage/UsageTracker';
 import { SessionTracker } from '../features/sessions/tracking/SessionTracker';
 import { GaugeSync } from '../features/weather/GaugeSync';
@@ -194,6 +195,7 @@ export function AppShell() {
       </main>
       <UpdatePrompt />
       <WeatherSync />
+      <WhatsNew />
       <UsageTracker />
       <SessionTracker />
       <GaugeSync />

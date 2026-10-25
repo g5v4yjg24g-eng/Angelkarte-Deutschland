@@ -13,6 +13,8 @@ export interface Settings {
   trackSessions: boolean;
   /** Anonyme Nutzungszählung (GoatCounter, nur Bereichspfade); Standard: an (Entscheidung Nutzer 2026-10-24) */
   usageCount: boolean;
+  /** ID des zuletzt gesehenen Neuigkeiten-Eintrags (Fenster „Neu in Fangpunkt“) */
+  lastSeenChangelog: string;
 }
 
 export async function getSetting<K extends keyof Settings>(

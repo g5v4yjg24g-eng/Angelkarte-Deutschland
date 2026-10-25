@@ -24,6 +24,11 @@ export const de = {
     later: 'Später',
     offlineReady: 'Fangpunkt ist jetzt auch ohne Internet startbar.',
   },
+  whatsNew: {
+    title: 'Neu in Fangpunkt',
+    ok: 'Alles klar',
+    aboutTitle: 'Neuigkeiten',
+  },
   common: {
     close: 'Schließen',
     back: 'Zurück',

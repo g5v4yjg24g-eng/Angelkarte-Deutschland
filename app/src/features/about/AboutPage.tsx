@@ -2,6 +2,8 @@ import { Link } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page, Section } from '../../design/components/Page';
 import { FishMark } from '../../design/icons';
+import { CHANGELOG } from '../../i18n/changelog';
+import { NewsItem } from '../whatsNew/WhatsNew';
 import styles from './AboutPage.module.css';
 
 export function AboutPage() {
@@ -15,6 +17,20 @@ export function AboutPage() {
         </div>
       </div>
       <p>{de.app.tagline}</p>
+      <Section title={de.whatsNew.aboutTitle}>
+        {CHANGELOG.map((e) => (
+          <div key={e.id}>
+            <h3 className={styles.newsTitle}>{e.title}</h3>
+            <ul className={styles.news}>
+              {e.items.map((it) => (
+                <li key={it}>
+                  <NewsItem text={it} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </Section>
       <Section title={de.about.privacyTitle}>
         <p>{de.about.privacyText}</p>
         <p>
