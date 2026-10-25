@@ -334,8 +334,17 @@ export default function ReviewMap({
       });
     });
     map.on('click', 'rv-events', (e) => {
-      const id = e.features?.[0]?.properties?.id as string | undefined;
-      if (id) onSelectRef.current(id);
+      // Bei dicht liegenden Symbolen den nehmen, dessen Mitte (mit Versatz) dem Tipp am nächsten ist
+      let best: { id: string; d: number } | undefined;
+      for (const f of e.features ?? []) {
+        const id = f.properties?.id as string | undefined;
+        const ev = placed.current.find((x) => x.id === id);
+        if (!id || !ev?.position) continue;
+        const p = map.project([ev.position.lng, ev.position.lat]);
+        const d = Math.hypot(p.x + ev.off[0] - e.point.x, p.y + ev.off[1] - e.point.y);
+        if (!best || d < best.d) best = { id, d };
+      }
+      if (best) onSelectRef.current(best.id);
     });
     map.on('mouseenter', 'rv-events', () => (map.getCanvas().style.cursor = 'pointer'));
     map.on('mouseleave', 'rv-events', () => (map.getCanvas().style.cursor = ''));

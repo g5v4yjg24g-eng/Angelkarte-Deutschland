@@ -22,21 +22,24 @@ export function ReviewTimeline({
   events,
   photos,
   selectedId,
+  scrollToSelected = true,
   onShow,
 }: {
   events: ReviewEvent[];
   photos: Map<string, Photo>;
   selectedId?: string | undefined;
+  /** nur nach einem Tipp auf einen Marker zum Eintrag scrollen (sonst springt die Seite von der Karte weg) */
+  scrollToSelected?: boolean;
   onShow: (id: string) => void;
 }) {
   const list = useRef<HTMLOListElement>(null);
   // Marker angetippt → Eintrag sichtbar machen
   useEffect(() => {
-    if (!selectedId) return;
+    if (!selectedId || !scrollToSelected) return;
     list.current
       ?.querySelector(`[data-id="${CSS.escape(selectedId)}"]`)
       ?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }, [selectedId]);
+  }, [selectedId, scrollToSelected]);
 
   return (
     <section className={styles.section} aria-labelledby="rv-timeline">

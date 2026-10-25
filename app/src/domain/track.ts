@@ -161,7 +161,7 @@ export const trackRange = (tr: Pick<Track, 'segments'>) => {
  * Bildschirm-Versatz für Marker an (fast) derselben Stelle, damit keiner einen anderen verdeckt: Gruppen im Umkreis
  * von `radiusM` werden im Kreis um ihren gemeinsamen Ort verteilt (px, für icon-offset).
  */
-export function spreadOffsets(points: readonly LatLng[], radiusM = 4, px = 18): [number, number][] {
+export function spreadOffsets(points: readonly LatLng[], radiusM = 4, iconPx = 36): [number, number][] {
   const out: [number, number][] = points.map(() => [0, 0]);
   const done = new Set<number>();
   for (let i = 0; i < points.length; i++) {
@@ -169,6 +169,8 @@ export function spreadOffsets(points: readonly LatLng[], radiusM = 4, px = 18): 
     const group = [i];
     for (let j = i + 1; j < points.length; j++)
       if (!done.has(j) && distM(points[i] as LatLng, points[j] as LatLng) <= radiusM) group.push(j);
+    // Kreisradius so, dass benachbarte Symbole (Durchmesser iconPx) sich nicht überdecken, plus etwas Luft
+    const px = group.length > 1 ? (iconPx / 2 + 4) / Math.sin(Math.PI / group.length) : 0;
     if (group.length > 1)
       group.forEach((k, n) => {
         const a = (2 * Math.PI * n) / group.length - Math.PI / 2;

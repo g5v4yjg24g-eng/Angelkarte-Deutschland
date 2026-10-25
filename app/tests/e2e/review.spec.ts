@@ -283,6 +283,7 @@ test('REV-2: Wiedergabe – Marker zum richtigen Zeitpunkt, Pause, Tempo, erneut
   await expect(dialog.locator('li[data-id="seen"]')).toHaveAttribute('aria-current', 'true');
   // Karte → Chronik: Marker antippen (Hecht und Verlust liegen übereinander und sind auseinandergezogen)
   await dialog.getByRole('button', { name: 'Ganze Route' }).click();
+  await mapBox(page).scrollIntoViewIfNeeded();
   await page.waitForTimeout(800);
   const hits = await page.evaluate(() => {
     const map = window.__fangpunktReviewMap;
