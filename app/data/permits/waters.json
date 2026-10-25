@@ -7,5 +7,185 @@
     "note": "Pachtgewässer des Anglerverbands Hamburg; Gastkarten laut Verbandsseite über hejfish.",
     "checkedAt": "2026-10-25",
     "checkedBy": "Claude, an der Verbandsseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:w39643946",
+    "waterName": "Ochtruper See",
+    "issuer": "Landesfischereiverband Westfalen und Lippe e. V.",
+    "url": "https://www.lfv-westfalen.de/content/angeln/gewaesser/ochtruper_see.php",
+    "note": "Verbandsgewässer des LFV Westfalen und Lippe.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:w925926157",
+    "waterName": "Offlumer See",
+    "issuer": "Landesfischereiverband Westfalen und Lippe e. V.",
+    "url": "https://www.lfv-westfalen.de/content/angeln/gewaesser/offlumer_see.php",
+    "note": "Verbandsgewässer des LFV Westfalen und Lippe.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:w34656065",
+    "waterName": "Holtwicker See",
+    "issuer": "Landesfischereiverband Westfalen und Lippe e. V.",
+    "url": "https://www.lfv-westfalen.de/content/angeln/gewaesser/holtwick_see.php",
+    "note": "Verbandsgewässer des LFV Westfalen und Lippe, betreut vom Fischereiverein Petri Jünger Holtwick.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r5459143",
+    "waterName": "Schiedersee",
+    "issuer": "Landesfischereiverband Westfalen und Lippe e. V.",
+    "url": "https://www.lfv-westfalen.de/content/angeln/gewaesser/schieder_see.php",
+    "note": "Verbandsgewässer des LFV Westfalen und Lippe.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r12686910",
+    "waterName": "Baldeneysee",
+    "issuer": "Rheinischer Fischereiverband von 1880 e.V.",
+    "url": "https://rhfv.de/index.php/verbandsgewaesser/810-baldeneysee-und-ruhr-essen",
+    "note": "Verbandsgewässer des RhFV; Ansprechpartner laut Seite: Fischereiverein Essen e.V.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r65512",
+    "waterName": "Rursee (Rurtalsperre)",
+    "issuer": "Rheinischer Fischereiverband von 1880 e.V.",
+    "url": "https://rhfv.de/index.php/verbandsgewaesser/770-rursee",
+    "note": "Angelkarten laut RhFV vor Ort oder online.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r4868473",
+    "waterName": "Schwanenspiegel",
+    "issuer": "Rheinischer Fischereiverband von 1880 e.V.",
+    "url": "https://rhfv.de/index.php/verbandsgewaesser/773-schwanenspiegel-kaiserteich-duesseldorf",
+    "note": "Verbandsgewässer des RhFV (zusammen mit dem Kaiserteich).",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:w142702542",
+    "waterName": "Kaiserteich",
+    "issuer": "Rheinischer Fischereiverband von 1880 e.V.",
+    "url": "https://rhfv.de/index.php/verbandsgewaesser/773-schwanenspiegel-kaiserteich-duesseldorf",
+    "note": "Verbandsgewässer des RhFV (zusammen mit dem Schwanenspiegel).",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r1965895",
+    "waterName": "Spee's Graben",
+    "issuer": "Rheinischer Fischereiverband von 1880 e.V.",
+    "url": "https://rhfv.de/index.php/verbandsgewaesser/776-speescher-garten-duesseldorf",
+    "note": "Verbandsgewässer des RhFV.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r21384",
+    "waterName": "Tenderingssee",
+    "issuer": "Rheinischer Fischereiverband von 1880 e.V.",
+    "url": "https://rhfv.de/index.php/verbandsgewaesser/781-tenderingssee",
+    "note": "Verbandsgewässer des RhFV.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:w10309342",
+    "waterName": "Hennetalsperre (Hennesee)",
+    "issuer": "Ruhrverband (Fischerei)",
+    "url": "https://www.ruhrverband.de/services/sport-und-freizeit-tipps/angeln",
+    "note": "Angelkarten laut Ruhrverband online oder bei den Ausgabestellen.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r2419130",
+    "waterName": "Möhnetalsperre (Möhnesee)",
+    "issuer": "Ruhrverband (Fischerei)",
+    "url": "https://www.ruhrverband.de/services/sport-und-freizeit-tipps/angeln",
+    "note": "Angelkarten laut Ruhrverband online oder bei den Ausgabestellen.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:w11813484",
+    "waterName": "Sorpetalsperre (Sorpesee)",
+    "issuer": "Ruhrverband (Fischerei)",
+    "url": "https://www.ruhrverband.de/services/sport-und-freizeit-tipps/angeln",
+    "note": "Angelkarten laut Ruhrverband online oder bei den Ausgabestellen.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r54314",
+    "waterName": "Biggetalsperre (Biggesee)",
+    "issuer": "Ruhrverband (Fischerei)",
+    "url": "https://www.ruhrverband.de/services/sport-und-freizeit-tipps/angeln",
+    "note": "Angelkarten laut Ruhrverband online oder bei den Ausgabestellen.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:w28656301",
+    "waterName": "Listertalsperre",
+    "issuer": "Ruhrverband (Fischerei)",
+    "url": "https://www.ruhrverband.de/services/sport-und-freizeit-tipps/angeln",
+    "note": "Laut Ruhrverband nur der nicht geschützte Teil befischbar (Trinkwasserschutz).",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r30879",
+    "waterName": "Ennepetalsperre (in OSM: Ennepetalstausee)",
+    "issuer": "Ruhrverband (Fischerei)",
+    "url": "https://www.ruhrverband.de/services/sport-und-freizeit-tipps/angeln",
+    "note": "Trinkwassertalsperre: laut Ruhrverband nur Jahresscheine in begrenzter Anzahl.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r6683738",
+    "waterName": "Versetalsperre",
+    "issuer": "Ruhrverband (Fischerei)",
+    "url": "https://www.ruhrverband.de/services/sport-und-freizeit-tipps/angeln",
+    "note": "Trinkwassertalsperre: laut Ruhrverband nur Jahresscheine in begrenzter Anzahl.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:w23385098",
+    "waterName": "Fürwiggetalsperre",
+    "issuer": "Ruhrverband (Fischerei)",
+    "url": "https://www.ruhrverband.de/services/sport-und-freizeit-tipps/angeln",
+    "note": "Trinkwassertalsperre: laut Ruhrverband nur Jahresscheine in begrenzter Anzahl.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:w23880967",
+    "waterName": "Bevertalsperre",
+    "issuer": "Campingpark Bever-Talsperre (laut Wupperverband)",
+    "url": "https://www.wupperverband.de/service/freizeit/angeln",
+    "note": "Tages- und Jahreskarten laut Wupperverband beim Campingpark oder online.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r1382605",
+    "waterName": "Wuppertalsperre",
+    "issuer": "Campingpark Bever-Talsperre (laut Wupperverband)",
+    "url": "https://www.wupperverband.de/service/freizeit/angeln",
+    "note": "Tages- und Jahreskarten laut Wupperverband beim Campingpark oder online; die Wupper-Vorsperre ist gesperrt.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
   }
 ]

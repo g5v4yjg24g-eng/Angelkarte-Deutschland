@@ -34,7 +34,7 @@ describe('Gewässerkarte im Profil (PRM-4)', () => {
   it('A: geprüfter Eintrag mit Vereinsseite und Prüfdatum', async () => {
     render(<WaterPermitSection waterId="osm:r1" state="HH" />);
     expect(await screen.findByText('Testverein e.V.')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Zur Vereinsseite' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Zur Angelkarten-Seite' })).toHaveAttribute(
       'href',
       'https://www.testverein.example/see',
     );

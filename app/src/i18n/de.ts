@@ -716,7 +716,7 @@ export const de = {
   permit: {
     title: 'Gewässerkarte',
     loading: 'Wird geladen …',
-    toClub: 'Zur Vereinsseite',
+    toClub: 'Zur Angelkarten-Seite',
     checked: (date: string, host: string) => `Link geprüft am ${date} · ${host}`,
     none: 'Noch kein geprüfter Eintrag für dieses Gewässer.',
     assocIntro: 'Anlaufstelle im Bundesland:',
