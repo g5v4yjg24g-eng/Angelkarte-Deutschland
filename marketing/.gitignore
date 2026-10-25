@@ -14,3 +14,6 @@ videos/clips-steg/.hyperframes/
 # Ausschnitte aus den Rohaufnahmen des Nutzers (neu erzeugen mit tools/clips-steg-prep.sh)
 videos/clips-steg/assets/*.mp4
 videos/clips-steg/index.html
+# Temporäre Arbeitsordner von HyperFrames während des Renderns
+videos/work-*/
+videos/.*hf-transaction*/
