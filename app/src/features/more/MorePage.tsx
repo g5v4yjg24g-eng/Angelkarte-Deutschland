@@ -1,7 +1,15 @@
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
 import { ListLink } from '../../design/components/ListLink';
-import { DatabaseIcon, HookIcon, InfoIcon, LockIcon, ParagraphIcon, SlidersIcon } from '../../design/icons';
+import {
+  DatabaseIcon,
+  HookIcon,
+  InfoIcon,
+  KnotIcon,
+  LockIcon,
+  ParagraphIcon,
+  SlidersIcon,
+} from '../../design/icons';
 import styles from '../../design/components/Page.module.css';
 
 export function MorePage() {
@@ -15,6 +23,7 @@ export function MorePage() {
           hint={de.more.regulationsHint}
         />
         <ListLink to="/mehr/koeder" icon={<HookIcon />} title={de.more.baits} hint={de.more.baitsHint} />
+        <ListLink to="/mehr/knoten" icon={<KnotIcon />} title={de.more.knots} hint={de.more.knotsHint} />
         <ListLink to="/mehr/daten" icon={<DatabaseIcon />} title={de.more.backup} hint={de.more.backupHint} />
       </div>
       <div className={styles.card}>

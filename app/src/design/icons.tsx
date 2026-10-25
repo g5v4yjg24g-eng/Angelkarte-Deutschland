@@ -161,3 +161,29 @@ export function FishMark({
     </svg>
   );
 }
+export const KnotIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 18c3 0 5-2 6.5-5S13 6 15.5 6 19 8 17.5 10.5 11 12 9.5 10 11 5 13 5" />
+    <path d="M12.5 13.5C14 16 16.5 18 21 18" />
+  </Icon>
+);
+export const PlayIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M7 5v14l11-7z" />
+  </Icon>
+);
+export const PauseIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M8 5v14M16 5v14" />
+  </Icon>
+);
+export const StepBackIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M6 5v14M18 5 9 12l9 7z" />
+  </Icon>
+);
+export const StepForwardIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M18 5v14M6 5l9 7-9 7z" />
+  </Icon>
+);

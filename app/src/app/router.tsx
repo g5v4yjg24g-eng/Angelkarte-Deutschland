@@ -15,6 +15,8 @@ import { WeatherPage } from '../features/weather/WeatherPage';
 import { CalendarPage } from '../features/calendar/CalendarPage';
 import { PrivacyPage } from '../features/about/PrivacyPage';
 import { BaitPresetsPage } from '../features/baits/BaitPresetsPage';
+import { KnotsPage } from '../features/knots/KnotsPage';
+import { KnotDetailPage } from '../features/knots/KnotDetailPage';
 import { AboutPage } from '../features/about/AboutPage';
 import { LazyBackupPage } from '../features/backup/LazyBackupPage';
 import { LawPage } from '../features/law/LawPage';
@@ -41,6 +43,8 @@ export const routes = [
           { path: 'mehr', element: <MorePage /> },
           { path: 'mehr/einstellungen', element: <SettingsPage /> },
           { path: 'mehr/koeder', element: <BaitPresetsPage /> },
+          { path: 'mehr/knoten', element: <KnotsPage /> },
+          { path: 'mehr/knoten/:knot', element: <KnotDetailPage /> },
           { path: 'mehr/info', element: <AboutPage /> },
           { path: 'mehr/datenschutz', element: <PrivacyPage /> },
           { path: 'mehr/daten', element: <LazyBackupPage /> },
