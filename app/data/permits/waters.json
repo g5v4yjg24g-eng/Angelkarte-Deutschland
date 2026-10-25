@@ -56,9 +56,9 @@
   {
     "waterId": "osm:r65512",
     "waterName": "Rursee (Rurtalsperre)",
-    "issuer": "Rheinischer Fischereiverband von 1880 e.V.",
-    "url": "https://rhfv.de/index.php/verbandsgewaesser/770-rursee",
-    "note": "Angelkarten laut RhFV vor Ort oder online.",
+    "issuer": "Fischerei-Pächtergemeinschaft Rursee e.V.",
+    "url": "https://fischerei-rursee.de/karten-kaufen",
+    "note": "Angelkarten laut Pächtergemeinschaft; auch über den Rheinischen Fischereiverband erhältlich.",
     "checkedAt": "2026-10-25",
     "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
   },
@@ -185,6 +185,15 @@
     "issuer": "Campingpark Bever-Talsperre (laut Wupperverband)",
     "url": "https://www.wupperverband.de/service/freizeit/angeln",
     "note": "Tages- und Jahreskarten laut Wupperverband beim Campingpark oder online; die Wupper-Vorsperre ist gesperrt.",
+    "checkedAt": "2026-10-25",
+    "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
+  },
+  {
+    "waterId": "osm:r2053801",
+    "waterName": "Obersee (Rurtalsperre, Simmerath)",
+    "issuer": "Fischerei-Pächtergemeinschaft Rursee e.V.",
+    "url": "https://fischerei-rursee.de/karten-kaufen",
+    "note": "Laut Pächtergemeinschaft wird auf dem Obersee ausschließlich von ihren Ruderkähnen aus geangelt.",
     "checkedAt": "2026-10-25",
     "checkedBy": "Claude, an der Quellseite abgerufen am 2026-10-25"
   }
