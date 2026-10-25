@@ -1,0 +1,56 @@
+<!doctype html>
+<!-- Steg-Clip 06-sonntag-intro (erzeugt von marketing/tools/clips-steg-build.mjs – dort ändern). Aufnahme: assets/sonntag.mp4 -->
+<html lang="de" data-resolution="portrait">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, height=1920" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+@font-face{font-family:'Inter';font-weight:100 900;src:url('assets/fonts/inter-latin-wght-normal.woff2') format('woff2')}
+@font-face{font-family:'Fraunces';font-weight:100 900;src:url('assets/fonts/fraunces-latin-wght-normal.woff2') format('woff2')}
+:root{--deep:#0b2a33;--fish:#e8f4f5;--eye:#f2994a;--ripple:#5cc4d6;--muted:#d6e8eb}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--deep)}
+#root{position:relative;width:100%;height:100%;font-family:'Inter',sans-serif;color:var(--fish)}
+.clip{position:absolute;inset:0}
+#footage{width:1080px;height:1920px;object-fit:cover}
+/* Verlauf oben, damit die Texte auf hellem Himmel lesbar bleiben */
+#shade{background:linear-gradient(180deg,rgb(7 29 36 / .78) 0%,rgb(7 29 36 / .45) 26%,rgb(7 29 36 / 0) 46%)}
+.kicker{top:250px;bottom:auto;left:84px;right:84px;font:700 30px/1 'Inter',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ripple);opacity:0}
+.title{top:300px;bottom:auto;left:84px;right:84px;font:650 104px/1.04 'Fraunces',serif;letter-spacing:-.01em;text-wrap:balance;opacity:0;text-shadow:0 4px 24px rgb(0 0 0 / .25)}
+.title em,.end-title em{font-style:normal;color:var(--eye)}
+.sub{top:auto;bottom:auto;left:84px;right:84px;font:500 44px/1.3 'Inter',sans-serif;color:var(--muted);text-wrap:balance;opacity:0;text-shadow:0 2px 16px rgb(0 0 0 / .35)}
+.badge{top:auto;bottom:380px;left:0;right:0;display:flex;justify-content:center;opacity:0}
+.badge span{font:600 30px/1 'Inter',sans-serif;padding:16px 26px;border-radius:999px;background:rgb(5 22 27 / .7);border:1.5px solid rgb(92 196 214 / .45)}
+.end{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;
+  background:radial-gradient(120% 80% at 80% 0%,#145a6a 0%,var(--deep) 55%,#071d24 100%)}
+.end img{width:300px;height:300px}
+.end .brand{margin-top:6px;font:650 72px/1 'Fraunces',serif}
+.end .end-title{margin-top:60px;font:650 104px/1.04 'Fraunces',serif}
+.end .pill{margin-top:40px;font:600 34px/1 'Inter',sans-serif;padding:20px 32px;border-radius:999px;background:rgb(92 196 214 / .14);border:1.5px solid rgb(92 196 214 / .4)}
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="5" data-width="1080" data-height="1920">
+  <video id="footage" class="clip" src="assets/sonntag.mp4" muted data-start="0" data-duration="5" data-media-start="0" data-track-index="0"></video>
+  <div id="shade" class="clip" data-start="0" data-duration="5" data-track-index="1"></div>
+  <div id="kicker" class="clip kicker" data-start="0" data-duration="5" data-track-index="2">Beißfenster-Check</div>
+  <div id="title" class="clip title" data-start="0" data-duration="5" data-track-index="3">Angelwetter der <em>Woche</em></div>
+  <div id="sub" class="clip sub" style="top:540px" data-start="0" data-duration="5" data-track-index="4">Vorhersage = Modellwert. Keine Garantie.</div>
+  
+  
+</div>
+<script>
+  window.__timelines = window.__timelines || {};
+  const tl = gsap.timeline({ paused: true });
+  tl.fromTo('#footage', { scale: 1 }, { scale: 1.05, duration: 5, ease: 'none' }, 0);
+  tl.fromTo('#kicker', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.4);
+  tl.fromTo('#title', { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' }, 0.55);
+  tl.fromTo('#sub', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 1.6);
+  
+  tl.to(['#kicker', '#title', '#sub'], { opacity: 0, duration: 0.35 }, 4.6);
+  window.__timelines['main'] = tl;
+  tl.seek(0);
+</script>
+</body>
+</html>

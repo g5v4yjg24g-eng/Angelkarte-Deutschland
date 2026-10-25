@@ -1,0 +1,32 @@
+[
+  {
+    "id": "01-ankommen",
+    "src": "ankommen",
+    "len": 7
+  },
+  {
+    "id": "02-wurf",
+    "src": "wurf",
+    "len": 11.2
+  },
+  {
+    "id": "03-pause",
+    "src": "pause",
+    "len": 11
+  },
+  {
+    "id": "04-schneidertag",
+    "src": "zeitraffer",
+    "len": 7
+  },
+  {
+    "id": "05-feierabend",
+    "src": "feierabend",
+    "len": 7
+  },
+  {
+    "id": "06-sonntag-intro",
+    "src": "sonntag",
+    "len": 5
+  }
+]
