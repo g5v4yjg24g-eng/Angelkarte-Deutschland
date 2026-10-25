@@ -17,3 +17,7 @@ videos/clips-steg/index.html
 # Temporäre Arbeitsordner von HyperFrames während des Renderns
 videos/work-*/
 videos/.*hf-transaction*/
+videos/clips-app/.hyperframes/
+# Ausschnitt aus den Rohaufnahmen des Nutzers (Kopie aus clips-steg/assets)
+videos/clips-app/assets/steg-*.mp4
+videos/clips-app/index.html
