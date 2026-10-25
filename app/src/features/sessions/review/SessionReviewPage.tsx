@@ -36,7 +36,9 @@ export function SessionReviewPage() {
   const navigate = useNavigate();
   const now = useNow();
   const dialog = useRef<HTMLDialogElement>(null);
-  const [selectedId, setSelectedId] = useState<string>();
+  // Woher die Auswahl kommt: nur ein Tipp auf der Karte scrollt die Chronik zum Eintrag
+  const [selection, setSelection] = useState<{ id: string; from: 'map' | 'list' }>();
+  const selectedId = selection?.id;
   const mapApi = useRef<ReviewMapApi | null>(null);
 
   const data = useLiveQuery(async () => {
@@ -144,7 +146,7 @@ export function SessionReviewPage() {
                     to={view.to}
                     selectedId={selectedId}
                     controller={mapApi}
-                    onSelect={setSelectedId}
+                    onSelect={(id) => setSelection({ id, from: 'map' })}
                   />
                 </Suspense>
               </>
@@ -156,8 +158,9 @@ export function SessionReviewPage() {
               events={view.events}
               photos={view.photos}
               selectedId={selectedId}
+              scrollToSelected={selection?.from === 'map'}
               onShow={(eid) => {
-                setSelectedId(eid);
+                setSelection({ id: eid, from: 'list' });
                 mapApi.current?.focus(eid);
                 dialog.current?.querySelector(`.${styles.mapBlock}`)?.scrollIntoView({ block: 'start' });
               }}
