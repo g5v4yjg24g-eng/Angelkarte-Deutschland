@@ -87,6 +87,8 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | REV-3 | Ohne Standortfreigabe | Session läuft normal, Hinweis + „erneut anfragen“; Rückblick ohne Route und ohne erfundene Highlights (✅ `review.spec.ts`) |
 | REV-4 | Lange Session, 390 px, dunkel, offline | 6 000 Punkte flüssig (vereinfacht), kein seitliches Scrollen, Hinweis ohne Kartenhintergrund (✅ `review.spec.ts`) |
 | SES-3 | Session > 24 h | Korrekturdialog. *Automatisiert: Hinweis in der Kopfzeile, Vorschlag übernehmen, Ende vor Beginn abgelehnt* |
+| NEWS-1 | Neuigkeiten nach Update | Neue Installation ohne Fenster; nach Update einmal „Neu in Fangpunkt“ mit den ungesehenen Einträgen, danach nicht mehr; 390 px; unter „Über“ nachlesbar (✅ `whatsnew.spec.ts`, `whatsNew.test.ts`) |
+| NEWS-2 | Bestandsnutzer ohne gemerkten Stand | Wer schon Daten hat, sieht den neuesten Eintrag; Escape schließt (✅ `whatsnew.spec.ts`) |
 | USE-1 | Nutzungszählung: Pfade | Nur Bereiche, IDs werden zu `:id`, Unbekanntes zu `/sonstige`, Basis-Pfad entfernt; nur gültige Codes (✅ `usage.test.ts`) |
 | USE-2 | Nutzungszählung: Abruf | Nur `p` + Cache-Brecher an `<code>.goatcounter.com/count`, ohne Cookies/Referrer; ohne Code kein Abruf (✅ `goatCounter.test.ts`); Datenschutz-Test erlaubt `*.goatcounter.com` (`privacy.spec.ts`) |
 | WX-3 | Fang gerade erfassen | Wetter erscheint schon im Formular unter „Mehr Details“ (Modellwert, Quelle), „In die Felder übernehmen“ füllt Himmel/Lufttemperatur/Wind (Bft), gespeichert ohne zweiten Abruf; die letzten 48 h über die Forecast-API; auch die aufgerundete nächste Stunde (✅ `weather.spec.ts`, `weather.test.ts`, `openMeteo.test.ts`) |
