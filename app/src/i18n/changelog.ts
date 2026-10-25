@@ -4,10 +4,17 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-25-5',
+    title: 'Gewässerkarten in NRW',
+    items: [
+      'Gewässerkarten in NRW: Für 20 Seen und Talsperren – z. B. Möhne-, Bigge-, Sorpe- und Rurtalsperre, Baldeneysee, Bever- und Wuppertalsperre – führt die Gewässerkarte direkt zur Seite des Verbands oder Betreibers.',
+    ],
+  },
+  {
     id: '2026-10-25-4',
     title: 'Gewässerkarte',
     items: [
-      'Gewässerkarte: Tippe auf ein Gewässer – unter „Gewässerkarte“ siehst du, wo es die Angelkarte gibt. Bei geprüften Gewässern führt „Zur Vereinsseite“ direkt dorthin, sonst zur Angelkarten-Seite des Landesverbands.',
+      'Gewässerkarte: Tippe auf ein Gewässer – unter „Gewässerkarte“ siehst du, wo es die Angelkarte gibt. Bei geprüften Gewässern führt „Zur Angelkarten-Seite“ direkt zum Verein, Verband oder Betreiber, sonst zur Angelkarten-Seite des Landesverbands.',
       'Eigener Link: Kennst du die Seite deines Vereins, speichere sie am Gewässer. Der Link bleibt auf deinem Gerät und ist Teil deiner Sicherung.',
     ],
   },
