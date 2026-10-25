@@ -1,6 +1,7 @@
 // Mehr → Konto (Etappe 1, Entscheidung Nutzer 2026-10-25): freiwillig, Anmeldung per E-Mail-Code, Profil mit
 // Nutzername, Anzeigename ändern, abmelden, Konto löschen. Fangdaten bleiben auf dem Gerät.
 import { useEffect, useState, type FormEvent } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
@@ -10,6 +11,7 @@ import { useProviders } from '../../ports/providersContext';
 import type { AccountProvider, AccountUser } from '../../ports/account';
 import {
   accountErrorKind,
+  authLinkInHash,
   displayNameValid,
   normalizeCode,
   normalizeDisplayName,
@@ -389,6 +391,16 @@ export function AccountPage() {
   const [loaded, setLoaded] = useState<{ uid: string; profile?: Profile | null; error?: string }>();
   const [wasSignedIn, setWasSignedIn] = useState(false);
   const [deleted, setDeleted] = useState(false);
+  // Anmelde-Link mit Fehler (z. B. abgelaufen): Hinweis zeigen und den #-Teil entfernen
+  const { hash } = useLocation();
+  const navigate = useNavigate();
+  const [linkError] = useState(() => {
+    const r = authLinkInHash(hash);
+    return r?.kind === 'error' ? r.reason : undefined;
+  });
+  useEffect(() => {
+    if (linkError) navigate('/mehr/konto', { replace: true });
+  }, [linkError, navigate]);
 
   useEffect(() => {
     if (!account.enabled) return;
@@ -435,6 +447,9 @@ export function AccountPage() {
       ) : (
         <div className={styles.stack}>
           {!online && <Notice tone="warning">{t.offline}</Notice>}
+          {linkError && user === null && (
+            <Notice tone="error">{linkError === 'expired' ? t.linkExpired : t.errors.unknown}</Notice>
+          )}
           {user === undefined ? (
             <p className="muted">{t.loading}</p>
           ) : user === null ? (

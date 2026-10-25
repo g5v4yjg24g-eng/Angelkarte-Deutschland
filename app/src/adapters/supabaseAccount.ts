@@ -16,7 +16,12 @@ const fail = (
   throw new AccountError(e?.message ?? 'Unbekannter Fehler', e?.status, e?.code);
 };
 
-export function supabaseAccount(url: string | undefined, key: string | undefined): AccountProvider {
+export function supabaseAccount(
+  url: string | undefined,
+  key: string | undefined,
+  /** Ziel des Anmelde-Links aus der Standard-Mail (Übergangslösung, solange kein eigener Mailanbieter da ist) */
+  redirectTo?: string,
+): AccountProvider {
   const enabled = !!url && !!key;
   let client: Promise<SupabaseClient> | undefined;
   const get = () => {
@@ -27,8 +32,10 @@ export function supabaseAccount(url: string | undefined, key: string | undefined
           storageKey: ACCOUNT_STORAGE_KEY,
           persistSession: true,
           autoRefreshToken: true,
-          // Anmeldung nur per Code – keine Links in der Adresse auswerten
-          detectSessionInUrl: false,
+          // Code (verifyOtp) oder Link aus der Standard-Mail: Der Link liefert die Anmeldung im #-Teil der Adresse
+          // (implizit statt PKCE, damit er auch in einem anderen Browser als dem anfragenden funktioniert)
+          flowType: 'implicit',
+          detectSessionInUrl: true,
         },
       }),
     );
@@ -67,7 +74,10 @@ export function supabaseAccount(url: string | undefined, key: string | undefined
     async requestCode(email) {
       const { error } = await (
         await get()
-      ).auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+      ).auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: true, ...(redirectTo ? { emailRedirectTo: redirectTo } : {}) },
+      });
       if (error) fail(error);
     },
     async verifyCode(email, code) {

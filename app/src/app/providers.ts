@@ -23,6 +23,8 @@ export const providers: Providers = {
   account: supabaseAccount(
     import.meta.env.VITE_SUPABASE_URL ?? 'https://sgnyymciwnwjgvojptwu.supabase.co',
     import.meta.env.VITE_SUPABASE_KEY ?? 'sb_publishable_OqbYE0xAGayAkr478v3GhQ_43tZhk7j',
+    // Anmelde-Link führt auf die Startseite (= „Site URL“ im Supabase-Projekt); AuthRedirect leitet weiter
+    typeof location === 'undefined' ? undefined : `${location.origin}${import.meta.env.BASE_URL}`,
   ),
   water: staticWaterData(import.meta.env.VITE_WATER_BASE_URL ?? `${import.meta.env.BASE_URL}data/water/`),
 };

@@ -69,3 +69,21 @@ export function resendIn(lastSentMs: number | undefined, nowMs: number): number 
     Math.max(0, Math.ceil((lastSentMs + RESEND_SECONDS * 1000 - nowMs) / 1000)),
   );
 }
+
+export type AuthLinkResult = { kind: 'session' } | { kind: 'error'; reason: 'expired' | 'other' };
+
+/**
+ * Wertet den #-Teil der Adresse nach einem Klick auf den Anmelde-Link aus (Supabase, impliziter Ablauf):
+ * Erfolg liefert access_token und refresh_token, ein Fehler error/error_code/error_description.
+ */
+export function authLinkInHash(hash: string): AuthLinkResult | undefined {
+  const p = new URLSearchParams(hash.replace(/^#/, ''));
+  if (p.get('access_token') && p.get('refresh_token')) return { kind: 'session' };
+  const code = p.get('error_code') ?? p.get('error');
+  if (!code) return undefined;
+  const text = `${code} ${p.get('error_description') ?? ''}`.toLowerCase();
+  return {
+    kind: 'error',
+    reason: text.includes('expired') || text.includes('invalid') ? 'expired' : 'other',
+  };
+}

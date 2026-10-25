@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   accountErrorKind,
+  authLinkInHash,
   displayNameValid,
   normalizeCode,
   resendIn,
@@ -54,5 +55,17 @@ describe('Konto-Regeln (ACC-1)', () => {
     expect(resendIn(0, 1000)).toBe(59);
     expect(resendIn(0, 60_000)).toBe(0);
     expect(resendIn(5000, 4200)).toBe(60);
+  });
+
+  it('Anmelde-Link im #-Teil der Adresse erkennen', () => {
+    expect(authLinkInHash('#access_token=a&refresh_token=r&type=magiclink')).toEqual({ kind: 'session' });
+    expect(
+      authLinkInHash(
+        '#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired',
+      ),
+    ).toEqual({ kind: 'error', reason: 'expired' });
+    expect(authLinkInHash('#error=server_error')).toEqual({ kind: 'error', reason: 'other' });
+    expect(authLinkInHash('')).toBeUndefined();
+    expect(authLinkInHash('#abschnitt')).toBeUndefined();
   });
 });

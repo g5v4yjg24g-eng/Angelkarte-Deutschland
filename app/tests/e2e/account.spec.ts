@@ -6,14 +6,16 @@ test.use({ serviceWorkers: 'block' });
 
 const SUPABASE = 'https://sgnyymciwnwjgvojptwu.supabase.co';
 const b64 = (o: object) => Buffer.from(JSON.stringify(o)).toString('base64url');
+const EXP = Math.floor(Date.now() / 1000) + 3600;
+const TOKEN = `${b64({ alg: 'HS256', typ: 'JWT' })}.${b64({ sub: 'u-1', exp: EXP, role: 'authenticated', aud: 'authenticated', email: 'max@example.de' })}.sig`;
 
 /** Nachgebildeter Supabase-Server: Auth (Code) und REST (profiles, Funktionen) – der echte wird nie gerufen. */
 async function fakeSupabase(page: Page) {
   const calls: string[] = [];
   let profile: { id: string; username: string; display_name: string } | null = null;
   const user = { id: 'u-1', aud: 'authenticated', role: 'authenticated', email: 'max@example.de' };
-  const exp = Math.floor(Date.now() / 1000) + 3600;
-  const token = `${b64({ alg: 'HS256', typ: 'JWT' })}.${b64({ sub: user.id, exp, role: 'authenticated', aud: 'authenticated', email: user.email })}.sig`;
+  const exp = EXP;
+  const token = TOKEN;
   const json = (route: Route, body: unknown, status = 200) =>
     route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
 
@@ -87,7 +89,7 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
 
   await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('Max@Example.de');
   await page.getByRole('button', { name: 'Code senden' }).click();
-  await expect(page.getByText(/Code an max@example\.de geschickt/)).toBeVisible();
+  await expect(page.getByText(/E-Mail an max@example\.de geschickt/)).toBeVisible();
   await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('999999');
   await page.getByRole('button', { name: 'Anmelden' }).click();
   await expect(page.getByText(/Der Code ist falsch oder abgelaufen/)).toBeVisible();
@@ -137,4 +139,27 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   expect(await page.evaluate(() => localStorage.getItem('fangpunkt.auth'))).toBeNull();
   // erwartet: die Antwort 403 auf den absichtlich falschen Code
   expect(errors.filter((e) => !e.includes('status of 403'))).toEqual([]);
+});
+
+test('ACC-4: Übergangslösung – Anmelde-Link aus der Standard-Mail meldet an, abgelaufener Link wird erklärt', async ({
+  page,
+}) => {
+  const calls = await fakeSupabase(page);
+  await page.goto(
+    `/#access_token=${TOKEN}&expires_at=${EXP}&expires_in=3600&refresh_token=r-1&token_type=bearer&type=magiclink`,
+  );
+  await waitForApp(page);
+  await expect(page).toHaveURL(/\/mehr\/konto#?$/);
+  await expect(page.getByRole('heading', { name: 'Profil anlegen' })).toBeVisible();
+  expect(calls).toContain('GET /auth/v1/user');
+  expect(await page.evaluate(() => location.hash)).toBe('');
+
+  await page.evaluate(() => localStorage.removeItem('fangpunkt.auth'));
+  await page.goto(
+    '/#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired',
+  );
+  await waitForApp(page);
+  await expect(page).toHaveURL(/\/mehr\/konto$/);
+  await expect(page.getByText(/Der Anmelde-Link ist abgelaufen/)).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'E-Mail-Adresse' })).toBeVisible();
 });

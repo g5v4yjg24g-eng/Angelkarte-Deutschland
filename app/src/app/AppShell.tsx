@@ -10,6 +10,7 @@ import { SessionChip } from '../features/sessions/SessionChip';
 import { WeatherSync } from '../features/weather/WeatherSync';
 import { WhatsNew } from '../features/whatsNew/WhatsNew';
 import { UsageTracker } from '../features/usage/UsageTracker';
+import { AuthRedirect } from '../features/account/AuthRedirect';
 import { SessionTracker } from '../features/sessions/tracking/SessionTracker';
 import { GaugeSync } from '../features/weather/GaugeSync';
 import { DRAG_START_PX, itemAt, lensCenter, type Span } from './navLens';
@@ -197,6 +198,7 @@ export function AppShell() {
       <WeatherSync />
       <WhatsNew />
       <UsageTracker />
+      <AuthRedirect />
       <SessionTracker />
       <GaugeSync />
     </div>
