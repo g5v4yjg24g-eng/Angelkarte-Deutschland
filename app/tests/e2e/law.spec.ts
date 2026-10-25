@@ -66,7 +66,9 @@ test('LAW-6: Hamburg – Fischart suchen, „Nur Fische in der Schonzeit“', as
   await waitForApp(page);
   const search = page.getByRole('searchbox', { name: 'Fischart suchen' });
   await search.fill('zander');
-  await expect(page.getByRole('listitem').filter({ hasText: 'Zander' }).first()).toContainText('01.02.–31.05.');
+  await expect(page.getByRole('listitem').filter({ hasText: 'Zander' }).first()).toContainText(
+    '01.02.–31.05.',
+  );
   await expect(page.getByRole('listitem').filter({ hasText: 'Hecht' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Fischereischein und Erlaubnisse' })).toHaveCount(0);
   await search.fill('');
