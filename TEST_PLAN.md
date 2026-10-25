@@ -58,6 +58,11 @@ Netzwerk in E2E: Externe Dienste (Karte, Wetter) werden per `page.route` **gemoc
 | WAT-3 | Profil eines unbenannten Teichs | „Unbenanntes Gewässer", Felder „unbekannt", Quelle OSM + Stand |
 | WAT-4 | Datenpaket-Update, `wid` entfällt | Nachfolger-Vorschlag, keine stille Neuzuordnung. *Stand M4: noch nicht umgesetzt [O]; wird mit dem ersten Datenpaket-Update fällig (zweiter Datenstand nötig).* |
 | WAT-5 | Tiefenkarte bei `status !== 'available'` | **Kein** Button; Text „nicht verfügbar" |
+| PRM-1 | Gewässerkarte: Fachlogik | Eigener Link: ohne Schema → https, nur http(s), keine Zugangsdaten im Link; Einträge je Gewässer eindeutig, nur https (✅ `permits.test.ts`) |
+| PRM-2 | Gewässerkarten-Dateien | Schema gültig; jedes Land hat einen Landesverband oder steht mit Grund unter „open“ (✅ `permitFiles.test.ts`, auch `pnpm validate:data`) |
+| PRM-3 | Eigenen Link speichern/ändern/entfernen | Ein Link je Gewässer, Teil der Sicherung, Migration v3→v4 (✅ `waterLinkService.test.ts`, `db.test.ts`, `backupService.test.ts`) |
+| PRM-4 | Profil mit geprüftem Eintrag / ohne / Land ohne Verband | „Zur Vereinsseite“ mit Prüfdatum; sonst Landesverband; Bremen: „noch kein geprüfter Landesverband“ (✅ `WaterPermitSection.test.tsx`) |
+| PRM-5 | De Wittsee antippen | Zwei NRW-Verbände verlinkt (neuer Tab); ungültiger Link abgelehnt; eigener Link bleibt nach Neuladen, entfernbar; axe, 390 px (✅ `water.spec.ts`) |
 
 Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in jedem Datenlauf; „Großer De Wittsee" heißt in OSM „De Wittsee", „Möhnesee" ist dort `name:de` der Möhnetalsperre): Bodensee, Chiemsee, Müritz, Steinhuder Meer, Edersee, Großer Plöner See, Starnberger See, Ammersee, Schweriner See, Großer Müggelsee, Kemnader See, Baldeneysee, Möhnesee, Großer De Wittsee, Hohendeicher See, Elbe, Rhein, Mittellandkanal, Dümmer, Senftenberger See.
 

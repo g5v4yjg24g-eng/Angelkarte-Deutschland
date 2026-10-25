@@ -13,6 +13,6 @@
     "test": "pnpm -C app test",
     "e2e": "pnpm -C app e2e",
     "icons": "pnpm -C app icons",
-    "validate:data": "pnpm -C app exec vitest run src/data/regulationFiles.test.ts"
+    "validate:data": "pnpm -C app exec vitest run src/data/regulationFiles.test.ts src/data/permitFiles.test.ts"
   }
 }

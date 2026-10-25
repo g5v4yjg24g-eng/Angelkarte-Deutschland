@@ -251,6 +251,18 @@ interface Trip extends Meta {
 // nicht gespeichert. Alt-App-Termine (`plans`) werden übernommen, abgesagte nicht.
 ```
 
+### 5.5b WaterLink (eigener Link zur Angelkarte, DB v4)
+```ts
+interface WaterLink extends Meta {
+  id: string;        // „waterlink-<waterId>" – ein Link je Gewässer
+  waterId: string;
+  url: string;       // http(s), eingegeben ohne Schema → https (domain/permits.ts normalizeUserUrl)
+  label?: string;    // max. 80 Zeichen
+}
+// umgesetzt 2026-10-25 (Gewässerkarte, Variante C); geprüfte Einträge (A) und Landesverbände (B) sind statische
+// Daten in app/data/permits (Schemas in domain/permits.ts), siehe DATA_SOURCES §6b.
+```
+
 ### 5.6 Settings / AppMeta (Key-Value)
 `theme`, `units`, `lastBackupAt`, `changesSinceBackup`, `backupReminderSnoozedUntil`, `dataPackVersion`, `persistGranted`, `introSeenVersion` (nur für „Was ist neu").
 
@@ -375,4 +387,5 @@ Umsetzung (M6, 2026-10-22):
 - Dexie `version(n).stores({...}).upgrade(tx => …)`. Jede Migration hat einen Test mit Fixture der Vorversion.
 - **v2 (2026-10-22):** neue Tabelle `trips` (Angelkalender), keine Umwandlung bestehender Daten; Test `db.test.ts`. Die Prüfsumme wird über den Datenteil der Datei gebildet, wie er dort steht – ältere Sicherungen ohne `trips` bleiben gültig.
 - **v3 (2026-10-23):** neue Tabelle `tracks` (GPS-Routen der Sessions), keine Umwandlung bestehender Daten; Test `db.test.ts`. Sicherungen und Snapshots ohne `tracks` bleiben gültig.
+- **v4 (2026-10-25):** neue Tabelle `waterLinks` (eigene Links zur Angelkarte), keine Umwandlung bestehender Daten; Test `db.test.ts`. Sicherungen und Snapshots ohne `waterLinks` bleiben gültig.
 - Exportformat und DB-Schema sind **getrennt versioniert** (`formatVersion` ≠ `schemaVersion`).

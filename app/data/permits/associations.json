@@ -1,0 +1,111 @@
+{
+  "source": {
+    "title": "Deutscher Angelfischerverband e.V.: Unsere Mitgliedsverbände (ergänzt um Verbände außerhalb des DAFV, je an der eigenen Seite geprüft)",
+    "url": "https://www.dafv.de/ueber-uns/unsere-mitgliedsverbaende",
+    "retrievedAt": "2026-10-25"
+  },
+  "associations": [
+    {
+      "state": "BW",
+      "name": "Landesfischereiverband Baden-Württemberg e. V.",
+      "url": "https://lfvbw.de/angelfischerei/angeln-in-verbandsgewaessern/",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "BY",
+      "name": "Landesfischereiverband Bayern e.V.",
+      "url": "https://www.lfvbayern.de/angelfischerei",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "BE",
+      "name": "Deutscher Anglerverband Landesverband Berlin e.V.",
+      "url": "https://landesanglerverband.berlin/service/angelkarten/",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "BB",
+      "name": "Landesanglerverband Brandenburg e.V.",
+      "url": "https://www.lavb.de/angelkarten/",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "HH",
+      "name": "Anglerverband Hamburg e.V.",
+      "url": "https://www.anglerverband-hh.de/unsere-gewaesser/gastkarten",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "HE",
+      "name": "Verband Hessischer Fischer e.V.",
+      "url": "https://hessenfischer.net/serviceangebote/online-karten/",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "MV",
+      "name": "Landesanglerverband Mecklenburg-Vorpommern e.V.",
+      "url": "https://www.lav-mv.de/angelkarten/",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "NI",
+      "name": "Anglerverband Niedersachsen e.V.",
+      "url": "https://www.av-nds.de/angeln/fischereierlaubnisscheine",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "NW",
+      "name": "Landesfischereiverband Westfalen und Lippe e. V.",
+      "url": "https://www.lfv-westfalen.de/content/angeln/gewaesser/verkaufsstellenuebersicht.php",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "NW",
+      "name": "Rheinischer Fischereiverband von 1880 e.V.",
+      "url": "https://rhfv.de/index.php/verbandsgewaesser",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "RP",
+      "name": "Landesfischereiverband Rheinland-Pfalz e.V.",
+      "url": "https://lfvrlp.de/service/angeln/",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "SL",
+      "name": "Fischereiverband Saar",
+      "url": "https://www.fischereiverband-saar.de/verbandsgewaesser/",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "SN",
+      "name": "Landesverband Sächsischer Angler e. V.",
+      "url": "https://angeln-sachsen.de/gewaesser/angelatlas",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "ST",
+      "name": "Landesanglerverband Sachsen-Anhalt e. V.",
+      "url": "https://www.lav-sachsen-anhalt.de/index.php/gewaesser-wirtschaft/gewaesser-wirtschaft-2",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "SH",
+      "name": "Landesangelverband Schleswig-Holstein e.V.",
+      "url": "https://lav-sh.de/angeln/fischerei-und-erlaubnisschein/erlaubnisscheine/",
+      "checkedAt": "2026-10-25"
+    },
+    {
+      "state": "TH",
+      "name": "Landesanglerverband Thüringen e.V.",
+      "url": "https://www.lavt.de/angelkarten/",
+      "checkedAt": "2026-10-25"
+    }
+  ],
+  "open": [
+    {
+      "state": "HB",
+      "reason": "Landesfischereiverband Bremen e.V. (lfvbremen.de laut DAFV): Seite am 2026-10-25 nicht sicher erreichbar (Zertifikat passt nicht zur Adresse)"
+    }
+  ]
+}

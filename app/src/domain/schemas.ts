@@ -227,6 +227,16 @@ export const TrackSchema = MetaSchema.extend({
   path: ['segments'],
 });
 
+/**
+ * Eigener Link zur Angelkarte eines Gewässers (Gewässerkarte, Variante C, Wunsch Nutzer 2026-10-25). Bleibt auf dem
+ * Gerät. Ein Link je Gewässer; die ID ist `waterlink-<waterId>`.
+ */
+export const WaterLinkSchema = MetaSchema.extend({
+  waterId: id,
+  url: z.url({ protocol: /^https?$/ }).max(2000),
+  label: text(80).optional(),
+});
+
 export type LatLng = z.infer<typeof LatLngSchema>;
 export type Meta = z.infer<typeof MetaSchema>;
 export type Place = z.infer<typeof PlaceSchema>;
@@ -241,6 +251,7 @@ export type PhotoMeta = z.infer<typeof PhotoMetaSchema>;
 export type BaitPreset = z.infer<typeof BaitPresetSchema>;
 export type Trip = z.infer<typeof TripSchema>;
 export type Track = z.infer<typeof TrackSchema>;
+export type WaterLink = z.infer<typeof WaterLinkSchema>;
 export type TrackPoint = z.infer<typeof TrackPointSchema>;
 
 /** Alle Entitäten mit eigener Tabelle; Reihenfolge = Import-Reihenfolge (Bezüge zuerst). */
@@ -251,6 +262,7 @@ export const ENTITY_SCHEMAS = {
   catches: CatchSchema,
   trips: TripSchema,
   tracks: TrackSchema,
+  waterLinks: WaterLinkSchema,
 } as const;
 export type EntityTable = keyof typeof ENTITY_SCHEMAS;
 export interface EntityMap {
@@ -260,4 +272,5 @@ export interface EntityMap {
   catches: Catch;
   trips: Trip;
   tracks: Track;
+  waterLinks: WaterLink;
 }

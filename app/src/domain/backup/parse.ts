@@ -45,6 +45,7 @@ export const emptyRecords = (): Records => ({
   baitPresets: [],
   trips: [],
   tracks: [],
+  waterLinks: [],
   catches: [],
   photos: [],
 });

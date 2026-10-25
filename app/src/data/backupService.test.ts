@@ -78,6 +78,13 @@ async function seed(db: FangpunktDB) {
       [{ t: 1781501000000, lat: 51.319, lng: 6.251, acc: 8 }],
     ],
   });
+  // eigener Link zur Angelkarte (seit DB v4)
+  await repo('waterLinks', db).create({
+    id: 'waterlink-osm:w35044256',
+    waterId: 'osm:w35044256',
+    url: 'https://verein.example/gastkarten',
+    label: 'Testverein',
+  });
   return { session, place, preset, c };
 }
 
@@ -95,6 +102,7 @@ async function dump(db: FangpunktDB) {
     baitPresets: await db.baitPresets.toArray(),
     trips: await db.trips.toArray(),
     tracks: await db.tracks.toArray(),
+    waterLinks: await db.waterLinks.toArray(),
     photos,
   };
 }
@@ -119,7 +127,7 @@ describe('BAK-1: Export → leeres Gerät → Import ergibt dieselben Daten', ()
 
     const b = freshDb();
     const { plan } = await importFile(exp.blob, b);
-    expect(summarize(plan)).toMatchObject({ added: 7, conflicts: 0 });
+    expect(summarize(plan)).toMatchObject({ added: 8, conflicts: 0 });
     expect((await b.tracks.toArray())[0]?.segments).toHaveLength(2);
     expect(await dump(b)).toEqual(await dump(a));
   });
@@ -149,11 +157,14 @@ describe('BAK-1: Export → leeres Gerät → Import ergibt dieselben Daten', ()
     delete file.counts.trips;
     delete file.data.tracks;
     delete file.counts.tracks;
+    delete file.data.waterLinks;
+    delete file.counts.waterLinks;
     file.checksum = await checksumOf(file.data);
     const b = freshDb();
     const { plan } = await importFile(new Blob([JSON.stringify(file)]), b);
     expect(plan.trips.added).toEqual([]);
     expect(plan.tracks.added).toEqual([]);
+    expect(plan.waterLinks.added).toEqual([]);
     expect(await b.catches.count()).toBe(1);
     expect(await b.sessions.count()).toBe(1);
   });
@@ -163,7 +174,7 @@ describe('BAK-1: Export → leeres Gerät → Import ergibt dieselben Daten', ()
     await seed(a);
     const exp = await exportBackup({ withPhotos: true }, a);
     const { plan } = await importFile(exp.blob, a);
-    expect(summarize(plan)).toMatchObject({ added: 0, identical: 7, conflicts: 0 });
+    expect(summarize(plan)).toMatchObject({ added: 0, identical: 8, conflicts: 0 });
   });
 });
 
@@ -251,7 +262,7 @@ describe('BAK-3: Konflikte und Strategien', () => {
     const plan = await prepareImport(await readBackupFile(file), device);
     expect(summarize(plan)).toEqual({
       added: 1,
-      identical: 5,
+      identical: 6,
       incomingNewer: 1,
       existingNewer: 1,
       conflicts: 2,
@@ -377,7 +388,7 @@ describe('Änderungen seit der letzten Sicherung', () => {
   it('zählt neue und geänderte Datensätze', async () => {
     const db = freshDb();
     await seed(db);
-    expect((await changesSince(undefined, db)).count).toBe(6);
+    expect((await changesSince(undefined, db)).count).toBe(7);
     const exp = await exportBackup({ withPhotos: false }, db);
     expect((await changesSince(exp.backup.exportedAt, db)).count).toBe(0);
   });

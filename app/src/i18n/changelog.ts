@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-25-4',
+    title: 'Gewässerkarte',
+    items: [
+      'Gewässerkarte: Tippe auf ein Gewässer – unter „Gewässerkarte“ siehst du, wo es die Angelkarte gibt. Bei geprüften Gewässern führt „Zur Vereinsseite“ direkt dorthin, sonst zur Angelkarten-Seite des Landesverbands.',
+      'Eigener Link: Kennst du die Seite deines Vereins, speichere sie am Gewässer. Der Link bleibt auf deinem Gerät und ist Teil deiner Sicherung.',
+    ],
+  },
+  {
     id: '2026-10-25-3',
     title: 'Suche im Angelrecht',
     items: [

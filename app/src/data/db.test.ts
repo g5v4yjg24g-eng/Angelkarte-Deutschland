@@ -83,7 +83,10 @@ describe('Migrationen', () => {
     expect(v2.verno).toBe(2);
     v2.close();
 
-    const v3 = new FangpunktDB(name);
+    const v3 = new FangpunktDB(
+      name,
+      SCHEMA_VERSIONS.filter((v) => v.version <= 3),
+    );
     await v3.open();
     expect(v3.verno).toBe(3);
     expect(await v3.sessions.get(s.id)).toEqual(s);
@@ -95,5 +98,30 @@ describe('Migrationen', () => {
     });
     expect(await v3.tracks.where('sessionId').equals(s.id).first()).toEqual(tr);
     v3.close();
+  });
+
+  it('Upgrade v3 → v4 (Gewässer-Links): Daten bleiben, eigene Links sind speicherbar', async () => {
+    const v3 = freshDb(SCHEMA_VERSIONS.filter((v) => v.version <= 3));
+    const name = v3.name;
+    const c = await repo('catches', v3).create({
+      outcome: 'caught',
+      at: '2026-10-20T07:10:00+02:00',
+      tz: 'Europe/Berlin',
+      waterId: 'osm:r9075175',
+    });
+    expect(v3.verno).toBe(3);
+    v3.close();
+
+    const v4 = new FangpunktDB(name);
+    await v4.open();
+    expect(v4.verno).toBe(4);
+    expect(await v4.catches.get(c.id)).toEqual(c);
+    const l = await repo('waterLinks', v4).create({
+      id: 'waterlink-osm:r9075175',
+      waterId: 'osm:r9075175',
+      url: 'https://verein.example/gastkarten',
+    });
+    expect(await v4.waterLinks.where('waterId').equals('osm:r9075175').first()).toEqual(l);
+    v4.close();
   });
 });
