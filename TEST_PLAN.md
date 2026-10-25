@@ -141,6 +141,15 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | LAW-6 | Land öffnen, Fischart suchen, „Nur Fische in der Schonzeit“ | Suche nach deutschem/wissenschaftlichem Namen und Synonym, ohne Groß/Klein und Umlaute; Knopf zeigt Schonzeiten des Tages, Maße dieser Arten und ganzjährig geschonte; Fischereischein/weitere Regeln beim Filtern ausgeblendet mit Hinweis; leerer Treffer mit „Filter zurücksetzen“ (✅ `regulations.test.ts`, `RegulationView.test.tsx`, `law.spec.ts` Hamburg) |
 | LAW-5 | Gewässer mit Landesrecht + Gewässerregeln (P3) | Getrennte Abschnitte, Quellen je Abschnitt |
 
+### 3.6a Knoten
+| ID | Testfall | Erwartung |
+|---|---|---|
+| KNT-1 | Zeichenkern | Kreuzungen erkannt, oben/unten nach Vorgabe, Abweichung gemeldet, Berührung an Strangenden zählt nicht, Zeichenreihenfolge je Ebene, Ersatzbilder (✅ `domain/knots.test.ts`) |
+| KNT-2 | Katalog | 9 Knoten mit Texten; jede Zeichnung ohne Widerspruch, ein Bild je Schritt (✅ `catalog.test.ts`) |
+| KNT-3 | Anleitung | Schritt vor/zurück, Schritt antippen, Wiedergabe schaltet weiter und hält am Ende, unbekannter Knoten (✅ `KnotDetailPage.test.tsx`) |
+| KNT-4 | Mehr → Knoten | Liste (3 animiert, 6 folgen), Filter, Wiedergabe, 390 px, axe (✅ `knots.spec.ts`) |
+| KNT-5 | Reduzierte Bewegung | Keine Zeichenanimation, Bilder sofort (✅ `knots.spec.ts`) |
+
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |
 |---|---|---|

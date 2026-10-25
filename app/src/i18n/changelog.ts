@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-25-6',
+    title: 'Knoten',
+    items: [
+      'Knoten: Unter Mehr → Knoten findest du die wichtigsten Angelknoten mit Einsatzzweck. Clinch-, Palomar- und Uni-Knoten zeigen Schritt für Schritt als Animation, wie die Schnur läuft – weitere folgen.',
+    ],
+  },
+  {
     id: '2026-10-25-5',
     title: 'Gewässerkarten in NRW',
     items: [

@@ -1,0 +1,183 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+.chip {
+  min-height: var(--touch);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.chip[aria-pressed='true'] {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.player {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.drawing {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.drawing path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.drawing .butt {
+  stroke-linecap: butt;
+}
+/* Ränder in Hintergrundfarbe trennen Über- und Unterkreuzungen */
+.layerHalo {
+  stroke: var(--color-surface);
+}
+.layerHalo.styleLine,
+.layerHalo.styleHardware {
+  stroke-width: 11px;
+}
+.layerHalo.styleDouble {
+  stroke-width: 15px;
+}
+.layerLine.styleLine {
+  stroke: var(--color-primary);
+  stroke-width: 4.5px;
+}
+.layerLine.styleDouble {
+  stroke: var(--color-primary);
+  stroke-width: 8px;
+}
+.layerInner.styleDouble {
+  stroke: var(--color-surface);
+  stroke-width: 2.2px;
+}
+.layerLine.styleHardware {
+  stroke: var(--color-text-muted);
+  stroke-width: 5px;
+}
+.drawIn {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation-name: draw;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.fadeIn {
+  animation: fade 600ms ease-out both;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .drawIn,
+  .fadeIn {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+}
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-3);
+}
+.iconButton,
+.playButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch);
+  min-width: var(--touch);
+  border-radius: var(--radius-full);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.iconButton {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: inherit;
+}
+.iconButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.playButton {
+  padding: 0 var(--space-5);
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.stepNow {
+  margin: 0;
+  min-height: 3em;
+}
+.small {
+  font-size: var(--text-sm);
+}
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+}
+.stepButton {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  width: 100%;
+  min-height: var(--touch);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-surface);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.stepButton[aria-current='step'] {
+  border-color: var(--color-primary);
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+.stepNo {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+  background: var(--color-surface-2);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.tips {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+}

@@ -11,7 +11,7 @@ export function ListLink({
   hint,
   badge,
 }: {
-  to?: string;
+  to?: string | undefined;
   icon: ReactNode;
   title: string;
   hint?: string;
