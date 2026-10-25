@@ -6,7 +6,8 @@
 // Rein und ohne DOM – die Ansicht rendert die Teilstücke als SVG.
 
 export type Pt = readonly [number, number];
-export type StrandStyle = 'line' | 'double' | 'hardware';
+/** line: Hauptschnur, line2: zweite Schnur (Vorfach), double: doppelt gelegte Schnur, hardware: Öhr/Haken/Spule */
+export type StrandStyle = 'line' | 'line2' | 'double' | 'hardware';
 
 export interface StrandSpec {
   id: string;
@@ -36,6 +37,8 @@ export interface Piece {
   /** oberes Stück: Linie minimal verlängert, damit an den Anschlüssen keine Kantenglättungs-Lücke bleibt */
   dLine: string;
   step: number;
+  /** oberes Stück erst ab diesem Schritt anheben (vorher liegt dort noch keine Kreuzung) */
+  raiseFrom: number;
   /** Bogenlänge im Strang: Beginn/Ende des Stücks und Beginn des Schrittabschnitts (für die Animationszeit) */
   from: number;
   to: number;
@@ -47,6 +50,8 @@ export interface Crossing {
   other: string;
   at: Pt;
   over: boolean;
+  /** Schritt des gerade gezeichneten bzw. des gekreuzten Teils */
+  steps: [number, number];
 }
 
 export interface KnotDiagram {
@@ -213,9 +218,18 @@ function stepRange(sm: Sampled, step: number): [number, number] | undefined {
 export function buildDiagram(spec: KnotDiagramSpec): KnotDiagram {
   const problems: string[] = [];
   const sampled = new Map<string, Sampled>();
-  const patches = new Map<string, [number, number][]>();
+  /** [von, bis, ab Schritt]: erst wenn beide Teile einer Kreuzung gezeichnet sind, wird das obere Stück angehoben */
+  const patches = new Map<string, [number, number, number][]>();
   const crossings: Crossing[] = [];
-  const addPatch = (id: string, s: number) => patches.get(id)?.push([s - PATCH_HALF, s + PATCH_HALF]);
+  const addPatch = (id: string, s: number, from: number) =>
+    patches.get(id)?.push([s - PATCH_HALF, s + PATCH_HALF, from]);
+  const stepAt = (sm: Sampled, s: number) =>
+    sm.step[
+      Math.max(
+        1,
+        sm.len.findIndex((l) => l >= s),
+      )
+    ] ?? 0;
 
   for (const st of spec.strands) {
     const sm = sample(parse(st.chunks));
@@ -241,9 +255,16 @@ export function buildDiagram(spec: KnotDiagramSpec): KnotDiagram {
       problems.push(`${st.id}: ${found.length} Kreuzungen, Vorgabe nennt ${st.cross.length}`);
     found.forEach((f, k) => {
       const over = st.cross[k] !== 'U';
-      if (over) addPatch(st.id, f.sa);
-      else addPatch(f.other, f.sb);
-      crossings.push({ strand: st.id, other: f.other, at: f.at, over });
+      const from = Math.max(stepAt(sm, f.sa), stepAt(sampled.get(f.other) as Sampled, f.sb));
+      if (over) addPatch(st.id, f.sa, from);
+      else addPatch(f.other, f.sb, from);
+      crossings.push({
+        strand: st.id,
+        other: f.other,
+        at: f.at,
+        over,
+        steps: [stepAt(sm, f.sa), stepAt(sampled.get(f.other) as Sampled, f.sb)],
+      });
     });
   }
 
@@ -259,12 +280,14 @@ export function buildDiagram(spec: KnotDiagramSpec): KnotDiagram {
     const sm = sampled.get(st.id) as Sampled;
     const total = sm.len.at(-1) ?? 0;
     const merged = (patches.get(st.id) ?? [])
-      .map(([a, b]) => [Math.max(0, a), Math.min(total, b)] as [number, number])
+      .map(([a, b, f]) => [Math.max(0, a), Math.min(total, b), f] as [number, number, number])
       .sort((x, y) => x[0] - y[0])
-      .reduce<[number, number][]>((acc, p) => {
+      .reduce<[number, number, number][]>((acc, p) => {
         const last = acc.at(-1);
-        if (last && p[0] <= last[1]) last[1] = Math.max(last[1], p[1]);
-        else acc.push([...p]);
+        if (last && p[0] <= last[1]) {
+          last[1] = Math.max(last[1], p[1]);
+          last[2] = Math.min(last[2], p[2]);
+        } else acc.push([...p]);
         return acc;
       }, []);
     for (let step = 0; step < steps; step++) {
@@ -281,7 +304,8 @@ export function buildDiagram(spec: KnotDiagramSpec): KnotDiagram {
         const to = sorted[k + 1] as number;
         if (to - from < 0.01) continue;
         const mid = (from + to) / 2;
-        const z = merged.some(([a, b]) => mid > a && mid < b) ? 1 : 0;
+        const patch = merged.find(([a, b]) => mid > a && mid < b);
+        const z = patch ? 1 : 0;
         pieces.push({
           strand: st.id,
           style: st.style,
@@ -295,6 +319,7 @@ export function buildDiagram(spec: KnotDiagramSpec): KnotDiagram {
           from,
           to,
           stepStart: r[0],
+          raiseFrom: patch ? patch[2] : Infinity,
         });
       }
     }
@@ -360,6 +385,7 @@ export interface DrawOp {
 const LAYERS_OF: Record<StrandStyle, DrawLayer[]> = {
   hardware: ['halo', 'line'],
   line: ['halo', 'line'],
+  line2: ['halo', 'line'],
   double: ['halo', 'line', 'inner'],
 };
 
@@ -390,9 +416,9 @@ export function drawOps(d: KnotDiagram, step: number): DrawOp[] {
     : piecesForStep(d, step).map(({ piece, isNew }, i) => ({
         key: `p${i}`,
         style: piece.style,
-        z: piece.z,
+        z: step >= piece.raiseFrom ? piece.z : 0,
         d: piece.d,
-        dLine: piece.dLine,
+        dLine: step >= piece.raiseFrom ? piece.dLine : piece.d,
         timing: isNew ? animationTiming(piece) : undefined,
       }));
   const zs = [...new Set(items.map((i) => i.z))].sort((a, b) => a - b);

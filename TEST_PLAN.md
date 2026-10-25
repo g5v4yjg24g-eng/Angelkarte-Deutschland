@@ -145,9 +145,9 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | ID | Testfall | Erwartung |
 |---|---|---|
 | KNT-1 | Zeichenkern | Kreuzungen erkannt, oben/unten nach Vorgabe, Abweichung gemeldet, Berührung an Strangenden zählt nicht, Zeichenreihenfolge je Ebene, Ersatzbilder (✅ `domain/knots.test.ts`) |
-| KNT-2 | Katalog | 9 Knoten mit Texten; jede Zeichnung ohne Widerspruch, ein Bild je Schritt (✅ `catalog.test.ts`) |
+| KNT-2 | Katalog | 9 Knoten mit Texten, alle animiert; jede Zeichnung ohne Widerspruch, ein Bild je Schritt (✅ `catalog.test.ts`) |
 | KNT-3 | Anleitung | Schritt vor/zurück, Schritt antippen, Wiedergabe schaltet weiter und hält am Ende, unbekannter Knoten (✅ `KnotDetailPage.test.tsx`) |
-| KNT-4 | Mehr → Knoten | Liste (3 animiert, 6 folgen), Filter, Wiedergabe, 390 px, axe (✅ `knots.spec.ts`) |
+| KNT-4 | Mehr → Knoten | Liste (9 animiert), Filter, Wiedergabe, Verbindungsknoten mit zweiter Schnurfarbe, 390 px, axe (✅ `knots.spec.ts`) |
 | KNT-5 | Reduzierte Bewegung | Keine Zeichenanimation, Bilder sofort (✅ `knots.spec.ts`) |
 
 ### 3.7 Datensicherung

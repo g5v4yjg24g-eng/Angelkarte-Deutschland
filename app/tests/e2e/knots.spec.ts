@@ -21,8 +21,8 @@ test('KNT-4: Mehr → Knoten: Liste, Filter, Anleitung mit Schritten und Wiederg
   await waitForApp(page);
   await page.getByRole('link', { name: /^Knoten/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Knoten' })).toBeVisible();
-  await expect(page.getByText('Animiert', { exact: true })).toHaveCount(3);
-  await expect(page.getByText('Animation folgt', { exact: true })).toHaveCount(6);
+  await expect(page.getByText('Animiert', { exact: true })).toHaveCount(9);
+  await expect(page.getByText('Animation folgt', { exact: true })).toHaveCount(0);
   expect(await noOverflow(page)).toBe(true);
   expect(await axe(page)).toEqual([]);
 
@@ -31,6 +31,13 @@ test('KNT-4: Mehr → Knoten: Liste, Filter, Anleitung mit Schritten und Wiederg
   await expect(filters.getByRole('button', { name: 'Verbinden' })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByText('Doppelter Uni-Knoten')).toBeVisible();
   await expect(page.getByText('Palomarknoten')).toHaveCount(0);
+  // Verbindungsknoten: zweite Schnur in eigener Farbe
+  await page.getByRole('link', { name: /^FG-Knoten/ }).click();
+  await expect(page.getByText('Schritt 1 von 4')).toBeVisible();
+  await page.getByRole('button', { name: /^Zu Schritt 4:/ }).click();
+  await expect(page.getByRole('img', { name: /^FG-Knoten: Das Vorfach dicht/ })).toBeVisible();
+  expect(await axe(page)).toEqual([]);
+  await page.getByRole('link', { name: 'Zurück' }).click();
   await filters.getByRole('button', { name: 'Alle' }).click();
 
   await page.getByRole('link', { name: /^Verbesserter Clinchknoten/ }).click();
