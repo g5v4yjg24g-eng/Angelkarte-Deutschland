@@ -8,3 +8,5 @@ videos/v1-hyperframes/assets/fisch-freilassen.mp4
 videos/story-see/.hyperframes/
 # Eigene Aufnahme des Nutzers (Zwischenstand) nicht einchecken – neu erzeugen mit tools/story-see-prep.sh
 videos/story-see/assets/see.mp4
+videos/reel-warum/.hyperframes/
+videos/reel-warum/assets/see.mp4

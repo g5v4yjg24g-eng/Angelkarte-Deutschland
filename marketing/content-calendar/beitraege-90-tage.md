@@ -64,8 +64,8 @@ Launch-Post am Sonntag vor Woche 1 (18:00), Woche 1 beginnt am 2026-10-26 (Monta
 - **Hook:** „Meine alte Angel-App war eine einzige HTML-Datei für einen See.“
 - **Ablauf:** Selfie-Video am Wasser oder Sprechertext über alte/neue App-Aufnahmen: von einem See zu ganz Deutschland, ohne Konto, ohne Werbung.
 - **CTA:** Folgen, wenn du sehen willst, wie es weitergeht.
-- **Material:** Selfie-Clip, Bildschirmaufnahmen
-- **Vorbereitung:** 60 min
+- **Material:** Fertiges Reel videos/reel-warum-fangpunkt-1080x1920.mp4 (Text-Reel, See + App); Cover cover-serie-werkstatt-notiz
+- **Vorbereitung:** 10 min
 - **Wiederverwendung:** TikTok, Shorts; Text als Facebook-Beitrag
 
 ### 2026-11-05 (Do) · Digitales Fangbuch

@@ -52,7 +52,7 @@ P = [
      "Gesicht/Stimme hinter der App, Glaubwürdigkeit",
      "Meine alte Angel-App war eine einzige HTML-Datei für einen See.",
      "Selfie-Video am Wasser oder Sprechertext über alte/neue App-Aufnahmen: von einem See zu ganz Deutschland, ohne Konto, ohne Werbung.",
-     "Folgen, wenn du sehen willst, wie es weitergeht.", "Selfie-Clip, Bildschirmaufnahmen", "60 min",
+     "Folgen, wenn du sehen willst, wie es weitergeht.", "Fertiges Reel videos/reel-warum-fangpunkt-1080x1920.mp4 (Text-Reel, See + App); Cover cover-serie-werkstatt-notiz", "10 min",
      "TikTok, Shorts; Text als Facebook-Beitrag"),
     (2, "Do", IG_B, "Bildbeitrag", "Erklärung", "Fangbuch-Freitag", "Digitales Fangbuch",
      "Kernfunktion Fangbuch erklären",
