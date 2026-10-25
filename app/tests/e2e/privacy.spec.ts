@@ -23,6 +23,8 @@ const ROUTES = [
   '/mehr',
   '/mehr/einstellungen',
   '/mehr/koeder',
+  // ohne Anmeldung darf die Kontoseite nichts an Supabase senden
+  '/mehr/konto',
   '/mehr/daten',
   '/mehr/recht',
   '/mehr/recht/BY',

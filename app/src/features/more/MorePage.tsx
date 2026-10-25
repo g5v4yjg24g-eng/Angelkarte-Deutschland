@@ -9,12 +9,31 @@ import {
   LockIcon,
   ParagraphIcon,
   SlidersIcon,
+  UserIcon,
 } from '../../design/icons';
+import { ACCOUNT_STORAGE_KEY } from '../../ports/account';
 import styles from '../../design/components/Page.module.css';
+
+/** Nur prüfen, ob eine Anmeldung gespeichert ist – ohne den Konto-Anbieter zu laden */
+function hasStoredSession(): boolean {
+  try {
+    return !!localStorage.getItem(ACCOUNT_STORAGE_KEY);
+  } catch {
+    return false;
+  }
+}
 
 export function MorePage() {
   return (
     <Page title={de.more.title}>
+      <div className={styles.card}>
+        <ListLink
+          to="/mehr/konto"
+          icon={<UserIcon />}
+          title={de.more.account}
+          hint={hasStoredSession() ? de.more.accountHintSignedIn : de.more.accountHint}
+        />
+      </div>
       <div className={styles.card}>
         <ListLink
           to="/mehr/recht"

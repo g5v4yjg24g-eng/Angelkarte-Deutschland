@@ -263,6 +263,13 @@ interface WaterLink extends Meta {
 // Daten in app/data/permits (Schemas in domain/permits.ts), siehe DATA_SOURCES §6b.
 ```
 
+### 5.5c Server: Profil (Supabase, seit 2026-10-25)
+```sql
+profiles (id uuid → auth.users, username text unique /^[a-z][a-z0-9_.]{2,19}$/ fest,
+          display_name text 1–40, created_at, updated_at)   -- RLS: nur eigenes Profil
+```
+Liegt nicht in IndexedDB und nicht in der Sicherung. Schema: `supabase/migrations/`. Die E-Mail-Adresse verwaltet Supabase Auth.
+
 ### 5.6 Settings / AppMeta (Key-Value)
 `theme`, `units`, `lastBackupAt`, `changesSinceBackup`, `backupReminderSnoozedUntil`, `dataPackVersion`, `persistGranted`, `introSeenVersion` (nur für „Was ist neu").
 
