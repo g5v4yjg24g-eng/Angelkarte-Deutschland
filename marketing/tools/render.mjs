@@ -321,6 +321,8 @@ for (const m of MOTIFS) {
 }
 for (const m of CAROUSEL) {
   await render(build(m, FEED), `${T}${m.id}.html`, `${carousel}${m.id}-1080x1350.png`, FEED.w, FEED.h);
+  // 3:4 passend zum Profilraster und zum Launch-Post (alle Bilder eines Karussells brauchen dasselbe Format)
+  await render(build(m, FEED34), `${T}${m.id}-34.html`, `${carousel}${m.id}-1080x1440.png`, FEED34.w, FEED34.h);
   // 9:16-Fassung als Einzelbilder für das Slideshow-Reel (tools/reel.sh)
   await render(build(m, STORY), `${T}${m.id}-story.html`, `${dir('videos/_frames/')}${m.id}.png`, STORY.w, STORY.h);
 }
