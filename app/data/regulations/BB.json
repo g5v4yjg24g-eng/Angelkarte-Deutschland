@@ -112,6 +112,7 @@
         "de": "Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "scope": "als Satzfisch eingebracht",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)",
@@ -129,6 +130,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta"
       },
+      "speciesId": "sea_trout",
       "scope": "als Satzfisch eingebracht",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)",
@@ -316,6 +318,7 @@
         "de": "Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "scope": "als Satzfisch eingebracht",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)",
@@ -326,6 +329,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta"
       },
+      "speciesId": "sea_trout",
       "scope": "als Satzfisch eingebracht",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)",
@@ -480,6 +484,7 @@
         "de": "Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -496,6 +501,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta"
       },
+      "speciesId": "sea_trout",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },

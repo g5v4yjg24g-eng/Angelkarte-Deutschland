@@ -24,4 +24,16 @@ describe('Landesdateien app/data/regulations', () => {
       if (f !== 'current') console.warn(`${code}: zuletzt geprüft ${r.data.checkedAt} (${f})`);
     });
   }
+
+  it('Lachs und Meerforelle sind mit der Fangbuch-Art verknüpft, Stör nicht (Gattung ≠ Europäischer Stör)', () => {
+    type Rule = { taxon: { de: string }; speciesId?: string };
+    for (const [path, data] of Object.entries(files)) {
+      const d = data as Record<'closedSeasons' | 'minSizes' | 'protectedSpecies', Rule[]>;
+      for (const r of [...d.closedSeasons, ...d.minSizes, ...d.protectedSpecies]) {
+        if (/^(Atlantischer )?Lachs$/.test(r.taxon.de)) expect(r.speciesId, path).toBe('salmon');
+        if (r.taxon.de === 'Meerforelle') expect(r.speciesId, path).toBe('sea_trout');
+        if (/Stör/.test(r.taxon.de)) expect(r.speciesId, path).toBeUndefined();
+      }
+    }
+  });
 });

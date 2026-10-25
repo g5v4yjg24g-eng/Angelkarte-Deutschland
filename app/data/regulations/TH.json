@@ -356,6 +356,7 @@
         "de": "Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "basisId": "ThürFischAVO",
       "basisRef": "§ 1 Abs. 1"
     },
@@ -364,6 +365,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta"
       },
+      "speciesId": "sea_trout",
       "basisId": "ThürFischAVO",
       "basisRef": "§ 1 Abs. 1"
     },

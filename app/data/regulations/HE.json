@@ -308,6 +308,7 @@
         "de": "Atlantischer Lachs",
         "sci": "Salmo salar (LINNAEUS, 1758)"
       },
+      "speciesId": "salmon",
       "basisId": "HFischV",
       "basisRef": "§ 1"
     },

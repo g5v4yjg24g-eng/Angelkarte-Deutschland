@@ -113,6 +113,7 @@
         "de": "Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "from": {
         "month": 10,
         "day": 15
@@ -129,6 +130,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta"
       },
+      "speciesId": "sea_trout",
       "from": {
         "month": 10,
         "day": 15
@@ -174,6 +176,7 @@
         "de": "Lachs",
         "sci": "Salmo salar"
       },
+      "speciesId": "salmon",
       "minCm": 60,
       "note": "nur entnehmen, wenn als Besatz nachweislich eingebracht oder bestandsunterstützende Maßnahmen durchgeführt wurden",
       "basisId": "BremBiFischVO",
@@ -184,6 +187,7 @@
         "de": "Meerforelle",
         "sci": "Salmo trutta trutta"
       },
+      "speciesId": "sea_trout",
       "minCm": 50,
       "note": "nur entnehmen, wenn als Besatz nachweislich eingebracht oder bestandsunterstützende Maßnahmen durchgeführt wurden",
       "basisId": "BremBiFischVO",
