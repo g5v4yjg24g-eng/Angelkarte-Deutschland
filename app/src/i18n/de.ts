@@ -602,11 +602,12 @@ export const de = {
     offline: 'Keine Verbindung – das Konto braucht Internet. Alles andere in Fangpunkt funktioniert weiter.',
     emailLabel: 'E-Mail-Adresse',
     emailHint:
-      'Wir schicken dir einen Code zum Anmelden – kein Passwort nötig. Neu? Dann wird dein Konto dabei angelegt.',
+      'Wir schicken dir eine E-Mail zum Anmelden – kein Passwort nötig. Neu? Dann wird dein Konto dabei angelegt.',
     emailInvalid: 'Bitte eine gültige E-Mail-Adresse eingeben.',
     sendCode: 'Code senden',
     codeSent: (email: string) =>
-      `Wir haben einen Code an ${email} geschickt. Schau auch im Spam-Ordner nach.`,
+      `Wir haben dir eine E-Mail an ${email} geschickt. Gib den Code daraus ein – oder tippe in der E-Mail auf den Anmelde-Link. Schau auch im Spam-Ordner nach.`,
+    linkExpired: 'Der Anmelde-Link ist abgelaufen oder wurde schon benutzt. Fordere einfach einen neuen an.',
     codeLabel: 'Code aus der E-Mail',
     codeInvalid: 'Bitte den Code aus der E-Mail eingeben (nur Ziffern).',
     verify: 'Anmelden',

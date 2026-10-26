@@ -75,7 +75,7 @@ describe('Mehr → Konto (ACC-2)', () => {
     expect(screen.getByText('Bitte eine gültige E-Mail-Adresse eingeben.')).toBeInTheDocument();
     fireEvent.change(email, { target: { value: ' Max@Example.de ' } });
     fireEvent.click(screen.getByRole('button', { name: 'Code senden' }));
-    expect(await screen.findByText(/Code an max@example\.de geschickt/)).toBeInTheDocument();
+    expect(await screen.findByText(/E-Mail an max@example\.de geschickt/)).toBeInTheDocument();
     expect(acc.calls).toEqual(['code:max@example.de']);
     expect(screen.getByRole('button', { name: /Neuer Code in \d+ s möglich/ })).toBeDisabled();
 
