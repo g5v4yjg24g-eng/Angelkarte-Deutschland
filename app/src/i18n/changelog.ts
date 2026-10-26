@@ -7,7 +7,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     id: '2026-10-25-8',
     title: 'Konto',
     items: [
-      'Konto (freiwillig): Unter Mehr → Konto meldest du dich mit einem Code per E-Mail an und legst deinen Nutzernamen fest – die Grundlage, um bald Freunde hinzuzufügen. Fangbuch, Fotos und Angelstellen bleiben weiter nur auf deinem Gerät.',
+      'Konto (demnächst): Unter Mehr → Konto entsteht ein freiwilliges Konto, mit dem du bald Freunde hinzufügen kannst. Fangbuch, Fotos und Angelstellen bleiben weiter nur auf deinem Gerät.',
     ],
   },
   {

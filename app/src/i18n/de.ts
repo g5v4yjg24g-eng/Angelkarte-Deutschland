@@ -586,6 +586,7 @@ export const de = {
     account: 'Konto',
     accountHintSignedIn: 'Angemeldet',
     accountHint: 'Freiwillig – für Freunde',
+    accountHintSoon: 'Demnächst – für Freunde',
     settings: 'Einstellungen',
     settingsHint: 'Darstellung, Standort, Wetter',
     privacy: 'Datenschutz',
@@ -599,6 +600,9 @@ export const de = {
       'Freiwillig: Mit einem Konto kannst du bald Freunde hinzufügen. Fangbuch, Fotos und Angelstellen bleiben weiter nur auf diesem Gerät.',
     loading: 'Wird geladen …',
     disabled: 'Das Konto ist in dieser Version nicht eingerichtet.',
+    comingSoonTitle: 'Demnächst verfügbar.',
+    comingSoon:
+      'Mit einem freiwilligen Konto kannst du bald Freunde hinzufügen. Fangbuch, Fotos und Angelstellen bleiben weiter nur auf deinem Gerät.',
     offline: 'Keine Verbindung – das Konto braucht Internet. Alles andere in Fangpunkt funktioniert weiter.',
     emailLabel: 'E-Mail-Adresse',
     emailHint:
