@@ -12,6 +12,7 @@ import {
   UserIcon,
 } from '../../design/icons';
 import { ACCOUNT_STORAGE_KEY } from '../../ports/account';
+import { accountOpen } from '../account/availability';
 import styles from '../../design/components/Page.module.css';
 
 /** Nur prüfen, ob eine Anmeldung gespeichert ist – ohne den Konto-Anbieter zu laden */
@@ -31,7 +32,13 @@ export function MorePage() {
           to="/mehr/konto"
           icon={<UserIcon />}
           title={de.more.account}
-          hint={hasStoredSession() ? de.more.accountHintSignedIn : de.more.accountHint}
+          hint={
+            !accountOpen()
+              ? de.more.accountHintSoon
+              : hasStoredSession()
+                ? de.more.accountHintSignedIn
+                : de.more.accountHint
+          }
         />
       </div>
       <div className={styles.card}>
