@@ -146,7 +146,9 @@ export async function addComment(
   authorId = LOCAL_AUTHOR,
   db: FangpunktDB = getDb(),
 ): Promise<PostComment> {
-  return repo('postComments', db).create({ postId, authorId, text: text.trim() });
+  // ID beginnt mit der Zeit in ms: Kommentare derselben Sekunde bleiben in ihrer Reihenfolge
+  const id = `c-${Date.now().toString(36).padStart(9, '0')}-${newId()}`;
+  return repo('postComments', db).create({ id, postId, authorId, text: text.trim() });
 }
 
 export const removeComment = (id: string, db: FangpunktDB = getDb()) => repo('postComments', db).remove(id);
@@ -156,9 +158,14 @@ export const restoreComment = (id: string, db: FangpunktDB = getDb()) => repo('p
 export async function postReactions(postId: string, db: FangpunktDB = getDb()) {
   const [likes, comments] = await Promise.all([
     db.postLikes.where('postId').equals(postId).toArray(),
-    db.postComments.where('postId').equals(postId).sortBy('createdAt'),
+    db.postComments.where('postId').equals(postId).toArray(),
   ]);
-  return { likes: likes.filter((l) => !l.deletedAt), comments: comments.filter((c) => !c.deletedAt) };
+  return {
+    likes: likes.filter((l) => !l.deletedAt),
+    comments: comments
+      .filter((c) => !c.deletedAt)
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id)),
+  };
 }
 
 export const removePost = (id: string, db: FangpunktDB = getDb()) => repo('posts', db).remove(id);

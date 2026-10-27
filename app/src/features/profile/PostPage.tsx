@@ -1,31 +1,23 @@
 // Ein Beitrag: Fotos zum Wischen (Doppeltipp = „Gefällt mir“), Herz und Kommentare, Text, Datum, verknüpfter Fang,
 // Sichtbarkeit; bearbeiten, löschen (Rückgängig im Profil). Likes und Kommentare sind vorerst nur die eigenen.
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
-import { Page, Section } from '../../design/components/Page';
-import { Button, IconButton } from '../../design/components/Button';
+import { Page } from '../../design/components/Page';
+import { Button } from '../../design/components/Button';
 import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
 import { TextArea } from '../../design/components/Field';
-import { Toast } from '../../design/components/Toast';
-import { CloseIcon, CommentIcon, HeartIcon, ImagesIcon } from '../../design/icons';
+import { CommentIcon, ImagesIcon, ThumbsUpIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
-import {
-  addComment,
-  postReactions,
-  removeComment,
-  removePost,
-  restoreComment,
-  toggleLike,
-  updatePost,
-} from '../../data/profileService';
-import { COMMENT_MAX, commentValid, likeIdOf, POST_CAPTION_MAX } from '../../domain/profile';
+import { postReactions, removePost, toggleLike, updatePost } from '../../data/profileService';
+import { likeIdOf, POST_CAPTION_MAX } from '../../domain/profile';
 import { LOCAL_AUTHOR, type Photo, type Post } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
 import { Avatar } from './Avatar';
 import { catchSummary } from './catchSummary';
+import { CommentsSheet } from './CommentsSheet';
 import { VisibilityField } from './NewPostPage';
 import type { ProfileState } from './ProfilePage';
 import { usePhotos, useProfile } from './usePhoto';
@@ -89,87 +81,6 @@ function EditForm({ post, onDone }: { post: Post; onDone: () => void }) {
   );
 }
 
-function Comments({
-  postId,
-  name,
-  avatarPhotoId,
-}: {
-  postId: string;
-  name: string;
-  avatarPhotoId?: string | undefined;
-}) {
-  const reactions = useLiveQuery(() => postReactions(postId), [postId]);
-  const [text, setText] = useState('');
-  const [undo, setUndo] = useState<{ id: string; restored: boolean }>();
-  const comments = reactions?.comments ?? [];
-
-  const send = (e: FormEvent) => {
-    e.preventDefault();
-    if (!commentValid(text)) return;
-    void addComment(postId, text).then(() => setText(''));
-  };
-
-  return (
-    <Section title={t.commentsTitle}>
-      {comments.length === 0 ? (
-        <p className="muted">{t.noComments}</p>
-      ) : (
-        <ul className={styles.comments}>
-          {comments.map((c) => (
-            <li key={c.id} className={styles.comment}>
-              <Avatar photoId={c.authorId === LOCAL_AUTHOR ? avatarPhotoId : undefined} size={32} />
-              <div className={styles.commentBody}>
-                <p>
-                  <strong>{name}</strong> {c.text}
-                </p>
-                <small className="muted">{dateOf(c.createdAt, 'medium')}</small>
-              </div>
-              {c.authorId === LOCAL_AUTHOR && (
-                <IconButton
-                  label={t.deleteComment}
-                  icon={<CloseIcon size={18} />}
-                  onClick={() => void removeComment(c.id).then(() => setUndo({ id: c.id, restored: false }))}
-                />
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-      <form className={styles.commentForm} onSubmit={send}>
-        <div className={styles.commentField} data-comment-field>
-          <TextArea
-            label={t.commentLabel}
-            value={text}
-            rows={2}
-            maxLength={COMMENT_MAX}
-            onChange={(e) => setText(e.target.value)}
-          />
-        </div>
-        <Button type="submit" disabled={!commentValid(text)}>
-          {t.commentSend}
-        </Button>
-      </form>
-      {undo && (
-        <Toast
-          onDismiss={() => setUndo(undefined)}
-          actions={
-            !undo.restored && (
-              <Button
-                variant="ghost"
-                onClick={() => void restoreComment(undo.id).then(() => setUndo({ ...undo, restored: true }))}
-              >
-                {t.undo}
-              </Button>
-            )
-          }
-        >
-          {undo.restored ? t.commentRestored : t.commentDeleted}
-        </Toast>
-      )}
-    </Section>
-  );
-}
-
 export function PostPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
@@ -185,6 +96,7 @@ export function PostPage() {
   const [editing, setEditing] = useState(false);
   const [index, setIndex] = useState(0);
   const [burst, setBurst] = useState(0);
+  const [commentsOpen, setCommentsOpen] = useState(false);
 
   if (post === undefined)
     return (
@@ -208,6 +120,7 @@ export function PostPage() {
   const total = photos?.length ?? post.photoIds.length;
   const name = profile?.name || t.placeholderName;
   const likes = reactions?.likes ?? [];
+  const comments = reactions?.comments ?? [];
   const liked = likes.some((l) => l.id === likeIdOf(LOCAL_AUTHOR, post.id));
   const likeByDoubleTap = () => {
     setBurst((b) => b + 1);
@@ -238,7 +151,7 @@ export function PostPage() {
           </ul>
           {burst > 0 && (
             <span key={burst} className={styles.burst} aria-hidden="true">
-              <HeartIcon filled size={96} />
+              <ThumbsUpIcon filled size={96} />
             </span>
           )}
         </div>
@@ -250,22 +163,39 @@ export function PostPage() {
           </p>
         )}
       </div>
-      <div className={styles.reactions}>
-        <div className={styles.reactionButtons}>
-          <IconButton
-            label={t.like}
-            aria-pressed={liked}
-            className={liked ? styles.liked : ''}
-            icon={<HeartIcon filled={liked} size={28} />}
-            onClick={() => void toggleLike(post.id)}
-          />
-          <IconButton
-            label={t.commentAction}
-            icon={<CommentIcon size={26} />}
-            onClick={() => document.querySelector<HTMLElement>('[data-comment-field] textarea')?.focus()}
-          />
+      {(likes.length > 0 || comments.length > 0) && (
+        <div className={styles.counts2}>
+          <span>
+            {likes.length > 0 && (
+              <>
+                <span className={styles.likeBadge} aria-hidden="true">
+                  <ThumbsUpIcon filled size={12} />
+                </span>{' '}
+                {t.likeCount(likes.length)}
+              </>
+            )}
+          </span>
+          {comments.length > 0 && (
+            <button type="button" className={styles.linkish} onClick={() => setCommentsOpen(true)}>
+              {t.commentCount(comments.length)}
+            </button>
+          )}
         </div>
-        {likes.length > 0 && <strong>{t.likeCount(likes.length)}</strong>}
+      )}
+      <div className={styles.actionRow}>
+        <button
+          type="button"
+          className={[styles.action, liked ? styles.liked : ''].join(' ')}
+          aria-pressed={liked}
+          onClick={() => void toggleLike(post.id)}
+        >
+          <ThumbsUpIcon filled={liked} size={22} />
+          <span>{t.like}</span>
+        </button>
+        <button type="button" className={styles.action} onClick={() => setCommentsOpen(true)}>
+          <CommentIcon size={22} />
+          <span>{t.commentAction}</span>
+        </button>
       </div>
       {editing ? (
         <EditForm post={post} onDone={() => setEditing(false)} />
@@ -286,7 +216,18 @@ export function PostPage() {
           )}
         </div>
       )}
-      <Comments postId={post.id} name={name} avatarPhotoId={profile?.avatarPhotoId} />
+      {comments.length > 0 && (
+        <button type="button" className={`${styles.linkish} muted`} onClick={() => setCommentsOpen(true)}>
+          {t.viewComments(comments.length)}
+        </button>
+      )}
+      <CommentsSheet
+        open={commentsOpen}
+        postId={post.id}
+        name={name}
+        avatarPhotoId={profile?.avatarPhotoId}
+        onClose={() => setCommentsOpen(false)}
+      />
       <p className={`muted ${styles.note}`}>{t.reactionsNote}</p>
       {!editing && (
         <div className={styles.formActions}>

@@ -211,9 +211,18 @@ export const ImagesIcon = (p: IconProps) => (
     <path d="M17 21H5.5A2.5 2.5 0 0 1 3 18.5V7" />
   </Icon>
 );
-export const HeartIcon = ({ filled, ...p }: IconProps & { filled?: boolean }) => (
-  <Icon {...p} fill={filled ? 'currentColor' : 'none'}>
-    <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20Z" />
+/** „Gefällt mir“ als Daumen hoch (wie früher bei Facebook) */
+export const ThumbsUpIcon = ({ filled, ...p }: IconProps & { filled?: boolean }) => (
+  <Icon {...p}>
+    <path
+      d="M7 10.5v9.5H4.5a1 1 0 0 1-1-1v-7.5a1 1 0 0 1 1-1H7Zm0 0 3.6-6.6a1.6 1.6 0 0 1 3 .9l-.6 4.2h5.2a2 2 0 0 1 2 2.4l-1.3 6.8a2.2 2.2 0 0 1-2.2 1.8H7"
+      fill={filled ? 'currentColor' : 'none'}
+    />
+  </Icon>
+);
+export const SendIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M21 3 10.5 13.5M21 3l-6.5 18-4-7.5L3 9.5 21 3Z" />
   </Icon>
 );
 export const CommentIcon = (p: IconProps) => (

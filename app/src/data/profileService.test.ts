@@ -131,6 +131,10 @@ describe('Profil (PRF-1)', () => {
     await restoreComment(a.id, db);
     expect((await postReactions(post.id, db)).comments).toHaveLength(2);
     await expect(addComment(post.id, '   ', 'me', db)).rejects.toThrow();
+    // in derselben Sekunde: Reihenfolge bleibt
+    const c = await addComment(post.id, 'drei', 'me', db);
+    const d = await addComment(post.id, 'vier', 'me', db);
+    expect((await postReactions(post.id, db)).comments.slice(-2).map((x) => x.id)).toEqual([c.id, d.id]);
   });
 
   it('Likes und Kommentare sind Teil der Sicherung', async () => {

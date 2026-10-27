@@ -83,7 +83,7 @@ test('PRF-4: Profil einrichten, Beitrag mit zwei Fotos posten, ansehen, Text än
   await grid.getByRole('link', { name: /Erster Abend/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Beitrag' })).toBeVisible();
   await expect(page.getByRole('img', { name: 'Foto 2' })).toBeAttached();
-  await page.getByRole('button', { name: 'Text bearbeiten' }).click();
+  await page.getByRole('button', { name: 'Bearbeiten' }).click();
   await page.getByLabel('Text').fill('Erster Abend am Rursee – zwei Bisse');
   await page.getByRole('button', { name: 'Speichern' }).click();
   await expect(page.getByText('Erster Abend am Rursee – zwei Bisse')).toBeVisible();
@@ -140,7 +140,7 @@ test('PRF-5: Beitrag aus einem Fang – Fangfoto wird übernommen, Beitrag verwe
   await expect(nav.getByRole('link', { name: 'Fangbuch' })).toHaveClass(/active/);
 });
 
-test('PRF-6: Gefällt mir per Herz und Doppeltipp, Kommentar schreiben und löschen, Sichtbarkeit pro Beitrag', async ({
+test('PRF-6: Gefällt mir per Daumen und Doppeltipp, Kommentare im Fenster von unten, Sichtbarkeit pro Beitrag', async ({
   page,
 }) => {
   const errors = collectErrors(page);
@@ -149,7 +149,7 @@ test('PRF-6: Gefällt mir per Herz und Doppeltipp, Kommentar schreiben und lösc
   await waitForApp(page);
   await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page, '#2d9cdb'));
   await expect(page.getByRole('img', { name: 'Foto 1' })).toBeVisible();
-  await page.getByText('Alle', { exact: true }).click();
+  await page.getByRole('radio', { name: 'Alle' }).check({ force: true });
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
   await expect(page.getByText(/Sichtbar für: Alle/)).toBeVisible();
@@ -169,26 +169,71 @@ test('PRF-6: Gefällt mir per Herz und Doppeltipp, Kommentar schreiben und lösc
   await expect(like).toHaveAttribute('aria-pressed', 'true');
 
   await page.getByRole('button', { name: 'Kommentieren' }).click();
-  await expect(page.getByLabel('Kommentar hinzufügen')).toBeFocused();
-  await expect(page.getByRole('button', { name: 'Senden' })).toBeDisabled();
-  await page.getByLabel('Kommentar hinzufügen').fill('Petri Heil!');
-  await page.getByRole('button', { name: 'Senden' }).click();
-  const comments = page.getByRole('region', { name: 'Kommentare' });
-  await expect(comments.getByText('Petri Heil!')).toBeVisible();
-  await expect(page.getByLabel('Kommentar hinzufügen')).toHaveValue('');
-  expect(await noOverflow(page)).toBe(true);
+  const sheet = page.getByRole('dialog', { name: 'Kommentare' });
+  await expect(sheet).toBeVisible();
+  await expect(sheet.getByText('Schreib den ersten Kommentar.')).toBeVisible();
+  await expect(sheet.getByRole('button', { name: 'Senden' })).toBeDisabled();
+  await sheet.getByRole('button', { name: '🎣 einfügen' }).click();
+  await sheet.getByLabel('Kommentar hinzufügen').press('End');
+  await sheet.getByLabel('Kommentar hinzufügen').pressSequentially(' Petri Heil!');
+  await sheet.getByLabel('Kommentar hinzufügen').press('Enter');
+  await expect(sheet.getByText('🎣 Petri Heil!')).toBeVisible();
+  await expect(sheet.getByLabel('Kommentar hinzufügen')).toHaveValue('');
   expect(await axe(page)).toEqual([]);
   await page.emulateMedia({ colorScheme: 'dark' });
   expect(await axe(page)).toEqual([]);
 
-  await comments.getByRole('button', { name: 'Kommentar löschen' }).click();
-  await expect(comments.getByText('Petri Heil!')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Rückgängig' }).click();
-  await expect(comments.getByText('Petri Heil!')).toBeVisible();
+  await sheet.getByRole('button', { name: 'Kommentar löschen' }).click();
+  await expect(sheet.getByText('🎣 Petri Heil!')).toHaveCount(0);
+  await sheet.getByRole('button', { name: 'Rückgängig' }).click();
+  await expect(sheet.getByText('🎣 Petri Heil!')).toBeVisible();
+  // Escape schließt (Herunterziehen: Touch, siehe PRF-7)
+  await page.keyboard.press('Escape');
+  await expect(sheet).toBeHidden();
+  await expect(page.getByRole('button', { name: '1 Kommentar ansehen' })).toBeVisible();
+  expect(await noOverflow(page)).toBe(true);
 
   await page.reload();
   await waitForApp(page);
   await expect(page.getByRole('button', { name: 'Gefällt mir' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('region', { name: 'Kommentare' }).getByText('Petri Heil!')).toBeVisible();
+  await page.getByRole('button', { name: '1 Kommentar', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Kommentare' }).getByText('🎣 Petri Heil!')).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test('PRF-7: Kommentar-Fenster schließt beim Herunterziehen, kurzes Ziehen federt zurück', async ({
+  page,
+  browserName,
+}) => {
+  test.skip(browserName !== 'chromium', 'Touch über CDP');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page, '#27ae60'));
+  await expect(page.getByRole('img', { name: 'Foto 1' })).toBeVisible();
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await page.getByRole('button', { name: 'Kommentieren' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Kommentare' });
+  await expect(sheet).toBeVisible();
+  const top = (await sheet.getByRole('heading', { name: 'Kommentare' }).boundingBox())?.y ?? 200;
+
+  const cdp = await page.context().newCDPSession(page);
+  const drag = async (dist: number, stepMs: number) => {
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: 195, y: top }] });
+    for (let d = 20; d <= dist; d += 20) {
+      await cdp.send('Input.dispatchTouchEvent', {
+        type: 'touchMove',
+        touchPoints: [{ x: 195, y: top + d }],
+      });
+      await page.waitForTimeout(stepMs);
+    }
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  };
+  // langsam und kurz: federt zurück
+  await drag(60, 120);
+  await page.waitForTimeout(400);
+  await expect(sheet).toBeVisible();
+  await drag(360, 20);
+  await expect(sheet).toBeHidden();
 });
