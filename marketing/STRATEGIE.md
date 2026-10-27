@@ -35,7 +35,7 @@ Kennzeichnung wie im Projekt: **[V]** verifiziert (mit Quelle/Datum), **[A]** An
 - **Angelkalender** (Monat/Woche/Tag) mit Wetter am Gewässer und Export in den Handy-Kalender (.ics).
 - **Statistik**: Fänge, Bisse, Landequote, Fänge pro Stunde, Arten, Gewässer, Köder, Methoden, größte Fische, Session-Vergleich – mit Mindestmengen und „n = …“.
 - **Heatmap** der eigenen Fänge (Warnung unter 30 Fängen).
-- **Angelrecht der Länder**: 15 Länder „teilweise geprüft“ (Schonzeiten, Mindestmaße, geschützte Arten, Fischereischein), **NRW noch ohne Daten**; Warnung beim Erfassen (blockiert nie); immer „keine Rechtsauskunft“.
+- **Angelrecht der Länder**: alle 16 Länder „teilweise geprüft“ (Schonzeiten, Mindestmaße, geschützte Arten, Fischereischein; NRW seit 2026-10-25); Warnung beim Erfassen (blockiert nie); immer „keine Rechtsauskunft“.
 - **Sicherung**: Export/Import (ZIP/JSON), CSV-Export, Erinnerung.
 - Hell/Dunkel, installierbar, barrierearm geprüft.
 

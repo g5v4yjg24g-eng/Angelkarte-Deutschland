@@ -251,7 +251,7 @@ const MOTIFS = [
 const CAROUSEL = [
   { id: '02-app-uebersicht-k1', layout: 'text', kicker: 'Wisch dich durch →', title: 'Fangpunkt in fünf Bildern', sub: 'Eine Angel-App für ganz Deutschland. Kostenlos, ohne Konto, deine Daten bleiben auf dem Handy.', pills: PILLS },
   { id: '02-app-uebersicht-k2', layout: 'phone', shots: ['light-karte'], kicker: '1 · Karte', title: 'Gewässer in ganz Deutschland', sub: 'Suchen, antippen, Profil mit Quelle ansehen.' },
-  { id: '02-app-uebersicht-k3', layout: 'phone', shots: ['light-fangbuch'], kicker: '2 · Fangbuch', title: 'Fänge nach Gewässern', sub: 'Auch ohne Netz erfassen.' },
+  { id: '02-app-uebersicht-k3', layout: 'phone', shots: ['light-fangbuch-gewaesser'], kicker: '2 · Fangbuch', title: 'Fänge nach Gewässern', sub: 'Auch ohne Netz erfassen.' },
   { id: '02-app-uebersicht-k4', layout: 'phone', shots: ['light-wetter-luftdruck'], kicker: '3 · Wetter', title: 'Vorhersage und Luftdruck', sub: 'Plus amtliche Warnungen und Pegel.' },
   { id: '02-app-uebersicht-k5', layout: 'phone', shots: ['light-statistik'], kicker: '4 · Statistik', title: 'Ehrliche Zahlen', sub: 'Mit Stichprobengröße und Mindestmengen.' },
   { id: '02-app-uebersicht-k6', layout: 'phone', shots: ['light-recht'], kicker: '5 · Angelrecht', title: 'Schonzeiten und Mindestmaße', sub: 'Mit Paragraf und Quelle. Keine Rechtsauskunft.' },

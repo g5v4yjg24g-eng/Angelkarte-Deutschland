@@ -78,6 +78,6 @@ Nachfassen nach 1–2 Wochen (einmal):
 | Pegel | ja, kostenlos (Bundeswasserstraßen, Landespegel NRW) | Pro |
 | Tiefenkarten | nein | Pro |
 | Amtliche Unwetterwarnungen (DWD) | ja | nicht geprüft |
-| Schonzeiten/Mindestmaße der Länder | 15 Länder teilweise geprüft, NRW fehlt | nicht geprüft |
+| Schonzeiten/Mindestmaße der Länder | alle 16 Länder teilweise geprüft | nicht geprüft |
 | Gebiet | Deutschland | Deutschland, Österreich, Schweiz |
 | Form | Web-App (Startbildschirm), nicht im Store | App in den Stores |

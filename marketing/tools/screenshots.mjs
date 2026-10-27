@@ -35,6 +35,12 @@ async function run(theme) {
   await go('./fangbuch');
   await page.waitForTimeout(1500);
   await shot('fangbuch');
+  // Ausschnitt ab der Fangliste (Karussell „Fänge nach Gewässern“ zeigt nur den oberen Teil des Bildschirms)
+  await page.getByText(/^\d+ Einträge$/).first().evaluate((el) => el.scrollIntoView({ block: 'start' }));
+  await page.evaluate(() => window.scrollBy(0, -64));
+  await page.waitForTimeout(1000);
+  await shot('fangbuch-gewaesser');
+  await page.evaluate(() => window.scrollTo(0, 0));
 
   await page.locator('main a[href*="/fangbuch/demo-c"]').first().click();
   await page.waitForTimeout(2500);
@@ -48,19 +54,23 @@ async function run(theme) {
   await shot('statistik-2');
 
   await go('./wetter');
-  await page.getByText(/Die nächsten Tage/i).first().waitFor({ timeout: 30000 });
-  await page.waitForTimeout(3000);
-  await shot('wetter');
-  const toHeading = async (re, name) => {
-    await page.getByText(re).first().evaluate((el) => el.scrollIntoView({ block: 'start' }));
-    await page.evaluate(() => window.scrollBy(0, -70));
-    await page.waitForTimeout(1000);
-    await shot(name);
-  };
-  await toHeading(/Luftdruck-Verlauf/i, 'wetter-luftdruck');
-  await toHeading(/Pegel in der Nähe/i, 'wetter-pegel');
-  await toHeading(/^Beißfenster$/i, 'wetter-beissfenster');
-  await toHeading(/Aus deinem Fangbuch/i, 'wetter-bisse');
+  // Lädt die Vorhersage nicht (z. B. Open-Meteo antwortet 429), bleiben die vorhandenen Wetter-Bilder stehen
+  const forecast = await page.getByText(/Die nächsten Tage/i).first().waitFor({ timeout: 30000 }).then(() => true, () => false);
+  if (!forecast) console.log('Wetter übersprungen: Vorhersage nicht geladen');
+  else {
+    await page.waitForTimeout(3000);
+    await shot('wetter');
+    const toHeading = async (re, name) => {
+      await page.getByText(re).first().evaluate((el) => el.scrollIntoView({ block: 'start' }));
+      await page.evaluate(() => window.scrollBy(0, -70));
+      await page.waitForTimeout(1000);
+      await shot(name);
+    };
+    await toHeading(/Luftdruck-Verlauf/i, 'wetter-luftdruck');
+    await toHeading(/Pegel in der Nähe/i, 'wetter-pegel');
+    await toHeading(/^Beißfenster$/i, 'wetter-beissfenster');
+    await toHeading(/Aus deinem Fangbuch/i, 'wetter-bisse');
+  }
 
   await go('./wetter/kalender');
   await page.waitForTimeout(2500);

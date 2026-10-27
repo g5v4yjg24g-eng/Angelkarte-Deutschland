@@ -50,7 +50,7 @@ Auf TikTok höchstens 3–5 Hashtags, auf YouTube Shorts `#shorts` + 2 Themen-Ha
 > 2 Fangbuch: nach Gewässern sortiert, auch im Funkloch erfassbar.
 > 3 Wetter: Vorhersage, Luftdruck-Verlauf, amtliche Warnungen und Pegel.
 > 4 Statistik: Fänge pro Angelstunde, Köder, Arten – mit Stichprobengröße.
-> 5 Angelrecht: Schonzeiten und Mindestmaße mit Paragraf und Quelle für 15 Länder (NRW folgt). Keine Rechtsauskunft – maßgeblich ist immer dein Erlaubnisschein.
+> 5 Angelrecht: Schonzeiten und Mindestmaße mit Paragraf und Quelle für alle 16 Bundesländer. Keine Rechtsauskunft – maßgeblich ist immer dein Erlaubnisschein.
 >
 > Speicher dir den Beitrag für den nächsten Angeltag.
 >
