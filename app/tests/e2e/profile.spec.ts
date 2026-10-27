@@ -139,3 +139,56 @@ test('PRF-5: Beitrag aus einem Fang – Fangfoto wird übernommen, Beitrag verwe
   await expect(page.getByRole('heading', { level: 1, name: 'Statistik' })).toBeVisible();
   await expect(nav.getByRole('link', { name: 'Fangbuch' })).toHaveClass(/active/);
 });
+
+test('PRF-6: Gefällt mir per Herz und Doppeltipp, Kommentar schreiben und löschen, Sichtbarkeit pro Beitrag', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page, '#2d9cdb'));
+  await expect(page.getByRole('img', { name: 'Foto 1' })).toBeVisible();
+  await page.getByText('Alle', { exact: true }).click();
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await expect(page.getByText(/Sichtbar für: Alle/)).toBeVisible();
+
+  const like = page.getByRole('button', { name: 'Gefällt mir' });
+  await expect(like).toHaveAttribute('aria-pressed', 'false');
+  await like.click();
+  await expect(like).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText('1 „Gefällt mir“-Angabe')).toBeVisible();
+  await like.click();
+  await expect(page.getByText(/„Gefällt mir“-Angabe/)).toHaveCount(0);
+  // Doppeltipp auf das Foto setzt „Gefällt mir“, nimmt es aber nie zurück
+  const slide = page.locator('li[aria-roledescription="slide"]').first();
+  await slide.dblclick();
+  await expect(like).toHaveAttribute('aria-pressed', 'true');
+  await slide.dblclick();
+  await expect(like).toHaveAttribute('aria-pressed', 'true');
+
+  await page.getByRole('button', { name: 'Kommentieren' }).click();
+  await expect(page.getByLabel('Kommentar hinzufügen')).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Senden' })).toBeDisabled();
+  await page.getByLabel('Kommentar hinzufügen').fill('Petri Heil!');
+  await page.getByRole('button', { name: 'Senden' }).click();
+  const comments = page.getByRole('region', { name: 'Kommentare' });
+  await expect(comments.getByText('Petri Heil!')).toBeVisible();
+  await expect(page.getByLabel('Kommentar hinzufügen')).toHaveValue('');
+  expect(await noOverflow(page)).toBe(true);
+  expect(await axe(page)).toEqual([]);
+  await page.emulateMedia({ colorScheme: 'dark' });
+  expect(await axe(page)).toEqual([]);
+
+  await comments.getByRole('button', { name: 'Kommentar löschen' }).click();
+  await expect(comments.getByText('Petri Heil!')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Rückgängig' }).click();
+  await expect(comments.getByText('Petri Heil!')).toBeVisible();
+
+  await page.reload();
+  await waitForApp(page);
+  await expect(page.getByRole('button', { name: 'Gefällt mir' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('region', { name: 'Kommentare' }).getByText('Petri Heil!')).toBeVisible();
+  expect(errors).toEqual([]);
+});

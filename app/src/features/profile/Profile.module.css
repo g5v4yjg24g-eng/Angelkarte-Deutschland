@@ -191,3 +191,97 @@
   font-weight: 600;
   color: var(--color-primary);
 }
+.visibility {
+  display: grid;
+  gap: var(--space-2);
+}
+.fieldLabel {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+.carouselBox {
+  position: relative;
+}
+/* Herz beim Doppeltipp */
+.burst {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 8px rgb(0 0 0 / 45%));
+  animation: burst 800ms ease-out forwards;
+}
+@keyframes burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  40% {
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .burst {
+    animation: burstStill 800ms linear forwards;
+  }
+  @keyframes burstStill {
+    0%,
+    70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}
+.reactions {
+  display: grid;
+  gap: var(--space-1);
+}
+.reactionButtons {
+  display: flex;
+  gap: var(--space-1);
+  margin-left: calc(-1 * var(--space-2));
+}
+.liked {
+  color: var(--color-danger);
+}
+.comments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.comment {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+.commentBody {
+  flex: 1;
+  min-width: 0;
+}
+.commentBody p {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.commentForm {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+.commentField {
+  width: 100%;
+}

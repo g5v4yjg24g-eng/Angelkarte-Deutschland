@@ -48,6 +48,8 @@ export const emptyRecords = (): Records => ({
   waterLinks: [],
   profiles: [],
   posts: [],
+  postLikes: [],
+  postComments: [],
   catches: [],
   photos: [],
 });

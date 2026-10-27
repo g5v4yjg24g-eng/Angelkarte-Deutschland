@@ -211,3 +211,13 @@ export const ImagesIcon = (p: IconProps) => (
     <path d="M17 21H5.5A2.5 2.5 0 0 1 3 18.5V7" />
   </Icon>
 );
+export const HeartIcon = ({ filled, ...p }: IconProps & { filled?: boolean }) => (
+  <Icon {...p} fill={filled ? 'currentColor' : 'none'}>
+    <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20Z" />
+  </Icon>
+);
+export const CommentIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M20 11.5a8 8 0 0 1-11.7 7.1L4 20l1.4-4A8 8 0 1 1 20 11.5Z" />
+  </Icon>
+);

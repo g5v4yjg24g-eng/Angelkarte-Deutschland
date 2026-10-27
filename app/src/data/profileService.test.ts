@@ -9,7 +9,12 @@ import {
   removePost,
   restorePost,
   saveProfile,
-  updatePostCaption,
+  updatePost,
+  toggleLike,
+  addComment,
+  removeComment,
+  restoreComment,
+  postReactions,
 } from './profileService';
 import { exportBackup } from './backupService';
 
@@ -72,7 +77,10 @@ describe('Profil (PRF-1)', () => {
     await db.posts.update(a.id, { createdAt: '2026-10-01T10:00:00+02:00' });
     const b = await createPost({ photos: [photo(2)], caption: 'b' }, db);
     expect((await listPosts(db)).map((p) => p.id)).toEqual([b.id, a.id]);
-    expect((await updatePostCaption(a.id, 'neu', db)).caption).toBe('neu');
+    expect(await updatePost(a.id, { caption: 'neu', visibility: 'public' }, db)).toMatchObject({
+      caption: 'neu',
+      visibility: 'public',
+    });
     await removePost(b.id, db);
     expect((await listPosts(db)).map((p) => p.id)).toEqual([a.id]);
     await restorePost(b.id, db);
@@ -91,5 +99,46 @@ describe('Profil (PRF-1)', () => {
     await createPost({ photos: [photo(4)] }, db);
     const { backup } = await exportBackup({ withPhotos: true }, db);
     expect(backup.counts).toMatchObject({ profiles: 1, posts: 1, photos: 2 });
+  });
+
+  it('Sichtbarkeit wird beim Posten gespeichert; ohne Angabe gilt „Freunde“ (fehlt)', async () => {
+    const db = freshDb();
+    expect((await createPost({ photos: [photo(1)], visibility: 'public' }, db)).visibility).toBe('public');
+    expect((await createPost({ photos: [photo(1)] }, db)).visibility).toBeUndefined();
+  });
+
+  it('Gefällt mir: an, aus, wieder an – je Verfasser höchstens eines', async () => {
+    const db = freshDb();
+    const post = await createPost({ photos: [photo(1)] }, db);
+    expect(await toggleLike(post.id, 'me', db)).toBe(true);
+    expect((await postReactions(post.id, db)).likes).toHaveLength(1);
+    expect(await toggleLike(post.id, 'me', db)).toBe(false);
+    expect((await postReactions(post.id, db)).likes).toHaveLength(0);
+    expect(await toggleLike(post.id, 'me', db)).toBe(true);
+    expect(await db.postLikes.count()).toBe(1);
+  });
+
+  it('Kommentare: hinzufügen (getrimmt), älteste zuerst, löschen und zurückholen; leer geht nicht', async () => {
+    const db = freshDb();
+    const post = await createPost({ photos: [photo(1)] }, db);
+    const a = await addComment(post.id, '  Toller Drill! ', 'me', db);
+    await db.postComments.update(a.id, { createdAt: '2026-10-01T10:00:00+02:00' });
+    const b = await addComment(post.id, 'Köder: Shad 12 cm', 'me', db);
+    expect(a.text).toBe('Toller Drill!');
+    expect((await postReactions(post.id, db)).comments.map((c) => c.id)).toEqual([a.id, b.id]);
+    await removeComment(a.id, db);
+    expect((await postReactions(post.id, db)).comments.map((c) => c.id)).toEqual([b.id]);
+    await restoreComment(a.id, db);
+    expect((await postReactions(post.id, db)).comments).toHaveLength(2);
+    await expect(addComment(post.id, '   ', 'me', db)).rejects.toThrow();
+  });
+
+  it('Likes und Kommentare sind Teil der Sicherung', async () => {
+    const db = freshDb();
+    const post = await createPost({ photos: [photo(1)] }, db);
+    await toggleLike(post.id, 'me', db);
+    await addComment(post.id, 'Petri!', 'me', db);
+    const { backup } = await exportBackup({ withPhotos: false }, db);
+    expect(backup.counts).toMatchObject({ posts: 1, postLikes: 1, postComments: 1 });
   });
 });

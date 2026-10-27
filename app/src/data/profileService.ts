@@ -1,7 +1,16 @@
 // Profilseite (Wunsch Nutzer 2026-10-27): eigenes Profil und Beiträge. Bleibt auf dem Gerät, ist Teil der Sicherung.
 // Fotos werden wie beim Fang in derselben Transaktion gespeichert. Ein Beitrag aus einem Fang bekommt Kopien der
 // gewählten Fangfotos – so bleibt der Beitrag erhalten, auch wenn der Fang gelöscht wird.
-import { PhotoSchema, PROFILE_ID, type Photo, type Post, type Profile } from '../domain/schemas';
+import {
+  LOCAL_AUTHOR,
+  PhotoSchema,
+  PROFILE_ID,
+  type Photo,
+  type Post,
+  type PostComment,
+  type Profile,
+} from '../domain/schemas';
+import { likeIdOf } from '../domain/profile';
 import { newId } from '../domain/id';
 import { nowIso } from '../domain/time';
 import { getDb, type FangpunktDB } from './db';
@@ -66,6 +75,7 @@ export async function createPost(
   args: {
     caption?: string | undefined;
     catchId?: string | undefined;
+    visibility?: Post['visibility'];
     photos: NewPhoto[];
     catchPhotoIds?: string[];
   },
@@ -96,12 +106,60 @@ export async function createPost(
       photoIds: all.map((p) => p.id),
       ...(args.caption ? { caption: args.caption } : {}),
       ...(args.catchId ? { catchId: args.catchId } : {}),
+      ...(args.visibility ? { visibility: args.visibility } : {}),
     });
   });
 }
 
-export const updatePostCaption = (id: string, caption: string, db: FangpunktDB = getDb()) =>
-  repo('posts', db).update(id, { caption: caption || undefined });
+export const updatePost = (
+  id: string,
+  changes: { caption: string; visibility: NonNullable<Post['visibility']> },
+  db: FangpunktDB = getDb(),
+) => repo('posts', db).update(id, { caption: changes.caption || undefined, visibility: changes.visibility });
+
+/** „Gefällt mir“ setzen oder zurücknehmen; liefert den neuen Stand. */
+export async function toggleLike(
+  postId: string,
+  authorId = LOCAL_AUTHOR,
+  db: FangpunktDB = getDb(),
+): Promise<boolean> {
+  const id = likeIdOf(authorId, postId);
+  const r = repo('postLikes', db);
+  return db.transaction('rw', db.postLikes, async () => {
+    const cur = await db.postLikes.get(id);
+    if (!cur) {
+      await r.create({ id, postId, authorId });
+      return true;
+    }
+    if (cur.deletedAt) {
+      await r.restore(id);
+      return true;
+    }
+    await r.remove(id);
+    return false;
+  });
+}
+
+export async function addComment(
+  postId: string,
+  text: string,
+  authorId = LOCAL_AUTHOR,
+  db: FangpunktDB = getDb(),
+): Promise<PostComment> {
+  return repo('postComments', db).create({ postId, authorId, text: text.trim() });
+}
+
+export const removeComment = (id: string, db: FangpunktDB = getDb()) => repo('postComments', db).remove(id);
+export const restoreComment = (id: string, db: FangpunktDB = getDb()) => repo('postComments', db).restore(id);
+
+/** Likes (sichtbar) und Kommentare (älteste zuerst) eines Beitrags */
+export async function postReactions(postId: string, db: FangpunktDB = getDb()) {
+  const [likes, comments] = await Promise.all([
+    db.postLikes.where('postId').equals(postId).toArray(),
+    db.postComments.where('postId').equals(postId).sortBy('createdAt'),
+  ]);
+  return { likes: likes.filter((l) => !l.deletedAt), comments: comments.filter((c) => !c.deletedAt) };
+}
 
 export const removePost = (id: string, db: FangpunktDB = getDb()) => repo('posts', db).remove(id);
 export const restorePost = (id: string, db: FangpunktDB = getDb()) => repo('posts', db).restore(id);

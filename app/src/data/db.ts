@@ -6,6 +6,8 @@ import type {
   Photo,
   Place,
   Post,
+  PostComment,
+  PostLike,
   Profile,
   Session,
   Track,
@@ -59,6 +61,14 @@ export const SCHEMA_VERSIONS: {
     version: 5,
     stores: { profiles: 'id, updatedAt, deletedAt', posts: 'id, createdAt, catchId, updatedAt, deletedAt' },
   },
+  // v6 (2026-10-27): „Gefällt mir“ und Kommentare an Beiträgen; neue Tabellen, vorhandene Daten bleiben unverändert
+  {
+    version: 6,
+    stores: {
+      postLikes: 'id, postId, authorId, updatedAt, deletedAt',
+      postComments: 'id, postId, authorId, createdAt, updatedAt, deletedAt',
+    },
+  },
 ];
 export const SCHEMA_VERSION = SCHEMA_VERSIONS[SCHEMA_VERSIONS.length - 1]?.version ?? 1;
 
@@ -73,6 +83,8 @@ export class FangpunktDB extends Dexie {
   waterLinks!: DexieTable<WaterLink, 'id'>;
   profiles!: DexieTable<Profile, 'id'>;
   posts!: DexieTable<Post, 'id'>;
+  postLikes!: DexieTable<PostLike, 'id'>;
+  postComments!: DexieTable<PostComment, 'id'>;
   settings!: DexieTable<SettingRow, 'key'>;
   snapshots!: DexieTable<SnapshotRow, 'id'>;
 

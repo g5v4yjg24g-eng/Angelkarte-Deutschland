@@ -139,7 +139,10 @@ describe('Migrationen', () => {
     expect(v4.verno).toBe(4);
     v4.close();
 
-    const v5 = new FangpunktDB(name);
+    const v5 = new FangpunktDB(
+      name,
+      SCHEMA_VERSIONS.filter((v) => v.version <= 5),
+    );
     await v5.open();
     expect(v5.verno).toBe(5);
     expect(await v5.catches.get(c.id)).toEqual(c);
@@ -148,5 +151,26 @@ describe('Migrationen', () => {
     const post = await repo('posts', v5).create({ photoIds: ['f1'], catchId: c.id });
     expect(await v5.posts.where('catchId').equals(c.id).first()).toEqual(post);
     v5.close();
+  });
+
+  it('Upgrade v5 → v6 (Gefällt mir, Kommentare): Beiträge bleiben, Reaktionen sind speicherbar', async () => {
+    const v5 = freshDb(SCHEMA_VERSIONS.filter((v) => v.version <= 5));
+    const name = v5.name;
+    const post = await repo('posts', v5).create({ photoIds: ['f1'] });
+    v5.close();
+
+    const v6 = new FangpunktDB(name);
+    await v6.open();
+    expect(v6.verno).toBe(6);
+    expect(await v6.posts.get(post.id)).toEqual(post);
+    const like = await repo('postLikes', v6).create({
+      id: `like-me-${post.id}`,
+      postId: post.id,
+      authorId: 'me',
+    });
+    const c = await repo('postComments', v6).create({ postId: post.id, authorId: 'me', text: 'Petri!' });
+    expect(await v6.postLikes.where('postId').equals(post.id).toArray()).toEqual([like]);
+    expect(await v6.postComments.where('postId').equals(post.id).toArray()).toEqual([c]);
+    v6.close();
   });
 });

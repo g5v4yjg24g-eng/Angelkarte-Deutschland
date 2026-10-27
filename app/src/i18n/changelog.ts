@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-27-3',
+    title: 'Gefällt mir und Kommentare',
+    items: [
+      'Gefällt mir: Tippe unter einem Beitrag aufs Herz – oder tippe zweimal schnell aufs Foto.',
+      'Kommentare: Unter jedem Beitrag kannst du jetzt kommentieren. Vorerst sind Herzen und Kommentare nur deine eigenen; mit dem Konto können Freunde mitmachen.',
+      'Sichtbarkeit: Beim Posten wählst du „Freunde“ oder „Alle“ – das gilt, sobald es Konten gibt.',
+    ],
+  },
+  {
     id: '2026-10-27-2',
     title: 'Profil',
     items: [

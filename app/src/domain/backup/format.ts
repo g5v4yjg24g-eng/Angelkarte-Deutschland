@@ -7,6 +7,8 @@ import {
   type PhotoMeta,
   type Place,
   type Post,
+  type PostComment,
+  type PostLike,
   type Profile,
   type Session,
   type Track,
@@ -31,6 +33,9 @@ export interface BackupData {
   profiles: Profile[];
   /** Beiträge im Profil (seit DB v5) */
   posts: Post[];
+  /** „Gefällt mir“ und Kommentare (seit DB v6) */
+  postLikes: PostLike[];
+  postComments: PostComment[];
   /** Nur Metadaten; die Bilddateien liegen im ZIP unter photos/<id>.<ext> oder fehlen (photos: 'omitted'). */
   photos: PhotoMeta[];
 }
@@ -70,6 +75,9 @@ export const BackupEnvelopeSchema = z.object({
     /** seit DB v5; ältere Sicherungen haben kein Profil und keine Beiträge */
     profiles: z.array(z.unknown()).default([]),
     posts: z.array(z.unknown()).default([]),
+    /** seit DB v6 */
+    postLikes: z.array(z.unknown()).default([]),
+    postComments: z.array(z.unknown()).default([]),
     photos: z.array(z.unknown()),
   }),
 });
@@ -106,6 +114,8 @@ export async function buildBackup(
       waterLinks: data.waterLinks.length,
       profiles: data.profiles.length,
       posts: data.posts.length,
+      postLikes: data.postLikes.length,
+      postComments: data.postComments.length,
       photos: data.photos.length,
     },
     photos: meta.withPhotos ? 'zip-sidecar' : 'omitted',
