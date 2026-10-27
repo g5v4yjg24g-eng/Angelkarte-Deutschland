@@ -16,6 +16,8 @@ export async function changesSince(
     db.trips,
     db.tracks,
     db.waterLinks,
+    db.profiles,
+    db.posts,
   ] as const) {
     await (t as typeof db.catches).each((r) => {
       if (Date.parse(r.updatedAt) > since) {

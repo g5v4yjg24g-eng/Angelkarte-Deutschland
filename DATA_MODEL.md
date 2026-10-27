@@ -263,6 +263,12 @@ interface WaterLink extends Meta {
 // Daten in app/data/permits (Schemas in domain/permits.ts), siehe DATA_SOURCES §6b.
 ```
 
+### 5.5b2 Profile und Post (Profilseite, DB v5, seit 2026-10-27)
+Wunsch Nutzer 2026-10-27. Bleiben auf dem Gerät und sind Teil der Sicherung; später mit dem Konto verknüpft.
+- `Profile` (Tabelle `profiles`, genau ein Datensatz `id = 'me'`): `name` (1–40), `bio?` (≤ 300), `avatarPhotoId?` (Photo mit `ownerType: 'profile'`).
+- `Post` (Tabelle `posts`): `photoIds` (1–10, Photos mit `ownerType: 'post'`), `caption?` (≤ 2200), `catchId?` (verknüpfter Fang). Fotos aus einem Fang werden beim Posten **kopiert**, damit der Beitrag den Fang überlebt. Löschen = Papierkorb (`deletedAt`) mit „Rückgängig“.
+- `Photo.ownerType` um `post` und `profile` erweitert (nur Erweiterung, alte Daten bleiben gültig).
+
 ### 5.5c Server: Profil (Supabase, seit 2026-10-25)
 ```sql
 profiles (id uuid → auth.users, username text unique /^[a-z][a-z0-9_.]{2,19}$/ fest,
@@ -395,4 +401,5 @@ Umsetzung (M6, 2026-10-22):
 - **v2 (2026-10-22):** neue Tabelle `trips` (Angelkalender), keine Umwandlung bestehender Daten; Test `db.test.ts`. Die Prüfsumme wird über den Datenteil der Datei gebildet, wie er dort steht – ältere Sicherungen ohne `trips` bleiben gültig.
 - **v3 (2026-10-23):** neue Tabelle `tracks` (GPS-Routen der Sessions), keine Umwandlung bestehender Daten; Test `db.test.ts`. Sicherungen und Snapshots ohne `tracks` bleiben gültig.
 - **v4 (2026-10-25):** neue Tabelle `waterLinks` (eigene Links zur Angelkarte), keine Umwandlung bestehender Daten; Test `db.test.ts`. Sicherungen und Snapshots ohne `waterLinks` bleiben gültig.
+- **v5 (2026-10-27):** neue Tabellen `profiles` und `posts` (Profilseite), keine Umwandlung bestehender Daten; Test `db.test.ts`. Sicherungen und Snapshots ohne beide bleiben gültig.
 - Exportformat und DB-Schema sind **getrennt versioniert** (`formatVersion` ≠ `schemaVersion`).

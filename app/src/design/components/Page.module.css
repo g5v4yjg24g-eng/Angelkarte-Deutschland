@@ -39,3 +39,7 @@
   overflow: hidden;
   background: var(--color-surface);
 }
+
+.action {
+  margin-left: auto;
+}

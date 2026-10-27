@@ -1,17 +1,13 @@
 // Umschalter Knoten | Montagen (Mehr → Knoten & Montagen)
-import { NavLink } from 'react-router';
 import { de } from '../../i18n/de';
-import styles from './Rigs.module.css';
+import { TabLinks } from '../../design/components/TabLinks';
 
-export function KnotTabs() {
-  return (
-    <nav className={styles.tabs} aria-label={de.more.knots}>
-      <NavLink to="/mehr/knoten" end className={styles.tab ?? ''}>
-        {de.knots.title}
-      </NavLink>
-      <NavLink to="/mehr/montagen" end className={styles.tab ?? ''}>
-        {de.rigs.title}
-      </NavLink>
-    </nav>
-  );
-}
+export const KnotTabs = () => (
+  <TabLinks
+    label={de.more.knots}
+    tabs={[
+      { to: '/mehr/knoten', label: de.knots.title },
+      { to: '/mehr/montagen', label: de.rigs.title },
+    ]}
+  />
+);

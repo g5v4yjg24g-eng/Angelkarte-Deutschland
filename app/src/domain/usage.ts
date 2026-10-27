@@ -8,6 +8,9 @@ const STATIC = new Set([
   '/wetter',
   '/wetter/kalender',
   '/statistik',
+  '/profil',
+  '/profil/bearbeiten',
+  '/profil/neu',
   '/mehr',
   '/mehr/einstellungen',
   '/mehr/koeder',
@@ -28,6 +31,7 @@ export function countedPath(pathname: string, base = '/'): string {
   if (/^\/fangbuch\/sessions\/[^/]+\/rueckblick$/.test(p)) return '/fangbuch/sessions/:id/rueckblick';
   if (/^\/fangbuch\/sessions\/[^/]+$/.test(p)) return '/fangbuch/sessions/:id';
   if (/^\/fangbuch\/[^/]+$/.test(p)) return '/fangbuch/:id';
+  if (/^\/profil\/beitrag\/[^/]+$/.test(p)) return '/profil/beitrag/:id';
   return '/sonstige';
 }
 

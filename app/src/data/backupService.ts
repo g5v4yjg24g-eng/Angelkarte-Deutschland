@@ -22,16 +22,19 @@ async function collect(
   db: FangpunktDB,
   withPhotos: boolean,
 ): Promise<{ data: BackupData; blobs: Record<string, Blob> }> {
-  const [catches, places, sessions, baitPresets, trips, tracks, waterLinks, photos] = await Promise.all([
-    db.catches.toArray(),
-    db.places.toArray(),
-    db.sessions.toArray(),
-    db.baitPresets.toArray(),
-    db.trips.toArray(),
-    db.tracks.toArray(),
-    db.waterLinks.toArray(),
-    withPhotos ? db.photos.toArray() : Promise.resolve([] as Photo[]),
-  ]);
+  const [catches, places, sessions, baitPresets, trips, tracks, waterLinks, profiles, posts, photos] =
+    await Promise.all([
+      db.catches.toArray(),
+      db.places.toArray(),
+      db.sessions.toArray(),
+      db.baitPresets.toArray(),
+      db.trips.toArray(),
+      db.tracks.toArray(),
+      db.waterLinks.toArray(),
+      db.profiles.toArray(),
+      db.posts.toArray(),
+      withPhotos ? db.photos.toArray() : Promise.resolve([] as Photo[]),
+    ]);
   const blobs: Record<string, Blob> = {};
   const metas: PhotoMeta[] = photos.map(({ blob, thumb: _t, ...meta }) => {
     void _t;
@@ -39,7 +42,18 @@ async function collect(
     return meta;
   });
   return {
-    data: { catches, places, sessions, baitPresets, trips, tracks, waterLinks, photos: metas },
+    data: {
+      catches,
+      places,
+      sessions,
+      baitPresets,
+      trips,
+      tracks,
+      waterLinks,
+      profiles,
+      posts,
+      photos: metas,
+    },
     blobs,
   };
 }
@@ -175,7 +189,18 @@ export async function applyImport(
   let written = 0;
   await db.transaction(
     'rw',
-    [db.sessions, db.places, db.baitPresets, db.catches, db.trips, db.tracks, db.waterLinks, db.photos],
+    [
+      db.sessions,
+      db.places,
+      db.baitPresets,
+      db.catches,
+      db.trips,
+      db.tracks,
+      db.waterLinks,
+      db.profiles,
+      db.posts,
+      db.photos,
+    ],
     async () => {
       for (const table of PLAN_TABLES) {
         let rows = writes[table] as object[];
@@ -225,7 +250,18 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
   const d = snap.backup.data;
   await db.transaction(
     'rw',
-    [db.sessions, db.places, db.baitPresets, db.catches, db.trips, db.tracks, db.waterLinks, db.photos],
+    [
+      db.sessions,
+      db.places,
+      db.baitPresets,
+      db.catches,
+      db.trips,
+      db.tracks,
+      db.waterLinks,
+      db.profiles,
+      db.posts,
+      db.photos,
+    ],
     async () => {
       await Promise.all([
         db.sessions.clear(),
@@ -235,6 +271,8 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
         db.trips.clear(),
         db.tracks.clear(),
         db.waterLinks.clear(),
+        db.profiles.clear(),
+        db.posts.clear(),
         db.photos.clear(),
       ]);
       await db.sessions.bulkPut(d.sessions);
@@ -247,6 +285,9 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
       await db.tracks.bulkPut(d.tracks ?? []);
       // Snapshots vor DB v4 haben keine eigenen Gewässer-Links
       await db.waterLinks.bulkPut(d.waterLinks ?? []);
+      // Snapshots vor DB v5 haben kein Profil und keine Beiträge
+      await db.profiles.bulkPut(d.profiles ?? []);
+      await db.posts.bulkPut(d.posts ?? []);
       await db.photos.bulkPut(
         d.photos.flatMap((m) =>
           snap.photoBlobs[m.id] ? [{ ...m, blob: snap.photoBlobs[m.id] as Blob }] : [],

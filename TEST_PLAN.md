@@ -159,6 +159,10 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 |---|---|---|
 | ACC-1 | Regeln | E-Mail, Code (6–10 Ziffern), Nutzername wie in der Datenbank-Regel, Anzeigename, Fehlerarten, Wartezeit (✅ `domain/account.test.ts`) |
 | ACC-2 | Kontoseite | Code anfordern, falscher/richtiger Code, Profil mit Verfügbarkeitsprüfung, Anzeigename ändern, abmelden, löschen nur nach Eingabe des Nutzernamens, nicht eingerichtet, Ladefehler (✅ `AccountPage.test.tsx`) |
+| PRF-1 | Profil-Datendienst | Profil anlegen/ändern, Profilbild ersetzen/entfernen, Beitrag mit neuen Fotos und Kopien von Fangfotos, Text ändern, löschen/wiederherstellen, ohne Foto kein Beitrag, Teil der Sicherung (✅ `profileService.test.ts`); Migration v4 → v5 (✅ `db.test.ts`) |
+| PRF-2 | Leiste | Karte · Fangbuch · Profil · Wetter · Mehr; Statistik als Reiter im Fangbuch, Fangbuch dabei aktiv (✅ `AppShell.test.tsx`, `app.spec.ts`) |
+| PRF-4 | Profilseite | einrichten mit Bild, Name, Text; Beitrag mit 2 Fotos; Raster; Beitrag ansehen, Text ändern, löschen + Rückgängig; bleibt nach Neustart; „Profil teilen“ → Demnächst; 390 px, axe hell/dunkel (✅ `profile.spec.ts`) |
+| PRF-5 | Beitrag aus Fang | „Im Profil posten“ im Fang, Fangfoto vorausgewählt, Beitrag verlinkt den Fang (✅ `profile.spec.ts`) |
 | ACC-4 | Anmelde-Link (Übergangslösung) | Link mit Anmeldung im #-Teil → Kontoseite, angemeldet; abgelaufener Link → Hinweis und Formular (✅ `account.spec.ts`, `authLinkInHash` in `account.test.ts`) |
 | ACC-3 | Mehr → Konto mit nachgebildetem Supabase | ganzer Ablauf, Anmeldung bleibt nach Neuladen, nur Auth/Profil-Aufrufe, nach Löschen keine Sitzung, 390 px, axe (✅ `account.spec.ts`); ohne Anmeldung keine Anfrage an Supabase (✅ `privacy.spec.ts`) |
 | ACC-5 | Konto noch nicht freigeschaltet | Mehr → Konto zeigt „Demnächst“, kein Formular, keine Anfrage an Supabase, axe; übrige Konto-Tests mit `fangpunkt.preview.account` (✅ `account.spec.ts`) |

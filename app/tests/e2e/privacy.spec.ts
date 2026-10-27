@@ -20,6 +20,8 @@ const ROUTES = [
   '/fangbuch/sessions',
   '/wetter',
   '/statistik',
+  '/profil',
+  '/profil/neu',
   '/mehr',
   '/mehr/einstellungen',
   '/mehr/koeder',

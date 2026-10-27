@@ -5,7 +5,18 @@ import { de } from '../../i18n/de';
 import styles from './Page.module.css';
 
 /** Seitenrahmen mit Überschrift; optional Zurück-Link für Unterseiten. */
-export function Page({ title, back, children }: { title: string; back?: string; children: ReactNode }) {
+export function Page({
+  title,
+  back,
+  action,
+  children,
+}: {
+  title: string;
+  back?: string;
+  /** Knopf rechts neben der Überschrift (z. B. „Neuer Beitrag“) */
+  action?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <div className={styles.page}>
       <div className={styles.head}>
@@ -15,6 +26,7 @@ export function Page({ title, back, children }: { title: string; back?: string; 
           </Link>
         )}
         <h1>{title}</h1>
+        {action && <span className={styles.action}>{action}</span>}
       </div>
       {children}
     </div>

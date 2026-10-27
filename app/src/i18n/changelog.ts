@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-27-2',
+    title: 'Profil',
+    items: [
+      'Profil: In der Mitte der unteren Leiste wartet jetzt dein Profil – mit Profilbild, Name, ein paar Worten über dich und deinen Beiträgen als Fotoraster.',
+      'Beiträge: Poste Fotos mit Text, auf Wunsch verknüpft mit einem Fang – auch direkt aus dem Fangbuch über „Im Profil posten“. Alles bleibt vorerst auf deinem Gerät.',
+      'Statistik: Sie ist jetzt ein Reiter im Fangbuch (Einträge | Statistik).',
+    ],
+  },
+  {
     id: '2026-10-27',
     title: 'Montagen',
     items: [
