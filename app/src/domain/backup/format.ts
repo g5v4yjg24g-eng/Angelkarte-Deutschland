@@ -6,6 +6,8 @@ import {
   type Catch,
   type PhotoMeta,
   type Place,
+  type Post,
+  type Profile,
   type Session,
   type Track,
   type Trip,
@@ -25,6 +27,10 @@ export interface BackupData {
   tracks: Track[];
   /** eigene Links zur Angelkarte (seit DB v4) */
   waterLinks: WaterLink[];
+  /** eigenes Profil (seit DB v5) */
+  profiles: Profile[];
+  /** Beiträge im Profil (seit DB v5) */
+  posts: Post[];
   /** Nur Metadaten; die Bilddateien liegen im ZIP unter photos/<id>.<ext> oder fehlen (photos: 'omitted'). */
   photos: PhotoMeta[];
 }
@@ -61,6 +67,9 @@ export const BackupEnvelopeSchema = z.object({
     tracks: z.array(z.unknown()).default([]),
     /** seit DB v4; ältere Sicherungen haben keine eigenen Gewässer-Links */
     waterLinks: z.array(z.unknown()).default([]),
+    /** seit DB v5; ältere Sicherungen haben kein Profil und keine Beiträge */
+    profiles: z.array(z.unknown()).default([]),
+    posts: z.array(z.unknown()).default([]),
     photos: z.array(z.unknown()),
   }),
 });
@@ -95,6 +104,8 @@ export async function buildBackup(
       trips: data.trips.length,
       tracks: data.tracks.length,
       waterLinks: data.waterLinks.length,
+      profiles: data.profiles.length,
+      posts: data.posts.length,
       photos: data.photos.length,
     },
     photos: meta.withPhotos ? 'zip-sidecar' : 'omitted',

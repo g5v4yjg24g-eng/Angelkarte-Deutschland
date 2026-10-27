@@ -9,6 +9,7 @@ import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
 import { SelectField } from '../../design/components/Field';
 import { ChartIcon } from '../../design/icons';
+import { CatchbookTabs } from '../catches/CatchbookTabs';
 import { getDb } from '../../data/db';
 import { SPECIES, speciesById } from '../../domain/species';
 import { waterNames, type CatchFilter } from '../../domain/catchDraft';
@@ -57,6 +58,7 @@ export function StatsPage() {
   if (!data || !stats)
     return (
       <Page title={t.title}>
+        <CatchbookTabs />
         <Notice>{t.loading}</Notice>
       </Page>
     );
@@ -64,6 +66,7 @@ export function StatsPage() {
   if (!active.some((c) => c.outcome !== 'observation'))
     return (
       <Page title={t.title}>
+        <CatchbookTabs />
         <EmptyState
           icon={<ChartIcon size={32} />}
           title={t.emptyTitle}
@@ -84,6 +87,7 @@ export function StatsPage() {
 
   return (
     <Page title={t.title}>
+      <CatchbookTabs />
       <div className={styles.stack}>
         <div className={styles.filters} role="group" aria-label={t.filters}>
           <SelectField

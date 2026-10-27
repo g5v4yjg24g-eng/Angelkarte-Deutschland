@@ -176,7 +176,7 @@ export const PhotoMetaSchema = MetaSchema.extend({
   width: z.number().int().positive().optional(),
   height: z.number().int().positive().optional(),
   bytes: z.number().int().min(0),
-  ownerType: z.enum(['catch', 'place']),
+  ownerType: z.enum(['catch', 'place', 'post', 'profile']),
   ownerId: id,
 });
 export const PhotoSchema = PhotoMetaSchema.extend({
@@ -237,6 +237,27 @@ export const WaterLinkSchema = MetaSchema.extend({
   label: text(80).optional(),
 });
 
+/** Höchstzahl Fotos je Beitrag (wie ein Karussell) */
+export const MAX_PHOTOS_PER_POST = 10;
+export const PROFILE_ID = 'me';
+
+/**
+ * Eigenes Profil (Wunsch Nutzer 2026-10-27): Name, Text und Profilbild. Bleibt auf dem Gerät, genau ein Datensatz
+ * mit der ID `me`. Wird später mit dem Konto verknüpft (Freunde).
+ */
+export const ProfileSchema = MetaSchema.extend({
+  name: text(40),
+  bio: text(300).optional(),
+  avatarPhotoId: id.optional(),
+});
+
+/** Beitrag im Profil: ein oder mehrere Fotos, Text, optional verknüpft mit einem Fang aus dem Fangbuch. */
+export const PostSchema = MetaSchema.extend({
+  caption: text(2200).optional(),
+  photoIds: z.array(id).min(1).max(MAX_PHOTOS_PER_POST),
+  catchId: id.optional(),
+});
+
 export type LatLng = z.infer<typeof LatLngSchema>;
 export type Meta = z.infer<typeof MetaSchema>;
 export type Place = z.infer<typeof PlaceSchema>;
@@ -253,6 +274,8 @@ export type Trip = z.infer<typeof TripSchema>;
 export type Track = z.infer<typeof TrackSchema>;
 export type WaterLink = z.infer<typeof WaterLinkSchema>;
 export type TrackPoint = z.infer<typeof TrackPointSchema>;
+export type Profile = z.infer<typeof ProfileSchema>;
+export type Post = z.infer<typeof PostSchema>;
 
 /** Alle Entitäten mit eigener Tabelle; Reihenfolge = Import-Reihenfolge (Bezüge zuerst). */
 export const ENTITY_SCHEMAS = {
@@ -263,6 +286,8 @@ export const ENTITY_SCHEMAS = {
   trips: TripSchema,
   tracks: TrackSchema,
   waterLinks: WaterLinkSchema,
+  profiles: ProfileSchema,
+  posts: PostSchema,
 } as const;
 export type EntityTable = keyof typeof ENTITY_SCHEMAS;
 export interface EntityMap {
@@ -273,4 +298,6 @@ export interface EntityMap {
   trips: Trip;
   tracks: Track;
   waterLinks: WaterLink;
+  profiles: Profile;
+  posts: Post;
 }

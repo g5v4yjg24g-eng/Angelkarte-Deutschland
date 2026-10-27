@@ -72,6 +72,9 @@ export function CatchDetailPage() {
             {t.showOnMap}
           </Button>
         )}
+        <Button variant="secondary" onClick={() => void navigate(`/profil/neu?fang=${item.id}`)}>
+          {de.profile.postFromCatch}
+        </Button>
         <Button
           variant="danger"
           onClick={() =>

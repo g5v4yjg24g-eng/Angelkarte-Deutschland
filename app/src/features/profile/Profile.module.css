@@ -1,0 +1,193 @@
+.navAvatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+.headMain {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.name {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--text-lg, 1.1rem);
+  overflow-wrap: anywhere;
+}
+.counts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+.count {
+  display: grid;
+  line-height: 1.2;
+}
+.count strong {
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+}
+.count span {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.bio {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: var(--space-2);
+}
+.buttons > button {
+  width: 100%;
+  min-width: 0;
+}
+.soon {
+  color: var(--color-text-muted);
+}
+.buttons > .squareButton {
+  min-width: var(--touch);
+}
+.squareButton {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 12px);
+}
+/* Raster wie bei Instagram: drei Spalten, schmale Fugen, bis an den Seitenrand */
+.grid {
+  list-style: none;
+  margin: 0 calc(-1 * var(--space-4));
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+.tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  background: var(--color-surface-2);
+  overflow: hidden;
+}
+.tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.multi {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  color: #fff;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 60%));
+}
+.note {
+  font-size: var(--text-sm);
+  margin: 0;
+}
+.top {
+  display: grid;
+  gap: var(--space-3);
+}
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+.avatarEdit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+.formActions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.pickable[aria-pressed='false'] {
+  opacity: 0.4;
+}
+.pickable[aria-pressed='true'] {
+  border: 3px solid var(--color-primary);
+}
+.postHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.carouselWrap {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0 calc(-1 * var(--space-4));
+}
+.carousel {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+.slide {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  aspect-ratio: 4 / 5;
+  background: var(--color-surface-2);
+}
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.dots {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+.dot,
+.dotOn {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-border);
+}
+.dotOn {
+  background: var(--color-primary);
+}
+.catchLink {
+  font-weight: 600;
+  color: var(--color-primary);
+}

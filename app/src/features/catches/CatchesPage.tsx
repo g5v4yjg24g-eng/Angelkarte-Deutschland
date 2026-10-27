@@ -17,6 +17,7 @@ import { SPECIES, speciesById } from '../../domain/species';
 import { filterCatches, groupByDay, NO_FILTER, type CatchFilter } from '../../domain/catchDraft';
 import { groupByWater } from '../../domain/waterGroups';
 import { WaterHeader, WaterTabs } from './WaterTabs';
+import { CatchbookTabs } from './CatchbookTabs';
 import { useWaterPlaces } from './useWaterPlaces';
 import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
@@ -158,6 +159,7 @@ export function CatchesPage() {
   if (!all)
     return (
       <Page title={t.title}>
+        <CatchbookTabs />
         <Notice>{t.loading}</Notice>
       </Page>
     );
@@ -165,6 +167,7 @@ export function CatchesPage() {
   if (active.length === 0)
     return (
       <Page title={t.title}>
+        <CatchbookTabs />
         <SessionsLink />
         <EmptyState
           icon={<BookIcon size={32} />}
@@ -183,6 +186,7 @@ export function CatchesPage() {
 
   return (
     <Page title={t.title}>
+      <CatchbookTabs />
       <SessionsLink />
       <WaterTabs groups={waterGroups} selected={selectedWater ? waterKey : ''} onSelect={setWaterKey} />
       {selectedWater && <WaterHeader key={selectedWater.key} group={selectedWater} />}

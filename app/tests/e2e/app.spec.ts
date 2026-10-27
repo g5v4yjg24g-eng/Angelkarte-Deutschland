@@ -23,7 +23,7 @@ test('Navigation über die Hauptleiste erreicht alle Bereiche', async ({ page })
   const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
   for (const [name, heading] of [
     ['Fangbuch', 'Fangbuch'],
-    ['Statistik', 'Statistik'],
+    ['Profil', 'Profil'],
     ['Mehr', 'Mehr'],
   ] as const) {
     await nav.getByRole('link', { name }).click();
@@ -139,14 +139,14 @@ test('NAV-1: Gedrückt über die Leiste wischen – Glas-Linse folgt, Loslassen 
   await page.goto('/fangbuch');
   await waitForApp(page);
   const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
-  await swipeNav(page, 'Fangbuch', 'Statistik', async () => {
+  await swipeNav(page, 'Fangbuch', 'Profil', async () => {
     // Während des Wischens: Linse sichtbar, Punkt darunter vergrößert, Seite noch nicht gewechselt
     await expect(nav.locator('[class*="lens_"], [class*="_lens"]').first()).toBeVisible();
-    await expect(nav.getByRole('link', { name: 'Statistik' })).toHaveClass(/lensed/);
+    await expect(nav.getByRole('link', { name: 'Profil' })).toHaveClass(/lensed/);
     await expect(page.getByRole('heading', { level: 1, name: 'Fangbuch' })).toBeVisible();
   });
-  await expect(page.getByRole('heading', { level: 1, name: 'Statistik' })).toBeVisible();
-  await expect(nav.getByRole('link', { name: 'Statistik' })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('heading', { level: 1, name: 'Profil' })).toBeVisible();
+  await expect(nav.getByRole('link', { name: 'Profil' })).toHaveAttribute('aria-current', 'page');
   // Linse verschwindet nach dem Einrasten
   await expect(nav.locator('[aria-hidden="true"][style*="--lens-x"]')).toHaveCount(0);
   // Normaler Tipp funktioniert weiter

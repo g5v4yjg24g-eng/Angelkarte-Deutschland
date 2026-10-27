@@ -112,7 +112,10 @@ describe('Migrationen', () => {
     expect(v3.verno).toBe(3);
     v3.close();
 
-    const v4 = new FangpunktDB(name);
+    const v4 = new FangpunktDB(
+      name,
+      SCHEMA_VERSIONS.filter((v) => v.version <= 4),
+    );
     await v4.open();
     expect(v4.verno).toBe(4);
     expect(await v4.catches.get(c.id)).toEqual(c);
@@ -123,5 +126,27 @@ describe('Migrationen', () => {
     });
     expect(await v4.waterLinks.where('waterId').equals('osm:r9075175').first()).toEqual(l);
     v4.close();
+  });
+
+  it('Upgrade v4 → v5 (Profil): Daten bleiben, Profil und Beiträge sind speicherbar', async () => {
+    const v4 = freshDb(SCHEMA_VERSIONS.filter((v) => v.version <= 4));
+    const name = v4.name;
+    const c = await repo('catches', v4).create({
+      outcome: 'caught',
+      at: '2026-10-20T07:10:00+02:00',
+      tz: 'Europe/Berlin',
+    });
+    expect(v4.verno).toBe(4);
+    v4.close();
+
+    const v5 = new FangpunktDB(name);
+    await v5.open();
+    expect(v5.verno).toBe(5);
+    expect(await v5.catches.get(c.id)).toEqual(c);
+    const p = await repo('profiles', v5).create({ id: 'me', name: 'Kevin' });
+    expect(await v5.profiles.get('me')).toEqual(p);
+    const post = await repo('posts', v5).create({ photoIds: ['f1'], catchId: c.id });
+    expect(await v5.posts.where('catchId').equals(c.id).first()).toEqual(post);
+    v5.close();
   });
 });

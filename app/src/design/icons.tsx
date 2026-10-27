@@ -193,3 +193,21 @@ export const UserIcon = (p: IconProps) => (
     <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
   </Icon>
 );
+export const PlusIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </Icon>
+);
+export const UserPlusIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="10" cy="8" r="3.5" />
+    <path d="M3.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5M19 8v6M16 11h6" />
+  </Icon>
+);
+/** mehrere Fotos (Karussell) */
+export const ImagesIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="7" y="3" width="14" height="14" rx="2.5" />
+    <path d="M17 21H5.5A2.5 2.5 0 0 1 3 18.5V7" />
+  </Icon>
+);

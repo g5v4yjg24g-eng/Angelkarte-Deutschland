@@ -1,7 +1,14 @@
-import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ComponentType,
+  type PointerEvent,
+} from 'react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import { de } from '../i18n/de';
-import { BookIcon, ChartIcon, FishMark, MapIcon, MoreIcon, OfflineIcon, WeatherIcon } from '../design/icons';
+import { BookIcon, FishMark, MapIcon, MoreIcon, OfflineIcon, WeatherIcon } from '../design/icons';
 import { Badge } from '../design/components/Badge';
 import { useOnline } from '../lib/useOnline';
 import { UpdatePrompt } from './UpdatePrompt';
@@ -13,16 +20,18 @@ import { UsageTracker } from '../features/usage/UsageTracker';
 import { AuthRedirect } from '../features/account/AuthRedirect';
 import { SessionTracker } from '../features/sessions/tracking/SessionTracker';
 import { GaugeSync } from '../features/weather/GaugeSync';
+import { ProfileNavIcon } from '../features/profile/ProfileNavIcon';
 import { DRAG_START_PX, itemAt, lensCenter, type Span } from './navLens';
 import styles from './AppShell.module.css';
 
-const NAV = [
+// Fünf Punkte, Profil in der Mitte (Entscheidung Nutzer 2026-10-27); die Statistik ist ein Reiter im Fangbuch.
+const NAV: readonly { to: string; label: string; icon: ComponentType; end: boolean; also?: string }[] = [
   { to: '/', label: de.nav.map, icon: MapIcon, end: true },
-  { to: '/fangbuch', label: de.nav.catches, icon: BookIcon, end: false },
+  { to: '/fangbuch', label: de.nav.catches, icon: BookIcon, end: false, also: '/statistik' },
+  { to: '/profil', label: de.nav.profile, icon: ProfileNavIcon, end: false },
   { to: '/wetter', label: de.nav.weather, icon: WeatherIcon, end: false },
-  { to: '/statistik', label: de.nav.stats, icon: ChartIcon, end: false },
   { to: '/mehr', label: de.nav.more, icon: MoreIcon, end: false },
-] as const;
+];
 const NAV_PATHS = NAV.map((n) => n.to);
 
 /** Linse etwas breiter als ein Punkt, damit sie ihn umschließt */
@@ -138,6 +147,7 @@ declare global {
 export function AppShell() {
   const online = useOnline();
   const { lens, navRef, itemRef, handlers } = useNavLens(NAV_PATHS);
+  const { pathname } = useLocation();
   useEffect(() => {
     // Intro ausblenden, sobald die Oberfläche steht (index.html).
     window.__fangpunktAppReady?.();
@@ -170,7 +180,7 @@ export function AppShell() {
             aria-hidden="true"
           />
         )}
-        {NAV.map(({ to, label, icon: Icon, end }, i) => (
+        {NAV.map(({ to, label, icon: Icon, end, also }, i) => (
           <NavLink
             key={to}
             ref={itemRef(i)}
@@ -178,9 +188,11 @@ export function AppShell() {
             end={end}
             draggable={false}
             className={({ isActive }) =>
-              [styles.navItem, isActive ? styles.active : '', lens?.index === i ? styles.lensed : ''].join(
-                ' ',
-              )
+              [
+                styles.navItem,
+                isActive || (also && pathname.startsWith(also)) ? styles.active : '',
+                lens?.index === i ? styles.lensed : '',
+              ].join(' ')
             }
           >
             <span className={styles.navIcon}>

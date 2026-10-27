@@ -1,6 +1,17 @@
 // Lokale Datenbank (IndexedDB über Dexie). Schemaänderungen nur als neue Version mit Migration + Test (CLAUDE.md).
 import Dexie, { type EntityTable as DexieTable } from 'dexie';
-import type { BaitPreset, Catch, Photo, Place, Session, Track, Trip, WaterLink } from '../domain/schemas';
+import type {
+  BaitPreset,
+  Catch,
+  Photo,
+  Place,
+  Post,
+  Profile,
+  Session,
+  Track,
+  Trip,
+  WaterLink,
+} from '../domain/schemas';
 import type { BackupFile } from '../domain/backup/format';
 
 export interface SettingRow {
@@ -43,6 +54,11 @@ export const SCHEMA_VERSIONS: {
   { version: 3, stores: { tracks: 'id, sessionId, updatedAt, deletedAt' } },
   // v4 (2026-10-25): eigene Links zur Angelkarte je Gewässer; neue Tabelle, vorhandene Daten bleiben unverändert
   { version: 4, stores: { waterLinks: 'id, waterId, updatedAt, deletedAt' } },
+  // v5 (2026-10-27): Profilseite – eigenes Profil und Beiträge; neue Tabellen, vorhandene Daten bleiben unverändert
+  {
+    version: 5,
+    stores: { profiles: 'id, updatedAt, deletedAt', posts: 'id, createdAt, catchId, updatedAt, deletedAt' },
+  },
 ];
 export const SCHEMA_VERSION = SCHEMA_VERSIONS[SCHEMA_VERSIONS.length - 1]?.version ?? 1;
 
@@ -55,6 +71,8 @@ export class FangpunktDB extends Dexie {
   trips!: DexieTable<Trip, 'id'>;
   tracks!: DexieTable<Track, 'id'>;
   waterLinks!: DexieTable<WaterLink, 'id'>;
+  profiles!: DexieTable<Profile, 'id'>;
+  posts!: DexieTable<Post, 'id'>;
   settings!: DexieTable<SettingRow, 'key'>;
   snapshots!: DexieTable<SnapshotRow, 'id'>;
 

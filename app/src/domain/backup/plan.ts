@@ -12,6 +12,8 @@ export const PLAN_TABLES: PlanTable[] = [
   'trips',
   'tracks',
   'waterLinks',
+  'profiles',
+  'posts',
   'photos',
 ];
 

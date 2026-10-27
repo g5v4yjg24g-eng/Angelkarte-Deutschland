@@ -18,6 +18,10 @@ import { BaitPresetsPage } from '../features/baits/BaitPresetsPage';
 import { KnotsPage } from '../features/knots/KnotsPage';
 import { KnotDetailPage } from '../features/knots/KnotDetailPage';
 import { RigsPage } from '../features/knots/RigsPage';
+import { ProfilePage } from '../features/profile/ProfilePage';
+import { EditProfilePage } from '../features/profile/EditProfilePage';
+import { NewPostPage } from '../features/profile/NewPostPage';
+import { PostPage } from '../features/profile/PostPage';
 import { RigDetailPage } from '../features/knots/RigDetailPage';
 import { AboutPage } from '../features/about/AboutPage';
 import { LazyBackupPage } from '../features/backup/LazyBackupPage';
@@ -43,6 +47,10 @@ export const routes = [
           { path: 'wetter', element: <WeatherPage /> },
           { path: 'wetter/kalender', element: <CalendarPage /> },
           { path: 'statistik', element: <StatsPage /> },
+          { path: 'profil', element: <ProfilePage /> },
+          { path: 'profil/bearbeiten', element: <EditProfilePage /> },
+          { path: 'profil/neu', element: <NewPostPage /> },
+          { path: 'profil/beitrag/:id', element: <PostPage /> },
           { path: 'mehr', element: <MorePage /> },
           { path: 'mehr/einstellungen', element: <SettingsPage /> },
           { path: 'mehr/koeder', element: <BaitPresetsPage /> },
