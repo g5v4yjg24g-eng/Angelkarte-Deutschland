@@ -1,13 +1,13 @@
 // Bildschirmaufnahme für das interne Erklärvideo „Profil“ (HyperFrames-Projekt marketing/videos/intern-profil):
-// echte Live-App mit Beispieldaten (Profil „Jonas“, 8 Beiträge, ein Zander-Fang mit Foto; Fotos von Wikimedia Commons,
-// Quellen in intern-profil/assets/beispielbilder/quellen.json). Ablauf: Profil → Neuer Beitrag aus dem Fang → Posten →
+// echte Live-App mit Beispieldaten (Profil „Jonas“, 8 Beiträge, ein Hecht-Fang mit Foto). Fotos: eigene Aufnahmen des
+// Nutzers in intern-profil/assets/eigene-fotos/ (ohne Metadaten, nicht im Repository). Ablauf: Profil → Neuer Beitrag aus dem Fang → Posten →
 // Beitrag öffnen → Gefällt mir → Kommentar → zurück → Profil teilen („Demnächst“) → Bearbeiten.
 // Technik wie tools/record-knoten.mjs. Ergebnis: intern-profil/assets/app-profil.mp4 und app-profil.json.
 // Aufruf (Repo-Root): node marketing/tools/record-profil.mjs
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { chromium } from '../../node_modules/.pnpm/node_modules/playwright/index.mjs';
-import { BASE, WATER, seed, waitApp } from './demo.mjs';
+import { BASE, seed, waitApp } from './demo.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const build = `${root}videos/_build/profil/`;
@@ -32,28 +32,27 @@ await page.addInitScript(() => {
   globalThis.setInterval = (fn, ms = 0, ...a) => si(fn, ms * (globalThis.__fpSlow ?? 1), ...a);
 });
 // ---------- Beispieldaten ----------
-const img = (k) => readFileSync(`${assets}beispielbilder/${k}.jpg`).toString('base64');
+const img = (k) => readFileSync(`${assets}eigene-fotos/${k}.jpg`).toString('base64');
 const meta = (at) => ({ createdAt: at, updatedAt: at, rev: 0 });
 const POSTS = [
-  ['hecht', '2026-06-14T19:20:00+00:00', 'Erster Hecht der Saison! Wobbler am Damm – und wieder schwimmen lassen.'],
-  ['bachforelle-1', '2026-07-02T06:10:00+00:00', 'Morgens am Bach. Kleiner Spinner, große Freude.'],
-  ['karpfen', '2026-07-19T03:05:00+00:00', 'Nachtansitz hat sich gelohnt 🌙'],
-  ['maraene', '2026-08-09T09:30:00+00:00', 'Mal was anderes: Maräne vom Boot aus. Wer fängt die öfter?'],
-  ['forelle-fliege', '2026-08-30T17:45:00+00:00', 'Mit der Fliegenrute unterwegs – endlich hat es geklappt.'],
-  ['regenbogenforelle', '2026-09-13T15:00:00+00:00', 'Regenbogenforelle am Vereinssee. Petri an alle, die heute draußen waren!'],
-  ['spiegelkarpfen', '2026-09-27T12:20:00+00:00', 'Spiegelkarpfen beim Feedern 💪'],
-  ['bachforelle-2', '2026-10-11T08:40:00+00:00', 'Die hat den Köder fast im Flug genommen.'],
+  ['hecht-gras', '2026-06-14T17:20:00+00:00', 'Hecht vom Ufer – kurz fürs Foto, dann direkt wieder zurück.'],
+  ['barsch-1', '2026-07-02T18:10:00+00:00', 'Barsch-Abend am Teich. Klein, aber gierig.'],
+  ['barsch-2', '2026-07-19T17:05:00+00:00', 'Noch einer! Die Barsche stehen heute direkt an der Kante.'],
+  ['hecht-drill', '2026-08-09T16:30:00+00:00', 'Kurz vor der Landung 👀'],
+  ['barsch-3', '2026-08-30T17:45:00+00:00', 'Der dritte Barsch heute. Läuft.'],
+  ['haenger', '2026-09-13T15:00:00+00:00', 'Heute nur einen Ast gefangen 🙈 Gehört auch dazu.'],
+  ['barsch-4', '2026-09-27T16:20:00+00:00', 'Barsch zum Feierabend.'],
+  ['barsch-5', '2026-10-11T15:40:00+00:00', 'Steg-Barsch 🎣'],
 ];
 const data = { catches: [], sessions: [], places: [], trips: [] };
 data.catches.push({
-  id: 'demo-zander', ...meta('2026-10-26T16:42:00+00:00'), outcome: 'caught', at: '2026-10-26T16:40:00+00:00', tz: 'Europe/Berlin',
-  stateCode: 'NW', position: { lat: 51.4836, lng: 8.1035, source: 'map-tap' }, ...WATER, method: 'jigging',
-  bait: { name: 'Gummifisch 10 cm', type: 'softbait', color: 'Motoroil' }, speciesId: 'zander', lengthCm: 68,
-  lengthMethod: 'measured', released: 'released', photoIds: ['photo-catch-zander'],
+  id: 'demo-hecht', ...meta('2026-10-26T15:42:00+00:00'), outcome: 'caught', at: '2026-10-26T15:40:00+00:00', tz: 'Europe/Berlin',
+  position: { lat: 51.4836, lng: 8.1035, source: 'map-tap' }, method: 'spinning', speciesId: 'pike',
+  released: 'released', photoIds: ['photo-catch-hecht'],
 });
 const photos = [
-  { id: 'photo-avatar', k: 'avatar', w: 600, h: 600, ownerType: 'profile', ownerId: 'me', at: '2026-06-01T10:00:00+00:00' },
-  { id: 'photo-catch-zander', k: 'zander', ownerType: 'catch', ownerId: 'demo-zander', at: '2026-10-26T16:42:00+00:00' },
+  { id: 'photo-avatar', k: 'see', w: 600, h: 600, ownerType: 'profile', ownerId: 'me', at: '2026-06-01T10:00:00+00:00' },
+  { id: 'photo-catch-hecht', k: 'hecht-hand', ownerType: 'catch', ownerId: 'demo-hecht', at: '2026-10-26T15:42:00+00:00' },
   ...POSTS.map(([k, at]) => ({ id: `photo-post-${k}`, k, ownerType: 'post', ownerId: `post-${k}`, at })),
 ].map((p) => ({ ...p, b64: img(p.k), t64: img(`${p.k}-thumb`) }));
 
@@ -79,7 +78,7 @@ await page.evaluate(async ({ photos, posts }) => {
     for (const [k, at, caption] of posts)
       tx.objectStore('posts').put({ id: `post-${k}`, createdAt: at, updatedAt: at, rev: 0, caption, photoIds: [`photo-post-${k}`], visibility: 'friends' });
     tx.objectStore('profiles').put({ id: 'me', createdAt: '2026-06-01T10:00:00+00:00', updatedAt: '2026-06-01T10:00:00+00:00', rev: 0,
-      name: 'Jonas', bio: 'Angeln am Möhnesee und an der Ruhr 🎣 Zander, Hecht, Karpfen – zurücksetzen, wo es passt.', avatarPhotoId: 'photo-avatar' });
+      name: 'Jonas', bio: 'Raubfisch an kleinen Seen und Teichen 🎣 Hecht und Barsch – zurücksetzen, wo es passt.', avatarPhotoId: 'photo-avatar' });
     tx.objectStore('settings').put({ key: 'lastBackupAt', value: new Date().toISOString() });
     tx.oncomplete = res;
     tx.onerror = () => rej(tx.error);
@@ -149,10 +148,10 @@ await page.getByRole('button', { name: 'Neuer Beitrag' }).first().click();
 await page.getByLabel('Mit Fang verknüpfen').waitFor();
 await pause(1600);
 stamp('link');
-await page.getByLabel('Mit Fang verknüpfen').selectOption('demo-zander');
+await page.getByLabel('Mit Fang verknüpfen').selectOption('demo-hecht');
 await pause(2200);
 stamp('caption');
-await type(page.getByLabel('Text'), 'Zander am Abend 🎣 Gummifisch in Motoroil.');
+await type(page.getByLabel('Text'), 'Hecht am Steg 🎣 Kurz fürs Foto, dann wieder zurück.');
 await pause(800);
 stamp('visibility');
 await scrollTo(page.getByText('Sichtbar für').first(), 330);

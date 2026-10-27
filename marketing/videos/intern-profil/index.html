@@ -1,8 +1,8 @@
 <!doctype html>
 <!--
   Internes Erklärvideo „Profil“ (nur fürs Team, nicht für Social Media), gebaut mit HyperFrames. Querformat 1920 × 1080.
-  Rechts das Handy mit der echten Live-App und Beispieldaten (assets/app-profil.mp4 aus tools/record-profil.mjs; Fotos von
-  Wikimedia Commons, Quellen in assets/beispielbilder/quellen.json). App-Zeitpunkte: assets/app-profil.json, Versatz R = 3,5 s.
+  Rechts das Handy mit der echten Live-App und Beispieldaten (assets/app-profil.mp4 aus tools/record-profil.mjs; Fotos: eigene
+  Aufnahmen des Nutzers, ohne Metadaten, nicht im Repository). App-Zeitpunkte: assets/app-profil.json, Versatz R = 3,5 s.
   Inhalt nach CLAUDE.md (Profilseite 2026-10-27) und app/src/i18n/de.ts (profile). Rendern: siehe README.md
 -->
 <html lang="de" data-resolution="landscape">
@@ -275,14 +275,14 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="47" data-width="1920" data-height="1080">
+    <div id="root" data-composition-id="main" data-start="0" data-duration="48" data-width="1920" data-height="1080">
       <div id="brand"><img src="assets/fisch.svg" alt="" />Fangpunkt<span class="tag">Intern</span></div>
       <div id="progress"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
 
       <div id="phone">
         <div class="screen">
           <img src="assets/app-profil-start.png" alt="" />
-          <video id="app-video" src="assets/app-profil.mp4" muted data-start="3.5" data-duration="33.3"></video>
+          <video id="app-video" src="assets/app-profil.mp4" muted data-start="3.5" data-duration="33.9"></video>
         </div>
       </div>
 
@@ -293,7 +293,7 @@
         <span class="sub">Das Symbol ist das eigene Profilbild. Oben Name, Zahlen und Text, darunter die Beiträge.</span>
       </div>
       <!-- 2 Neuer Beitrag -->
-      <div id="c2" class="clip block" data-start="6.6" data-duration="12.2" data-track-index="3">
+      <div id="c2" class="clip block" data-start="6.6" data-duration="12.8" data-track-index="3">
         <span class="kicker">2 · Neuer Beitrag</span>
         <span class="big">Einen Fang <em>posten</em></span>
         <div class="list">
@@ -304,7 +304,7 @@
         </div>
       </div>
       <!-- 3 Reaktionen -->
-      <div id="c3" class="clip block" data-start="18.7" data-duration="10.6" data-track-index="3">
+      <div id="c3" class="clip block" data-start="19.3" data-duration="10.6" data-track-index="3">
         <span class="kicker">3 · Reaktionen</span>
         <span class="big">Gefällt mir und <em>Kommentare</em></span>
         <div class="list">
@@ -314,13 +314,13 @@
         </div>
       </div>
       <!-- 4 Konto -->
-      <div id="c4" class="clip block" data-start="29.2" data-duration="4.3" data-track-index="3">
+      <div id="c4" class="clip block" data-start="29.8" data-duration="4.3" data-track-index="3">
         <span class="kicker">4 · Kommt mit dem Konto</span>
         <span class="big">Teilen und Freunde: <em>demnächst</em></span>
         <span class="sub">„Profil teilen“ und „Freunde hinzufügen“ zeigen vorerst einen Hinweis. Follower und Gefolgt stehen auf „–“.</span>
       </div>
       <!-- 5 Bearbeiten -->
-      <div id="c5" class="clip block" data-start="33.4" data-duration="3.6" data-track-index="3">
+      <div id="c5" class="clip block" data-start="34.0" data-duration="3.6" data-track-index="3">
         <span class="kicker">5 · Bearbeiten</span>
         <span class="big">Profilbild, Name, <em>Über dich</em></span>
         <span class="sub">Der Text darf bis zu 300 Zeichen lang sein.</span>
@@ -332,7 +332,7 @@
         <div class="meta">Kurzvorstellung für das Team · Stand 27.10.2026 · Beispieldaten</div>
       </div>
       <!-- Schluss: Stand und offene Punkte -->
-      <div id="outro" class="clip card" data-start="36.7" data-duration="10.3" data-track-index="5">
+      <div id="outro" class="clip card" data-start="37.3" data-duration="10.7" data-track-index="5">
         <h2>Stand und nächste Schritte</h2>
         <div class="cols">
           <div>
@@ -352,8 +352,7 @@
             </ul>
           </div>
         </div>
-        <div class="credits">Beispielfotos von Wikimedia Commons: Ruben Da Rocha (CC0) · ASSOPECHE, Plechinger, Pitka Bernhard (CC BY-SA 4.0) ·
-          Bill Blevins (CC BY 2.0) · Marcin Szala (CC BY 3.0) · USFWS, Bureau of Land Management, NARA (gemeinfrei). Zugeschnitten. Quellen im README.</div>
+        <div class="credits">Fotos: eigene Aufnahmen. Profil „Jonas“, Texte und Daten im Video sind Beispieldaten.</div>
       </div>
     </div>
     <script>
@@ -385,32 +384,32 @@
       bar(2, 6.7);
       item('#c2 .item:nth-child(1)', 6.9);
       item('#c2 .item:nth-child(2)', 8.4);
-      item('#c2 .item:nth-child(3)', 10.6);
-      item('#c2 .item:nth-child(4)', 16.1);
-      out('#c2', 18.6);
+      item('#c2 .item:nth-child(3)', 10.8);
+      item('#c2 .item:nth-child(4)', 16.7);
+      out('#c2', 19.2);
       // 3 – Beitrag offen 18,89 s, Gefällt mir 20,91 s, Kommentieren 22,53 s, Senden 25,32 s, Fenster zu 27,34 s
-      inUp('#c3', 18.8);
-      bar(3, 18.8);
-      item('#c3 .item:nth-child(1)', 20.9);
-      item('#c3 .item:nth-child(2)', 22.6);
-      item('#c3 .item:nth-child(3)', 27.4);
-      out('#c3', 29.1);
+      inUp('#c3', 19.4);
+      bar(3, 19.4);
+      item('#c3 .item:nth-child(1)', 21.5);
+      item('#c3 .item:nth-child(2)', 23.2);
+      item('#c3 .item:nth-child(3)', 28.0);
+      out('#c3', 29.7);
       // 4 – zurück 29,34 s, „Profil teilen“ 30,97 s
-      inUp('#c4', 29.3);
-      bar(4, 29.3);
-      out('#c4', 33.3);
+      inUp('#c4', 29.9);
+      bar(4, 29.9);
+      out('#c4', 33.9);
       // 5 – Bearbeiten 33,58 s
-      inUp('#c5', 33.5);
-      bar(5, 33.5);
+      inUp('#c5', 34.1);
+      bar(5, 34.1);
       // Schluss
-      tl.to(['#c5', '#brand', '#progress'], { opacity: 0, duration: 0.35 }, 36.4);
-      tl.to('#phone', { opacity: 0, x: 80, duration: 0.4, ease: 'power2.in' }, 36.4);
-      tl.fromTo('#outro', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 36.8);
-      tl.fromTo('#outro h2', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 36.9);
+      tl.to(['#c5', '#brand', '#progress'], { opacity: 0, duration: 0.35 }, 37.0);
+      tl.to('#phone', { opacity: 0, x: 80, duration: 0.4, ease: 'power2.in' }, 37.0);
+      tl.fromTo('#outro', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 37.4);
+      tl.fromTo('#outro h2', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 37.5);
       document.querySelectorAll('#outro li').forEach((el, i) => {
-        tl.fromTo(el, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power3.out' }, 37.4 + i * 0.35);
+        tl.fromTo(el, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power3.out' }, 38.0 + i * 0.35);
       });
-      tl.fromTo('#outro .credits', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 39.8);
+      tl.fromTo('#outro .credits', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 40.4);
       window.__timelines['main'] = tl;
       tl.seek(0);
     </script>

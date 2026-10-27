@@ -24,3 +24,5 @@ videos/clips-app/index.html
 videos/intern-knoten/.hyperframes/
 videos/intern-montagen/.hyperframes/
 videos/intern-profil/.hyperframes/
+# Eigene Fotos des Nutzers für das Profil-Video (ohne Metadaten, nur lokal)
+videos/intern-profil/assets/eigene-fotos/
