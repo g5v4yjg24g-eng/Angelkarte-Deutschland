@@ -154,7 +154,8 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | RIG-3 | Montagen-Ansicht | Filter nach Angelart, Wofür, Beschriftung je Schritt, Material, Link zu passenden Knoten, unbekannte Montage (✅ `RigDetailPage.test.tsx`) |
 | RET-1 | Köderführung-Katalog | 8 Techniken, beide Wassertiefen, Texte vollständig, Zeichnungen ohne Fehler, jeder Schritt bewegt den Köder, Beschriftungen übersetzt (✅ `retrieveCatalog.test.ts`); Kern: Tempo je Bewegung, Bahn des Schritts, Endlage/Richtung (✅ `domain/rigs.test.ts`) |
 | RET-2 | Köderführung-Ansicht | drei Reiter, Filter, Wofür, Beschriftung je Schritt, Montagen-Link, unbekannte Technik (✅ `RetrieveDetailPage.test.tsx`) |
-| RET-3 | Mehr → Köderführung | Reiter, Anleitung, laufender Köder (animateMotion), Wiedergabe, reduzierte Bewegung = ruhender Köder, 390 px, axe hell/dunkel (✅ `knots.spec.ts`) |
+| RET-4 | Angler und Rute | Rutenwinkel über die Zeit, Rutenspitze, Schnur locker/straff (✅ `domain/angler.test.ts`); jede Köderbewegung hat eine Rutenbewegung (✅ `retrieveCatalog.test.ts`) |
+| RET-3 | Mehr → Köderführung | Reiter, Anleitung, Angler mit Rute und Schnur, laufender Köder, Wiedergabe, reduzierte Bewegung = ruhender Köder, 390 px, axe hell/dunkel (✅ `knots.spec.ts`) |
 | RIG-4 | Mehr → Knoten & Montagen → Montagen | Umschalter, Filter, Wiedergabe, Knoten-Link, 390 px, axe hell und dunkel (✅ `knots.spec.ts`) |
 
 ### 3.6b Konto

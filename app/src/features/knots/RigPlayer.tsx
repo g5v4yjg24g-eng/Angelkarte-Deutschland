@@ -13,6 +13,7 @@ import {
   type RigDiagramSpec,
 } from '../../domain/rigs';
 import { StepControls } from './StepControls';
+import { AnglerScene } from './AnglerScene';
 import styles from './Knots.module.css';
 import rig from './Rigs.module.css';
 
@@ -86,17 +87,20 @@ export function RigPlayer({
         role="img"
         aria-label={t.drawingLabel(name, steps[step] ?? '')}
       >
-        {frame.map((p) => (
-          <path
-            key={p.id}
-            d={p.d}
-            pathLength={p.timing && isDrawn(p.style) ? 1 : undefined}
-            className={[rig[p.style], p.timing ? (isDrawn(p.style) ? styles.drawIn : rig.fade) : ''].join(
-              ' ',
-            )}
-            style={timing(p)}
-          />
-        ))}
+        {/* reine Beschriftungen (Pfad ohne Linie) zeichnen nichts */}
+        {frame
+          .filter((p) => /[LCQZ]/i.test(p.d))
+          .map((p) => (
+            <path
+              key={p.id}
+              d={p.d}
+              pathLength={p.timing && isDrawn(p.style) ? 1 : undefined}
+              className={[rig[p.style], p.timing ? (isDrawn(p.style) ? styles.drawIn : rig.fade) : ''].join(
+                ' ',
+              )}
+              style={timing(p)}
+            />
+          ))}
         {frame.map(
           (p) =>
             p.label && (
@@ -116,7 +120,11 @@ export function RigPlayer({
               </text>
             ),
         )}
-        {spec.lure && <Lure spec={spec} step={step} />}
+        {spec.angler ? (
+          <AnglerScene spec={spec} step={step} />
+        ) : (
+          spec.lure && <Lure spec={spec} step={step} />
+        )}
       </svg>
       <StepControls
         step={step}

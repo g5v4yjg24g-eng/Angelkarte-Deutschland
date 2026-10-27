@@ -919,7 +919,7 @@ export const de = {
     labels: {
       surface: 'Wasseroberfläche',
       ground: 'Grund',
-      toAngler: 'zum Angler →',
+      rodSide: 'Rute von der Seite',
       topView: 'Ansicht von oben',
       boat: 'Boot',
       sink: 'absinken lassen',

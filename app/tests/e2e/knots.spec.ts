@@ -136,10 +136,14 @@ test('RET-3: Köderführung – Reiter, Filter, Anleitung mit laufendem Köder, 
   await expect(page.getByRole('region', { name: 'Wofür?' })).toContainText('Absinkphase');
   const drawing = page.getByRole('img', { name: /^Jiggen: Auswerfen/ });
   await expect(drawing).toBeVisible();
-  // der Köder läuft die Bahn ab
+  // Angler mit Rute, Schnur zum Köder; der Köder läuft die Bahn ab
   const lure = drawing.locator('path[class*="lure"]');
   await expect(lure).toHaveCount(1);
-  await expect(lure.locator('animateMotion')).toHaveCount(1);
+  await expect(drawing.locator('path[class*="rod"]')).toHaveCount(1);
+  await expect(drawing.locator('path[class*="fishingLine"]')).toHaveCount(1);
+  const before = await lure.getAttribute('transform');
+  await page.waitForTimeout(700);
+  expect(await lure.getAttribute('transform')).not.toBe(before);
   await page.getByRole('button', { name: 'Abspielen' }).click();
   await expect(page.getByText('Schritt 2 von 4')).toBeVisible({ timeout: 10_000 });
   await page.getByRole('button', { name: 'Anhalten' }).click();

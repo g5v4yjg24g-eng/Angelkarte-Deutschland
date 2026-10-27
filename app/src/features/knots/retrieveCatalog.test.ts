@@ -22,6 +22,10 @@ describe('Köderführung-Katalog (RET-1)', () => {
     it(`${r.id}: Zeichnung ohne Fehler, ein Bild je Schritt, jeder Schritt bewegt den Köder, Beschriftungen übersetzt`, () => {
       expect(rigProblems(r.diagram)).toEqual([]);
       expect(r.diagram.lure).toBe(true);
+      // Angler mit Rute; jede Bewegung des Köders hat eine Rutenbewegung
+      expect(r.diagram.angler).toBeDefined();
+      for (const p of r.diagram.parts.filter((x) => x.style === 'trail'))
+        expect(p.rod?.keys.length).toBeGreaterThan(0);
       const steps = rigStepCount(r.diagram);
       expect(steps).toBe(de.retrieves.items[r.id].steps.length);
       for (let s = 0; s < steps; s++)

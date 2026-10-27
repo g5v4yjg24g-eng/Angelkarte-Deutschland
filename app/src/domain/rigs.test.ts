@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   lastTrail,
   pathEnd,
+  pathStart,
+  rodAngleBefore,
   RIG_DRAW_MS,
   RIG_FADE_MS,
   rigFrame,
@@ -81,5 +83,7 @@ describe('Montagen-Zeichenkern (RIG-1)', () => {
     expect(lastTrail(spec, 0)?.id).toBe('sink');
     expect(pathEnd('M10 10 L10 80')).toEqual({ x: 10, y: 80, angle: 90 });
     expect(pathEnd('M10 80 C10 60 30 50 40 50')).toEqual({ x: 40, y: 50, angle: 0 });
+    expect(pathStart('M10 80 C10 60 30 50 40 50')).toEqual({ x: 10, y: 80 });
+    expect(rodAngleBefore(spec, 0)).toBe(30);
   });
 });

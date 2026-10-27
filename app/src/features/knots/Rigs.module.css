@@ -77,6 +77,35 @@
 .boat {
   fill: var(--color-text-muted);
 }
+.bank {
+  fill: var(--color-surface-2);
+  stroke: var(--color-border);
+  stroke-width: 1.5px;
+}
+.angler {
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 2.5px;
+}
+.rod {
+  stroke: var(--color-text);
+  stroke-width: 3px;
+}
+.fishingLine {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 1.2px;
+  opacity: 0.8;
+}
+.reel {
+  fill: var(--color-surface);
+  stroke: var(--color-text);
+  stroke-width: 2px;
+}
+.reelHandle {
+  stroke: var(--color-text);
+  stroke-width: 2px;
+}
 .lure {
   fill: var(--color-success);
   stroke: var(--color-surface);
