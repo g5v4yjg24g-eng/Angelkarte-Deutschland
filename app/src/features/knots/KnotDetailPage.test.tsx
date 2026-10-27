@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { KnotDetailPage } from './KnotDetailPage';
-import { STEP_HOLD_MS } from './KnotPlayer';
+import { STEP_HOLD_MS } from './StepControls';
 
 const open = (slug: string) =>
   render(

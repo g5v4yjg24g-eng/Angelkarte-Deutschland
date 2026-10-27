@@ -1,0 +1,114 @@
+// Montagen (Wunsch Nutzer 2026-10-27): Zeichenkern für die Schritt-für-Schritt-Animation, Gegenstück zu knots.ts.
+// Eine Montage besteht aus Teilen (Schnurstücke, Blei, Perle, Wirbel, Haken, Pose, Köder), die je Schritt
+// hinzukommen. Kreuzungen gibt es nicht: Teile liegen in der Reihenfolge der Vorgabe übereinander.
+// Schnüre und Metallteile zeichnen sich als Linie, Körper (Blei, Perle, Pose, Köder) blenden ein.
+// Rein und ohne DOM – die Ansicht rendert die Teile als SVG.
+
+/**
+ * line: Hauptschnur, line2: Vorfach/Haar, hardware: Haken und Ringe (Linie), metal: Wirbelkörper (Fläche),
+ * weight: Blei, bead: Perle, float: Posenkörper, floatTip: Posenspitze, bait: Köder (Fläche), worm: Wurm (Strich),
+ * stopper: Stopper/Posengummis,
+ * context: Grund oder Wasseroberfläche (gestrichelt)
+ */
+export type RigStyle =
+  | 'line'
+  | 'line2'
+  | 'hardware'
+  | 'metal'
+  | 'weight'
+  | 'bead'
+  | 'float'
+  | 'floatTip'
+  | 'bait'
+  | 'worm'
+  | 'stopper'
+  | 'context';
+
+/** Teile, die sich als Linie zeichnen; alle übrigen (Flächen, gestrichelter Grund) blenden ein */
+const DRAWN: ReadonlySet<RigStyle> = new Set(['line', 'line2', 'hardware', 'worm', 'stopper']);
+export const isDrawn = (s: RigStyle) => DRAWN.has(s);
+
+export interface RigLabelSpec {
+  /** Schlüssel der Beschriftung (Texte in i18n) */
+  key: string;
+  x: number;
+  y: number;
+  anchor?: 'start' | 'middle' | 'end';
+}
+
+export interface RigPart {
+  id: string;
+  step: number;
+  style: RigStyle;
+  d: string;
+  label?: RigLabelSpec;
+}
+
+export interface RigDiagramSpec {
+  width: number;
+  height: number;
+  parts: RigPart[];
+}
+
+export interface RigFramePart extends RigPart {
+  /** im aktuellen Schritt neu: mit Animation */
+  timing?: { delayMs: number; durationMs: number };
+}
+
+export const RIG_DRAW_MS = 650;
+export const RIG_FADE_MS = 350;
+
+export const rigStepCount = (spec: RigDiagramSpec) => spec.parts.reduce((n, p) => Math.max(n, p.step + 1), 0);
+
+/** Sichtbare Teile bis einschließlich `step`; die neuen Teile kommen nacheinander. */
+export function rigFrame(spec: RigDiagramSpec, step: number): RigFramePart[] {
+  let t = 0;
+  const out: RigFramePart[] = [];
+  for (const p of spec.parts) {
+    if (p.step > step) continue;
+    if (p.step < step) {
+      out.push(p);
+      continue;
+    }
+    const durationMs = isDrawn(p.style) ? RIG_DRAW_MS : RIG_FADE_MS;
+    out.push({ ...p, timing: { delayMs: t, durationMs } });
+    t += durationMs;
+  }
+  return out;
+}
+
+/** Dauer, bis alle neuen Teile eines Schritts zu sehen sind */
+export function rigStepDurationMs(spec: RigDiagramSpec, step: number): number {
+  return rigFrame(spec, step).reduce(
+    (m, p) => (p.timing ? Math.max(m, p.timing.delayMs + p.timing.durationMs) : m),
+    0,
+  );
+}
+
+/** Prüft die Vorgabe (für Tests): eindeutige IDs, jeder Schritt bringt etwas Neues, Pfade im Bild. */
+export function rigProblems(spec: RigDiagramSpec): string[] {
+  const problems: string[] = [];
+  const ids = new Set<string>();
+  for (const p of spec.parts) {
+    if (ids.has(p.id)) problems.push(`doppelte ID ${p.id}`);
+    ids.add(p.id);
+    const nums = (p.d.match(/-?\d*\.?\d+/g) ?? []).map(Number);
+    if (!/^M/.test(p.d.trim()) || nums.length < 2) problems.push(`${p.id}: Pfad beginnt nicht mit M`);
+    for (let i = 0; i + 1 < nums.length; i += 2) {
+      const x = nums[i] as number;
+      const y = nums[i + 1] as number;
+      if (x < 0 || x > spec.width || y < 0 || y > spec.height) {
+        problems.push(`${p.id}: Punkt ${x} ${y} außerhalb des Bildes`);
+        break;
+      }
+    }
+    if (p.label) {
+      const { x, y } = p.label;
+      if (x < 0 || x > spec.width || y < 0 || y > spec.height)
+        problems.push(`${p.id}: Beschriftung außerhalb`);
+    }
+  }
+  for (let s = 0; s < rigStepCount(spec); s++)
+    if (!spec.parts.some((p) => p.step === s)) problems.push(`Schritt ${s + 1} ohne neue Teile`);
+  return problems;
+}

@@ -17,6 +17,8 @@ import { PrivacyPage } from '../features/about/PrivacyPage';
 import { BaitPresetsPage } from '../features/baits/BaitPresetsPage';
 import { KnotsPage } from '../features/knots/KnotsPage';
 import { KnotDetailPage } from '../features/knots/KnotDetailPage';
+import { RigsPage } from '../features/knots/RigsPage';
+import { RigDetailPage } from '../features/knots/RigDetailPage';
 import { AboutPage } from '../features/about/AboutPage';
 import { LazyBackupPage } from '../features/backup/LazyBackupPage';
 import { LazyAccountPage } from '../features/account/LazyAccountPage';
@@ -46,6 +48,8 @@ export const routes = [
           { path: 'mehr/koeder', element: <BaitPresetsPage /> },
           { path: 'mehr/knoten', element: <KnotsPage /> },
           { path: 'mehr/knoten/:knot', element: <KnotDetailPage /> },
+          { path: 'mehr/montagen', element: <RigsPage /> },
+          { path: 'mehr/montagen/:rig', element: <RigDetailPage /> },
           { path: 'mehr/info', element: <AboutPage /> },
           { path: 'mehr/datenschutz', element: <PrivacyPage /> },
           { path: 'mehr/daten', element: <LazyBackupPage /> },

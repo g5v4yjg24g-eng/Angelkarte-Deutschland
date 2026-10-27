@@ -1,0 +1,124 @@
+/* Montagen: Teile der Zeichnung (siehe domain/rigs.ts) */
+.drawing {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 60vh;
+}
+.drawing path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.line,
+.line2,
+.hardware,
+.worm,
+.stopper,
+.context {
+  fill: none;
+}
+.line {
+  stroke: var(--color-primary);
+  stroke-width: 3.5px;
+}
+.line2 {
+  stroke: var(--color-focus);
+  stroke-width: 3.5px;
+}
+.hardware {
+  stroke: var(--color-text-muted);
+  stroke-width: 3px;
+}
+.metal {
+  fill: var(--color-text-muted);
+}
+.weight {
+  fill: var(--color-text);
+  opacity: 0.72;
+}
+.bead {
+  fill: var(--color-accent);
+  stroke: var(--color-surface);
+  stroke-width: 1.5px;
+}
+.float {
+  fill: var(--color-surface-2);
+  stroke: var(--color-text);
+  stroke-width: 1.5px;
+}
+.floatTip {
+  fill: var(--color-danger);
+}
+.bait {
+  fill: var(--color-success);
+  opacity: 0.85;
+}
+.worm {
+  stroke: var(--color-success);
+  stroke-width: 7px;
+  opacity: 0.9;
+}
+.stopper {
+  stroke: var(--color-text);
+  stroke-width: 4px;
+}
+.context {
+  stroke: var(--color-text-muted);
+  stroke-width: 1.5px;
+  stroke-dasharray: 6 5;
+  opacity: 0.7;
+}
+.label {
+  fill: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--color-surface);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.fade {
+  animation-name: fade;
+  animation-duration: 350ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fade {
+    animation: none;
+  }
+}
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 var(--space-3);
+  padding: var(--space-1);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+}
+.tab {
+  display: grid;
+  place-items: center;
+  min-height: var(--touch);
+  border-radius: var(--radius-full);
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+}
+.tab[aria-current='page'] {
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
+}
+.purpose {
+  display: grid;
+  gap: var(--space-2);
+}
+.purpose p {
+  margin: 0;
+}

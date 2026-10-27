@@ -74,3 +74,44 @@ test('KNT-5: Reduzierte Bewegung – Bilder erscheinen ohne Zeichenanimation', a
     .evaluate((el) => getComputedStyle(el).animationName);
   expect(anim).toBe('none');
 });
+
+test('RIG-4: Knoten & Montagen → Montagen: Umschalter, Filter, Anleitung mit Wofür, Wiedergabe, Knoten-Link', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/mehr');
+  await waitForApp(page);
+  await page.getByRole('link', { name: /^Knoten & Montagen/ }).click();
+  await page
+    .getByRole('navigation', { name: 'Knoten & Montagen' })
+    .getByRole('link', { name: 'Montagen' })
+    .click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Montagen' })).toBeVisible();
+  expect(await noOverflow(page)).toBe(true);
+  expect(await axe(page)).toEqual([]);
+
+  await page.getByRole('button', { name: 'Grundangeln' }).click();
+  await expect(page.getByRole('link', { name: /^Carolina-Rig/ })).toHaveCount(0);
+  await page.getByRole('link', { name: /^Haar-Montage/ }).click();
+  await expect(page.getByRole('region', { name: 'Wofür?' })).toContainText('Selbsthakeffekt');
+  await page.getByRole('link', { name: 'Zurück' }).click();
+  await page.getByRole('button', { name: 'Alle' }).click();
+
+  await page.getByRole('link', { name: /^Carolina-Rig/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Carolina-Rig' })).toBeVisible();
+  await expect(page.getByText('Schritt 1 von 5')).toBeVisible();
+  await page.getByRole('button', { name: 'Abspielen' }).click();
+  await expect(page.getByText('Schritt 2 von 5')).toBeVisible({ timeout: 10_000 });
+  await page.getByRole('button', { name: 'Anhalten' }).click();
+  await page.getByRole('button', { name: /^Zu Schritt 5:/ }).click();
+  await expect(page.getByRole('img', { name: /^Carolina-Rig: Den Gummiköder/ })).toContainText('Gummiköder');
+  expect(await noOverflow(page)).toBe(true);
+  expect(await axe(page)).toEqual([]);
+
+  await page.emulateMedia({ colorScheme: 'dark' });
+  expect(await axe(page)).toEqual([]);
+  await page.getByRole('link', { name: /^Palomarknoten/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Palomarknoten' })).toBeVisible();
+  expect(errors).toEqual([]);
+});
