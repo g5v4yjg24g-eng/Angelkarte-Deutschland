@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-27',
+    title: 'Montagen',
+    items: [
+      'Montagen: Unter Mehr → Knoten & Montagen findest du jetzt acht bewährte Montagen – vom Carolina-Rig bis zur Laufpose. Jede zeigt Schritt für Schritt, wie sie aufgebaut wird, und erklärt, wofür sie gut ist.',
+    ],
+  },
+  {
     id: '2026-10-25-8',
     title: 'Konto',
     items: [

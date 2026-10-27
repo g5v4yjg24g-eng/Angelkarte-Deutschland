@@ -1,9 +1,9 @@
 // Schritt-für-Schritt-Animation eines Knotens: Die neuen Schnurstücke eines Schritts zeichnen sich nacheinander,
 // Ersatzbilder (z. B. zugezogener Knoten) werden eingeblendet. Bei reduzierter Bewegung erscheinen die Bilder sofort.
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { de } from '../../i18n/de';
 import { buildDiagram, drawOps, stepDurationMs, type KnotDiagramSpec } from '../../domain/knots';
-import { PauseIcon, PlayIcon, RefreshIcon, StepBackIcon, StepForwardIcon } from '../../design/icons';
+import { StepControls } from './StepControls';
 import styles from './Knots.module.css';
 
 const t = de.knots;
@@ -14,8 +14,6 @@ const STYLE_CLASS = {
   double: 'styleDouble',
   hardware: 'styleHardware',
 } as const;
-/** Pause nach einem fertig gezeichneten Schritt, bevor die Wiedergabe weiterschaltet */
-export const STEP_HOLD_MS = 1800;
 
 export function KnotPlayer({
   name,
@@ -32,26 +30,7 @@ export function KnotPlayer({
 }) {
   const diagram = useMemo(() => buildDiagram(spec), [spec]);
   const total = Math.min(diagram.steps, steps.length);
-  const [playing, setPlaying] = useState(false);
   const ops = useMemo(() => drawOps(diagram, step), [diagram, step]);
-  const last = step >= total - 1;
-
-  // Wiedergabe: nach dem Zeichnen kurz halten, dann weiter; am Ende anhalten
-  useEffect(() => {
-    if (!playing) return;
-    if (last) {
-      const id = window.setTimeout(() => setPlaying(false), stepDurationMs(diagram, step));
-      return () => window.clearTimeout(id);
-    }
-    const id = window.setTimeout(() => onStep(step + 1), stepDurationMs(diagram, step) + STEP_HOLD_MS);
-    return () => window.clearTimeout(id);
-  }, [playing, last, step, diagram, onStep]);
-
-  const toggle = () => {
-    if (playing) return setPlaying(false);
-    if (last) onStep(0);
-    setPlaying(true);
-  };
 
   return (
     <div className={styles.player}>
@@ -82,39 +61,13 @@ export function KnotPlayer({
           />
         ))}
       </svg>
-      <div className={styles.controls}>
-        <button
-          type="button"
-          className={styles.iconButton}
-          aria-label={t.prev}
-          disabled={step === 0}
-          onClick={() => {
-            setPlaying(false);
-            onStep(step - 1);
-          }}
-        >
-          <StepBackIcon />
-        </button>
-        <button type="button" className={styles.playButton} onClick={toggle}>
-          {playing ? <PauseIcon /> : last ? <RefreshIcon /> : <PlayIcon />}
-          <span>{playing ? t.pause : last ? t.replay : t.play}</span>
-        </button>
-        <button
-          type="button"
-          className={styles.iconButton}
-          aria-label={t.next}
-          disabled={last}
-          onClick={() => {
-            setPlaying(false);
-            onStep(step + 1);
-          }}
-        >
-          <StepForwardIcon />
-        </button>
-      </div>
-      <p className={styles.stepNow} aria-live="polite">
-        <strong>{t.stepOf(step + 1, total)}</strong> {steps[step]}
-      </p>
+      <StepControls
+        step={step}
+        total={total}
+        text={steps[step] ?? ''}
+        drawMs={stepDurationMs(diagram, step)}
+        onStep={onStep}
+      />
     </div>
   );
 }

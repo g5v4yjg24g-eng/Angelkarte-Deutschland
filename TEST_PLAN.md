@@ -149,6 +149,10 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | KNT-3 | Anleitung | Schritt vor/zurück, Schritt antippen, Wiedergabe schaltet weiter und hält am Ende, unbekannter Knoten (✅ `KnotDetailPage.test.tsx`) |
 | KNT-4 | Mehr → Knoten | Liste (9 animiert), Filter, Wiedergabe, Verbindungsknoten mit zweiter Schnurfarbe, 390 px, axe (✅ `knots.spec.ts`) |
 | KNT-5 | Reduzierte Bewegung | Keine Zeichenanimation, Bilder sofort (✅ `knots.spec.ts`) |
+| RIG-1 | Montagen-Zeichenkern | Teile je Schritt, Reihenfolge und Zeiten der Animation, Prüfung der Vorgabe (✅ `domain/rigs.test.ts`) |
+| RIG-2 | Montagen-Katalog | 8 Montagen, alle Angelarten, Texte vollständig, Zeichnungen ohne Fehler, Schritte = Bilder, Beschriftungen übersetzt (✅ `rigCatalog.test.ts`) |
+| RIG-3 | Montagen-Ansicht | Filter nach Angelart, Wofür, Beschriftung je Schritt, Material, Link zu passenden Knoten, unbekannte Montage (✅ `RigDetailPage.test.tsx`) |
+| RIG-4 | Mehr → Knoten & Montagen → Montagen | Umschalter, Filter, Wiedergabe, Knoten-Link, 390 px, axe hell und dunkel (✅ `knots.spec.ts`) |
 
 ### 3.6b Konto
 | ID | Testfall | Erwartung |

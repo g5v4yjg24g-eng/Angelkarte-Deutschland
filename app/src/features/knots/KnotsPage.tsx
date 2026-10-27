@@ -7,6 +7,7 @@ import { Badge } from '../../design/components/Badge';
 import { KnotIcon } from '../../design/icons';
 import pageStyles from '../../design/components/Page.module.css';
 import { KNOT_USES, KNOTS, type KnotUse } from './catalog';
+import { KnotTabs } from './KnotTabs';
 import styles from './Knots.module.css';
 
 const t = de.knots;
@@ -16,6 +17,7 @@ export function KnotsPage() {
   const shown = KNOTS.filter((k) => !use || k.uses.includes(use));
   return (
     <Page title={t.title} back="/mehr">
+      <KnotTabs />
       <p className="muted">{t.intro}</p>
       <div className={styles.filters} role="group" aria-label={t.filterLabel}>
         <button type="button" className={styles.chip} aria-pressed={!use} onClick={() => setUse(undefined)}>
