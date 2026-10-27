@@ -1,0 +1,418 @@
+<!doctype html>
+<!--
+  Internes Erklärvideo „Profil“ (nur fürs Team, nicht für Social Media), gebaut mit HyperFrames. Querformat 1920 × 1080.
+  Rechts das Handy mit der echten Live-App und Beispieldaten (assets/app-profil.mp4 aus tools/record-profil.mjs; Fotos von
+  Wikimedia Commons, Quellen in assets/beispielbilder/quellen.json). App-Zeitpunkte: assets/app-profil.json, Versatz R = 3,5 s.
+  Inhalt nach CLAUDE.md (Profilseite 2026-10-27) und app/src/i18n/de.ts (profile). Rendern: siehe README.md
+-->
+<html lang="de" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        font-weight: 100 900;
+        src: url('assets/fonts/inter-latin-wght-normal.woff2') format('woff2');
+      }
+      @font-face {
+        font-family: 'Fraunces';
+        font-weight: 100 900;
+        src: url('assets/fonts/fraunces-latin-wght-normal.woff2') format('woff2');
+      }
+      :root {
+        --deep: #0b2a33;
+        --fish: #e8f4f5;
+        --eye: #f2994a;
+        --ripple: #5cc4d6;
+        --muted: #bfd8dc;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--deep);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        font-family: 'Inter', sans-serif;
+        color: var(--fish);
+        background: radial-gradient(90% 120% at 85% 10%, #145a6a 0%, var(--deep) 55%, #071d24 100%);
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+      }
+      /* Kopfzeile links oben */
+      #brand {
+        position: absolute;
+        left: 120px;
+        top: 64px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font: 650 34px/1 'Fraunces', serif;
+        opacity: 0;
+      }
+      #brand img {
+        width: 58px;
+        height: 58px;
+      }
+      #brand .tag {
+        font: 700 20px/1 'Inter', sans-serif;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ripple);
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1.5px solid rgb(92 196 214 / 0.45);
+        margin-left: 6px;
+      }
+      /* Fortschritt: fünf Abschnitte */
+      #progress {
+        position: absolute;
+        left: 120px;
+        top: 980px;
+        display: flex;
+        gap: 12px;
+        opacity: 0;
+      }
+      #progress i {
+        display: block;
+        width: 60px;
+        height: 6px;
+        border-radius: 3px;
+        background: rgb(92 196 214 / 0.22);
+      }
+      #progress i b {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 3px;
+        background: var(--eye);
+        transform-origin: left;
+        transform: scaleX(0);
+      }
+      /* Abschnitte links */
+      .block {
+        top: 250px;
+        bottom: auto;
+        left: 120px;
+        right: auto;
+        width: 940px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        opacity: 0;
+      }
+      .kicker {
+        font: 700 26px/1 'Inter', sans-serif;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ripple);
+      }
+      .big {
+        font: 650 76px/1.06 'Fraunces', serif;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+      }
+      .big em {
+        font-style: normal;
+        color: var(--eye);
+      }
+      .sub {
+        font: 500 36px/1.4 'Inter', sans-serif;
+        color: var(--muted);
+        text-wrap: pretty;
+      }
+      .list {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        margin-top: 8px;
+      }
+      .item {
+        display: flex;
+        gap: 22px;
+        align-items: baseline;
+        font: 500 36px/1.35 'Inter', sans-serif;
+        color: var(--fish);
+        opacity: 0;
+      }
+      .item::before {
+        content: '';
+        flex: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--eye);
+        transform: translateY(-4px);
+      }
+      .item .m {
+        color: var(--muted);
+      }
+      /* Handy rechts */
+      #phone {
+        position: absolute;
+        left: 1300px;
+        top: 40px;
+        width: 480px;
+        height: 1000px;
+        padding: 16px;
+        border-radius: 64px;
+        background: #05161b;
+        box-shadow:
+          0 40px 90px rgb(0 0 0 / 0.5),
+          0 0 0 2px rgb(92 196 214 / 0.3);
+        opacity: 0;
+      }
+      #phone .screen {
+        position: relative;
+        width: 448px;
+        height: 968px;
+        border-radius: 50px;
+        overflow: hidden;
+        background: #05161b;
+        isolation: isolate;
+      }
+      #phone img,
+      #phone video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      /* Titel- und Schlusskarte */
+      .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 160px;
+        gap: 30px;
+        opacity: 0;
+        background: radial-gradient(90% 120% at 85% 10%, #145a6a 0%, var(--deep) 55%, #071d24 100%);
+      }
+      .card .row {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+      }
+      .card .row img {
+        width: 120px;
+        height: 120px;
+      }
+      .card h1 {
+        font: 650 120px/1 'Fraunces', serif;
+        letter-spacing: -0.01em;
+      }
+      .card h1 em {
+        font-style: normal;
+        color: var(--eye);
+      }
+      .card .meta {
+        font: 500 38px/1.4 'Inter', sans-serif;
+        color: var(--muted);
+      }
+      .card h2 {
+        font: 650 72px/1.05 'Fraunces', serif;
+      }
+      .cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 70px;
+        margin-top: 16px;
+      }
+      .cols h3 {
+        font: 700 26px/1 'Inter', sans-serif;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ripple);
+        margin-bottom: 24px;
+      }
+      .cols ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .cols li {
+        display: flex;
+        gap: 18px;
+        font: 500 32px/1.35 'Inter', sans-serif;
+      }
+      .cols li span:first-child {
+        flex: none;
+        width: 40px;
+        font-weight: 800;
+      }
+      .done span:first-child {
+        color: var(--ripple);
+      }
+      .open span:first-child {
+        color: var(--eye);
+      }
+      .card .foot {
+        margin-top: 20px;
+        font: 600 32px/1.3 'Inter', sans-serif;
+        color: var(--fish);
+      }
+      .credits {
+        margin-top: 10px;
+        font: 500 20px/1.45 'Inter', sans-serif;
+        color: var(--muted);
+        max-width: 1600px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="47" data-width="1920" data-height="1080">
+      <div id="brand"><img src="assets/fisch.svg" alt="" />Fangpunkt<span class="tag">Intern</span></div>
+      <div id="progress"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+
+      <div id="phone">
+        <div class="screen">
+          <img src="assets/app-profil-start.png" alt="" />
+          <video id="app-video" src="assets/app-profil.mp4" muted data-start="3.5" data-duration="33.3"></video>
+        </div>
+      </div>
+
+      <!-- 1 Wo? -->
+      <div id="c1" class="clip block" data-start="3.4" data-duration="3.3" data-track-index="3">
+        <span class="kicker">1 · Wo finde ich es?</span>
+        <span class="big">Profil – <em>mitten</em> in der Leiste</span>
+        <span class="sub">Das Symbol ist das eigene Profilbild. Oben Name, Zahlen und Text, darunter die Beiträge.</span>
+      </div>
+      <!-- 2 Neuer Beitrag -->
+      <div id="c2" class="clip block" data-start="6.6" data-duration="12.2" data-track-index="3">
+        <span class="kicker">2 · Neuer Beitrag</span>
+        <span class="big">Einen Fang <em>posten</em></span>
+        <div class="list">
+          <div class="item">„+“ oben rechts</div>
+          <div class="item">Mit Fang verknüpfen – die Fangfotos kommen als Kopie mit</div>
+          <div class="item">Text schreiben, sichtbar für Freunde oder Alle</div>
+          <div class="item">„Posten“ – der Beitrag steht oben im Raster</div>
+        </div>
+      </div>
+      <!-- 3 Reaktionen -->
+      <div id="c3" class="clip block" data-start="18.7" data-duration="10.6" data-track-index="3">
+        <span class="kicker">3 · Reaktionen</span>
+        <span class="big">Gefällt mir und <em>Kommentare</em></span>
+        <div class="list">
+          <div class="item">Daumen hoch statt Herz</div>
+          <div class="item">Kommentare im Fenster von unten, mit Emoji-Leiste</div>
+          <div class="item">Unter dem Beitrag: Link zum verknüpften Fang</div>
+        </div>
+      </div>
+      <!-- 4 Konto -->
+      <div id="c4" class="clip block" data-start="29.2" data-duration="4.3" data-track-index="3">
+        <span class="kicker">4 · Kommt mit dem Konto</span>
+        <span class="big">Teilen und Freunde: <em>demnächst</em></span>
+        <span class="sub">„Profil teilen“ und „Freunde hinzufügen“ zeigen vorerst einen Hinweis. Follower und Gefolgt stehen auf „–“.</span>
+      </div>
+      <!-- 5 Bearbeiten -->
+      <div id="c5" class="clip block" data-start="33.4" data-duration="3.6" data-track-index="3">
+        <span class="kicker">5 · Bearbeiten</span>
+        <span class="big">Profilbild, Name, <em>Über dich</em></span>
+        <span class="sub">Der Text darf bis zu 300 Zeichen lang sein.</span>
+      </div>
+
+      <!-- Titel -->
+      <div id="intro" class="clip card" data-start="0" data-duration="3.7" data-track-index="5">
+        <div class="row"><img src="assets/fisch.svg" alt="" /><h1>Neu: <em>Profil</em></h1></div>
+        <div class="meta">Kurzvorstellung für das Team · Stand 27.10.2026 · Beispieldaten</div>
+      </div>
+      <!-- Schluss: Stand und offene Punkte -->
+      <div id="outro" class="clip card" data-start="36.7" data-duration="10.3" data-track-index="5">
+        <h2>Stand und nächste Schritte</h2>
+        <div class="cols">
+          <div>
+            <h3>Fertig</h3>
+            <ul>
+              <li class="done"><span>✓</span><span>Leiste: Karte · Fangbuch · Profil · Wetter · Mehr, Statistik als Reiter im Fangbuch</span></li>
+              <li class="done"><span>✓</span><span>Beiträge mit Fotos, Text und verknüpftem Fang</span></li>
+              <li class="done"><span>✓</span><span>Gefällt mir und Kommentare – vorerst nur die eigenen</span></li>
+              <li class="done"><span>✓</span><span>Alles bleibt auf dem Gerät und ist Teil der Sicherung</span></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Offen</h3>
+            <ul>
+              <li class="open"><span>○</span><span>Konto (Freunde, Follower, Teilen) – noch nicht freigeschaltet</span></li>
+              <li class="open"><span>○</span><span>Sichtbarkeit Freunde/Alle wirkt erst mit dem Konto</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="credits">Beispielfotos von Wikimedia Commons: Ruben Da Rocha (CC0) · ASSOPECHE, Plechinger, Pitka Bernhard (CC BY-SA 4.0) ·
+          Bill Blevins (CC BY 2.0) · Marcin Szala (CC BY 3.0) · USFWS, Bureau of Land Management, NARA (gemeinfrei). Zugeschnitten. Quellen im README.</div>
+      </div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const inUp = (sel, at, d = 0.5) =>
+        tl.fromTo(sel, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: d, ease: 'power3.out' }, at);
+      const out = (sel, at) => tl.to(sel, { opacity: 0, y: -18, duration: 0.3, ease: 'power2.in' }, at);
+      const item = (sel, at) =>
+        tl.fromTo(sel, { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power3.out' }, at);
+      const bar = (n, at) =>
+        tl.to(`#progress i:nth-child(${n}) b`, { scaleX: 1, duration: 0.4, ease: 'power2.out' }, at);
+
+      // Titel
+      tl.set('#intro', { opacity: 1 }, 0);
+      tl.fromTo('#intro .row', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.2);
+      tl.fromTo('#intro .meta', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 0.6);
+      tl.to('#intro', { opacity: 0, duration: 0.4 }, 3.2);
+      // Rahmen
+      tl.fromTo('#brand', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 3.3);
+      tl.fromTo('#progress', { opacity: 0 }, { opacity: 1, duration: 0.4 }, 3.3);
+      tl.fromTo('#phone', { opacity: 0, x: 120 }, { opacity: 1, x: 0, duration: 0.7, ease: 'power3.out' }, 3.0);
+      // 1 – Profilseite
+      inUp('#c1', 3.5);
+      bar(1, 3.5);
+      out('#c1', 6.5);
+      // 2 – „+“ 6,71 s, Fang gewählt 8,33 s, Text ab 10,53 s, Sichtbarkeit 13,66 s, Posten 16,07 s
+      inUp('#c2', 6.7);
+      bar(2, 6.7);
+      item('#c2 .item:nth-child(1)', 6.9);
+      item('#c2 .item:nth-child(2)', 8.4);
+      item('#c2 .item:nth-child(3)', 10.6);
+      item('#c2 .item:nth-child(4)', 16.1);
+      out('#c2', 18.6);
+      // 3 – Beitrag offen 18,89 s, Gefällt mir 20,91 s, Kommentieren 22,53 s, Senden 25,32 s, Fenster zu 27,34 s
+      inUp('#c3', 18.8);
+      bar(3, 18.8);
+      item('#c3 .item:nth-child(1)', 20.9);
+      item('#c3 .item:nth-child(2)', 22.6);
+      item('#c3 .item:nth-child(3)', 27.4);
+      out('#c3', 29.1);
+      // 4 – zurück 29,34 s, „Profil teilen“ 30,97 s
+      inUp('#c4', 29.3);
+      bar(4, 29.3);
+      out('#c4', 33.3);
+      // 5 – Bearbeiten 33,58 s
+      inUp('#c5', 33.5);
+      bar(5, 33.5);
+      // Schluss
+      tl.to(['#c5', '#brand', '#progress'], { opacity: 0, duration: 0.35 }, 36.4);
+      tl.to('#phone', { opacity: 0, x: 80, duration: 0.4, ease: 'power2.in' }, 36.4);
+      tl.fromTo('#outro', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 36.8);
+      tl.fromTo('#outro h2', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out' }, 36.9);
+      document.querySelectorAll('#outro li').forEach((el, i) => {
+        tl.fromTo(el, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.4, ease: 'power3.out' }, 37.4 + i * 0.35);
+      });
+      tl.fromTo('#outro .credits', { opacity: 0 }, { opacity: 1, duration: 0.5 }, 39.8);
+      window.__timelines['main'] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
