@@ -82,9 +82,9 @@ test('RIG-4: Knoten & Montagen → Montagen: Umschalter, Filter, Anleitung mit W
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/mehr');
   await waitForApp(page);
-  await page.getByRole('link', { name: /^Knoten & Montagen/ }).click();
+  await page.getByRole('link', { name: /^Knoten, Montagen & Köderführung/ }).click();
   await page
-    .getByRole('navigation', { name: 'Knoten & Montagen' })
+    .getByRole('navigation', { name: 'Knoten, Montagen & Köderführung' })
     .getByRole('link', { name: 'Montagen' })
     .click();
   await expect(page.getByRole('heading', { level: 1, name: 'Montagen' })).toBeVisible();
@@ -113,5 +113,47 @@ test('RIG-4: Knoten & Montagen → Montagen: Umschalter, Filter, Anleitung mit W
   expect(await axe(page)).toEqual([]);
   await page.getByRole('link', { name: /^Palomarknoten/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Palomarknoten' })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('RET-3: Köderführung – Reiter, Filter, Anleitung mit laufendem Köder, 390 px, axe hell und dunkel', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/mehr');
+  await waitForApp(page);
+  await page.getByRole('link', { name: /^Knoten, Montagen & Köderführung/ }).click();
+  await page
+    .getByRole('navigation', { name: 'Knoten, Montagen & Köderführung' })
+    .getByRole('link', { name: 'Köderführung' })
+    .click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Köderführung' })).toBeVisible();
+  expect(await noOverflow(page)).toBe(true);
+  expect(await axe(page)).toEqual([]);
+
+  await page.getByRole('link', { name: /^Jiggen/ }).click();
+  await expect(page.getByRole('region', { name: 'Wofür?' })).toContainText('Absinkphase');
+  const drawing = page.getByRole('img', { name: /^Jiggen: Auswerfen/ });
+  await expect(drawing).toBeVisible();
+  // der Köder läuft die Bahn ab
+  const lure = drawing.locator('path[class*="lure"]');
+  await expect(lure).toHaveCount(1);
+  await expect(lure.locator('animateMotion')).toHaveCount(1);
+  await page.getByRole('button', { name: 'Abspielen' }).click();
+  await expect(page.getByText('Schritt 2 von 4')).toBeVisible({ timeout: 10_000 });
+  await page.getByRole('button', { name: 'Anhalten' }).click();
+  await page.getByRole('button', { name: /^Zu Schritt 4:/ }).click();
+  await expect(page.getByRole('img', { name: /^Jiggen: So in Sprüngen/ })).toContainText('wiederholen');
+  expect(await noOverflow(page)).toBe(true);
+  expect(await axe(page)).toEqual([]);
+  await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
+  await page.getByRole('button', { name: /^Zu Schritt 3:/ }).click();
+  // bei reduzierter Bewegung ruht der Köder am Ende der Bahn
+  await expect(page.getByRole('img').locator('path[class*="lure"]')).toHaveAttribute(
+    'transform',
+    /translate/,
+  );
+  expect(await axe(page)).toEqual([]);
   expect(errors).toEqual([]);
 });

@@ -23,6 +23,8 @@ import { EditProfilePage } from '../features/profile/EditProfilePage';
 import { NewPostPage } from '../features/profile/NewPostPage';
 import { PostPage } from '../features/profile/PostPage';
 import { RigDetailPage } from '../features/knots/RigDetailPage';
+import { RetrievesPage } from '../features/knots/RetrievesPage';
+import { RetrieveDetailPage } from '../features/knots/RetrieveDetailPage';
 import { AboutPage } from '../features/about/AboutPage';
 import { LazyBackupPage } from '../features/backup/LazyBackupPage';
 import { LazyAccountPage } from '../features/account/LazyAccountPage';
@@ -58,6 +60,8 @@ export const routes = [
           { path: 'mehr/knoten/:knot', element: <KnotDetailPage /> },
           { path: 'mehr/montagen', element: <RigsPage /> },
           { path: 'mehr/montagen/:rig', element: <RigDetailPage /> },
+          { path: 'mehr/koederfuehrung', element: <RetrievesPage /> },
+          { path: 'mehr/koederfuehrung/:retrieve', element: <RetrieveDetailPage /> },
           { path: 'mehr/info', element: <AboutPage /> },
           { path: 'mehr/datenschutz', element: <PrivacyPage /> },
           { path: 'mehr/daten', element: <LazyBackupPage /> },

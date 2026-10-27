@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-27-4',
+    title: 'Köderführung',
+    items: [
+      'Köderführung: Unter Mehr → Knoten, Montagen & Köderführung zeigen acht Techniken wie Jiggen, Faulenzen, Twitchen und Jerken, wie du deinen Köder führst – mit Animation, in der der Köder seine Bahn unter Wasser abläuft, und mit Erklärung, wofür sie gut sind.',
+    ],
+  },
+  {
     id: '2026-10-27-3',
     title: 'Gefällt mir und Kommentare',
     items: [

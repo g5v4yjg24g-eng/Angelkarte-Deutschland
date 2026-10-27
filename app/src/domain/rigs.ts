@@ -7,7 +7,7 @@
 /**
  * line: Hauptschnur, line2: Vorfach/Haar, hardware: Haken und Ringe (Linie), metal: Wirbelkörper (Fläche),
  * weight: Blei, bead: Perle, float: Posenkörper, floatTip: Posenspitze, bait: Köder (Fläche), worm: Wurm (Strich),
- * stopper: Stopper/Posengummis,
+ * stopper: Stopper/Posengummis, trail: Bahn des Köders (Köderführung, der Köder läuft sie ab), boat: Boot,
  * context: Grund oder Wasseroberfläche (gestrichelt)
  */
 export type RigStyle =
@@ -22,10 +22,12 @@ export type RigStyle =
   | 'bait'
   | 'worm'
   | 'stopper'
+  | 'trail'
+  | 'boat'
   | 'context';
 
 /** Teile, die sich als Linie zeichnen; alle übrigen (Flächen, gestrichelter Grund) blenden ein */
-const DRAWN: ReadonlySet<RigStyle> = new Set(['line', 'line2', 'hardware', 'worm', 'stopper']);
+const DRAWN: ReadonlySet<RigStyle> = new Set(['line', 'line2', 'hardware', 'worm', 'stopper', 'trail']);
 export const isDrawn = (s: RigStyle) => DRAWN.has(s);
 
 export interface RigLabelSpec {
@@ -42,12 +44,16 @@ export interface RigPart {
   style: RigStyle;
   d: string;
   label?: RigLabelSpec;
+  /** eigene Dauer der Animation (z. B. langsames Absinken) */
+  ms?: number;
 }
 
 export interface RigDiagramSpec {
   width: number;
   height: number;
   parts: RigPart[];
+  /** Köderführung: ein Köder läuft die Bahn (`trail`) des aktuellen Schritts ab */
+  lure?: boolean;
 }
 
 export interface RigFramePart extends RigPart {
@@ -70,7 +76,7 @@ export function rigFrame(spec: RigDiagramSpec, step: number): RigFramePart[] {
       out.push(p);
       continue;
     }
-    const durationMs = isDrawn(p.style) ? RIG_DRAW_MS : RIG_FADE_MS;
+    const durationMs = p.ms ?? (isDrawn(p.style) ? RIG_DRAW_MS : RIG_FADE_MS);
     out.push({ ...p, timing: { delayMs: t, durationMs } });
     t += durationMs;
   }
@@ -111,4 +117,24 @@ export function rigProblems(spec: RigDiagramSpec): string[] {
   for (let s = 0; s < rigStepCount(spec); s++)
     if (!spec.parts.some((p) => p.step === s)) problems.push(`Schritt ${s + 1} ohne neue Teile`);
   return problems;
+}
+
+/** Endpunkt eines Pfads und Richtung der letzten Bewegung (Grad, 0 = nach rechts) – für den ruhenden Köder */
+export function pathEnd(d: string): { x: number; y: number; angle: number } {
+  const nums = (d.match(/-?\d*\.?\d+(?:e-?\d+)?/gi) ?? []).map(Number);
+  const x = nums[nums.length - 2] ?? 0;
+  const y = nums[nums.length - 1] ?? 0;
+  const px = nums[nums.length - 4] ?? x;
+  const py = nums[nums.length - 3] ?? y;
+  const angle = px === x && py === y ? 0 : (Math.atan2(y - py, x - px) * 180) / Math.PI;
+  return { x, y, angle };
+}
+
+/** Bahnstücke des Schritts mit Zeiten (für den laufenden Köder) */
+export const stepTrail = (spec: RigDiagramSpec, step: number) =>
+  rigFrame(spec, step).filter((p) => p.style === 'trail' && p.step === step);
+
+/** Letztes Bahnstück bis einschließlich `step` (hier ruht der Köder) */
+export function lastTrail(spec: RigDiagramSpec, step: number): RigPart | undefined {
+  return spec.parts.filter((p) => p.style === 'trail' && p.step <= step).at(-1);
 }
