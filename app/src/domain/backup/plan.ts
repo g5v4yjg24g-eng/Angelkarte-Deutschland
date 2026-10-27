@@ -14,6 +14,8 @@ export const PLAN_TABLES: PlanTable[] = [
   'waterLinks',
   'profiles',
   'posts',
+  'postLikes',
+  'postComments',
   'photos',
 ];
 

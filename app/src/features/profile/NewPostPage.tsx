@@ -8,6 +8,8 @@ import { Page } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
 import { Notice } from '../../design/components/Notice';
 import { SelectField, TextArea } from '../../design/components/Field';
+import { SegmentedControl } from '../../design/components/SegmentedControl';
+import type { Post } from '../../domain/schemas';
 import { CloseIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
 import { createPost } from '../../data/profileService';
@@ -30,6 +32,7 @@ export function NewPostPage() {
   /** abgewählte Fangfotos (Standard: alle übernehmen) */
   const [skipped, setSkipped] = useState<string[]>([]);
   const [caption, setCaption] = useState('');
+  const [visibility, setVisibility] = useState<NonNullable<Post['visibility']>>('friends');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -73,6 +76,7 @@ export function NewPostPage() {
       await createPost({
         caption: caption.trim(),
         catchId: chosen?.id,
+        visibility,
         photos: pending.map((p) => p.photo),
         catchPhotoIds: takenFromCatch.map((p) => p.id),
       });
@@ -171,6 +175,7 @@ export function NewPostPage() {
           maxLength={POST_CAPTION_MAX}
           onChange={(e) => setCaption(e.target.value)}
         />
+        <VisibilityField value={visibility} onChange={setVisibility} />
         {error && <Notice tone="error">{error}</Notice>}
         <div className={styles.formActions}>
           <Button type="submit" disabled={busy}>
@@ -182,5 +187,31 @@ export function NewPostPage() {
         </div>
       </form>
     </Page>
+  );
+}
+
+export function VisibilityField({
+  value,
+  onChange,
+}: {
+  value: NonNullable<Post['visibility']>;
+  onChange: (v: NonNullable<Post['visibility']>) => void;
+}) {
+  return (
+    <div className={styles.visibility}>
+      <span className={styles.fieldLabel} aria-hidden="true">
+        {t.visibilityLabel}
+      </span>
+      <SegmentedControl
+        label={t.visibilityLabel}
+        value={value}
+        onChange={onChange}
+        options={[
+          { value: 'friends', label: t.visibility.friends },
+          { value: 'public', label: t.visibility.public },
+        ]}
+      />
+      <small className="muted">{t.visibilityHint}</small>
+    </div>
   );
 }

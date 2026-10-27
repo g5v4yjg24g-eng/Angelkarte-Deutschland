@@ -16,3 +16,13 @@ export const photoRoom = (count: number) => Math.max(0, MAX_PHOTOS_PER_POST - co
 
 /** Ein Beitrag braucht mindestens ein Foto */
 export const canPublish = (photoCount: number) => photoCount > 0 && photoCount <= MAX_PHOTOS_PER_POST;
+
+export const COMMENT_MAX = 1000;
+
+/** Je Verfasser höchstens ein „Gefällt mir“ je Beitrag */
+export const likeIdOf = (authorId: string, postId: string) => `like-${authorId}-${postId}`;
+
+export const commentValid = (text: string) => {
+  const t = text.trim();
+  return t.length > 0 && t.length <= COMMENT_MAX;
+};

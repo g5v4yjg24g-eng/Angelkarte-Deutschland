@@ -256,6 +256,24 @@ export const PostSchema = MetaSchema.extend({
   caption: text(2200).optional(),
   photoIds: z.array(id).min(1).max(MAX_PHOTOS_PER_POST),
   catchId: id.optional(),
+  /** Wer den Beitrag später (mit Konto) sehen, liken und kommentieren darf; fehlt = Freunde (Entscheidung 2026-10-27) */
+  visibility: z.enum(['friends', 'public']).optional(),
+});
+
+/** Verfasser: vorerst nur `me` (dieses Gerät); mit dem Konto die Nutzer-ID */
+export const LOCAL_AUTHOR = 'me';
+
+/** „Gefällt mir“ an einem Beitrag; je Verfasser höchstens eines (ID `like-<authorId>-<postId>`) */
+export const PostLikeSchema = MetaSchema.extend({
+  postId: id,
+  authorId: id,
+});
+
+/** Kommentar an einem Beitrag */
+export const PostCommentSchema = MetaSchema.extend({
+  postId: id,
+  authorId: id,
+  text: text(1000).min(1),
 });
 
 export type LatLng = z.infer<typeof LatLngSchema>;
@@ -276,6 +294,8 @@ export type WaterLink = z.infer<typeof WaterLinkSchema>;
 export type TrackPoint = z.infer<typeof TrackPointSchema>;
 export type Profile = z.infer<typeof ProfileSchema>;
 export type Post = z.infer<typeof PostSchema>;
+export type PostLike = z.infer<typeof PostLikeSchema>;
+export type PostComment = z.infer<typeof PostCommentSchema>;
 
 /** Alle Entitäten mit eigener Tabelle; Reihenfolge = Import-Reihenfolge (Bezüge zuerst). */
 export const ENTITY_SCHEMAS = {
@@ -288,6 +308,8 @@ export const ENTITY_SCHEMAS = {
   waterLinks: WaterLinkSchema,
   profiles: ProfileSchema,
   posts: PostSchema,
+  postLikes: PostLikeSchema,
+  postComments: PostCommentSchema,
 } as const;
 export type EntityTable = keyof typeof ENTITY_SCHEMAS;
 export interface EntityMap {
@@ -300,4 +322,6 @@ export interface EntityMap {
   waterLinks: WaterLink;
   profiles: Profile;
   posts: Post;
+  postLikes: PostLike;
+  postComments: PostComment;
 }

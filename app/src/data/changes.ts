@@ -18,6 +18,8 @@ export async function changesSince(
     db.waterLinks,
     db.profiles,
     db.posts,
+    db.postLikes,
+    db.postComments,
   ] as const) {
     await (t as typeof db.catches).each((r) => {
       if (Date.parse(r.updatedAt) > since) {

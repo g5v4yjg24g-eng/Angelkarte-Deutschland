@@ -22,19 +22,33 @@ async function collect(
   db: FangpunktDB,
   withPhotos: boolean,
 ): Promise<{ data: BackupData; blobs: Record<string, Blob> }> {
-  const [catches, places, sessions, baitPresets, trips, tracks, waterLinks, profiles, posts, photos] =
-    await Promise.all([
-      db.catches.toArray(),
-      db.places.toArray(),
-      db.sessions.toArray(),
-      db.baitPresets.toArray(),
-      db.trips.toArray(),
-      db.tracks.toArray(),
-      db.waterLinks.toArray(),
-      db.profiles.toArray(),
-      db.posts.toArray(),
-      withPhotos ? db.photos.toArray() : Promise.resolve([] as Photo[]),
-    ]);
+  const [
+    catches,
+    places,
+    sessions,
+    baitPresets,
+    trips,
+    tracks,
+    waterLinks,
+    profiles,
+    posts,
+    postLikes,
+    postComments,
+    photos,
+  ] = await Promise.all([
+    db.catches.toArray(),
+    db.places.toArray(),
+    db.sessions.toArray(),
+    db.baitPresets.toArray(),
+    db.trips.toArray(),
+    db.tracks.toArray(),
+    db.waterLinks.toArray(),
+    db.profiles.toArray(),
+    db.posts.toArray(),
+    db.postLikes.toArray(),
+    db.postComments.toArray(),
+    withPhotos ? db.photos.toArray() : Promise.resolve([] as Photo[]),
+  ]);
   const blobs: Record<string, Blob> = {};
   const metas: PhotoMeta[] = photos.map(({ blob, thumb: _t, ...meta }) => {
     void _t;
@@ -52,6 +66,8 @@ async function collect(
       waterLinks,
       profiles,
       posts,
+      postLikes,
+      postComments,
       photos: metas,
     },
     blobs,
@@ -199,6 +215,8 @@ export async function applyImport(
       db.waterLinks,
       db.profiles,
       db.posts,
+      db.postLikes,
+      db.postComments,
       db.photos,
     ],
     async () => {
@@ -260,6 +278,8 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
       db.waterLinks,
       db.profiles,
       db.posts,
+      db.postLikes,
+      db.postComments,
       db.photos,
     ],
     async () => {
@@ -273,6 +293,8 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
         db.waterLinks.clear(),
         db.profiles.clear(),
         db.posts.clear(),
+        db.postLikes.clear(),
+        db.postComments.clear(),
         db.photos.clear(),
       ]);
       await db.sessions.bulkPut(d.sessions);
@@ -288,6 +310,9 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
       // Snapshots vor DB v5 haben kein Profil und keine Beiträge
       await db.profiles.bulkPut(d.profiles ?? []);
       await db.posts.bulkPut(d.posts ?? []);
+      // Snapshots vor DB v6 haben keine Likes und Kommentare
+      await db.postLikes.bulkPut(d.postLikes ?? []);
+      await db.postComments.bulkPut(d.postComments ?? []);
       await db.photos.bulkPut(
         d.photos.flatMap((m) =>
           snap.photoBlobs[m.id] ? [{ ...m, blob: snap.photoBlobs[m.id] as Blob }] : [],

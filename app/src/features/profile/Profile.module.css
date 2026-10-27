@@ -191,3 +191,111 @@
   font-weight: 600;
   color: var(--color-primary);
 }
+.visibility {
+  display: grid;
+  gap: var(--space-2);
+}
+.fieldLabel {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+.carouselBox {
+  position: relative;
+}
+/* Herz beim Doppeltipp */
+.burst {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 8px rgb(0 0 0 / 45%));
+  animation: burst 800ms ease-out forwards;
+}
+@keyframes burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  40% {
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .burst {
+    animation: burstStill 800ms linear forwards;
+  }
+  @keyframes burstStill {
+    0%,
+    70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}
+.counts2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.likeBadge {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  vertical-align: middle;
+}
+.actionRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch);
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--radius-md, 12px);
+}
+.action:focus-visible {
+  outline: 3px solid var(--color-focus);
+}
+.liked {
+  color: var(--color-primary);
+}
+.linkish {
+  justify-self: start;
+  min-height: var(--touch);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
