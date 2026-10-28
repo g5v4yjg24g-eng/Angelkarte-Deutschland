@@ -1,11 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import {
+  lastTrail,
+  pathEnd,
+  pathStart,
+  rodAngleBefore,
   RIG_DRAW_MS,
   RIG_FADE_MS,
   rigFrame,
   rigProblems,
   rigStepCount,
   rigStepDurationMs,
+  stepTrail,
   type RigDiagramSpec,
 } from './rigs';
 
@@ -57,5 +62,28 @@ describe('Montagen-Zeichenkern (RIG-1)', () => {
       'a: Beschriftung außerhalb',
       'Schritt 2 ohne neue Teile',
     ]);
+  });
+
+  it('Köderführung: eigene Dauer je Bewegung, Bahn des Schritts, Endlage und Richtung des Köders', () => {
+    const spec: RigDiagramSpec = {
+      width: 100,
+      height: 100,
+      lure: true,
+      parts: [
+        { id: 'ground', step: 0, style: 'context', d: 'M0 90 L100 90' },
+        { id: 'sink', step: 0, style: 'trail', d: 'M10 10 L10 80', ms: 1400 },
+        { id: 'hop', step: 1, style: 'trail', d: 'M10 80 C10 60 30 50 40 50', ms: 450 },
+      ],
+    };
+    expect(rigFrame(spec, 0).map((p) => p.timing)).toEqual([
+      { delayMs: 0, durationMs: RIG_FADE_MS },
+      { delayMs: RIG_FADE_MS, durationMs: 1400 },
+    ]);
+    expect(stepTrail(spec, 1).map((p) => p.id)).toEqual(['hop']);
+    expect(lastTrail(spec, 0)?.id).toBe('sink');
+    expect(pathEnd('M10 10 L10 80')).toEqual({ x: 10, y: 80, angle: 90 });
+    expect(pathEnd('M10 80 C10 60 30 50 40 50')).toEqual({ x: 40, y: 50, angle: 0 });
+    expect(pathStart('M10 80 C10 60 30 50 40 50')).toEqual({ x: 10, y: 80 });
+    expect(rodAngleBefore(spec, 0)).toBe(30);
   });
 });
