@@ -62,6 +62,24 @@ Auf TikTok höchstens 3–5 Hashtags, auf YouTube Shorts `#shorts` + 2 Themen-Ha
 
 ---
 
+## 02b · Reel „Fangpunkt in 17 Sekunden“ (Sa 31.10., `videos/reel-fuenf-bilder-1080x1920.mp4`)
+**Plattform:** Instagram Reel, dasselbe Video auf TikTok und YouTube Shorts · **Titelbild:** `stories/reel-cover/cover-reel-17-sekunden-1080x1920.png` · **Ton:** ruhige Musik aus der Bibliothek der Plattform, leise.
+
+**Caption (Instagram):**
+> Fangpunkt in 17 Sekunden. 🎣
+>
+> Karte mit Gewässern in ganz Deutschland, Fangbuch nach Gewässern, Wetter mit Luftdruck und Pegel, ehrliche Statistik und Schonzeiten und Mindestmaße für alle 16 Bundesländer (keine Rechtsauskunft).
+>
+> Kostenlos, ohne Konto, deine Daten bleiben auf dem Handy. Link in der Bio.
+>
+> Kartendaten © OpenStreetMap-Mitwirkende · Wetter: Open-Meteo, DWD
+
+**Hashtags:** `#angeln #angelapp #fangbuch #raubfischangeln #angelnindeutschland #petriheil`
+
+**TikTok:** Fangpunkt in 17 Sekunden 🎣 Karte, Fangbuch, Wetter, Statistik, Angelrecht – kostenlos, ohne Konto. Link im Profil. `#angeln #angelapp #fyp`
+**YouTube Shorts – Titel:** Fangpunkt in 17 Sekunden – die Angel-App für ganz Deutschland · **Beschreibung:** wie Instagram, mit dem Link aus der Bio.
+**CTA:** Link in der Bio.
+
 ## 03 · Tiefenkarten – noch nicht
 **Plattform:** Instagram Feed + Facebook · **Erweiterbar:** Reel „Ehrlich gesagt“ (Video-Konzept V4), Story-Highlight „Ehrlich“.
 

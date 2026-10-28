@@ -341,6 +341,7 @@ function cover({ kicker, title, sub }) {
   });
 }
 const COVERS = [
+  ['reel-17-sekunden', { kicker: 'Kurz erklärt', title: 'Fangpunkt in <em>17</em> Sekunden', sub: 'Fünf Funktionen, eine App.' }],
   ['video-v1', { kicker: 'Kurz erklärt', title: 'Fang eintragen, bevor er <em>zurück</em> im Wasser ist.' }],
   ['video-v2', { kicker: 'Problem am Wasser', title: 'Wo war nochmal die <em>Stelle</em>?' }],
   ['video-v3', { kicker: 'Fangbuch-Freitag', title: 'Mein Angeljahr – <em>ehrlich</em>.' }],
