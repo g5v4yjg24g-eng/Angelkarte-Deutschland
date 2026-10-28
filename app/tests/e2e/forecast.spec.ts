@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page, type Route } from './fixtures';
 import type { Catch } from '../../src/domain/schemas';
 import { readFileSync } from 'node:fs';
@@ -35,6 +36,8 @@ async function fakeForecast(page: Page) {
           time: hours.map((t) => t / 1000),
           pressure_msl: hours.map((_, i) => 1025 - i * 0.1),
           temperature_2m: hours.map(() => 9),
+          apparent_temperature: hours.map(() => 6),
+          precipitation_probability: hours.map((_, i) => (i % 24 === 15 ? 70 : 10)),
           wind_speed_10m: hours.map(() => 4),
           wind_direction_10m: hours.map(() => 270),
           wind_gusts_10m: hours.map(() => 9),
@@ -47,6 +50,7 @@ async function fakeForecast(page: Page) {
           temperature_2m_max: days.map(() => 12),
           temperature_2m_min: days.map(() => 5),
           precipitation_sum: days.map(() => 1.5),
+          precipitation_probability_max: days.map(() => 70),
           weather_code: days.map(() => 61),
         },
       },
@@ -121,12 +125,15 @@ test('FC-1: Wetter-Bereich mit Vorhersage, Luftdruck-Verlauf, Ortswahl, Zwischen
     .click();
   await expect(page.getByRole('heading', { level: 1, name: 'Wetter' })).toBeVisible();
   const now = page.getByRole('region', { name: 'Jetzt' });
-  await expect(now).toContainText('9 °C');
+  await expect(now).toContainText('9°');
   await expect(now).toContainText('Bedeckt');
-  await expect(now).toContainText('−0,3 hPa in 3 h');
+  await expect(now).toContainText('H: 12° T: 5°');
+  await expect(page.getByText(/−0,3 hPa in 3 h/)).toBeVisible();
   await expect(page.getByRole('img', { name: /Luftdruck-Verlauf von/ })).toBeVisible();
-  await expect(page.getByText('Heute', { exact: true }).first()).toBeVisible();
-  await expect(page.getByText('Morgen', { exact: true }).first()).toBeVisible();
+  // Stundenleiste und Tagesliste wie beim iPhone-Wetter
+  await expect(page.getByRole('list', { name: 'Vorhersage der nächsten 24 Stunden' })).toContainText('Jetzt');
+  await expect(page.getByRole('region', { name: /-Tage-Vorhersage/ }).getByRole('button')).toHaveCount(8);
+  await expect(page.getByRole('button', { name: /^Heute.*Leichter Regen.*5°.*12°/ })).toBeVisible();
   await expect(page.getByText(/Quelle: Open-Meteo\.com \(CC BY 4\.0\)/)).toBeVisible();
   expect(api.requests.at(-1)?.searchParams.get('latitude')).toBe('51.326');
   expect(api.requests.at(-1)?.searchParams.get('longitude')).toBe('6.242');
@@ -153,7 +160,7 @@ test('FC-1: Wetter-Bereich mit Vorhersage, Luftdruck-Verlauf, Ortswahl, Zwischen
   await page.reload();
   await waitForApp(page);
   await expect(page.getByText(/Ohne Verbindung – gezeigt wird die Vorhersage von/)).toBeVisible();
-  await expect(now).toContainText('9 °C');
+  await expect(now).toContainText('9°');
 
   // 390 px ohne horizontales Scrollen
   await page.setViewportSize({ width: 390, height: 844 });
@@ -323,7 +330,7 @@ test('CAL-1: Angelkalender – Termin eintragen, Wetter am Gewässer, bearbeiten
   await s2.getByLabel('Tag').fill(far);
   await s2.getByLabel('Gewässer').selectOption({ label: 'De Wittsee (Nettetal)' });
   await s2.getByRole('button', { name: 'Speichern' }).click();
-  await expect(upcoming.getByText(/Wetter ab .* \(7 Tage im Voraus\)\./)).toBeVisible();
+  await expect(upcoming.getByText(/Wetter ab .* \(10 Tage im Voraus\)\./)).toBeVisible();
 
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -691,4 +698,49 @@ test('GAUGE-2: Landespegel NRW aus der Tagesdatei, nur wenn der Ort in NRW liegt
   await expect(box).toContainText('Kein Pegel im Umkreis von 15 km.');
   expect(hygon).toHaveLength(0);
   expect(errors.filter((e) => !e.includes('Failed to load resource'))).toEqual([]);
+});
+
+test('FC-6: Tag antippen öffnet die Wetterlage – Datumsleiste, Temperatur tatsächlich/gefühlt, Regen, Wind, Luftdruck', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await useLocalExternals(page);
+  await stubGeolocation(page);
+  await fakeForecast(page);
+  await page.goto('/wetter');
+  await waitForApp(page);
+  await page.getByRole('button', { name: /^Heute/ }).click();
+  const sheet = page.getByRole('dialog', { name: 'Wetterlage' });
+  await expect(sheet).toBeVisible();
+  const strip = sheet.getByRole('group', { name: 'Tag wählen' });
+  await expect(strip.getByRole('button')).toHaveCount(8);
+  await expect(strip.getByRole('button').first()).toHaveAttribute('aria-pressed', 'true');
+  await expect(sheet.getByText('H: 12° T: 5°')).toBeVisible();
+  await expect(sheet.getByRole('img', { name: /^Temperatur am .*: 9° bis 9°/ })).toBeVisible();
+  await sheet.getByRole('radio', { name: 'Gefühlt' }).check({ force: true });
+  await expect(sheet.getByRole('img', { name: /^Temperatur \(Gefühlt\) am .*: 6° bis 6°/ })).toBeVisible();
+  await expect(sheet.getByText('Wahrscheinlichkeit heute: 70 %')).toBeVisible();
+  await expect(sheet.getByRole('heading', { name: 'Wind' })).toBeVisible();
+  await expect(sheet.getByRole('heading', { name: 'Luftdruck' })).toBeVisible();
+  await expect(sheet.getByText(/Aufgang 08:00 Uhr · Untergang 18:00 Uhr/)).toBeVisible();
+  expect(
+    (await new AxeBuilder({ page }).analyze()).violations
+      .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+      .map((v) => v.id),
+  ).toEqual([]);
+
+  // anderer Tag über die Datumsleiste
+  await strip.getByRole('button').nth(2).click();
+  await expect(strip.getByRole('button').nth(2)).toHaveAttribute('aria-pressed', 'true');
+  await expect(sheet.getByText(/Wahrscheinlichkeit an diesem Tag: 70 %/)).toBeVisible();
+  await page.emulateMedia({ colorScheme: 'dark' });
+  expect(
+    (await new AxeBuilder({ page }).analyze()).violations
+      .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+      .map((v) => v.id),
+  ).toEqual([]);
+  await page.keyboard.press('Escape');
+  await expect(sheet).toBeHidden();
+  expect(errors).toEqual([]);
 });

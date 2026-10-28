@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-28',
+    title: 'Neues Wetter',
+    items: [
+      'Wetter: Neu gestaltet – mit großer Temperatur, Stundenleiste samt Sonnenauf- und -untergang und einer 10-Tage-Vorhersage mit Temperaturbalken.',
+      'Tagesdetail: Tippe auf einen Tag – dann siehst du Temperatur (tatsächlich und gefühlt), Regenwahrscheinlichkeit, Wind und Luftdruck über den Tag.',
+    ],
+  },
+  {
     id: '2026-10-27-4',
     title: 'Köderführung',
     items: [

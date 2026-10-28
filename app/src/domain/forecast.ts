@@ -4,7 +4,8 @@
 import { z } from 'zod';
 import { roundCoord } from './weather';
 
-export const FORECAST_DAYS = 7;
+/** Tage im Voraus (wie die 10-Tage-Vorhersage, Wunsch Nutzer 2026-10-28; Open-Meteo erlaubt bis 16) */
+export const FORECAST_DAYS = 10;
 /** Spanne für die Luftdruck-Änderung (h) */
 export const PRESSURE_SPAN_H = 3;
 
@@ -18,6 +19,8 @@ export const ForecastSchema = z.object({
       t: z.number(),
       pressureHpa: n.optional(),
       tempC: n.optional(),
+      /** gefühlte Temperatur */
+      feelsC: n.optional(),
       windMs: n.optional(),
       windDirDeg: n.optional(),
       gustMs: n.optional(),
@@ -36,6 +39,8 @@ export const ForecastSchema = z.object({
       tMax: n.optional(),
       tMin: n.optional(),
       precipSum: n.optional(),
+      /** höchste stündliche Regenwahrscheinlichkeit des Tages (%) */
+      precipProbMax: n.optional(),
       code: z.number().int().optional(),
     }),
   ),
@@ -72,6 +77,7 @@ export function parseOpenMeteoForecast(json: unknown, q: ForecastQuery, fetchedA
         t: (num(t) ?? NaN) * 1000,
         pressureHpa: at(h, 'pressure_msl', i),
         tempC: at(h, 'temperature_2m', i),
+        feelsC: at(h, 'apparent_temperature', i),
         windMs: at(h, 'wind_speed_10m', i),
         windDirDeg: at(h, 'wind_direction_10m', i),
         gustMs: at(h, 'wind_gusts_10m', i),
@@ -91,6 +97,7 @@ export function parseOpenMeteoForecast(json: unknown, q: ForecastQuery, fetchedA
         tMax: at(d, 'temperature_2m_max', i),
         tMin: at(d, 'temperature_2m_min', i),
         precipSum: at(d, 'precipitation_sum', i),
+        precipProbMax: at(d, 'precipitation_probability_max', i),
         code: at(d, 'weather_code', i),
       }),
     )

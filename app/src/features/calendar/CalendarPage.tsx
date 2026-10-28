@@ -1,5 +1,5 @@
 // Angelkalender (Wunsch Nutzer 2026-10-22): Termine eintragen, Monat im Blick, Wetter am Gewässer für die
-// nächsten 7 Tage. Termine bleiben auf dem Gerät und sind Teil der Sicherung.
+// nächsten 10 Tage. Termine bleiben auf dem Gerät und sind Teil der Sicherung.
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';

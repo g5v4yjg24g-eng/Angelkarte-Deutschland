@@ -1798,6 +1798,48 @@ export const de = {
     tableChange: 'Änderung über den Tag',
     note: 'Modellwerte, nicht am Gewässer gemessen.',
     source: (time: string) => `Quelle: Open-Meteo.com (CC BY 4.0) · Stand ${time}`,
+    deg: (c: number) => `${Math.round(c).toLocaleString('de-DE')}°`,
+    hiLo: (hi: number, lo: number) => `H: ${Math.round(hi)}° T: ${Math.round(lo)}°`,
+    hourly: 'Stündlich',
+    hourlyLabel: 'Vorhersage der nächsten 24 Stunden',
+    hourLabel: (h: string) => `${h} Uhr`,
+    sunrise: 'Sonnenaufgang',
+    sunset: 'Sonnenuntergang',
+    tenDays: (n: number) => `${n}-Tage-Vorhersage`,
+    weekdayShort: (ms: number) =>
+      new Date(ms)
+        .toLocaleDateString('de-DE', { weekday: 'short', timeZone: 'Europe/Berlin' })
+        .replace('.', ''),
+    precipPct: (p: number) => `${Math.round(p)} %`,
+    detailTitle: 'Wetterlage',
+    detailDays: 'Tag wählen',
+    tempChart: 'Temperatur',
+    actual: 'Tatsächlich',
+    feels: 'Gefühlt',
+    seriesLabel: 'Darstellung',
+    actualText: 'Die tatsächliche Temperatur.',
+    feelsText: 'Die gefühlte Temperatur – sie bezieht Wind, Luftfeuchtigkeit und Sonne mit ein.',
+    precipChart: 'Niederschlagswahrscheinlichkeit',
+    precipDay: (p: number, today: boolean) =>
+      `Wahrscheinlichkeit ${today ? 'heute' : 'an diesem Tag'}: ${Math.round(p)} %`,
+    precipNote: 'Die Wahrscheinlichkeit für den ganzen Tag ist meist höher als die einer einzelnen Stunde.',
+    precipSum: (mm: number) => `Niederschlag: ${mm.toLocaleString('de-DE', { maximumFractionDigits: 1 })} mm`,
+    windChart: 'Wind',
+    windSub: (ms: number, gust?: number) =>
+      `Bis ${ms.toLocaleString('de-DE', { maximumFractionDigits: 0 })} m/s` +
+      (gust === undefined
+        ? ''
+        : `, Böen bis ${gust.toLocaleString('de-DE', { maximumFractionDigits: 0 })} m/s`),
+    pressureDay: 'Luftdruck',
+    pressureSub: (min: number, max: number, delta?: number) =>
+      `${Math.round(min)}–${Math.round(max)} hPa` +
+      (delta === undefined
+        ? ''
+        : ` · über den Tag ${delta > 0 ? '+' : delta < 0 ? '−' : '±'}${Math.abs(delta).toLocaleString('de-DE', { maximumFractionDigits: 1 })} hPa`),
+    sunTitle: 'Sonne',
+    sunTimes: (rise: string, set: string) => `Aufgang ${rise} Uhr · Untergang ${set} Uhr`,
+    chartLabel: (what: string, day: string, lo: string, hi: string) => `${what} am ${day}: ${lo} bis ${hi}`,
+    noHourly: 'Für diesen Tag gibt es keine Stundenwerte.',
   },
   gauge: {
     title: 'Pegel in der Nähe',
@@ -1879,7 +1921,7 @@ export const de = {
     tabCalendar: 'Angelkalender',
     tabsLabel: 'Wetter-Ansicht',
     intro:
-      'Trag ein, wann du angeln gehst. Für die nächsten 7 Tage siehst du das Wetter am gewählten Gewässer.',
+      'Trag ein, wann du angeln gehst. Für die nächsten 10 Tage siehst du das Wetter am gewählten Gewässer.',
     loading: 'Kalender wird geladen …',
     prevMonth: 'Voriger Monat',
     nextMonth: 'Nächster Monat',
@@ -1957,7 +1999,7 @@ export const de = {
       from && to ? `${from}–${to} Uhr` : from ? `ab ${from} Uhr` : to ? `bis ${to} Uhr` : 'ganztägig',
     weatherPast: 'Vorbei.',
     weatherLater: (from: string) =>
-      `Wetter ab ${new Date(`${from}T12:00:00Z`).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' })} (7 Tage im Voraus).`,
+      `Wetter ab ${new Date(`${from}T12:00:00Z`).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' })} (10 Tage im Voraus).`,
     weatherNoWater: 'Ohne Gewässer kein Wetter.',
     weatherLoading: 'Wetter wird geladen …',
     weatherError: 'Wetter nicht verfügbar.',
