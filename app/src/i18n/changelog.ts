@@ -8,6 +8,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     title: 'Solunar im Tagesdetail',
     items: [
       'Wetter: Im Tagesdetail stehen jetzt auch die Solunar-Zeiten des Tages – als Leiste über den Tag, mit Haupt- und Nebenzeiten und der Mondphase (Theorie, wissenschaftlich nicht belegt).',
+      'Beißfenster: Die lange Solunar-Liste unten auf der Wetter-Seite ist weg – die Zeiten findest du jetzt beim jeweiligen Tag.',
     ],
   },
   {

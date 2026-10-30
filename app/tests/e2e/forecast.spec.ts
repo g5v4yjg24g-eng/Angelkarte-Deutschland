@@ -138,15 +138,13 @@ test('FC-1: Wetter-Bereich mit Vorhersage, Luftdruck-Verlauf, Ortswahl, Zwischen
   expect(api.requests.at(-1)?.searchParams.get('latitude')).toBe('51.326');
   expect(api.requests.at(-1)?.searchParams.get('longitude')).toBe('6.242');
 
-  // Beißfenster: beide Blickwinkel getrennt; mit 1 Eintrag keine Auswertung
+  // Beißfenster: eigene Auswertung; mit 1 Eintrag keine Auswertung
   await expect(page.getByRole('heading', { name: 'Beißfenster' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Aus deinem Fangbuch' })).toContainText(
     'Zu wenige Daten (n = 1, ab 20).',
   );
-  const solunar = page.getByRole('region', { name: 'Solunar-Zeiten (Theorie)' });
-  await expect(solunar).toContainText('wissenschaftlich nicht belegt');
-  await expect(solunar.getByText(/Hauptzeit · Mond (oben|unten)/).first()).toBeVisible();
-  await expect(solunar.getByText(/% beleuchtet/).first()).toBeVisible();
+  // Solunar steht nur im Tagesdetail (FC-6), nicht mehr in der Übersicht
+  await expect(page.getByRole('region', { name: 'Solunar-Zeiten (Theorie)' })).toHaveCount(0);
 
   // Gewässer aus dem Fangbuch wählen → Vorhersage dort; Wahl bleibt
   await page.getByLabel('Ort').selectOption({ label: 'De Wittsee (Nettetal)' });

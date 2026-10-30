@@ -1,19 +1,15 @@
-// Beißfenster (Wunsch Nutzer 2026-10-22: „Beides, klar getrennt"): eigene Auswertung aus dem Fangbuch und
-// Solunar-Zeiten als Theorie. Keine Wertung „gut/schlecht" – nur Zahlen mit Grundlage.
-import { useMemo } from 'react';
+// Beißfenster (Wunsch Nutzer 2026-10-22): eigene Auswertung aus dem Fangbuch. Keine Wertung „gut/schlecht" – nur
+// Zahlen mit Grundlage. Die Solunar-Zeiten stehen seit 2026-10-30 nur noch im Tagesdetail (Wunsch Nutzer).
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
 import { Section } from '../../design/components/Page';
 import { getDb } from '../../data/db';
 import { analyzeBites, matchNow, pressureBucket, SLOT_HOURS } from '../../domain/biteAnalysis';
-import { moonEvents, moonPhase, phaseName, solunarWindows } from '../../domain/solunar';
-import type { DaySummary, ForecastHour } from '../../domain/forecast';
+import type { ForecastHour } from '../../domain/forecast';
 import { BarTable } from '../stats/Charts';
 import styles from './Weather.module.css';
 
 const t = de.bite;
-const time = (ms: number) =>
-  new Date(ms).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' });
 const berlinHour = (ms: number) =>
   Number(
     new Date(ms).toLocaleString('en-GB', { hour: '2-digit', hourCycle: 'h23', timeZone: 'Europe/Berlin' }),
@@ -135,67 +131,10 @@ function OwnBites({
   );
 }
 
-function Solunar({
-  days,
-  lat,
-  lng,
-  title,
-}: {
-  days: DaySummary[];
-  lat: number;
-  lng: number;
-  title: (ms: number) => string;
-}) {
-  const rows = useMemo(
-    () =>
-      days.map((d, i) => {
-        const end = days[i + 1]?.t ?? d.t + 86_400_000;
-        const phase = moonPhase(d.t + 12 * 3_600_000);
-        return { t: d.t, windows: solunarWindows(moonEvents(d.t, end, lat, lng)), phase };
-      }),
-    [days, lat, lng],
-  );
-  return (
-    <>
-      <p className="muted">{t.solunarDisclaimer}</p>
-      <ul className={styles.days}>
-        {rows.map((r) => (
-          <li key={r.t} className={styles.day}>
-            <div className={styles.dayHead}>
-              <span>{title(r.t)}</span>
-              <span className="muted">
-                {t.phase(t.phases[phaseName(r.phase.phase)], Math.round(r.phase.fraction * 100))}
-              </span>
-            </div>
-            {r.windows.length === 0 ? (
-              <p className="muted">{t.none}</p>
-            ) : (
-              <ul className={styles.windows}>
-                {r.windows.map((w) => (
-                  <li key={w.event} className={w.kind === 'major' ? styles.major : styles.minor}>
-                    <span className="tabular">{t.window(time(w.from), time(w.to))}</span>{' '}
-                    <span>
-                      {w.kind === 'major' ? t.major : t.minor} · {t.events[w.event]} {time(w.center)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
-    </>
-  );
-}
-
 export function BiteWindows(props: {
-  days: DaySummary[];
-  lat: number;
-  lng: number;
   nowMs: number;
   now?: ForecastHour | undefined;
   change?: number | undefined;
-  dayTitle: (ms: number) => string;
 }) {
   return (
     <Section title={t.title}>
@@ -205,12 +144,6 @@ export function BiteWindows(props: {
           {t.ownTitle}
         </h3>
         <OwnBites nowMs={props.nowMs} now={props.now} change={props.change} />
-      </section>
-      <section className={styles.biteBlock} aria-labelledby="bite-solunar">
-        <h3 id="bite-solunar" className={styles.blockTitle}>
-          {t.solunarTitle}
-        </h3>
-        <Solunar days={props.days} lat={props.lat} lng={props.lng} title={props.dayTitle} />
       </section>
     </Section>
   );

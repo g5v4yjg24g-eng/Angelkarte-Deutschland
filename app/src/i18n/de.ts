@@ -2011,7 +2011,8 @@ export const de = {
   },
   bite: {
     title: 'Beißfenster',
-    intro: 'Zwei getrennte Blickwinkel: was deine eigenen Einträge zeigen, und was die Solunar-Theorie sagt.',
+    intro:
+      'Was deine eigenen Einträge zeigen. Die Solunar-Zeiten (Theorie) findest du im Tagesdetail – tippe dazu auf einen Tag.',
     ownTitle: 'Aus deinem Fangbuch',
     ownLoading: 'Fangbuch wird ausgewertet …',
     ownIntro: (n: number) =>
