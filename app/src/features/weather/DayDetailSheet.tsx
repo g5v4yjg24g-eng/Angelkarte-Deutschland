@@ -1,19 +1,21 @@
 // Tagesdetail (Wunsch Nutzer 2026-10-28, Vorbild iPhone-Wetter „Wetterlage“): Datumsleiste zum Wechseln, Temperatur
 // des Tages mit Hoch/Tief, Kurve tatsächlich/gefühlt, Niederschlagswahrscheinlichkeit; für Angler zusätzlich Wind,
 // Luftdruck und Sonnenzeiten. Natives dialog: Fokusfalle, Escape schließt.
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { de } from '../../i18n/de';
 import { IconButton } from '../../design/components/Button';
 import { SegmentedControl } from '../../design/components/SegmentedControl';
 import { CloseIcon } from '../../design/icons';
 import { hourAt, type DaySummary, type Forecast } from '../../domain/forecast';
-import { dayDetail, isNight, weatherIcon } from '../../domain/forecastView';
+import { dayDetail, daySpan, isNight, solunarDay, weatherIcon } from '../../domain/forecastView';
+import { phaseName } from '../../domain/solunar';
 import { DayChart, type ChartPoint } from './DayChart';
 import { WeatherIcon } from './WeatherIcon';
 import styles from './WeatherView.module.css';
 
 const t = de.forecast;
 const w = de.weather;
+const b = de.bite;
 const HOUR = 3_600_000;
 const tz = { timeZone: 'Europe/Berlin' } as const;
 const berlinDate = (ms: number) => new Date(ms).toLocaleDateString('sv-SE', tz);
@@ -165,13 +167,66 @@ function DayBody({ f, day, nowMs }: { f: Forecast; day: DaySummary; nowMs: numbe
           <h3 id="dd-sun">{t.sunTitle}</h3>
           <p className={styles.sunRow}>
             <WeatherIcon icon="sunrise" size={26} />
-            {t.sunTimes(time(day.day.sunrise), time(day.day.sunset))}
+            <span>{t.sunTimes(time(day.day.sunrise), time(day.day.sunset))}</span>
             <WeatherIcon icon="sunset" size={26} />
           </p>
         </section>
       )}
+      <SolunarSection f={f} dayT={day.t} />
       <p className="muted">{t.note}</p>
     </>
+  );
+}
+
+/** Solunar-Zeiten des Tages (Wunsch Nutzer 2026-10-30): Leiste 0–24 Uhr und Liste, immer mit Theorie-Hinweis */
+function SolunarSection({ f, dayT }: { f: Forecast; dayT: number }) {
+  const s = useMemo(() => solunarDay(f, dayT), [f, dayT]);
+  const end = f.days[f.days.findIndex((d) => d.t === dayT) + 1]?.t ?? dayT + 24 * HOUR;
+  return (
+    <section className={styles.detailSection} aria-labelledby="dd-solunar">
+      <h3 id="dd-solunar">{b.solunarTitle}</h3>
+      <p className="muted">{b.phase(b.phases[phaseName(s.phase.phase)], Math.round(s.phase.fraction * 100))}</p>
+      {s.windows.length === 0 ? (
+        <p className="muted">{b.none}</p>
+      ) : (
+        <>
+          <div className={styles.solunarBar} aria-hidden="true">
+            {s.windows.map((x) => {
+              const span = daySpan(x.from, x.to, dayT, end);
+              return (
+                <span
+                  key={x.event}
+                  className={x.kind === 'major' ? styles.solunarMajor : styles.solunarMinor}
+                  style={{ left: `${span.left}%`, width: `${span.width}%` }}
+                />
+              );
+            })}
+            {[6, 12, 18].map((h) => (
+              <i key={h} style={{ left: `${(h / 24) * 100}%` }} />
+            ))}
+          </div>
+          <div className={styles.solunarAxis} aria-hidden="true">
+            {[0, 6, 12, 18, 24].map((h) => (
+              <span key={h} style={{ left: `${(h / 24) * 100}%` }}>
+                {t.hourLabel(String(h).padStart(2, '0'))}
+              </span>
+            ))}
+          </div>
+          <ul className={styles.solunarList}>
+            {s.windows.map((x) => (
+              <li key={x.event}>
+                <span className={x.kind === 'major' ? styles.solunarMajor : styles.solunarMinor} />
+                <span className="tabular">{b.window(time(x.from), time(x.to))}</span>
+                <span>
+                  {x.kind === 'major' ? b.major : b.minor} · {b.events[x.event]} {time(x.center)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <p className="muted">{b.solunarDisclaimer}</p>
+    </section>
   );
 }
 

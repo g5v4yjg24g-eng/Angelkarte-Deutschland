@@ -152,8 +152,8 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | RIG-1 | Montagen-Zeichenkern | Teile je Schritt, Reihenfolge und Zeiten der Animation, Prüfung der Vorgabe (✅ `domain/rigs.test.ts`) |
 | RIG-2 | Montagen-Katalog | 8 Montagen, alle Angelarten, Texte vollständig, Zeichnungen ohne Fehler, Schritte = Bilder, Beschriftungen übersetzt (✅ `rigCatalog.test.ts`) |
 | RIG-3 | Montagen-Ansicht | Filter nach Angelart, Wofür, Beschriftung je Schritt, Material, Link zu passenden Knoten, unbekannte Montage (✅ `RigDetailPage.test.tsx`) |
-| WX-V1 | Wetter-Ansichtslogik | Symbole je Wettercode, Nacht, Stundenleiste mit Sonnenuntergang, Temperaturbalken, Farben, Tagesdetail H/T und Regen-%, Achsen (✅ `domain/forecastView.test.ts`) |
-| FC-6 | Wetter-Tagesdetail | Tag antippen → Wetterlage, Datumsleiste, Temperatur tatsächlich/gefühlt, Regen-%, Wind, Luftdruck, Sonne, anderer Tag, Escape, axe hell/dunkel (✅ `forecast.spec.ts`); Übersicht mit Stundenleiste und 10-Tage-Liste in FC-1 |
+| WX-V1 | Wetter-Ansichtslogik | Symbole je Wettercode, Nacht, Stundenleiste mit Sonnenuntergang, Temperaturbalken, Farben, Tagesdetail H/T und Regen-%, Achsen, Solunar je Tag (`solunarDay`, `daySpan`) (✅ `domain/forecastView.test.ts`) |
+| FC-6 | Wetter-Tagesdetail | Tag antippen → Wetterlage, Datumsleiste, Temperatur tatsächlich/gefühlt, Regen-%, Wind, Luftdruck, Sonne, Solunar-Zeiten mit Theorie-Hinweis, anderer Tag, Escape, axe hell/dunkel (✅ `forecast.spec.ts`); Übersicht mit Stundenleiste und 10-Tage-Liste in FC-1 |
 | RET-1 | Köderführung-Katalog | 8 Techniken, beide Wassertiefen, Texte vollständig, Zeichnungen ohne Fehler, jeder Schritt bewegt den Köder, Beschriftungen übersetzt (✅ `retrieveCatalog.test.ts`); Kern: Tempo je Bewegung, Bahn des Schritts, Endlage/Richtung (✅ `domain/rigs.test.ts`) |
 | RET-2 | Köderführung-Ansicht | drei Reiter, Filter, Wofür, Beschriftung je Schritt, Montagen-Link, unbekannte Technik (✅ `RetrieveDetailPage.test.tsx`) |
 | RET-4 | Angler und Rute | Rutenwinkel über die Zeit, Rutenspitze, Schnur locker/straff (✅ `domain/angler.test.ts`); jede Köderbewegung hat eine Rutenbewegung (✅ `retrieveCatalog.test.ts`) |

@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { Forecast } from './forecast';
+import { moonEvents, solunarWindows } from './solunar';
 import {
   barSpan,
   dayDetail,
+  daySpan,
   hourStrip,
   isNight,
   niceTicks,
   pct,
+  solunarDay,
   tempBounds,
   tempColor,
   weatherIcon,
@@ -94,5 +97,17 @@ describe('Wetter-Ansicht (WX-V1)', () => {
   it('Achsenteilung mit runden Schritten', () => {
     expect(niceTicks(7, 14)).toEqual([6, 8, 10, 12, 14]);
     expect(niceTicks(0, 100)).toEqual([0, 20, 40, 60, 80, 100]);
+  });
+
+  it('Solunar-Zeiten des Tages am Ort der Vorhersage, Fenster auf der Tagesleiste abgeschnitten', () => {
+    const s = solunarDay(f, day0);
+    expect(s.windows).toEqual(solunarWindows(moonEvents(day0, day0 + 24 * H, 51.3, 6.2)));
+    expect(s.windows.every((w) => w.center >= day0 && w.center < day0 + 24 * H)).toBe(true);
+    expect(s.phase.fraction).toBeGreaterThanOrEqual(0);
+    expect(s.phase.fraction).toBeLessThanOrEqual(1);
+    expect(daySpan(day0 + 6 * H, day0 + 12 * H, day0, day0 + 24 * H)).toEqual({ left: 25, width: 25 });
+    const cut = daySpan(day0 - H, day0 + H, day0, day0 + 24 * H);
+    expect(cut.left).toBe(0);
+    expect(cut.width).toBeCloseTo(100 / 24);
   });
 });

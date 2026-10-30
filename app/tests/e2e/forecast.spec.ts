@@ -724,6 +724,11 @@ test('FC-6: Tag antippen öffnet die Wetterlage – Datumsleiste, Temperatur tat
   await expect(sheet.getByRole('heading', { name: 'Wind' })).toBeVisible();
   await expect(sheet.getByRole('heading', { name: 'Luftdruck' })).toBeVisible();
   await expect(sheet.getByText(/Aufgang 08:00 Uhr · Untergang 18:00 Uhr/)).toBeVisible();
+  // Solunar-Zeiten des Tages (offline berechnet) mit Theorie-Hinweis
+  await expect(sheet.getByRole('heading', { name: 'Solunar-Zeiten (Theorie)' })).toBeVisible();
+  await expect(sheet.getByText(/% beleuchtet/)).toBeVisible();
+  await expect(sheet.getByText(/Hauptzeit · Mond (oben|unten)/).first()).toBeVisible();
+  await expect(sheet.getByText(/wissenschaftlich nicht belegt/)).toBeVisible();
   expect(
     (await new AxeBuilder({ page }).analyze()).violations
       .filter((v) => v.impact === 'serious' || v.impact === 'critical')

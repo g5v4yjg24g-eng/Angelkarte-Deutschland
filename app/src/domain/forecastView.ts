@@ -1,6 +1,7 @@
 // Wetter-Ansicht (Wunsch Nutzer 2026-10-28, Vorbild iPhone-Wetter): Stundenleiste mit Sonnenauf- und -untergang,
 // 10-Tage-Liste mit Temperaturbalken, Tagesdetail mit Hoch/Tief. Rein, ohne DOM; Zeiten als Unix-ms.
 import type { Forecast, ForecastHour } from './forecast';
+import { moonEvents, moonPhase, solunarWindows, type MoonPhase, type SolunarWindow } from './solunar';
 
 const HOUR = 3_600_000;
 
@@ -170,4 +171,28 @@ export function niceTicks(min: number, max: number, count = 5): number[] {
   const ticks: number[] = [];
   for (let v = lo; v <= hi + step / 2; v += step) ticks.push(Math.round(v * 1000) / 1000);
   return ticks;
+}
+
+export interface SolunarDay {
+  windows: SolunarWindow[];
+  /** Mondphase zur Tagesmitte */
+  phase: MoonPhase;
+}
+
+/** Solunar-Zeiten eines Tages am Ort der Vorhersage (Tagesdetail, Wunsch Nutzer 2026-10-30) */
+export function solunarDay(f: Forecast, dayT: number): SolunarDay {
+  const i = f.days.findIndex((d) => d.t === dayT);
+  const end = f.days[i + 1]?.t ?? dayT + 24 * HOUR;
+  return {
+    windows: solunarWindows(moonEvents(dayT, end, f.lat, f.lng)),
+    phase: moonPhase(dayT + (end - dayT) / 2),
+  };
+}
+
+/** Lage eines Zeitfensters auf der Tagesleiste (0…100 %), am Tagesrand abgeschnitten */
+export function daySpan(from: number, to: number, dayT: number, dayEnd: number): { left: number; width: number } {
+  const len = dayEnd - dayT;
+  const a = Math.min(1, Math.max(0, (from - dayT) / len));
+  const b = Math.min(1, Math.max(0, (to - dayT) / len));
+  return { left: a * 100, width: (b - a) * 100 };
 }
