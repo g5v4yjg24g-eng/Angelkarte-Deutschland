@@ -379,10 +379,74 @@
   font-size: 1.15rem;
 }
 .sunRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: var(--space-2);
-  flex-wrap: wrap;
+}
+
+/* Solunar-Leiste im Tagesdetail */
+.solunarBar {
+  position: relative;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-text) 8%, transparent);
+  overflow: hidden;
+}
+.solunarBar > span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.solunarBar > i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px dashed color-mix(in srgb, var(--color-text) 25%, transparent);
+}
+.solunarMajor {
+  background: var(--color-accent);
+}
+.solunarMinor {
+  background: color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+.solunarAxis {
+  position: relative;
+  height: 1.1rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.solunarAxis span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.solunarAxis span:first-child {
+  transform: none;
+}
+.solunarAxis span:last-child {
+  transform: translateX(-100%);
+}
+.solunarList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+.solunarList li {
+  display: grid;
+  grid-template-columns: 12px auto 1fr;
+  align-items: center;
+  column-gap: var(--space-2);
+}
+.solunarList li > span:first-child {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex: none;
 }
 
 /* Tagesdiagramm */

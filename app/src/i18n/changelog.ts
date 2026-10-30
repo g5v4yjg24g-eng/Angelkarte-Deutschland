@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-10-30',
+    title: 'Solunar im Tagesdetail',
+    items: [
+      'Wetter: Im Tagesdetail stehen jetzt auch die Solunar-Zeiten des Tages – als Leiste über den Tag, mit Haupt- und Nebenzeiten und der Mondphase (Theorie, wissenschaftlich nicht belegt).',
+    ],
+  },
+  {
     id: '2026-10-28',
     title: 'Neues Wetter',
     items: [
