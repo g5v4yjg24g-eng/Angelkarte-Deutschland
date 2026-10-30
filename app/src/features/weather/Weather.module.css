@@ -80,30 +80,6 @@
 .facts dd {
   margin: 0;
 }
-.days {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: var(--space-2);
-}
-.day {
-  display: grid;
-  gap: 2px;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-}
-.dayHead {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-2);
-  font-weight: 650;
-}
-.day p {
-  margin: 0;
-}
 .biteBlock {
   display: grid;
   gap: var(--space-2);
@@ -127,20 +103,6 @@
 }
 .biteNow p {
   margin: 0;
-}
-.windows {
-  list-style: none;
-  margin: var(--space-1) 0 0;
-  padding: 0;
-  display: grid;
-  gap: 2px;
-}
-.windows li {
-  padding-left: var(--space-2);
-  border-left: 3px solid var(--color-border);
-}
-.windows .major {
-  border-left-color: var(--color-accent);
 }
 .tabs {
   display: grid;

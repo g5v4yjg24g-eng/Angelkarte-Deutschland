@@ -32,18 +32,6 @@ const stamp = (ms: number) =>
   new Date(ms).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Berlin' });
 const berlinDate = (ms: number) => new Date(ms).toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' });
 
-function dayTitle(ms: number, nowMs: number): string {
-  const d = berlinDate(ms);
-  if (d === berlinDate(nowMs)) return t.today;
-  if (d === berlinDate(nowMs + 86_400_000)) return t.tomorrow;
-  return new Date(ms).toLocaleDateString('de-DE', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'numeric',
-    timeZone: 'Europe/Berlin',
-  });
-}
-
 function ForecastView({
   f,
   nowMs,
@@ -80,15 +68,7 @@ function ForecastView({
         )}
         <PressureChart hours={chartHours} days={days} nowMs={nowMs} />
       </Section>
-      <BiteWindows
-        days={days}
-        lat={f.lat}
-        lng={f.lng}
-        nowMs={nowMs}
-        now={now}
-        change={change}
-        dayTitle={(ms) => dayTitle(ms, nowMs)}
-      />
+      <BiteWindows nowMs={nowMs} now={now} change={change} />
       <p className="muted">
         {t.note} {t.source(stamp(f.fetchedAt))}
       </p>
