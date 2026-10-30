@@ -1,4 +1,4 @@
-// Wetter zu einem Angeltermin: Tageswerte aus der Vorhersage am Gewässer (nur die nächsten 7 Tage) und die
+// Wetter zu einem Angeltermin: Tageswerte aus der Vorhersage am Gewässer (nur die nächsten 10 Tage) und die
 // Solunar-Hauptzeiten des Tages (offline, Theorie).
 import { useMemo } from 'react';
 import { de } from '../../i18n/de';

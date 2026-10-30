@@ -1,0 +1,499 @@
+/* Wetter im Stil des iPhone-Wetters (ohne Hintergrundbild): blaue Karten mit heller Schrift */
+.card {
+  --wx-cloud: #ffffff;
+  --wx-cloud-stroke: transparent;
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, #2b5a96, #34679f);
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .card {
+    background: linear-gradient(180deg, #1b3456, #224266);
+  }
+}
+:root[data-theme='dark'] .card {
+  background: linear-gradient(180deg, #1b3456, #224266);
+}
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid rgb(255 255 255 / 25%);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 90%);
+}
+
+/* Kopf */
+.hero {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 0;
+}
+.hero p {
+  margin: 0;
+}
+.heroPlace {
+  font-size: var(--text-lg, 1.15rem);
+  font-weight: 600;
+}
+.heroTemp {
+  font-size: 4.2rem;
+  font-weight: 250;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  padding-left: 0.3em;
+}
+.heroSky {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+.heroHiLo {
+  font-weight: 600;
+}
+
+/* Stundenleiste */
+.strip {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0 0 var(--space-1);
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.strip::-webkit-scrollbar {
+  display: none;
+}
+.stripItem {
+  flex: none;
+  min-width: 3.4rem;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  font-weight: 600;
+}
+.stripSun {
+  min-width: 6.5rem;
+}
+.stripTime {
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+.stripIcon {
+  display: grid;
+  justify-items: center;
+  min-height: 46px;
+  align-content: center;
+}
+.stripTemp {
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+.stripSun .stripTemp {
+  font-size: var(--text-sm);
+}
+.precip {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #a9dcff;
+  line-height: 1;
+}
+
+/* 10-Tage-Liste */
+.dayList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.dayList li + li {
+  border-top: 1px solid rgb(255 255 255 / 20%);
+}
+.dayRow {
+  display: grid;
+  grid-template-columns: 3.4rem 2.6rem 2.4rem minmax(3rem, 1fr) 2.4rem;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 3.4rem;
+  padding: var(--space-1) 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.dayRow:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-md, 12px);
+}
+.dayIcon {
+  display: grid;
+  justify-items: center;
+}
+.dayMin {
+  text-align: right;
+  color: rgb(255 255 255 / 80%);
+  font-variant-numeric: tabular-nums;
+}
+.dayMax {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.bar {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(0 0 0 / 25%);
+}
+.barFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 3px;
+}
+.barDot {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgb(0 0 0 / 35%);
+}
+
+/* Symbole */
+.icon {
+  display: block;
+  overflow: visible;
+}
+.sun {
+  fill: #f8c43a;
+}
+.ray {
+  stroke: #f8c43a;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.moon {
+  fill: #f2e9c4;
+}
+.cloud {
+  fill: var(--wx-cloud, #e3e9f0);
+  stroke: var(--wx-cloud-stroke, #8a9bb0);
+  stroke-width: 1;
+}
+.drop {
+  stroke: #5fb8f5;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.snow {
+  stroke: #cfe8ff;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+.bolt {
+  fill: #f8c43a;
+}
+.fog {
+  stroke: var(--wx-cloud, #c4cdd8);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.horizon {
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+.arrow {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Tagesdetail */
+.sheet {
+  --nav-clearance: 0px;
+  margin: auto auto 0;
+  width: 100%;
+  max-width: 40rem;
+  height: 94dvh;
+  max-height: 94dvh;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+}
+.sheet[open] {
+  animation: up 260ms var(--ease-out, ease-out);
+}
+.sheet::backdrop {
+  background: var(--color-scrim);
+}
+@keyframes up {
+  from {
+    transform: translateY(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet[open] {
+    animation: none;
+  }
+}
+.sheetInner {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+}
+.sheetHead {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 3.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.sheetHead h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 1.1rem;
+}
+.sheetClose {
+  position: absolute;
+  left: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: var(--color-surface-2);
+}
+.dateStrip {
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--color-border);
+}
+.dateStrip::-webkit-scrollbar {
+  display: none;
+}
+.dateButton {
+  flex: 1 0 2.9rem;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  min-height: var(--touch);
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.dateWeekday {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+.dateNum {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.dateButton[aria-pressed='true'] .dateNum {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.dateButton:focus-visible {
+  outline: 3px solid var(--color-focus);
+  border-radius: var(--radius-md, 12px);
+}
+.sheetBody {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-3) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom));
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+.sheetBody p {
+  margin: 0;
+}
+.detailDate {
+  text-align: center;
+  font-weight: 600;
+}
+.detailNow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+.detailTemp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 3rem;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.detailSky {
+  font-weight: 600;
+  text-align: right;
+}
+.detailSection {
+  display: grid;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+.detailSection h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.sunRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* Tagesdiagramm */
+.dayFigure {
+  position: relative;
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+.iconRow {
+  position: relative;
+  height: 26px;
+}
+.iconRow span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+}
+.dayChart {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+.gridLine {
+  stroke: var(--color-border);
+  stroke-width: 1;
+}
+.gridDash {
+  stroke: var(--color-border);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+.axis {
+  fill: var(--color-text-muted);
+  font-size: 11px;
+}
+.series {
+  fill: none;
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.pastLine {
+  stroke-dasharray: 6 5;
+  opacity: 0.75;
+}
+.pastShade {
+  opacity: 0.5;
+}
+.hatch {
+  stroke: var(--color-text-muted);
+  stroke-width: 1.2;
+  opacity: 0.35;
+}
+.nowLine {
+  stroke: var(--color-text-muted);
+  stroke-width: 1;
+}
+.marker {
+  fill: var(--color-surface);
+  stroke: var(--color-text);
+  stroke-width: 2;
+}
+.markerText {
+  fill: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+.tempLine {
+  stroke: #4fc3b8;
+}
+.tempStop1 {
+  stop-color: #4fc3b8;
+  stop-opacity: 0.45;
+}
+.tempStop2 {
+  stop-color: #3a6fb0;
+  stop-opacity: 0.08;
+}
+.precipLine {
+  stroke: #3fa9f5;
+}
+.precipStop1 {
+  stop-color: #3fa9f5;
+  stop-opacity: 0.4;
+}
+.precipStop2 {
+  stop-color: #3fa9f5;
+  stop-opacity: 0.05;
+}
+.windLine {
+  stroke: #9b8cf2;
+}
+.windStop1 {
+  stop-color: #9b8cf2;
+  stop-opacity: 0.35;
+}
+.windStop2 {
+  stop-color: #9b8cf2;
+  stop-opacity: 0.05;
+}
+.pressureLine {
+  stroke: var(--color-chart);
+}
+.pressureStop1 {
+  stop-color: var(--color-chart);
+  stop-opacity: 0.25;
+}
+.pressureStop2 {
+  stop-color: var(--color-chart);
+  stop-opacity: 0.03;
+}

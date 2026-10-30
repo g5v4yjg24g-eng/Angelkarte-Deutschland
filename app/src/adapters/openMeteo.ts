@@ -69,6 +69,7 @@ export function openMeteoForecastUrl(q: ForecastQuery, base = OPEN_METEO_FORECAS
     hourly: [
       'pressure_msl',
       'temperature_2m',
+      'apparent_temperature',
       'wind_speed_10m',
       'wind_direction_10m',
       'wind_gusts_10m',
@@ -83,6 +84,7 @@ export function openMeteoForecastUrl(q: ForecastQuery, base = OPEN_METEO_FORECAS
       'temperature_2m_max',
       'temperature_2m_min',
       'precipitation_sum',
+      'precipitation_probability_max',
       'weather_code',
     ].join(','),
     timezone: 'Europe/Berlin',

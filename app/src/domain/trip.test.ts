@@ -54,11 +54,11 @@ describe('Angelkalender', () => {
     expect(dayStartMs('2026-10-26')).toBe(Date.parse('2026-10-25T23:00:00Z'));
   });
 
-  it('Vorhersage: vorbei, verfügbar (heute + 6 Tage) oder erst später', () => {
+  it('Vorhersage: vorbei, verfügbar (heute + 9 Tage) oder erst später', () => {
     expect(forecastStatus('2026-10-21', '2026-10-22')).toEqual({ kind: 'past' });
     expect(forecastStatus('2026-10-22', '2026-10-22')).toEqual({ kind: 'available', dayIndex: 0 });
-    expect(forecastStatus('2026-10-28', '2026-10-22')).toEqual({ kind: 'available', dayIndex: 6 });
-    expect(forecastStatus('2026-11-05', '2026-10-22')).toEqual({ kind: 'later', from: '2026-10-30' });
+    expect(forecastStatus('2026-10-31', '2026-10-22')).toEqual({ kind: 'available', dayIndex: 9 });
+    expect(forecastStatus('2026-11-05', '2026-10-22')).toEqual({ kind: 'later', from: '2026-10-27' });
   });
 
   it('anstehende Termine: ab heute, sortiert nach Tag und Uhrzeit, ohne gelöschte', () => {

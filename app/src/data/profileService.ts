@@ -140,14 +140,18 @@ export async function toggleLike(
   });
 }
 
+/** letzte vergebene Zeit einer Kommentar-ID */
+let lastCommentMs = 0;
+
 export async function addComment(
   postId: string,
   text: string,
   authorId = LOCAL_AUTHOR,
   db: FangpunktDB = getDb(),
 ): Promise<PostComment> {
-  // ID beginnt mit der Zeit in ms: Kommentare derselben Sekunde bleiben in ihrer Reihenfolge
-  const id = `c-${Date.now().toString(36).padStart(9, '0')}-${newId()}`;
+  // ID beginnt mit der Zeit in ms (streng steigend): Kommentare derselben Sekunde bleiben in ihrer Reihenfolge
+  lastCommentMs = Math.max(Date.now(), lastCommentMs + 1);
+  const id = `c-${lastCommentMs.toString(36).padStart(9, '0')}-${newId()}`;
   return repo('postComments', db).create({ id, postId, authorId, text: text.trim() });
 }
 

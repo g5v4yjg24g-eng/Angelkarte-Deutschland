@@ -24,16 +24,13 @@ import { BiteWindows } from './BiteWindows';
 import { WeatherTabs } from './WeatherTabs';
 import { WeatherAlerts } from './AlertsList';
 import { GaugeCard } from './GaugeCard';
-import styles from './Weather.module.css';
+import { ForecastOverview } from './ForecastOverview';
 
 const t = de.forecast;
 const w = de.weather;
-const time = (ms: number) =>
-  new Date(ms).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' });
 const stamp = (ms: number) =>
   new Date(ms).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Berlin' });
 const berlinDate = (ms: number) => new Date(ms).toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' });
-const codeText = (c?: number) => (c === undefined ? undefined : (w.codes[c] ?? w.codeUnknown(c)));
 
 function dayTitle(ms: number, nowMs: number): string {
   const d = berlinDate(ms);
@@ -47,7 +44,17 @@ function dayTitle(ms: number, nowMs: number): string {
   });
 }
 
-function ForecastView({ f, nowMs, stale }: { f: Forecast; nowMs: number; stale: boolean }) {
+function ForecastView({
+  f,
+  nowMs,
+  stale,
+  placeLabel,
+}: {
+  f: Forecast;
+  nowMs: number;
+  stale: boolean;
+  placeLabel: string;
+}) {
   const now = hourAt(f, nowMs);
   const change = now ? pressureChange(f, now.t) : undefined;
   // Vergangene Tage (past_days) und Stunden vor heute 0 Uhr ausblenden
@@ -57,79 +64,21 @@ function ForecastView({ f, nowMs, stale }: { f: Forecast; nowMs: number; stale: 
   return (
     <>
       {stale && <Notice tone="warning">{t.offlineCached(stamp(f.fetchedAt))}</Notice>}
-      {now && (
-        <section className={styles.nowCard} aria-label={t.now}>
-          <span className="muted">{t.now}</span>
-          {now.tempC !== undefined && <span className={styles.nowTemp}>{w.tempValue(now.tempC)}</span>}
-          <dl className={styles.facts}>
-            {codeText(now.code) && (
-              <div>
-                <dt>{w.sky}</dt>
-                <dd>{codeText(now.code)}</dd>
-              </div>
-            )}
-            {now.pressureHpa !== undefined && (
-              <div>
-                <dt>{t.pressure}</dt>
-                <dd>
-                  {w.pressureValue(now.pressureHpa)}
-                  {change !== undefined && ` · ${t.pressureChange(change, PRESSURE_SPAN_H)}`}
-                </dd>
-              </div>
-            )}
-            {now.windMs !== undefined && (
-              <div>
-                <dt>{w.wind}</dt>
-                <dd>
-                  {w.windValue(
-                    now.windMs,
-                    now.windDirDeg === undefined ? undefined : w.compass[compassIndex(now.windDirDeg)],
-                    now.gustMs,
-                  )}
-                </dd>
-              </div>
-            )}
-          </dl>
-        </section>
-      )}
+      <ForecastOverview f={f} days={days} now={now} nowMs={nowMs} placeLabel={placeLabel} />
       <Section title={t.pressureChart}>
+        {now?.pressureHpa !== undefined && (
+          <p className="muted">
+            {w.pressureValue(now.pressureHpa)}
+            {change !== undefined && ` · ${t.pressureChange(change, PRESSURE_SPAN_H)}`}
+            {now.windMs !== undefined &&
+              ` · ${w.wind} ${w.windValue(
+                now.windMs,
+                now.windDirDeg === undefined ? undefined : w.compass[compassIndex(now.windDirDeg)],
+                now.gustMs,
+              )}`}
+          </p>
+        )}
         <PressureChart hours={chartHours} days={days} nowMs={nowMs} />
-      </Section>
-      <Section title={t.days}>
-        <ul className={styles.days}>
-          {days.map((d) => (
-            <li key={d.t} className={styles.day}>
-              <div className={styles.dayHead}>
-                <span>{dayTitle(d.t, nowMs)}</span>
-                {d.day.tMin !== undefined && d.day.tMax !== undefined && (
-                  <span className="tabular">{t.tempRange(d.day.tMin, d.day.tMax)}</span>
-                )}
-              </div>
-              <p className="muted">
-                {[
-                  codeText(d.day.code),
-                  d.day.precipSum !== undefined && t.precip(d.day.precipSum),
-                  d.windMaxMs !== undefined && t.wind(d.windMaxMs, d.gustMaxMs),
-                ]
-                  .filter(Boolean)
-                  .join(' · ')}
-              </p>
-              <p className="muted tabular">
-                {[
-                  d.pressureMin !== undefined &&
-                    d.pressureMax !== undefined &&
-                    `${t.pressure} ${t.pressureRange(d.pressureMin, d.pressureMax)}`,
-                  d.pressureDelta !== undefined && t.signedHpa(d.pressureDelta),
-                  d.day.sunrise !== undefined &&
-                    d.day.sunset !== undefined &&
-                    t.sun(time(d.day.sunrise), time(d.day.sunset)),
-                ]
-                  .filter(Boolean)
-                  .join(' · ')}
-              </p>
-            </li>
-          ))}
-        </ul>
       </Section>
       <BiteWindows
         days={days}
@@ -164,6 +113,8 @@ export function WeatherPage() {
   const { state, reload } = useForecast(enabled ? q : undefined);
   const [nowMs] = useState(() => Date.now());
 
+  const placeLabel = useMe ? t.myLocation : (water?.label ?? t.myLocation);
+
   const options = [
     { value: 'me', label: t.myLocationRounded },
     ...(waters ?? []).map((o) => ({ value: o.key, label: o.sub ? `${o.label} (${o.sub})` : o.label })),
@@ -180,7 +131,7 @@ export function WeatherPage() {
   else if (useMe && geo.status === 'denied') body = <Notice tone="warning">{t.locationDenied}</Notice>;
   else if (useMe && geo.status !== 'ok') body = <Notice>{t.locating}</Notice>;
   else if (state.status === 'ok')
-    body = <ForecastView f={state.forecast} nowMs={nowMs} stale={state.stale} />;
+    body = <ForecastView f={state.forecast} nowMs={nowMs} stale={state.stale} placeLabel={placeLabel} />;
   else if (state.status === 'error')
     body = (
       <Notice tone="error">
@@ -191,7 +142,7 @@ export function WeatherPage() {
       </Notice>
     );
   else if (state.status === 'loading' && state.cached)
-    body = <ForecastView f={state.cached} nowMs={nowMs} stale={false} />;
+    body = <ForecastView f={state.cached} nowMs={nowMs} stale={false} placeLabel={placeLabel} />;
   else body = <Notice>{t.loading}</Notice>;
 
   return (
