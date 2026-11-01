@@ -80,6 +80,25 @@ Auf TikTok höchstens 3–5 Hashtags, auf YouTube Shorts `#shorts` + 2 Themen-Ha
 **YouTube Shorts – Titel:** Fangpunkt in 17 Sekunden – die Angel-App für ganz Deutschland · **Beschreibung:** wie Instagram, mit dem Link aus der Bio.
 **CTA:** Link in der Bio.
 
+## 02c · Reel V1 „Fang eintragen, bevor er zurück im Wasser ist“ (So 01.11., `videos/v1-fang-eintragen-1080x1920.mp4`)
+**Plattform:** Instagram Reel, dasselbe Video auf TikTok und YouTube Shorts · **Titelbild:** `stories/reel-cover/cover-video-v1-1080x1920.png` · **Ton:** Wassergeräusch ist drin; Musik aus der Plattform-Bibliothek nur leise darunter.
+Keine Sekundenangabe im Text: Die App-Aufnahme ist automatisiert, also keine gemessene Zeit.
+
+**Caption (Instagram):**
+> Fang eintragen, bevor er zurück im Wasser ist. 🎣
+>
+> Vier Tipps: Fang erfassen, Stelle auf der Karte antippen, Fischart wählen, speichern. Datum und Uhrzeit sind schon drin – und der Fisch ist schnell wieder im Wasser.
+>
+> Kostenlos, ohne Konto, deine Daten bleiben auf dem Handy. Link in der Bio.
+>
+> Kartendaten © OpenStreetMap-Mitwirkende · Video Fisch: Pexels
+
+**Hashtags:** `#angeln #catchandrelease #fangbuch #angelapp #raubfischangeln #petriheil`
+
+**TikTok:** Fang eintragen, bevor er zurück im Wasser ist 🎣 Vier Tipps, fertig. Kostenlos, ohne Konto – Link im Profil. `#angeln #catchandrelease #fyp`
+**YouTube Shorts – Titel:** Fang eintragen in vier Tipps – bevor der Fisch zurück im Wasser ist · **Beschreibung:** wie Instagram, mit dem Link aus der Bio.
+**CTA:** Link in der Bio.
+
 ## 03 · Tiefenkarten – noch nicht
 **Plattform:** Instagram Feed + Facebook · **Erweiterbar:** Reel „Ehrlich gesagt“ (Video-Konzept V4), Story-Highlight „Ehrlich“.
 

@@ -45,7 +45,7 @@ P = [
      "Reichweite über Nicht-Follower; Kernnutzen zeigen",
      "Fang eintragen, bevor der Fisch zurück im Wasser ist.",
      "Fertiges Video hochladen: Fisch in der Hand → App in 4 Schritten (Fang erfassen, Stelle antippen, Fischart, Speichern) → Freilassen → Schluss-Karte. Musik aus der Plattform-Bibliothek leise dazulegen.",
-     "Link in der Bio.", "Fertiges Video videos/v1-fang-eintragen-1080x1920.mp4 (Lizenz des Fisch-Clips vorher bestätigen)", "10 min",
+     "Link in der Bio.", "Fertiges Video videos/v1-fang-eintragen-1080x1920.mp4 (Fisch-Clip: Pexels-Video 20594663, Quelle geprüft)", "10 min",
      "TikTok, YouTube Shorts, Story"),
     # --- Woche 2 ---
     (2, "Di", IG_R, "Reel 20–30 s", "Vertrauen", "Werkstatt-Notiz", "Warum es Fangpunkt gibt",

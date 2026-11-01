@@ -13,7 +13,7 @@ Ergebnis: `../v1-fang-eintragen-1080x1920.mp4`.
 ## Dateien
 - `index.html` – Komposition (HTML + GSAP), Texte und Zeiten dort ändern.
 - `assets/app-aufnahme.mp4`, `assets/marks.json` – erzeugt mit `node marketing/tools/record-app.mjs` (Live-App, Beispieldaten, Uhrzeit im Formular auf 07:42 gesetzt). Für flüssige Bewegung wird fünffach verlangsamt aufgenommen (CSS-Animationen über CDP, Timer der App, Pausen) und wieder beschleunigt – sonst liefert der Software-Renderer nur ca. 6 Bilder/s. Ändern sich die Zeiten in `marks.json`, die `data-start`-Werte der Schritte in `index.html` anpassen (App-Video beginnt bei 3,4 s).
-- `assets/fisch-freilassen.mp4` – **nicht im Repository** (fremdes Material, vom Nutzer hochgeladen am 2026-10-23; Dateiname `20594663-hd_1920_1080_24fps.mp4` deutet auf Pexels hin). **[O]** Quelle und Lizenz bestätigen, bevor das Video veröffentlicht wird. Zum Neurendern die Datei wieder unter diesem Namen ablegen.
+- `assets/fisch-freilassen.mp4` – **nicht im Repository** (fremdes Material, vom Nutzer hochgeladen am 2026-10-23). **[V]** Quelle: Pexels-Video 20594663 – Datei byteweise identisch mit `https://videos.pexels.com/video-files/20594663/20594663-hd_1920_1080_24fps.mp4` (gleiche Größe 10 361 627 Bytes, geprüft 2026-11-01). Lizenz: Pexels-Lizenz (https://www.pexels.com/license/, kostenlos, ohne Namensnennung, Bearbeitung erlaubt); die Seite selbst war aus dieser Umgebung nicht abrufbar (403). Zum Neurendern die Datei wieder unter diesem Namen ablegen.
 - `assets/fonts/` – Inter und Fraunces (SIL OFL 1.1), `assets/fisch.svg` aus dem Marken-Master.
 
 ## Rendern

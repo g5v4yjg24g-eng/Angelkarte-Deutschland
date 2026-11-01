@@ -1,5 +1,5 @@
 // Bildschirmaufnahme für Video V1 (HyperFrames-Projekt marketing/videos/v1-hyperframes):
-// echte Live-App mit Beispieldaten, aufgenommen per Chrome-Screencast (scharfe Einzelbilder in Gerätepixeln).
+// echte Live-App mit Beispieldaten, Einzelbilder in doppelter Auflösung (Zeitlupe, danach beschleunigt).
 // Ergebnis: v1-hyperframes/assets/app-aufnahme.mp4 und assets/marks.json (Zeitpunkte der vier Tipps in Sekunden).
 // Aufruf (Repo-Root): node marketing/tools/record-app.mjs
 import { execFileSync } from 'node:child_process';
@@ -15,13 +15,13 @@ rmSync(build, { recursive: true, force: true });
 mkdirSync(`${build}frames`, { recursive: true });
 const browser = await chromium.launch({
   executablePath: process.env.CHROME ?? '/opt/pw-browsers/chromium',
-  args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--lang=de-DE'],
+  args: ['--force-device-scale-factor=2', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--lang=de-DE'],
   env: { ...process.env, LANG: 'de_DE.UTF-8', LANGUAGE: 'de' },
 });
 
 // ---------- 1. Aufnahme ----------
 const ctx = await browser.newContext({
-  viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: 'de-DE', timezoneId: 'Europe/Berlin',
+  viewport: { width: 390, height: 844 }, locale: 'de-DE', timezoneId: 'Europe/Berlin',
   geolocation: HOME, permissions: ['geolocation'], colorScheme: 'light', serviceWorkers: 'block',
 });
 const page = await ctx.newPage();
@@ -86,23 +86,26 @@ await page.evaluate(() =>
 );
 
 const cdp = await ctx.newCDPSession(page);
-const frames = [];
-let t0;
-cdp.on('Page.screencastFrame', async ({ data, metadata, sessionId }) => {
-  t0 ??= metadata.timestamp;
-  const file = `${build}frames/${String(frames.length).padStart(5, '0')}.jpg`;
-  writeFileSync(file, Buffer.from(data, 'base64'));
-  frames.push({ file, t: (metadata.timestamp - t0) / SLOW });
-  await cdp.send('Page.screencastFrameAck', { sessionId }).catch(() => {});
-});
 // Flüssig trotz Software-Rendering: alles SLOW-fach verlangsamt aufnehmen (CSS-/Web-Animationen über CDP,
-// Timer über __fpSlow, eigene Pausen) und beim Zusammensetzen wieder beschleunigen → effektiv ca. 30 Bilder/s.
+// Timer über __fpSlow, eigene Pausen) und beim Zusammensetzen wieder beschleunigen. Einzelbilder per captureScreenshot
+// in doppelter Auflösung (--force-device-scale-factor; der Screencast liefert headless nur 390 px Breite).
 const SLOW = 5;
 await cdp.send('Animation.enable');
 await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 / SLOW });
 await page.evaluate((k) => (window.__fpSlow = k), SLOW);
-await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92, maxWidth: 780, maxHeight: 1688 });
-const startWall = Date.now();
+const frames = [];
+let recording = true;
+const t0 = Date.now();
+const grab = (async () => {
+  while (recording) {
+    const t = (Date.now() - t0) / 1000 / SLOW;
+    const { data } = await cdp.send('Page.captureScreenshot', { format: 'jpeg', quality: 92 });
+    const file = `${build}frames/${String(frames.length).padStart(5, '0')}.jpg`;
+    writeFileSync(file, Buffer.from(data, 'base64'));
+    frames.push({ file, t });
+  }
+})();
+const startWall = t0;
 const mark = {};
 const stamp = (k) => (mark[k] = (Date.now() - startWall) / 1000 / SLOW);
 const pause = (ms) => page.waitForTimeout(ms * SLOW);
@@ -132,7 +135,8 @@ stamp('s4');
 await save.click();
 await pause(2600);
 stamp('end');
-await cdp.send('Page.stopScreencast');
+recording = false;
+await grab;
 await ctx.close();
 if (frames.length < 20) throw new Error(`Zu wenige Bilder aufgenommen (${frames.length})`);
 // Zeitbasis angleichen: Screencast-Zeit beginnt beim ersten Bild, die Marken bei Aufnahmebeginn
@@ -148,7 +152,7 @@ writeFileSync(`${build}frames.txt`, list);
 console.log(`Aufnahme: ${frames.length} Bilder, ${recLen.toFixed(1)} s`, mark);
 
 await browser.close();
-// 30 fps, Gerätepixel (1170 × 2532); Tipp-Zeitpunkte relativ zum Beginn der Aufnahme
+// 30 fps, 780 × 1688; Tipp-Zeitpunkte relativ zum Beginn der Aufnahme
 execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', `${build}frames.txt`,
   '-vf', 'fps=30,format=yuv420p', '-c:v', 'libx264', '-preset', 'slow', '-crf', '16', '-movflags', '+faststart',
   `${assets}app-aufnahme.mp4`], { stdio: 'inherit' });

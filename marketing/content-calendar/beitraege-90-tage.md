@@ -49,7 +49,7 @@ Launch-Post am Sonntag vor Woche 1 (18:00), Woche 1 beginnt am 2026-10-26 (Monta
 - **Hook:** „Fang eintragen, bevor der Fisch zurück im Wasser ist.“
 - **Ablauf:** Fertiges Video hochladen: Fisch in der Hand → App in 4 Schritten (Fang erfassen, Stelle antippen, Fischart, Speichern) → Freilassen → Schluss-Karte. Musik aus der Plattform-Bibliothek leise dazulegen.
 - **CTA:** Link in der Bio.
-- **Material:** Fertiges Video videos/v1-fang-eintragen-1080x1920.mp4 (Lizenz des Fisch-Clips vorher bestätigen)
+- **Material:** Fertiges Video videos/v1-fang-eintragen-1080x1920.mp4 (Fisch-Clip: Pexels-Video 20594663, Quelle geprüft)
 - **Vorbereitung:** 10 min
 - **Wiederverwendung:** TikTok, YouTube Shorts, Story
 

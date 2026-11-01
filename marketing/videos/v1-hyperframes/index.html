@@ -200,22 +200,22 @@
       <div id="app-shade" class="clip shade-full" data-start="3.2" data-duration="9.66" data-track-index="1"></div>
       <div id="phone" class="phone">
         <div class="screen">
-          <video id="app-video" src="assets/app-aufnahme.mp4" muted data-start="3.4" data-duration="8.96"></video>
+          <video id="app-video" src="assets/app-aufnahme.mp4" muted data-start="3.4" data-duration="9.21"></video>
         </div>
       </div>
-      <div id="cap1" class="clip cap" data-start="4.8" data-duration="1.31" data-track-index="3">
+      <div id="cap1" class="clip cap" data-start="4.8" data-duration="1.33" data-track-index="3">
         <div class="row"><span class="n">1</span><span class="t">Fang erfassen</span></div>
         <span class="s">1 von 4 Tipps</span>
       </div>
-      <div id="cap2" class="clip cap" data-start="6.11" data-duration="1.62" data-track-index="3">
+      <div id="cap2" class="clip cap" data-start="6.13" data-duration="1.63" data-track-index="3">
         <div class="row"><span class="n">2</span><span class="t">Stelle antippen</span></div>
         <span class="s">2 von 4 Tipps</span>
       </div>
-      <div id="cap3" class="clip cap" data-start="7.73" data-duration="2.02" data-track-index="3">
+      <div id="cap3" class="clip cap" data-start="7.76" data-duration="2.03" data-track-index="3">
         <div class="row"><span class="n">3</span><span class="t">Fischart wählen</span></div>
         <span class="s">3 von 4 Tipps</span>
       </div>
-      <div id="cap4" class="clip cap" data-start="9.75" data-duration="3.11" data-track-index="3">
+      <div id="cap4" class="clip cap" data-start="9.79" data-duration="3.07" data-track-index="3">
         <div class="row"><span class="n">4</span><span class="t">Speichern. <em>Fertig.</em></span></div>
         <span class="s">4 von 4 Tipps</span>
       </div>
@@ -247,7 +247,7 @@
       tl.fromTo('#phone', { opacity: 0, y: 160 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 3.2);
       // Schritte
       ['#cap1', '#cap2', '#cap3', '#cap4'].forEach((id, i) => {
-        const at = [4.8, 6.11, 7.73, 9.75][i];
+        const at = [4.8, 6.13, 7.76, 9.79][i];
         tl.fromTo(id, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' }, at);
       });
       // Übergang zum Freilassen
