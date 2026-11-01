@@ -104,9 +104,9 @@ DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
  en\, Stelle antippen\, Fischart\, Speichern) → Freilassen → Schluss-Ka
  rte. Musik aus der Plattform-Bibliothek leise dazulegen.\n\nCTA: Link in d
  er Bio.\n\nMaterial: Fertiges Video videos/v1-fang-eintragen-1080x1920.mp4
-  (Lizenz des Fisch-Clips vorher bestätigen)\nVorbereitung: 10 min\nWieder
- verwendung: TikTok\, YouTube Shorts\, Story\n\nCaption: marketing/posts/CA
- PTIONS.md
+  (Fisch-Clip: Pexels-Video 20594663\, Quelle geprüft)\nVorbereitung: 10 m
+ in\nWiederverwendung: TikTok\, YouTube Shorts\, Story\n\nCaption: marketin
+ g/posts/CAPTIONS.md
 CATEGORIES:Fangpunkt Social Media
 TRANSP:TRANSPARENT
 BEGIN:VALARM
@@ -120,23 +120,20 @@ UID:post-04-2026-11-03@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261103T170000Z
 DTEND:20261103T173000Z
-SUMMARY:Post: Warum es Fangpunkt gibt (Reel 20–30 s)
+SUMMARY:Post: Gute Stelle? Mit einem Tipp merken (Reel 14 s (fertig))
 DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
-  Video)\nFormat: Reel 20–30 s\nSäule: Vertrauen · Serie: Werkstatt-Not
- iz\nZiel: Gesicht/Stimme hinter der App\, Glaubwürdigkeit\n\nHook: „Mei
- ne alte Angel-App war eine einzige HTML-Datei für einen See.“\n\nAblauf
- : Selfie-Video am Wasser oder Sprechertext über alte/neue App-Aufnahmen: 
- von einem See zu ganz Deutschland\, ohne Konto\, ohne Werbung.\n\nCTA: Fol
- gen\, wenn du sehen willst\, wie es weitergeht.\n\nMaterial: Fertiges Reel
-  videos/reel-warum-fangpunkt-1080x1920.mp4 (Text-Reel\, See + App)\; Cover
-  cover-serie-werkstatt-notiz\nVorbereitung: 10 min\nWiederverwendung: TikT
- ok\, Shorts\; Text als Facebook-Beitrag\n\nCaption: marketing/posts/CAPTIO
- NS.md
+  Video)\nFormat: Reel 14 s (fertig)\nSäule: Reichweite · Serie: Kurz erk
+ lärt\nZiel: Reichweite: Bewegung in Sekunde 1 statt ruhigem Einstieg (Leh
+ re aus dem Nebel-Reel)\n\nHook: „Gute Stelle?“\n\nAblauf: Steg-Clip 02
+ : Überkopfwurf in Zeitlupe\, Text „Gute Stelle?“ → „Mit einem Tip
+ p auf die Karte merken.“ → Schluss-Karte.\n\nCTA: Link in der Bio.\n\n
+ Material: videos/clips-steg-02-wurf-1080x1920.mp4\nVorbereitung: 10 min\nW
+ iederverwendung: TikTok\, Shorts\n\nCaption: marketing/posts/CAPTIONS.md
 CATEGORIES:Fangpunkt Social Media
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Post: Warum es Fangpunkt gibt (Reel 20–30 s)
+DESCRIPTION:Post: Gute Stelle? Mit einem Tipp merken (Reel 14 s (fertig))
 TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
@@ -145,20 +142,23 @@ UID:post-05-2026-11-05@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261105T170000Z
 DTEND:20261105T173000Z
-SUMMARY:Post: Digitales Fangbuch (Bildbeitrag)
-DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
- ldbeitrag\nSäule: Erklärung · Serie: Fangbuch-Freitag\nZiel: Kernfunkti
- on Fangbuch erklären\n\nHook: „Jeder Biss zählt. Auch der verlorene.
- “\n\nAblauf: Motiv 04. Caption: Fang\, Fischkontakt\, Fehlbiss\, Beobach
- tung – warum Fehlbisse für die Auswertung wichtig sind.\n\nCTA: Wie not
- ierst du bisher deine Fänge? Kommentar.\n\nMaterial: posts/04-fangbuch-fe
- ed-1080x1440.png\nVorbereitung: 15 min\nWiederverwendung: Story mit Umfrag
- e „Zettel / Handy / gar nicht“\n\nCaption: marketing/posts/CAPTIONS.md
+SUMMARY:Post: Digitales Fangbuch (Karussell (2))
+DESCRIPTION:Plattform: Instagram Karussell → Facebook-Seite (Bilder) · T
+ ikTok-Fotomodus\nFormat: Karussell (2)\nSäule: Erklärung · Serie: Fangb
+ uch-Freitag\nZiel: Kernfunktion Fangbuch erklären\, echtes Foto als Einst
+ ieg\n\nHook: „Jeder Biss zählt. Auch der verlorene.“\n\nAblauf: Folie
+  1: eigenes Barsch-Foto mit Hook. Folie 2: Motiv 04. Caption: Fang\, Fisch
+ kontakt\, Fehlbiss\, Beobachtung – warum Fehlbisse für die Auswertung w
+ ichtig sind.\n\nCTA: Wie notierst du bisher deine Fänge? Kommentar.\n\nMa
+ terial: Folie 1 aus eigenem Fangfoto (wird erstellt) + posts/04-fangbuch-f
+ eed-1080x1440.png\nVorbereitung: 15 min\nWiederverwendung: Story mit Umfra
+ ge „Zettel / Handy / gar nicht“\n\nCaption: marketing/posts/CAPTIONS.m
+ d
 CATEGORIES:Fangpunkt Social Media
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Post: Digitales Fangbuch (Bildbeitrag)
+DESCRIPTION:Post: Digitales Fangbuch (Karussell (2))
 TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
@@ -189,21 +189,23 @@ UID:post-07-2026-11-08@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261108T090000Z
 DTEND:20261108T093000Z
-SUMMARY:Post: Luftdruck der Woche (Reel 20 s)
+SUMMARY:Post: Luftdruck der Woche (Reel 12 s)
 DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
-  Video)\nFormat: Reel 20 s\nSäule: Reichweite · Serie: Beißfenster-Chec
+  Video)\nFormat: Reel 12 s\nSäule: Reichweite · Serie: Beißfenster-Chec
  k\nZiel: Wiederkehrender Sonntags-Termin aufbauen\n\nHook: „Luftdruck f
- ällt – was heißt das für dein Wochenende?“\n\nAblauf: Bildschirmauf
- nahme Wetter → Luftdruck-Verlauf. Klar sagen: Zusammenhang ist umstritte
- n\; die App zeigt deine eigenen Daten ab 20 Bissen.\n\nCTA: Welche Erfahru
- ng hast du mit fallendem Luftdruck?\n\nMaterial: Bildschirmaufnahme Wetter
- seite\nVorbereitung: 40 min\nWiederverwendung: TikTok\, Shorts\n\nCaption:
-  marketing/posts/CAPTIONS.md
+ ällt – was heißt das für dein Wochenende?“\n\nAblauf: Steg-Clip 06 
+ als Intro (5 s\, „Angelwetter der Woche“) → aktueller Luftdruck-Verl
+ auf aus der App (7 s). Klar sagen: Zusammenhang ist umstritten\; die App z
+ eigt deine eigenen Daten ab 20 Bissen.\n\nCTA: Welche Erfahrung hast du mi
+ t fallendem Luftdruck?\n\nMaterial: videos/clips-steg-06-sonntag-intro-108
+ 0x1920.mp4 + Wetter-Screenshot vom Tag (am Samstag erstellen)\nVorbereitun
+ g: 20 min\nWiederverwendung: TikTok\, Shorts\n\nCaption: marketing/posts/C
+ APTIONS.md
 CATEGORIES:Fangpunkt Social Media
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Post: Luftdruck der Woche (Reel 20 s)
+DESCRIPTION:Post: Luftdruck der Woche (Reel 12 s)
 TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
@@ -212,21 +214,21 @@ UID:post-08-2026-11-10@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261110T170000Z
 DTEND:20261110T173000Z
-SUMMARY:Post: „Wo war nochmal die Stelle?“ (Reel 25 s)
+SUMMARY:Post: Kurz hinsetzen – Pause zählt nicht (Reel 14 s (fertig))
 DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
-  Video)\nFormat: Reel 25 s\nSäule: Reichweite · Serie: Problem am Wasser
- \nZiel: Problem-Lösung\, hohe Wiedererkennung\n\nHook: „Du findest die 
- Stelle vom letzten Mal nicht wieder?“\n\nAblauf: Szene: Ratlos am Ufer (
- eigene Aufnahme) → Karte → gespeicherte Angelstelle → Fang dort. Sie
- he V2.\n\nCTA: Speichern und beim nächsten Mal ausprobieren.\n\nMaterial:
-  Uferclip\, Bildschirmaufnahme Karte\; Cover cover-video-v2\nVorbereitung:
-  60 min\nWiederverwendung: TikTok\, Shorts\n\nCaption: marketing/posts/CAP
- TIONS.md
+  Video)\nFormat: Reel 14 s (fertig)\nSäule: Reichweite · Serie: Clip tri
+ fft App\nZiel: Echte Szene und echte App gleichzeitig zeigen (Split-Screen
+ )\n\nHook: „Kurz hinsetzen.“\n\nAblauf: Oben Steg-Aufnahme (Hinsetzen)
+ \, unten die App: „Pause“ → 15 Minuten später → „Weiter angeln
+ “\, Angelzeit bleibt stehen.\n\nCTA: Link in der Bio.\n\nMaterial: video
+ s/clips-app-01-pause-1080x1920.mp4\nVorbereitung: 10 min\nWiederverwendung
+ : TikTok\, Shorts\n\nCaption: marketing/posts/CAPTIONS.md
 CATEGORIES:Fangpunkt Social Media
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Post: „Wo war nochmal die Stelle?“ (Reel 25 s)
+DESCRIPTION:Post: Kurz hinsetzen – Pause zählt nicht (Reel 14 s (fertig)
+ )
 TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
@@ -235,25 +237,50 @@ UID:post-09-2026-11-12@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261112T170000Z
 DTEND:20261112T173000Z
-SUMMARY:Post: Angelstellen & Heatmap (Bildbeitrag)
-DESCRIPTION:Plattform: Instagram Bildbeitrag → Facebook-Seite\nFormat: Bi
- ldbeitrag\nSäule: Erklärung · Serie: Kurz erklärt\nZiel: Datenschutz a
- ls Vorteil zeigen\n\nHook: „Deine Stellen. Nur auf deinem Handy.“\n\nA
- blauf: Motiv 07. Caption: Markierungen per Tipp\, Heatmap ab 30 Fängen si
- nnvoll\, nichts wird hochgeladen.\n\nCTA: Wie viele Stellen hast du im Kop
- f statt auf dem Handy?\n\nMaterial: posts/07-angelstellen-feed-1080x1440.p
- ng\nVorbereitung: 15 min\nWiederverwendung: Story\n\nCaption: marketing/po
- sts/CAPTIONS.md
+SUMMARY:Post: Angelstellen & Heatmap (Karussell (2))
+DESCRIPTION:Plattform: Instagram Karussell → Facebook-Seite (Bilder) · T
+ ikTok-Fotomodus\nFormat: Karussell (2)\nSäule: Erklärung · Serie: Kurz 
+ erklärt\nZiel: Datenschutz als Vorteil zeigen\, echtes Foto als Einstieg\
+ n\nHook: „Deine Stellen. Nur auf deinem Handy.“\n\nAblauf: Folie 1: ei
+ genes Hecht-Foto mit Hook. Folie 2: Motiv 07. Caption: Markierungen per Ti
+ pp\, Heatmap ab 30 Fängen sinnvoll\, nichts wird hochgeladen.\n\nCTA: Wie
+  viele Stellen hast du im Kopf statt auf dem Handy?\n\nMaterial: Folie 1 a
+ us eigenem Fangfoto (wird erstellt) + posts/07-angelstellen-feed-1080x1440
+ .png\nVorbereitung: 15 min\nWiederverwendung: Story\n\nCaption: marketing/
+ posts/CAPTIONS.md
 CATEGORIES:Fangpunkt Social Media
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Post: Angelstellen & Heatmap (Bildbeitrag)
+DESCRIPTION:Post: Angelstellen & Heatmap (Karussell (2))
 TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-10-2026-11-15@fangpunkt-redaktionsplan
+UID:post-10-2026-11-14@fangpunkt-redaktionsplan
+DTSTAMP:20261023T000000Z
+DTSTART:20261114T090000Z
+DTEND:20261114T093000Z
+SUMMARY:Post: Warum es Fangpunkt gibt (kurz) (Reel ≤ 15 s)
+DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
+  Video)\nFormat: Reel ≤ 15 s\nSäule: Vertrauen · Serie: Werkstatt-Noti
+ z\nZiel: Gesicht/Geschichte hinter der App – in der Hälfte der Zeit\n\n
+ Hook: „Meine erste Angel-App war eine einzige HTML-Datei.“\n\nAblauf: 
+ Text-Reel auf 15 s kürzen: Hook sofort\, dann „Heute: Fangpunkt“ mit 
+ Handy\, Schluss-Karte.\n\nCTA: Folgen\, wenn du sehen willst\, wie es weit
+ ergeht.\n\nMaterial: Kürzung von videos/reel-warum-fangpunkt-1080x1920.mp
+ 4 (23 s → 15 s)\nVorbereitung: 15 min\nWiederverwendung: TikTok\, Shorts
+ \n\nCaption: marketing/posts/CAPTIONS.md
+CATEGORIES:Fangpunkt Social Media
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Post: Warum es Fangpunkt gibt (kurz) (Reel ≤ 15 s)
+TRIGGER:-PT120M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:post-11-2026-11-15@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261115T090000Z
 DTEND:20261115T093000Z
@@ -275,29 +302,30 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-11-2026-11-17@fangpunkt-redaktionsplan
+UID:post-12-2026-11-17@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261117T170000Z
 DTEND:20261117T173000Z
-SUMMARY:Post: Fänge pro Stunde statt Fänge pro Tag (Reel 30 s)
+SUMMARY:Post: Kein Biss? Gehört dazu (Reel 10 s (fertig))
 DESCRIPTION:Plattform: Instagram Reel → TikTok + YouTube Shorts (gleiches
-  Video)\nFormat: Reel 30 s\nSäule: Reichweite · Serie: Wissen in 30 Seku
- nden\nZiel: Mehrwert ohne App-Zwang\, Statistik-Denke\n\nHook: „10 Fisch
- e an einem Tag sind nicht gut – wenn du 12 Stunden da warst.“\n\nAblau
- f: Rechenbeispiel als Texteinblendung\, dann Statistik-Screen „Fänge pr
- o Stunde“ mit n = …\n\nCTA: Rechnest du deine Angelzeit mit?\n\nMateri
- al: Statistik-Screenshot\, Texteinblendungen\nVorbereitung: 45 min\nWieder
- verwendung: TikTok\, Shorts\n\nCaption: marketing/posts/CAPTIONS.md
+  Video)\nFormat: Reel 10 s (fertig)\nSäule: Reichweite · Serie: Wissen i
+ n 30 Sekunden\nZiel: Mehrwert ohne App-Zwang\, Statistik-Denke – kurz st
+ att 30 s\n\nHook: „Kein Biss? Gehört dazu.“\n\nAblauf: Steg-Clip 04: 
+ 7 Minuten Werfen als Zeitraffer\, Text „Fänge pro Angelstunde – auch 
+ Schneidertage zählen.“ → Schluss-Karte.\n\nCTA: Rechnest du deine Ang
+ elzeit mit?\n\nMaterial: videos/clips-steg-04-schneidertag-1080x1920.mp4\n
+ Vorbereitung: 10 min\nWiederverwendung: TikTok\, Shorts\n\nCaption: market
+ ing/posts/CAPTIONS.md
 CATEGORIES:Fangpunkt Social Media
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:Post: Fänge pro Stunde statt Fänge pro Tag (Reel 30 s)
+DESCRIPTION:Post: Kein Biss? Gehört dazu (Reel 10 s (fertig))
 TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-12-2026-11-19@fangpunkt-redaktionsplan
+UID:post-13-2026-11-19@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261119T170000Z
 DTEND:20261119T173000Z
@@ -319,7 +347,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-13-2026-11-21@fangpunkt-redaktionsplan
+UID:post-14-2026-11-21@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261121T090000Z
 DTEND:20261121T093000Z
@@ -341,7 +369,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-14-2026-11-22@fangpunkt-redaktionsplan
+UID:post-15-2026-11-22@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261122T090000Z
 DTEND:20261122T093000Z
@@ -364,7 +392,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-15-2026-11-24@fangpunkt-redaktionsplan
+UID:post-16-2026-11-24@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261124T170000Z
 DTEND:20261124T173000Z
@@ -387,7 +415,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-16-2026-11-26@fangpunkt-redaktionsplan
+UID:post-17-2026-11-26@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261126T170000Z
 DTEND:20261126T173000Z
@@ -408,7 +436,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-17-2026-11-29@fangpunkt-redaktionsplan
+UID:post-18-2026-11-29@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261129T090000Z
 DTEND:20261129T093000Z
@@ -430,7 +458,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-18-2026-12-01@fangpunkt-redaktionsplan
+UID:post-19-2026-12-01@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261201T170000Z
 DTEND:20261201T173000Z
@@ -452,7 +480,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-19-2026-12-03@fangpunkt-redaktionsplan
+UID:post-20-2026-12-03@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261203T170000Z
 DTEND:20261203T173000Z
@@ -474,7 +502,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-20-2026-12-05@fangpunkt-redaktionsplan
+UID:post-21-2026-12-05@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261205T090000Z
 DTEND:20261205T093000Z
@@ -495,7 +523,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-21-2026-12-06@fangpunkt-redaktionsplan
+UID:post-22-2026-12-06@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261206T090000Z
 DTEND:20261206T093000Z
@@ -517,7 +545,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-22-2026-12-08@fangpunkt-redaktionsplan
+UID:post-23-2026-12-08@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261208T170000Z
 DTEND:20261208T173000Z
@@ -539,7 +567,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-23-2026-12-10@fangpunkt-redaktionsplan
+UID:post-24-2026-12-10@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261210T170000Z
 DTEND:20261210T173000Z
@@ -561,7 +589,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-24-2026-12-13@fangpunkt-redaktionsplan
+UID:post-25-2026-12-13@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261213T090000Z
 DTEND:20261213T093000Z
@@ -583,7 +611,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-25-2026-12-15@fangpunkt-redaktionsplan
+UID:post-26-2026-12-15@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261215T170000Z
 DTEND:20261215T173000Z
@@ -606,7 +634,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-26-2026-12-17@fangpunkt-redaktionsplan
+UID:post-27-2026-12-17@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261217T170000Z
 DTEND:20261217T173000Z
@@ -627,7 +655,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-27-2026-12-20@fangpunkt-redaktionsplan
+UID:post-28-2026-12-20@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261220T090000Z
 DTEND:20261220T093000Z
@@ -649,7 +677,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-28-2026-12-22@fangpunkt-redaktionsplan
+UID:post-29-2026-12-22@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261222T170000Z
 DTEND:20261222T173000Z
@@ -672,7 +700,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-29-2026-12-24@fangpunkt-redaktionsplan
+UID:post-30-2026-12-24@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261224T170000Z
 DTEND:20261224T173000Z
@@ -694,7 +722,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-30-2026-12-27@fangpunkt-redaktionsplan
+UID:post-31-2026-12-27@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261227T090000Z
 DTEND:20261227T093000Z
@@ -714,7 +742,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-31-2026-12-29@fangpunkt-redaktionsplan
+UID:post-32-2026-12-29@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261229T170000Z
 DTEND:20261229T173000Z
@@ -734,7 +762,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-32-2026-12-31@fangpunkt-redaktionsplan
+UID:post-33-2026-12-31@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20261231T170000Z
 DTEND:20261231T173000Z
@@ -756,7 +784,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-33-2027-01-03@fangpunkt-redaktionsplan
+UID:post-34-2027-01-03@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270103T090000Z
 DTEND:20270103T093000Z
@@ -777,7 +805,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-34-2027-01-05@fangpunkt-redaktionsplan
+UID:post-35-2027-01-05@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270105T170000Z
 DTEND:20270105T173000Z
@@ -799,7 +827,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-35-2027-01-07@fangpunkt-redaktionsplan
+UID:post-36-2027-01-07@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270107T170000Z
 DTEND:20270107T173000Z
@@ -821,7 +849,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-36-2027-01-09@fangpunkt-redaktionsplan
+UID:post-37-2027-01-09@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270109T090000Z
 DTEND:20270109T093000Z
@@ -843,7 +871,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-37-2027-01-10@fangpunkt-redaktionsplan
+UID:post-38-2027-01-10@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270110T090000Z
 DTEND:20270110T093000Z
@@ -864,7 +892,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-38-2027-01-12@fangpunkt-redaktionsplan
+UID:post-39-2027-01-12@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270112T170000Z
 DTEND:20270112T173000Z
@@ -886,7 +914,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-39-2027-01-14@fangpunkt-redaktionsplan
+UID:post-40-2027-01-14@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270114T170000Z
 DTEND:20270114T173000Z
@@ -906,7 +934,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-40-2027-01-17@fangpunkt-redaktionsplan
+UID:post-41-2027-01-17@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270117T090000Z
 DTEND:20270117T093000Z
@@ -927,7 +955,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-41-2027-01-19@fangpunkt-redaktionsplan
+UID:post-42-2027-01-19@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270119T170000Z
 DTEND:20270119T173000Z
@@ -951,7 +979,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-42-2027-01-21@fangpunkt-redaktionsplan
+UID:post-43-2027-01-21@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270121T170000Z
 DTEND:20270121T173000Z
@@ -972,7 +1000,7 @@ TRIGGER:-PT120M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
-UID:post-43-2027-01-24@fangpunkt-redaktionsplan
+UID:post-44-2027-01-24@fangpunkt-redaktionsplan
 DTSTAMP:20261023T000000Z
 DTSTART:20270124T090000Z
 DTEND:20270124T093000Z

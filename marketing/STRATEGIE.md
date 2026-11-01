@@ -267,6 +267,12 @@ Hinweise: Bezahlte Anzeigen und Kooperationen ändern nichts an „nicht kommerz
 
 **Keine Zielwerte für Reichweite oder Downloads** – dafür fehlt jede belastbare Grundlage. Ziel der ersten 90 Tage ist ein *Verlauf*: Welche Serien bringen Wiedergabedauer, Speichern und Rückmeldungen?
 
+### Erste Auswertung (2026-11-01) – Folgen für den Plan
+- Das Nebel-Reel (42 s, ruhiger Einstieg) bekam am ersten Tag Testreichweite (Instagram 138, TikTok 622 Aufrufe), dann nichts mehr: 78,4 % „Übersprungen“ (Instagram), Ø 2,3 s Wiedergabe und 0,15 % ganz angesehen (TikTok).
+- Beiträge nur mit App-Bildern blieben bei 13–14 Aufrufen. TikTok: 2 Profilaufrufe bei 659 Zuschauer*innen.
+- **Regeln ab Woche 2:** Reels höchstens 15 s; in Sekunde 1 echte Szene am Wasser (Wurf, Fisch, Biss) mit höchstens 6 Wörtern Text; die App erst danach. Bildbeiträge als Karussell mit eigenem Fangfoto auf Folie 1. Am Schluss einen Grund für den Profilbesuch geben (Serie, Frage).
+- Daten: `content-calendar/auswertung.csv`. Eine Woche ist kein Beweis – nach 4 Wochen mit dem eigenen Durchschnitt vergleichen.
+
 ### Wöchentliche Auswertung (Sonntag, 20 Minuten)
 1. Tabelle `content-calendar/auswertung-vorlage.csv` ausfüllen (je Beitrag: Reichweite, Ø Wiedergabedauer, Speichern, Teilen, Kommentare, Profilaufrufe, Link-Klicks).
 2. Beitrag mit der besten **Wiedergabedauer** und der besten **Speicherquote** markieren.

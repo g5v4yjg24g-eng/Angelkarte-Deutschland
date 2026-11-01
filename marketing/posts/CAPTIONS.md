@@ -99,6 +99,30 @@ Keine Sekundenangabe im Text: Die App-Aufnahme ist automatisiert, also keine gem
 **YouTube Shorts – Titel:** Fang eintragen in vier Tipps – bevor der Fisch zurück im Wasser ist · **Beschreibung:** wie Instagram, mit dem Link aus der Bio.
 **CTA:** Link in der Bio.
 
+## 02d · Reels aus den Steg-Clips (Plan ab 03.11., Regel: ≤ 15 s, echte Szene in Sekunde 1)
+Alle drei: Instagram Reel, dasselbe Video auf TikTok und YouTube Shorts; Musik leise aus der Plattform-Bibliothek. Keine erfundenen Zahlen.
+
+**Di 03.11. · „Gute Stelle?“** (`videos/clips-steg-02-wurf-1080x1920.mp4`)
+> Gute Stelle? 🎣 Ein Tipp auf die Karte und sie ist gemerkt – mit Fängen, Datum und Wetter. Nur auf deinem Handy.
+>
+> Kostenlos, ohne Konto. Link in der Bio.
+
+Hashtags: `#angeln #spinnfischen #angelstelle #angelapp #petriheil` · TikTok: Gute Stelle? Ein Tipp und sie ist gemerkt 🎣 Link im Profil. `#angeln #fyp`
+
+**Di 10.11. · „Kurz hinsetzen.“** (`videos/clips-app-01-pause-1080x1920.mp4`)
+> Kurz hinsetzen. ☕ In Fangpunkt drückst du „Pause“ – die Pause zählt nicht als Angelzeit. So stimmen später deine Fänge pro Stunde.
+>
+> Kostenlos, ohne Konto. Link in der Bio.
+
+Hashtags: `#angeln #angelzeit #fangbuch #angelapp #petriheil` · TikTok: Pause am Wasser? Zählt nicht als Angelzeit ☕ Link im Profil. `#angeln #fyp`
+
+**Di 17.11. · „Kein Biss? Gehört dazu.“** (`videos/clips-steg-04-schneidertag-1080x1920.mp4`)
+> 7 Minuten werfen, kein Biss. Gehört dazu. 🤷 Fangpunkt rechnet Fänge pro Angelstunde – Schneidertage zählen mit. Ehrliche Statistik statt Glückstreffer.
+>
+> Wie oft bist du Schneider? Kommentar. Link in der Bio.
+
+Hashtags: `#angeln #schneidertag #fangbuch #angelapp #petriheil` · TikTok: Kein Biss? Zählt trotzdem 🤷 Link im Profil. `#angeln #fyp`
+
 ## 03 · Tiefenkarten – noch nicht
 **Plattform:** Instagram Feed + Facebook · **Erweiterbar:** Reel „Ehrlich gesagt“ (Video-Konzept V4), Story-Highlight „Ehrlich“.
 

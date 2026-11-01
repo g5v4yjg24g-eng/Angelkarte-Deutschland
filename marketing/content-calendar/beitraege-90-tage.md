@@ -56,27 +56,27 @@ Launch-Post am Sonntag vor Woche 1 (18:00), Woche 1 beginnt am 2026-10-26 (Monta
 
 ## Woche 2
 
-### 2026-11-03 (Di) · Warum es Fangpunkt gibt
+### 2026-11-03 (Di) · Gute Stelle? Mit einem Tipp merken
 
-- **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel 20–30 s
-- **Säule / Serie:** Vertrauen · Werkstatt-Notiz
-- **Ziel:** Gesicht/Stimme hinter der App, Glaubwürdigkeit
-- **Hook:** „Meine alte Angel-App war eine einzige HTML-Datei für einen See.“
-- **Ablauf:** Selfie-Video am Wasser oder Sprechertext über alte/neue App-Aufnahmen: von einem See zu ganz Deutschland, ohne Konto, ohne Werbung.
-- **CTA:** Folgen, wenn du sehen willst, wie es weitergeht.
-- **Material:** Fertiges Reel videos/reel-warum-fangpunkt-1080x1920.mp4 (Text-Reel, See + App); Cover cover-serie-werkstatt-notiz
+- **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel 14 s (fertig)
+- **Säule / Serie:** Reichweite · Kurz erklärt
+- **Ziel:** Reichweite: Bewegung in Sekunde 1 statt ruhigem Einstieg (Lehre aus dem Nebel-Reel)
+- **Hook:** „Gute Stelle?“
+- **Ablauf:** Steg-Clip 02: Überkopfwurf in Zeitlupe, Text „Gute Stelle?“ → „Mit einem Tipp auf die Karte merken.“ → Schluss-Karte.
+- **CTA:** Link in der Bio.
+- **Material:** videos/clips-steg-02-wurf-1080x1920.mp4
 - **Vorbereitung:** 10 min
-- **Wiederverwendung:** TikTok, Shorts; Text als Facebook-Beitrag
+- **Wiederverwendung:** TikTok, Shorts
 
 ### 2026-11-05 (Do) · Digitales Fangbuch
 
-- **Plattform / Format:** Instagram Bildbeitrag → Facebook-Seite · Bildbeitrag
+- **Plattform / Format:** Instagram Karussell → Facebook-Seite (Bilder) · TikTok-Fotomodus · Karussell (2)
 - **Säule / Serie:** Erklärung · Fangbuch-Freitag
-- **Ziel:** Kernfunktion Fangbuch erklären
+- **Ziel:** Kernfunktion Fangbuch erklären, echtes Foto als Einstieg
 - **Hook:** „Jeder Biss zählt. Auch der verlorene.“
-- **Ablauf:** Motiv 04. Caption: Fang, Fischkontakt, Fehlbiss, Beobachtung – warum Fehlbisse für die Auswertung wichtig sind.
+- **Ablauf:** Folie 1: eigenes Barsch-Foto mit Hook. Folie 2: Motiv 04. Caption: Fang, Fischkontakt, Fehlbiss, Beobachtung – warum Fehlbisse für die Auswertung wichtig sind.
 - **CTA:** Wie notierst du bisher deine Fänge? Kommentar.
-- **Material:** posts/04-fangbuch-feed-1080x1440.png
+- **Material:** Folie 1 aus eigenem Fangfoto (wird erstellt) + posts/04-fangbuch-feed-1080x1440.png
 - **Vorbereitung:** 15 min
 - **Wiederverwendung:** Story mit Umfrage „Zettel / Handy / gar nicht“
 
@@ -94,42 +94,54 @@ Launch-Post am Sonntag vor Woche 1 (18:00), Woche 1 beginnt am 2026-10-26 (Monta
 
 ### 2026-11-08 (So) · Luftdruck der Woche
 
-- **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel 20 s
+- **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel 12 s
 - **Säule / Serie:** Reichweite · Beißfenster-Check
 - **Ziel:** Wiederkehrender Sonntags-Termin aufbauen
 - **Hook:** „Luftdruck fällt – was heißt das für dein Wochenende?“
-- **Ablauf:** Bildschirmaufnahme Wetter → Luftdruck-Verlauf. Klar sagen: Zusammenhang ist umstritten; die App zeigt deine eigenen Daten ab 20 Bissen.
+- **Ablauf:** Steg-Clip 06 als Intro (5 s, „Angelwetter der Woche“) → aktueller Luftdruck-Verlauf aus der App (7 s). Klar sagen: Zusammenhang ist umstritten; die App zeigt deine eigenen Daten ab 20 Bissen.
 - **CTA:** Welche Erfahrung hast du mit fallendem Luftdruck?
-- **Material:** Bildschirmaufnahme Wetterseite
-- **Vorbereitung:** 40 min
+- **Material:** videos/clips-steg-06-sonntag-intro-1080x1920.mp4 + Wetter-Screenshot vom Tag (am Samstag erstellen)
+- **Vorbereitung:** 20 min
 - **Wiederverwendung:** TikTok, Shorts
 
 
 ## Woche 3
 
-### 2026-11-10 (Di) · „Wo war nochmal die Stelle?“
+### 2026-11-10 (Di) · Kurz hinsetzen – Pause zählt nicht
 
-- **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel 25 s
-- **Säule / Serie:** Reichweite · Problem am Wasser
-- **Ziel:** Problem-Lösung, hohe Wiedererkennung
-- **Hook:** „Du findest die Stelle vom letzten Mal nicht wieder?“
-- **Ablauf:** Szene: Ratlos am Ufer (eigene Aufnahme) → Karte → gespeicherte Angelstelle → Fang dort. Siehe V2.
-- **CTA:** Speichern und beim nächsten Mal ausprobieren.
-- **Material:** Uferclip, Bildschirmaufnahme Karte; Cover cover-video-v2
-- **Vorbereitung:** 60 min
+- **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel 14 s (fertig)
+- **Säule / Serie:** Reichweite · Clip trifft App
+- **Ziel:** Echte Szene und echte App gleichzeitig zeigen (Split-Screen)
+- **Hook:** „Kurz hinsetzen.“
+- **Ablauf:** Oben Steg-Aufnahme (Hinsetzen), unten die App: „Pause“ → 15 Minuten später → „Weiter angeln“, Angelzeit bleibt stehen.
+- **CTA:** Link in der Bio.
+- **Material:** videos/clips-app-01-pause-1080x1920.mp4
+- **Vorbereitung:** 10 min
 - **Wiederverwendung:** TikTok, Shorts
 
 ### 2026-11-12 (Do) · Angelstellen & Heatmap
 
-- **Plattform / Format:** Instagram Bildbeitrag → Facebook-Seite · Bildbeitrag
+- **Plattform / Format:** Instagram Karussell → Facebook-Seite (Bilder) · TikTok-Fotomodus · Karussell (2)
 - **Säule / Serie:** Erklärung · Kurz erklärt
-- **Ziel:** Datenschutz als Vorteil zeigen
+- **Ziel:** Datenschutz als Vorteil zeigen, echtes Foto als Einstieg
 - **Hook:** „Deine Stellen. Nur auf deinem Handy.“
-- **Ablauf:** Motiv 07. Caption: Markierungen per Tipp, Heatmap ab 30 Fängen sinnvoll, nichts wird hochgeladen.
+- **Ablauf:** Folie 1: eigenes Hecht-Foto mit Hook. Folie 2: Motiv 07. Caption: Markierungen per Tipp, Heatmap ab 30 Fängen sinnvoll, nichts wird hochgeladen.
 - **CTA:** Wie viele Stellen hast du im Kopf statt auf dem Handy?
-- **Material:** posts/07-angelstellen-feed-1080x1440.png
+- **Material:** Folie 1 aus eigenem Fangfoto (wird erstellt) + posts/07-angelstellen-feed-1080x1440.png
 - **Vorbereitung:** 15 min
 - **Wiederverwendung:** Story
+
+### 2026-11-14 (Sa) · Warum es Fangpunkt gibt (kurz)
+
+- **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel ≤ 15 s
+- **Säule / Serie:** Vertrauen · Werkstatt-Notiz
+- **Ziel:** Gesicht/Geschichte hinter der App – in der Hälfte der Zeit
+- **Hook:** „Meine erste Angel-App war eine einzige HTML-Datei.“
+- **Ablauf:** Text-Reel auf 15 s kürzen: Hook sofort, dann „Heute: Fangpunkt“ mit Handy, Schluss-Karte.
+- **CTA:** Folgen, wenn du sehen willst, wie es weitergeht.
+- **Material:** Kürzung von videos/reel-warum-fangpunkt-1080x1920.mp4 (23 s → 15 s)
+- **Vorbereitung:** 15 min
+- **Wiederverwendung:** TikTok, Shorts
 
 ### 2026-11-15 (So) · Ergebnis der Umfrage + nächste Frage
 
@@ -146,16 +158,16 @@ Launch-Post am Sonntag vor Woche 1 (18:00), Woche 1 beginnt am 2026-10-26 (Monta
 
 ## Woche 4
 
-### 2026-11-17 (Di) · Fänge pro Stunde statt Fänge pro Tag
+### 2026-11-17 (Di) · Kein Biss? Gehört dazu
 
-- **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel 30 s
+- **Plattform / Format:** Instagram Reel → TikTok + YouTube Shorts (gleiches Video) · Reel 10 s (fertig)
 - **Säule / Serie:** Reichweite · Wissen in 30 Sekunden
-- **Ziel:** Mehrwert ohne App-Zwang, Statistik-Denke
-- **Hook:** „10 Fische an einem Tag sind nicht gut – wenn du 12 Stunden da warst.“
-- **Ablauf:** Rechenbeispiel als Texteinblendung, dann Statistik-Screen „Fänge pro Stunde“ mit n = …
+- **Ziel:** Mehrwert ohne App-Zwang, Statistik-Denke – kurz statt 30 s
+- **Hook:** „Kein Biss? Gehört dazu.“
+- **Ablauf:** Steg-Clip 04: 7 Minuten Werfen als Zeitraffer, Text „Fänge pro Angelstunde – auch Schneidertage zählen.“ → Schluss-Karte.
 - **CTA:** Rechnest du deine Angelzeit mit?
-- **Material:** Statistik-Screenshot, Texteinblendungen
-- **Vorbereitung:** 45 min
+- **Material:** videos/clips-steg-04-schneidertag-1080x1920.mp4
+- **Vorbereitung:** 10 min
 - **Wiederverwendung:** TikTok, Shorts
 
 ### 2026-11-19 (Do) · Statistik
