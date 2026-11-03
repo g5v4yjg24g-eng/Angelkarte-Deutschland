@@ -25,21 +25,35 @@ try {
   problems.push(`ASC_PRIVATE_KEY lässt sich nicht lesen: ${e.message}`);
 }
 
-if (key) {
+async function tryToken(payload) {
   const b64 = (o) => Buffer.from(typeof o === 'string' ? o : JSON.stringify(o)).toString('base64url');
-  const now = Math.floor(Date.now() / 1000);
   const head = b64({ alg: 'ES256', kid: kid.trim(), typ: 'JWT' });
-  const body = b64({ iss: iss.trim(), iat: now, exp: now + 600, aud: 'appstoreconnect-v1' });
+  const body = b64(payload);
   const sig = sign('sha256', Buffer.from(`${head}.${body}`), { key, dsaEncoding: 'ieee-p1363' }).toString('base64url');
   const res = await fetch('https://api.appstoreconnect.apple.com/v1/apps?filter[bundleId]=com.fangpunkt.app', {
     headers: { Authorization: `Bearer ${head}.${body}.${sig}` },
   });
-  const json = await res.json().catch(() => ({}));
-  console.log(`App Store Connect API: HTTP ${res.status}`);
-  if (res.ok) console.log(`App mit Bundle-ID com.fangpunkt.app gefunden: ${json.data?.length ? 'ja' : 'NEIN'}`);
-  else {
-    for (const e of json.errors ?? []) console.log(`  ${e.status} ${e.code}: ${e.title} – ${e.detail}`);
-    problems.push('App Store Connect lehnt die Zugangsdaten ab (Key-ID, Issuer-ID und .p8 passen nicht zusammen oder der Schlüssel wurde widerrufen)');
+  return { res, json: await res.json().catch(() => ({})) };
+}
+
+if (key) {
+  const now = Math.floor(Date.now() / 1000);
+  const base = { iat: now, exp: now + 600, aud: 'appstoreconnect-v1' };
+  // Teamschlüssel: mit Issuer-ID. Individueller Schlüssel: ohne Issuer, mit sub "user".
+  const team = await tryToken({ ...base, iss: iss.trim() });
+  console.log(`Als Teamschlüssel: HTTP ${team.res.status}`);
+  if (team.res.ok) {
+    console.log(`App mit Bundle-ID com.fangpunkt.app gefunden: ${team.json.data?.length ? 'ja' : 'NEIN'}`);
+    if (!team.json.data?.length) problems.push('Schlüssel gültig, aber keine App mit com.fangpunkt.app in App Store Connect');
+  } else {
+    for (const e of team.json.errors ?? []) console.log(`  ${e.status} ${e.code}: ${e.title}`);
+    const indiv = await tryToken({ ...base, sub: 'user' });
+    console.log(`Als individueller Schlüssel: HTTP ${indiv.res.status}`);
+    problems.push(
+      indiv.res.ok
+        ? 'Das ist ein INDIVIDUELLER Schlüssel. Bitte unter Integration → App Store Connect API → Reiter „Teamschlüssel“ einen Schlüssel (Admin) erstellen.'
+        : 'App Store Connect lehnt die Zugangsdaten ab: Key-ID, Issuer-ID und .p8 gehören nicht zusammen (oder der Schlüssel wurde widerrufen).',
+    );
   }
 }
 
