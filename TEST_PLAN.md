@@ -173,7 +173,7 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | PRF-5 | Beitrag aus Fang | „Im Profil posten“ im Fang, Fangfoto vorausgewählt, Beitrag verlinkt den Fang (✅ `profile.spec.ts`) |
 | ACC-4 | Anmelde-Link (Übergangslösung) | Link mit Anmeldung im #-Teil → Kontoseite, angemeldet; abgelaufener Link → Hinweis und Formular (✅ `account.spec.ts`, `authLinkInHash` in `account.test.ts`) |
 | ACC-3 | Mehr → Konto mit nachgebildetem Supabase | ganzer Ablauf, Anmeldung bleibt nach Neuladen, nur Auth/Profil-Aufrufe, nach Löschen keine Sitzung, 390 px, axe (✅ `account.spec.ts`); ohne Anmeldung keine Anfrage an Supabase (✅ `privacy.spec.ts`) |
-| ACC-5 | Konto noch nicht freigeschaltet | Mehr → Konto zeigt „Demnächst“, kein Formular, keine Anfrage an Supabase, axe; übrige Konto-Tests mit `fangpunkt.preview.account` (✅ `account.spec.ts`) |
+| ACC-5 | Konto freigeschaltet (2026-11-03) | Mehr → Konto zeigt Formular statt „Demnächst“, ohne Eingabe keine Anfrage an Supabase, axe (✅ `account.spec.ts`) |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |

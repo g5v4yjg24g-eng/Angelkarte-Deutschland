@@ -588,7 +588,6 @@ export const de = {
     account: 'Konto',
     accountHintSignedIn: 'Angemeldet',
     accountHint: 'Freiwillig – für Freunde',
-    accountHintSoon: 'Demnächst – für Freunde',
     settings: 'Einstellungen',
     settingsHint: 'Darstellung, Standort, Wetter',
     privacy: 'Datenschutz',
@@ -602,17 +601,14 @@ export const de = {
       'Freiwillig: Mit einem Konto kannst du bald Freunde hinzufügen. Fangbuch, Fotos und Angelstellen bleiben weiter nur auf diesem Gerät.',
     loading: 'Wird geladen …',
     disabled: 'Das Konto ist in dieser Version nicht eingerichtet.',
-    comingSoonTitle: 'Demnächst verfügbar.',
-    comingSoon:
-      'Mit einem freiwilligen Konto kannst du bald Freunde hinzufügen. Fangbuch, Fotos und Angelstellen bleiben weiter nur auf deinem Gerät.',
     offline: 'Keine Verbindung – das Konto braucht Internet. Alles andere in Fangpunkt funktioniert weiter.',
     emailLabel: 'E-Mail-Adresse',
     emailHint:
-      'Wir schicken dir eine E-Mail zum Anmelden – kein Passwort nötig. Neu? Dann wird dein Konto dabei angelegt.',
+      'Wir schicken dir einen Anmeldecode per E-Mail – kein Passwort nötig. Neu? Dann wird dein Konto dabei angelegt.',
     emailInvalid: 'Bitte eine gültige E-Mail-Adresse eingeben.',
     sendCode: 'Code senden',
     codeSent: (email: string) =>
-      `Wir haben dir eine E-Mail an ${email} geschickt. Gib den Code daraus ein – oder tippe in der E-Mail auf den Anmelde-Link. Schau auch im Spam-Ordner nach.`,
+      `Wir haben dir einen Code an ${email} geschickt. Gib ihn hier ein. Keine E-Mail da? Schau auch im Spam-Ordner nach.`,
     linkExpired: 'Der Anmelde-Link ist abgelaufen oder wurde schon benutzt. Fordere einfach einen neuen an.',
     codeLabel: 'Code aus der E-Mail',
     codeInvalid: 'Bitte den Code aus der E-Mail eingeben (nur Ziffern).',

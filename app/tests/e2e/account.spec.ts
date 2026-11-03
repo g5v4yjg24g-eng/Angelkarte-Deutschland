@@ -15,8 +15,6 @@ async function fakeSupabase(page: Page) {
   let profile: { id: string; username: string; display_name: string } | null = null;
   const user = { id: 'u-1', aud: 'authenticated', role: 'authenticated', email: 'max@example.de' };
   const exp = EXP;
-  // Konto ist für Nutzer noch nicht freigeschaltet („Demnächst“); die Tests schalten die Vorschau ein
-  await page.addInitScript(() => localStorage.setItem('fangpunkt.preview.account', '1'));
   const token = TOKEN;
   const json = (route: Route, body: unknown, status = 200) =>
     route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
@@ -91,7 +89,7 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
 
   await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('Max@Example.de');
   await page.getByRole('button', { name: 'Code senden' }).click();
-  await expect(page.getByText(/E-Mail an max@example\.de geschickt/)).toBeVisible();
+  await expect(page.getByText(/Code an max@example\.de geschickt/)).toBeVisible();
   await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('999999');
   await page.getByRole('button', { name: 'Anmelden' }).click();
   await expect(page.getByText(/Der Code ist falsch oder abgelaufen/)).toBeVisible();
@@ -166,7 +164,7 @@ test('ACC-4: Übergangslösung – Anmelde-Link aus der Standard-Mail meldet an,
   await expect(page.getByRole('textbox', { name: 'E-Mail-Adresse' })).toBeVisible();
 });
 
-test('ACC-5: Konto noch nicht freigeschaltet – Mehr → Konto zeigt „Demnächst“ ohne Kontakt zu Supabase', async ({
+test('ACC-5: Konto freigeschaltet – Mehr → Konto zeigt das Anmeldeformular, ohne vorher Supabase zu fragen', async ({
   page,
 }) => {
   const calls: string[] = [];
@@ -176,11 +174,12 @@ test('ACC-5: Konto noch nicht freigeschaltet – Mehr → Konto zeigt „Demnäc
   });
   await page.goto('/mehr');
   await waitForApp(page);
-  await expect(page.getByRole('link', { name: /^Konto.*Demnächst/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /^Konto.*Freiwillig/ })).toBeVisible();
   await page.getByRole('link', { name: /^Konto/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Konto' })).toBeVisible();
-  await expect(page.getByText('Demnächst verfügbar.')).toBeVisible();
-  await expect(page.getByRole('textbox', { name: 'E-Mail-Adresse' })).toHaveCount(0);
+  await expect(page.getByRole('textbox', { name: 'E-Mail-Adresse' })).toBeVisible();
+  await expect(page.getByText(/Demnächst/)).toHaveCount(0);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  // Ohne Eingabe keine Anfrage an Supabase
   expect(calls).toEqual([]);
 });
