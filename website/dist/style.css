@@ -1,0 +1,153 @@
+/* Farben aus app/src/design/tokens.css („Tiefwasser“), Systemschriften (keine Fremdserver). */
+:root {
+  color-scheme: light dark;
+  --bg: #f3f6f6;
+  --surface: #ffffff;
+  --border: #cfdcde;
+  --text: #0e2229;
+  --muted: #4a5f66;
+  --primary: #0f5c6e;
+  --on-primary: #ffffff;
+  --focus: #c2620c;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0a181d;
+    --surface: #10242a;
+    --border: #26444d;
+    --text: #e4eef0;
+    --muted: #9cb2b8;
+    --primary: #5cc4d6;
+    --on-primary: #06232a;
+    --focus: #f5a962;
+  }
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 1rem/1.55 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  overflow-wrap: anywhere;
+}
+a {
+  color: var(--primary);
+}
+a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.top,
+main,
+footer {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-block: 16px;
+}
+.top nav {
+  display: flex;
+  gap: 16px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-decoration: none;
+}
+.brand img {
+  border-radius: 8px;
+}
+.hero {
+  text-align: center;
+  padding-block: 32px 16px;
+}
+.hero img {
+  border-radius: 22px;
+}
+h1 {
+  font-size: 2.25rem;
+  line-height: 1.2;
+  margin: 16px 0 8px;
+}
+.lead {
+  font-size: 1.15rem;
+  color: var(--muted);
+}
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-block: 24px 12px;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 650;
+  text-decoration: none;
+}
+.button.secondary {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+.muted {
+  color: var(--muted);
+}
+section,
+.prose {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-block: 16px;
+}
+.hero {
+  background: none;
+  border: 0;
+}
+.features {
+  padding-left: 1.2em;
+}
+.features li {
+  margin-block: 6px;
+}
+.prose h1 {
+  font-size: 1.75rem;
+  margin-top: 0;
+}
+.prose h2 {
+  font-size: 1.2rem;
+  margin: 24px 0 6px;
+}
+.prose h3 {
+  font-size: 1rem;
+  margin: 16px 0 4px;
+}
+footer {
+  padding-block: 24px 40px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}

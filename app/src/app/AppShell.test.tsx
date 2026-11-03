@@ -1,3 +1,5 @@
+// Leiste und Seiten lesen die lokale DB (z. B. Profilbild in der Leiste) – ohne IndexedDB bricht Vitest mit unbehandelten Fehlern ab.
+import 'fake-indexeddb/auto';
 import { act, render, screen } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
