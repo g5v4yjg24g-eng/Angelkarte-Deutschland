@@ -1,7 +1,7 @@
 // Supabase (Auth + Postgres, Region EU/Irland): freiwilliges Konto. Der Client wird erst geladen, wenn das Konto
 // gebraucht wird (eigener Chunk); ohne gespeicherte Anmeldung sendet die App nichts an Supabase.
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
-// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen). Nur der öffentliche Schlüssel steht in der App.
+// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen). Nur der öffentliche Schlüssel steht in der App.
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
@@ -9,6 +9,7 @@ import { FriendRequestResultSchema, parseFriendRows } from '../domain/friends';
 import { photoExt } from '../domain/postSync';
 import { FEED_PAGE, parseFeedRows } from '../domain/feed';
 import { parseSharedSpotRows } from '../domain/sharedSpots';
+import { parseBlockRows } from '../domain/moderation';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
 
 type Row = { id: string; username: string; display_name: string };
@@ -254,6 +255,31 @@ export function supabaseAccount(
     async unshareSpot(id) {
       const { error } = await (await get()).rpc('unshare_spot', { spot: id });
       if (error) fail(error);
+    },
+    async report(input) {
+      const { error } = await (
+        await get()
+      ).rpc('report_content', {
+        kind: input.kind,
+        target: input.targetId,
+        target_owner: input.targetUserId,
+        why: input.reason,
+        note: input.details ?? null,
+      });
+      if (error) fail(error);
+    },
+    async blockUser(userId) {
+      const { error } = await (await get()).rpc('block_user', { other: userId });
+      if (error) fail(error);
+    },
+    async unblockUser(userId) {
+      const { error } = await (await get()).rpc('unblock_user', { other: userId });
+      if (error) fail(error);
+    },
+    async blockedUsers() {
+      const { data, error } = await (await get()).rpc('my_blocks');
+      if (error) fail(error);
+      return parseBlockRows(data as unknown[] | null);
     },
     async deleteAccount() {
       const c = await get();

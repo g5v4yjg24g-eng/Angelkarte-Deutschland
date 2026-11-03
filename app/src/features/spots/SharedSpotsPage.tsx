@@ -18,6 +18,8 @@ import { useProviders } from '../../ports/providersContext';
 import type { MapFocusState } from '../map/MapView';
 import { SharedSpotDetails, SpotHead } from './SharedSpotDetails';
 import { useSharedSpots } from './useSharedSpots';
+import { isHidden } from '../../domain/moderation';
+import { useHidden } from '../moderation/hiddenStore';
 import styles from './Spots.module.css';
 
 const t = de.spots;
@@ -30,6 +32,7 @@ export function SharedSpotsPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [toast, setToast] = useState<string>();
+  const hidden = useHidden();
 
   const refresh = <IconButton label={de.feed.refresh} icon={<RefreshIcon />} onClick={() => void reload()} />;
 
@@ -41,7 +44,10 @@ export function SharedSpotsPage() {
       </Page>
     );
 
-  const incoming = state.kind === 'ready' ? incomingSpots(state.list) : [];
+  const incoming =
+    state.kind === 'ready'
+      ? incomingSpots(state.list).filter((x) => !isHidden(hidden, 'spot', x.id, x.ownerId))
+      : [];
   const outgoing = state.kind === 'ready' ? outgoingSpots(state.list) : [];
 
   const unshare = async (id: string) => {
@@ -75,6 +81,7 @@ export function SharedSpotsPage() {
                     <SharedSpotDetails
                       spot={s}
                       adopted={!!places && !!adoptedPlace(s, places)}
+                      onSafety={setToast}
                       onShowMap={() =>
                         void navigate('/', { state: { focusShared: s.id } satisfies MapFocusState })
                       }

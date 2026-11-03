@@ -13,6 +13,10 @@ import { hasMore, initialOf, mergeFeed, type FeedPost } from '../../domain/feed'
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
 import { storedUserId } from '../badges/badgeStore';
+import { Toast } from '../../design/components/Toast';
+import { isHidden } from '../../domain/moderation';
+import { SafetyMenu } from '../moderation/SafetyMenu';
+import { useHidden } from '../moderation/hiddenStore';
 import styles from './Feed.module.css';
 
 const t = de.feed;
@@ -24,7 +28,7 @@ const dateOf = (iso: string) =>
     timeZone: 'Europe/Berlin',
   });
 
-function FeedCard({ post }: { post: FeedPost }) {
+function FeedCard({ post, onDone }: { post: FeedPost; onDone: (message: string) => void }) {
   const [index, setIndex] = useState(0);
   const total = post.photoUrls.length;
   return (
@@ -42,6 +46,16 @@ function FeedCard({ post }: { post: FeedPost }) {
             {t.handle(post.username)} · {dateOf(post.createdAt)}
           </span>
         </span>
+        {post.authorId !== storedUserId() && (
+          <span className={styles.menu}>
+            <SafetyMenu
+              kind="post"
+              targetId={post.id}
+              owner={{ id: post.authorId, name: post.displayName }}
+              onDone={onDone}
+            />
+          </span>
+        )}
       </header>
       <ul
         className={styles.photos}
@@ -78,6 +92,10 @@ function FeedCard({ post }: { post: FeedPost }) {
   );
 }
 
+/** Gemeldete Beiträge und Beiträge gemeldeter/blockierter Konten fallen weg */
+const visible = (posts: readonly FeedPost[], hidden: ReadonlySet<string>) =>
+  posts.filter((p) => !isHidden(hidden, 'post', p.id, p.authorId));
+
 type State =
   | { kind: 'loading' }
   | { kind: 'error' }
@@ -89,6 +107,8 @@ export function FeedPage() {
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [tick, setTick] = useState(0);
   const refresh = useCallback(() => setTick((n) => n + 1), []);
+  const hidden = useHidden();
+  const [toast, setToast] = useState<string>();
 
   useEffect(() => {
     if (!signedIn) return;
@@ -141,7 +161,7 @@ export function FeedPage() {
         </>
       )}
       {state.kind === 'ready' &&
-        (state.posts.length === 0 ? (
+        (visible(state.posts, hidden).length === 0 ? (
           <EmptyState
             icon={<FeedIcon size={32} />}
             title={t.emptyTitle}
@@ -155,8 +175,8 @@ export function FeedPage() {
           </EmptyState>
         ) : (
           <div className={styles.list}>
-            {state.posts.map((p) => (
-              <FeedCard key={p.id} post={p} />
+            {visible(state.posts, hidden).map((p) => (
+              <FeedCard key={p.id} post={p} onDone={setToast} />
             ))}
             {state.more ? (
               <div>
@@ -169,6 +189,7 @@ export function FeedPage() {
             )}
           </div>
         ))}
+      {toast && <Toast onDismiss={() => setToast(undefined)}>{toast}</Toast>}
     </Page>
   );
 }

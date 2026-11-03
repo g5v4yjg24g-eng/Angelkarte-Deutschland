@@ -192,6 +192,11 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | SPOT-2 | Übernehmen | wird eigener Ort mit Art, Name, Notiz + Herkunft und genauer Position; zweimal übernehmen ergibt keinen zweiten (✅ `sharedSpotService.test.ts`) |
 | SPOT-3 | Teilen auf der Karte | Spot eines Freundes als violetter Pin, Blatt mit Name/Abzeichen/Notiz, übernehmen; eigenen Ort mit allen Freunden und einem Freund teilen (genau die gespeicherte Position), Teilen beenden; Übersicht im Profil; 390 px, hell/dunkel ohne axe-Verstöße (✅ `account.spec.ts`) |
 | SPOT-4 | Ohne Anmeldung | Übersicht und Teilen-Seite zeigen Hinweis aufs Konto, keine Anfrage an Supabase (✅ `account.spec.ts`) |
+| MOD-1 | Melden/Blockieren-Logik | Gründe = Server-Werte, Hinweis gekürzt; blockierte Konten lesen; Ausblenden von Inhalt und ganzer Person; Regeln-Zustimmung je Version, kaputter Wert fragt erneut (✅ `moderation.test.ts`) |
+| MOD-2 | Beitrag melden | „…“ im Feed → Melden, Grund Pflicht, Hinweis optional; Meldung an den Server, Beitrag sofort und nach Neuladen ausgeblendet; Fenster hell/dunkel ohne axe-Verstöße (✅ `account.spec.ts`) |
+| MOD-3 | Blockieren | Freund blockieren → Freundschaft endet, Liste „Blockiert“, Beiträge weg; Freigeben; 390 px, hell/dunkel (✅ `account.spec.ts`) |
+| MOD-4 | Spot melden | geteilten Spot melden → aus der Liste verschwunden (✅ `account.spec.ts`) |
+| MOD-5 | Regeln vor dem Code | „Code senden“ öffnet die Regeln; Ablehnen verschickt keine Mail, Akzeptieren schon (✅ `AccountPage.test.tsx`, ACC-3 in `account.spec.ts`) |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |

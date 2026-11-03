@@ -35,6 +35,8 @@ async function fakeSupabase(
   spots: Record<string, unknown>[] = [],
 ) {
   const calls: string[] = [];
+  const reports: Record<string, unknown>[] = [];
+  const blocks: { user_id: string; username: string; display_name: string }[] = [];
   const storage = new Map<string, number>();
   const posts = new Map<
     string,
@@ -235,6 +237,31 @@ async function fakeSupabase(
         if (i >= 0) spots.splice(i, 1);
         return route.fulfill({ status: 204 });
       }
+      // Melden/Blockieren (Etappe 5)
+      case 'POST /rest/v1/rpc/report_content':
+        reports.push(req.postDataJSON() as Record<string, unknown>);
+        return json(route, `r-${reports.length}`);
+      case 'POST /rest/v1/rpc/block_user': {
+        const { other } = req.postDataJSON() as { other: string };
+        const f = friends.find((x) => x.user_id === other);
+        blocks.push({
+          user_id: other,
+          username: f?.username ?? other,
+          display_name: f?.display_name ?? other,
+        });
+        if (f) friends.splice(friends.indexOf(f), 1);
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/unblock_user': {
+        const { other } = req.postDataJSON() as { other: string };
+        blocks.splice(
+          blocks.findIndex((b) => b.user_id === other),
+          1,
+        );
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/my_blocks':
+        return json(route, blocks);
       case 'POST /rest/v1/rpc/delete_my_account':
         profile = null;
         return route.fulfill({ status: 204 });
@@ -247,7 +274,11 @@ async function fakeSupabase(
     storage: { value: storage },
     posts: { value: posts },
     spots: { value: spots },
+    reports: { value: reports },
+    blocks: { value: blocks },
   }) as string[] & {
+    reports: typeof reports;
+    blocks: typeof blocks;
     storage: typeof storage;
     posts: typeof posts;
     spots: typeof spots;
@@ -266,7 +297,15 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   expect(calls).toEqual([]); // ohne Anmeldung kein Kontakt zu Supabase
 
   await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('Max@Example.de');
+  // Regeln der Community vor dem Code (Wunsch Nutzer 2026-11-03): Ablehnen verschickt nichts
   await page.getByRole('button', { name: 'Code senden' }).click();
+  const rules = page.getByRole('dialog', { name: 'Regeln der Community' });
+  await expect(rules.getByText('Kein Spam und keine Werbung.')).toBeVisible();
+  await rules.getByRole('button', { name: 'Ablehnen' }).click();
+  await expect(page.getByText(/Es wurde keine E-Mail verschickt/)).toBeVisible();
+  expect(calls).toEqual([]);
+  await page.getByRole('button', { name: 'Code senden' }).click();
+  await rules.getByRole('button', { name: 'Akzeptieren' }).click();
   await expect(page.getByText(/Code an max@example\.de geschickt/)).toBeVisible();
   await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('999999');
   await page.getByRole('button', { name: 'Anmelden' }).click();
@@ -370,6 +409,10 @@ async function signInWithProfile(page: Page, username: string) {
   await waitForApp(page);
   await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('max@example.de');
   await page.getByRole('button', { name: 'Code senden' }).click();
+  await page
+    .getByRole('dialog', { name: 'Regeln der Community' })
+    .getByRole('button', { name: 'Akzeptieren' })
+    .click();
   await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('123456');
   await page.getByRole('button', { name: 'Anmelden' }).click();
   await page.getByRole('textbox', { name: 'Nutzername' }).fill(username);
@@ -558,9 +601,10 @@ test('PST-3: Beitrag teilen – angemeldet wird er mit Fotos hochgeladen, Änder
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
   await expect(page.getByRole('status').filter({ hasText: 'Geteilt' })).toBeVisible();
-  expect([...server.posts.values()]).toEqual([
-    expect.objectContaining({ caption: 'Hecht vom Steg', visibility: 'friends' }),
-  ]);
+  // der Abgleich läuft im Hintergrund (PostSync): auf den Server-Stand warten statt sofort zu prüfen
+  await expect
+    .poll(() => [...server.posts.values()])
+    .toEqual([expect.objectContaining({ caption: 'Hecht vom Steg', visibility: 'friends' })]);
   expect([...server.storage.keys()]).toEqual([expect.stringMatching(/^u-1\/[0-9a-f-]+\/1\.jpg$/)]);
 
   await page.getByRole('button', { name: 'Bearbeiten' }).click();
@@ -840,4 +884,126 @@ test('SPOT-4: ohne Anmeldung – Hinweis aufs Konto, keine Anfrage an Supabase',
   await page.goto('/profil/spots/teilen/irgendwas');
   await expect(page.getByText(/Zum Teilen von Spots brauchst du ein Konto/)).toBeVisible();
   expect(calls).toEqual([]);
+});
+
+const FEED_ANNA = {
+  id: 'post-anna-1',
+  author_id: 'u-anna',
+  username: 'anna',
+  display_name: 'Anna',
+  badges: [],
+  caption: 'Zander am Abend',
+  visibility: 'friends',
+  photo_paths: ['u-anna/post-anna-1/1.jpg'],
+  created_at: '2026-11-07T18:00:00Z',
+};
+
+test('MOD-2: Beitrag im Feed melden – Grund wählen, Meldung geht an den Server, Beitrag ist weg', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }], [FEED_ANNA]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed');
+  await waitForApp(page);
+  await expect(page.getByText('Zander am Abend')).toBeVisible();
+  await page.getByRole('button', { name: 'Optionen zu Anna' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Optionen' });
+  await sheet.getByRole('button', { name: 'Melden' }).click();
+  const report = page.getByRole('dialog', { name: 'Melden' });
+  await expect(report.getByText('Was stimmt mit diesem Beitrag nicht?')).toBeVisible();
+  await expect(report.getByRole('button', { name: 'Meldung senden' })).toBeDisabled();
+  await report.getByRole('radio', { name: 'Spam oder Werbung' }).check();
+  await report.getByRole('textbox', { name: 'Hinweis (optional)' }).fill('Werbung für einen Shop');
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page })
+      .include('dialog[open]')
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await report.getByRole('button', { name: 'Meldung senden' }).click();
+  await expect(page.getByText(/Wir prüfen die Meldung innerhalb von 24 Stunden/)).toBeVisible();
+  await expect(page.getByText('Zander am Abend')).toHaveCount(0);
+  expect(calls.reports).toEqual([
+    {
+      kind: 'post',
+      target: 'post-anna-1',
+      target_owner: 'u-anna',
+      why: 'spam',
+      note: 'Werbung für einen Shop',
+    },
+  ]);
+  // bleibt nach dem Neuladen ausgeblendet
+  await page.reload();
+  await waitForApp(page);
+  await expect(page.getByText('Noch keine Beiträge')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('MOD-3: Freund blockieren und wieder freigeben – Freundschaft endet, Liste „Blockiert“', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }], [FEED_ANNA]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil/freunde');
+  await waitForApp(page);
+  const list = page.getByRole('region', { name: 'Deine Freunde (1)' });
+  await list.getByRole('button', { name: 'Optionen zu Anna' }).click();
+  await page
+    .getByRole('dialog', { name: 'Optionen' })
+    .getByRole('button', { name: 'Anna blockieren' })
+    .click();
+  const confirm = page.getByRole('dialog', { name: 'Anna blockieren?' });
+  await expect(confirm.getByText(/nicht mehr befreundet/)).toBeVisible();
+  await confirm.getByRole('button', { name: 'Blockieren' }).click();
+  await expect(page.getByText('Anna ist blockiert.')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Deine Freunde (0)' })).toBeVisible();
+  const blocked = page.getByRole('region', { name: 'Blockiert' });
+  await expect(blocked.getByText('@anna')).toBeVisible();
+  expect(calls.blocks.map((b) => b.user_id)).toEqual(['u-anna']);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  // Beiträge der blockierten Person sind sofort weg (auch wenn der Server noch einen liefert)
+  await page.goto('/feed');
+  await expect(page.getByText('Noch keine Beiträge')).toBeVisible();
+  await page.goto('/profil/freunde');
+  await page.getByRole('region', { name: 'Blockiert' }).getByRole('button', { name: 'Freigeben' }).click();
+  await expect(page.getByText('Anna ist nicht mehr blockiert.')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Blockiert' })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('MOD-4: geteilten Spot melden – auf der Karte und in der Liste ausgeblendet', async ({ page }) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }], [], [{ ...BUHNE }]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil/spots');
+  await waitForApp(page);
+  const incoming = page.getByRole('region', { name: 'Mit dir geteilt' });
+  await expect(incoming.getByText('Buhne 3')).toBeVisible();
+  await incoming.getByRole('button', { name: 'Optionen zu Anna' }).click();
+  await page.getByRole('dialog', { name: 'Optionen' }).getByRole('button', { name: 'Melden' }).click();
+  const report = page.getByRole('dialog', { name: 'Melden' });
+  await expect(report.getByText('Was stimmt mit diesem Spot nicht?')).toBeVisible();
+  await report.getByRole('radio', { name: 'Daten anderer ohne Zustimmung' }).check();
+  await report.getByRole('button', { name: 'Meldung senden' }).click();
+  await expect(incoming.getByText('Buhne 3')).toHaveCount(0);
+  expect(calls.reports).toEqual([
+    { kind: 'spot', target: 's-anna-1', target_owner: 'u-anna', why: 'privacy', note: null },
+  ]);
+  expect(errors).toEqual([]);
 });
