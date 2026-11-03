@@ -177,7 +177,7 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | BADGE-1 | Abzeichen-Regeln | nur bekannte Abzeichen vom Server, gemerkter Stand nur für dieselbe Nutzer-ID, kaputter/manipulierter Speicher = keins (✅ `domain/badges.test.ts`) |
 | BADGE-2 | Kontoseite | FOUNDER nur beim Konto, dem der Server es gibt; anderes Konto auf demselben Gerät ohne (✅ `AccountPage.test.tsx`) |
 | BADGE-3 | FOUNDER sichtbar | Konto, Profil (groß), Beitrag und Kommentar (klein), 390 px, axe hell/dunkel (✅ `account.spec.ts`) |
-| BADGE-4 | Manipulation | normales Konto ohne Abzeichen; selbst eingetragenes Abzeichen im Gerätespeicher wird vom Server überschrieben; Abmelden löscht es (✅ `account.spec.ts`); Schreiben in `user_badges` ohne Rechte (RLS, keine Schreib-Policy, `revoke`) – nach dem Einspielen live geprüft [O] |
+| BADGE-4 | Manipulation | normales Konto ohne Abzeichen; selbst eingetragenes Abzeichen im Gerätespeicher wird vom Server überschrieben; Abmelden löscht es (✅ `account.spec.ts`); Schreiben in `user_badges` ohne Rechte (RLS, keine Schreib-Policy, `revoke`) – live geprüft [V 2026-11-03]: ohne Anmeldung Lesen/Eintragen/Löschen → 42501; Founder-Konto sieht das Abzeichen (vom Nutzer bestätigt) |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |
