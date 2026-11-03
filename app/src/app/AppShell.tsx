@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import { de } from '../i18n/de';
-import { BookIcon, FishMark, MapIcon, MoreIcon, OfflineIcon, WeatherIcon } from '../design/icons';
+import { BookIcon, FeedIcon, FishMark, MapIcon, MoreIcon, OfflineIcon, WeatherIcon } from '../design/icons';
 import { Badge } from '../design/components/Badge';
 import { useOnline } from '../lib/useOnline';
 import { UpdatePrompt } from './UpdatePrompt';
@@ -29,6 +29,7 @@ import styles from './AppShell.module.css';
 const NAV: readonly { to: string; label: string; icon: ComponentType; end: boolean; also?: string }[] = [
   { to: '/', label: de.nav.map, icon: MapIcon, end: true },
   { to: '/fangbuch', label: de.nav.catches, icon: BookIcon, end: false, also: '/statistik' },
+  { to: '/feed', label: de.nav.feed, icon: FeedIcon, end: false },
   { to: '/profil', label: de.nav.profile, icon: ProfileNavIcon, end: false },
   { to: '/wetter', label: de.nav.weather, icon: WeatherIcon, end: false },
   { to: '/mehr', label: de.nav.more, icon: MoreIcon, end: false },

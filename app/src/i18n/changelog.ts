@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-06',
+    title: 'Feed',
+    items: [
+      'Feed: Neuer Punkt in der unteren Leiste – hier siehst du die geteilten Beiträge deiner Freunde und deine eigenen, neueste zuerst.',
+    ],
+  },
+  {
     id: '2026-11-05',
     title: 'Beiträge teilen',
     items: [

@@ -2,6 +2,7 @@
 import type { Profile } from '../domain/account';
 import type { Badge } from '../domain/badges';
 import type { FriendEntry, FriendRequestResult } from '../domain/friends';
+import type { FeedPost } from '../domain/feed';
 
 export interface AccountUser {
   id: string;
@@ -60,6 +61,8 @@ export interface AccountProvider {
   ): Promise<void>;
   /** Beitrag samt Fotos vom Server entfernen (fehlt er schon, ist das kein Fehler) */
   deleteSharedPost(id: string): Promise<void>;
+  /** Feed: eigene Beiträge und die von Freunden, neueste zuerst; `before` = Zeit des letzten geladenen Beitrags */
+  feed(before?: string): Promise<FeedPost[]>;
   /** Konto und Profil endgültig löschen, danach abgemeldet */
   deleteAccount(): Promise<void>;
 }

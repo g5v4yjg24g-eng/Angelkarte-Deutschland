@@ -29,7 +29,7 @@ describe('AppShell', () => {
   it('hat fünf Hauptbereiche in der Navigation und markiert den aktiven', () => {
     renderAt('/fangbuch');
     const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' });
-    const links = ['Karte', 'Fangbuch', 'Profil', 'Wetter', 'Mehr'].map((n) =>
+    const links = ['Karte', 'Fangbuch', 'Feed', 'Profil', 'Wetter', 'Mehr'].map((n) =>
       screen.getByRole('link', { name: n }),
     );
     links.forEach((l) => expect(nav).toContainElement(l));
@@ -76,14 +76,14 @@ describe('AppShell', () => {
     window.matchMedia = () => ({ matches: false }) as MediaQueryList;
     renderAt('/basis/fangbuch', '/basis');
     const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' });
-    const links = ['Karte', 'Fangbuch', 'Profil', 'Wetter', 'Mehr'].map((n) =>
+    const links = ['Karte', 'Fangbuch', 'Feed', 'Profil', 'Wetter', 'Mehr'].map((n) =>
       screen.getByRole('link', { name: n }),
     );
-    expect(links[3]).toHaveAttribute('href', '/basis/wetter');
+    expect(links[4]).toHaveAttribute('href', '/basis/wetter');
     links.forEach((l, i) =>
       vi.spyOn(l, 'getBoundingClientRect').mockReturnValue({ left: i * 70, width: 68 } as DOMRect),
     );
-    vi.spyOn(nav, 'getBoundingClientRect').mockReturnValue({ left: 0, width: 350 } as DOMRect);
+    vi.spyOn(nav, 'getBoundingClientRect').mockReturnValue({ left: 0, width: 420 } as DOMRect);
     nav.setPointerCapture = () => {};
     const fire = (type: string, x: number) =>
       act(() => {
@@ -99,8 +99,8 @@ describe('AppShell', () => {
         );
       });
     fire('pointerdown', 104);
-    for (const x of [140, 180, 220, 245]) fire('pointermove', x);
-    fire('pointerup', 245);
+    for (const x of [140, 200, 260, 315]) fire('pointermove', x);
+    fire('pointerup', 315);
     expect(await screen.findByRole('heading', { level: 1, name: 'Wetter' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Seite nicht gefunden' })).toBeNull();
   });

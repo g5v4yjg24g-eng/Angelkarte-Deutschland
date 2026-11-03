@@ -54,6 +54,7 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
     publishPost: () => Promise.resolve(),
     updateSharedPost: () => Promise.resolve(),
     deleteSharedPost: () => Promise.resolve(),
+    feed: () => Promise.resolve([]),
     myBadges: () => (user ? Promise.resolve(badges) : Promise.reject(new AccountError('not signed in', 401))),
     deleteAccount: () => {
       calls.push('delete');

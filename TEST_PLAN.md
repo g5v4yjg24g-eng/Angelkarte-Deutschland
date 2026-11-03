@@ -185,6 +185,9 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | PST-2 | Abgleich | hochladen, Änderung nachziehen, löschen + wiederherstellen, nicht mehr teilen + erneut, ohne Verbindung bleibt vorgemerkt (✅ `data/postSyncService.test.ts`) |
 | PST-3 | Beitrag teilen (Oberfläche) | angemeldet: Hinweis, Upload mit Foto-Pfad, Bearbeitung folgt, „Nicht mehr teilen“ entfernt Eintrag + Fotos, „Teilen“ lädt wieder hoch (✅ `account.spec.ts`) |
 | PST-4 | Ohne Anmeldung | Beitrag bleibt lokal, kein Teilen-Knopf, keine Anfrage an Supabase (✅ `account.spec.ts`) |
+| FEED-1 | Feed-Regeln | Server-Antwort lesen (ohne Foto/kaputt fällt weg), Seiten ohne Doppelte zusammenführen, „mehr laden“ nur nach voller Seite, Anfangsbuchstabe (✅ `domain/feed.test.ts`) |
+| FEED-2 | Feed | Leiste mit 6 Punkten, Beiträge mit Fotos (zeitlich begrenzte Adressen), Name, Abzeichen, Text, Ende der Liste, 390 px, axe hell/dunkel (✅ `account.spec.ts`) |
+| FEED-3 | Leer / ohne Anmeldung | leerer Feed → „Freunde hinzufügen“; ohne Anmeldung Hinweis, keine Anfrage an Supabase (✅ `account.spec.ts`) |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |
