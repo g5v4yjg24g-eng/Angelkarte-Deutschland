@@ -22,6 +22,8 @@ import { ProfilePage } from '../features/profile/ProfilePage';
 import { EditProfilePage } from '../features/profile/EditProfilePage';
 import { NewPostPage } from '../features/profile/NewPostPage';
 import { PostPage } from '../features/profile/PostPage';
+import { SharedSpotsPage } from '../features/spots/SharedSpotsPage';
+import { ShareSpotPage } from '../features/spots/ShareSpotPage';
 import { FriendsPage } from '../features/friends/FriendsPage';
 import { FeedPage } from '../features/feed/FeedPage';
 import { RigDetailPage } from '../features/knots/RigDetailPage';
@@ -56,6 +58,8 @@ export const routes = [
           { path: 'profil/neu', element: <NewPostPage /> },
           { path: 'profil/beitrag/:id', element: <PostPage /> },
           { path: 'profil/freunde', element: <FriendsPage /> },
+          { path: 'profil/spots', element: <SharedSpotsPage /> },
+          { path: 'profil/spots/teilen/:placeId', element: <ShareSpotPage /> },
           { path: 'feed', element: <FeedPage /> },
           { path: 'mehr', element: <MorePage /> },
           { path: 'mehr/einstellungen', element: <SettingsPage /> },

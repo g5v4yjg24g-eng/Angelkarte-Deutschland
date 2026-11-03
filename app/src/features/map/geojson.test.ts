@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Catch, Place } from '../../domain/schemas';
+import type { SharedSpot } from '../../domain/sharedSpots';
 import { circlePolygon, toFeatures } from './geojson';
 import { ALL_MARKERS, markerSvg } from './markerIcons';
 
@@ -34,6 +35,27 @@ describe('Kartenobjekte', () => {
     expect(placeFc.features.map((f) => f.properties.kind)).toEqual(['place-jetty']);
     expect(placeFc.features[0]?.geometry.coordinates).toEqual([6.2, 51.3]);
     expect(catchFc.features.map((f) => f.properties.kind)).toEqual(['catch-caught', 'catch-missed_bite']);
+  });
+
+  it('zeigt geteilte Spots von Freunden in der Orte-Ebene – übernommene nicht doppelt (SPOT-1)', () => {
+    const shared = (id: string, lat: number): SharedSpot => ({
+      id,
+      placeId: id,
+      direction: 'incoming',
+      ownerId: 'a',
+      ownerUsername: 'a',
+      ownerName: 'A',
+      ownerBadges: [],
+      type: 'spot',
+      lat,
+      lng: 6.2,
+      updatedAt: '2026-11-07T10:00:00Z',
+    });
+    const { placeFc } = toFeatures([place('p')], [], [shared('s1', 51.3), shared('s2', 51.4)]);
+    expect(placeFc.features.map((f) => [f.properties.entity, f.properties.id, f.properties.kind])).toEqual([
+      ['place', 'p', 'place-jetty'],
+      ['shared', 's2', 'shared-spot'],
+    ]);
   });
 
   it('jedes Symbol ist ein gültiges SVG mit Zeichen zusätzlich zur Farbe', () => {
