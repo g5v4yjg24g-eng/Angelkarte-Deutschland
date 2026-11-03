@@ -9,6 +9,7 @@ import { CloseIcon, SendIcon } from '../../design/icons';
 import { addComment, postReactions, removeComment, restoreComment } from '../../data/profileService';
 import { COMMENT_MAX, commentValid } from '../../domain/profile';
 import { LOCAL_AUTHOR } from '../../domain/schemas';
+import { FounderBadge } from '../badges/FounderBadge';
 import { Avatar } from './Avatar';
 import { dragOffset, shouldClose } from './sheetDrag';
 import styles from './Comments.module.css';
@@ -23,12 +24,15 @@ export function CommentsSheet({
   open,
   postId,
   name,
+  founder = false,
   avatarPhotoId,
   onClose,
 }: {
   open: boolean;
   postId: string;
   name: string;
+  /** eigenes Konto hat das FOUNDER-Abzeichen (gilt für eigene Kommentare) */
+  founder?: boolean;
   avatarPhotoId?: string | undefined;
   onClose: () => void;
 }) {
@@ -148,7 +152,9 @@ export function CommentsSheet({
                   <Avatar photoId={c.authorId === LOCAL_AUTHOR ? avatarPhotoId : undefined} size={36} />
                   <div className={styles.body}>
                     <p className={styles.meta}>
-                      <strong>{name}</strong> <span className="muted">{ago(c.createdAt)}</span>
+                      <strong>{name}</strong>
+                      {founder && c.authorId === LOCAL_AUTHOR && <FounderBadge />}{' '}
+                      <span className="muted">{ago(c.createdAt)}</span>
                     </p>
                     <p className={styles.text}>{c.text}</p>
                   </div>

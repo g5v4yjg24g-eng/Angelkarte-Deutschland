@@ -2176,6 +2176,10 @@ export const de = {
     legalNote:
       'Fangpunkt ersetzt keine Rechtsauskunft. Maßgeblich sind die amtlichen Texte und dein Erlaubnisschein.',
   },
+  badges: {
+    founder: 'FOUNDER',
+    founderLabel: 'Abzeichen: Founder – Gründer von Fangpunkt',
+  },
   privacy: {
     title: 'Datenschutz',
     intro:

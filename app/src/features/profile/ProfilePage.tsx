@@ -12,6 +12,8 @@ import { ImagesIcon, PlusIcon, UserPlusIcon } from '../../design/icons';
 import { restorePost } from '../../data/profileService';
 import type { Post } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
+import { FounderBadge } from '../badges/FounderBadge';
+import { useMyBadges } from '../badges/badgeStore';
 import { Avatar } from './Avatar';
 import { usePhotos, usePosts, useProfile } from './usePhoto';
 import styles from './Profile.module.css';
@@ -55,6 +57,7 @@ function Count({ value, label }: { value: string; label: string }) {
 export function ProfilePage() {
   const profile = useProfile();
   const posts = usePosts();
+  const founder = useMyBadges().includes('founder');
   const navigate = useNavigate();
   const location = useLocation();
   const [soon, setSoon] = useState(false);
@@ -81,6 +84,11 @@ export function ProfilePage() {
             <p className={profile ? styles.name : `${styles.name} muted`}>
               {profile?.name || t.placeholderName}
             </p>
+            {founder && (
+              <p className={styles.badgeRow}>
+                <FounderBadge variant="full" />
+              </p>
+            )}
             <div className={styles.counts}>
               <Count value={posts.length.toLocaleString('de-DE')} label={t.posts} />
               <Count value={t.noCount} label={t.followers} />

@@ -299,3 +299,7 @@
   cursor: pointer;
   text-align: left;
 }
+.badgeRow {
+  margin: 0;
+  display: flex;
+}

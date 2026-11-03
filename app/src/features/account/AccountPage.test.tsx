@@ -2,12 +2,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import type { Profile } from '../../domain/account';
+import type { Badge } from '../../domain/badges';
 import { AccountError, type AccountProvider, type AccountUser } from '../../ports/account';
 import { ProvidersContext, type Providers } from '../../ports/providersContext';
 import { AccountPage } from './AccountPage';
 
 /** Anbieter im Speicher: ein Nutzer, Code 123456, belegter Name „hecht“ */
-function fakeAccount(): AccountProvider & { calls: string[] } {
+function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] } {
   let user: AccountUser | null = null;
   let profile: Profile | null = null;
   const listeners = new Set<(u: AccountUser | null) => void>();
@@ -46,6 +47,7 @@ function fakeAccount(): AccountProvider & { calls: string[] } {
       profile = { ...(profile as Profile), displayName };
       return Promise.resolve(profile);
     },
+    myBadges: () => (user ? Promise.resolve(badges) : Promise.reject(new AccountError('not signed in', 401))),
     deleteAccount: () => {
       calls.push('delete');
       user = null;
@@ -122,6 +124,32 @@ describe('Mehr → Konto (ACC-2)', () => {
     fireEvent.click(del);
     expect(await screen.findByText('Dein Konto wurde gelöscht.')).toBeInTheDocument();
     expect(acc.calls).toContain('delete');
+  });
+
+  it('FOUNDER-Abzeichen nur für das Konto, dem der Server es gibt (BADGE-2)', async () => {
+    localStorage.clear();
+    const founder = fakeAccount(['founder']);
+    await founder.verifyCode('kevin@example.de', '123456');
+    await founder.createProfile('kevin', 'Kevin');
+    const { unmount } = renderWith(founder);
+    expect(await screen.findByRole('img', { name: /Abzeichen: Founder/ })).toBeInTheDocument();
+    expect(screen.getByText('FOUNDER')).toBeInTheDocument();
+    unmount();
+
+    // anderes Konto auf demselben Gerät: der gemerkte Stand gehört zu einer anderen Nutzer-ID
+    localStorage.setItem(
+      'fangpunkt.badges',
+      JSON.stringify({ userId: 'u1', badges: ['founder'], checkedAt: 1 }),
+    );
+    const normal = fakeAccount([]);
+    await normal.verifyCode('max@example.de', '123456');
+    await normal.createProfile('max', 'Max');
+    renderWith(normal);
+    expect(await screen.findByText('@max')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByRole('img', { name: /Abzeichen: Founder/ })).not.toBeInTheDocument(),
+    );
+    localStorage.clear();
   });
 
   it('ohne Einrichtung kein Anmeldeformular', () => {

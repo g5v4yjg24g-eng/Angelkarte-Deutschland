@@ -1,9 +1,10 @@
 // Supabase (Auth + Postgres, Region EU/Irland): freiwilliges Konto. Der Client wird erst geladen, wenn das Konto
 // gebraucht wird (eigener Chunk); ohne gespeicherte Anmeldung sendet die App nichts an Supabase.
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
-// delete_my_account). Nur der öffentliche Schlüssel steht in der App.
+// delete_my_account) und *_user_badges.sql (nur lesbar). Nur der öffentliche Schlüssel steht in der App.
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
+import { parseBadges } from '../domain/badges';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
 
 type Row = { id: string; username: string; display_name: string };
@@ -129,6 +130,13 @@ export function supabaseAccount(
         .single();
       if (error) fail(error);
       return toProfile(data as Row);
+    },
+    async myBadges() {
+      const c = await get();
+      const id = await uid(c);
+      const { data, error } = await c.from('user_badges').select('badge').eq('user_id', id);
+      if (error) fail(error);
+      return parseBadges(data as { badge: unknown }[] | null);
     },
     async deleteAccount() {
       const c = await get();
