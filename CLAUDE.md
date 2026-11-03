@@ -38,6 +38,7 @@ Planungsdokumente im Repo-Root: `PLAN.md`, `ARCHITECTURE.md`, `DATA_SOURCES.md`,
 - App liegt in `app/` (pnpm-Workspace mit `tools/*`). Marken-Master: `app/src/design/brand/fish.json` → nach Änderungen `pnpm icons`.
 - Gewässer-Pipeline: `tools/water-pipeline` (Doku dort); Deutschland-Lauf nur über den Actions-Workflow „Gewässerdaten erzeugen“ (Overpass und Geofabrik sind in der Cloud-Umgebung gesperrt). Nur tippecanoe ≥ 2.55 (2.49 aus Ubuntu verliert Objekte und vertauscht IDs, DATA_SOURCES §10.4). Die Prüfung in Schritt 5 (`src/verify.ts`) nie entfernen oder lockern.
 - Marketing (Social Media) liegt getrennt in `marketing/` (Doku `marketing/README.md`); wird nicht gebaut. Grafiken nur aus dem Fisch-Master erzeugen (`marketing/tools/render.mjs`), Screenshots nur von der echten App mit Kennzeichnung „Beispieldaten“. Nur vorhandene Funktionen bewerben (keine Tiefen-/Offline-Karten).
+- Website fangpunkt.com (Entscheidung Nutzer 2026-11-03: App bleibt unter github.io, Domain nur Website): Quelle `website/` (Doku dort), Datenschutz-Abschnitte aus `de.privacy` – bei Änderungen der Datenschutzseite die Website neu bauen. Kontakt `kontakt@fangpunkt.com`. Nie dem Repo `g5v4yjg24g-eng.github.io` eine Domain geben (würde die App umleiten → Daten weg).
 - Rechtsinhalte zuerst nur für **NRW** (E7).
 - Altprojekte `g5v4yjg24g-eng/angelkarte` und `g5v4yjg24g-eng/angelkarte-hohendeicher-see` sind **nur Referenz**. Nie verändern, nie Code oder Daten 1:1 kopieren (insbesondere nicht `tiefen.js`/`zonen.js`, Lizenz ungeklärt).
 
