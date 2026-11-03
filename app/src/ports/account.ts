@@ -1,5 +1,6 @@
 // Port für das freiwillige Nutzerkonto. Features kennen nur diese Schnittstelle, nicht den Anbieter.
 import type { Profile } from '../domain/account';
+import type { Badge } from '../domain/badges';
 
 export interface AccountUser {
   id: string;
@@ -32,9 +33,13 @@ export interface AccountProvider {
   usernameAvailable(username: string): Promise<boolean>;
   createProfile(username: string, displayName: string): Promise<Profile>;
   updateDisplayName(displayName: string): Promise<Profile>;
+  /** Abzeichen des angemeldeten Kontos – nur vom Server vergeben (Tabelle user_badges) */
+  myBadges(): Promise<Badge[]>;
   /** Konto und Profil endgültig löschen, danach abgemeldet */
   deleteAccount(): Promise<void>;
 }
 
 /** Ob auf diesem Gerät eine Anmeldung gespeichert ist – ohne den Anbieter zu laden (für die Mehr-Liste). */
 export const ACCOUNT_STORAGE_KEY = 'fangpunkt.auth';
+/** Zuletzt vom Server gelesene Abzeichen (nur zur Anzeige ohne Netz, siehe domain/badges.ts) */
+export const BADGE_STORAGE_KEY = 'fangpunkt.badges';

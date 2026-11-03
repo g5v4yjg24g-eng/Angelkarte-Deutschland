@@ -174,6 +174,10 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | ACC-4 | Anmelde-Link (Übergangslösung) | Link mit Anmeldung im #-Teil → Kontoseite, angemeldet; abgelaufener Link → Hinweis und Formular (✅ `account.spec.ts`, `authLinkInHash` in `account.test.ts`) |
 | ACC-3 | Mehr → Konto mit nachgebildetem Supabase | ganzer Ablauf, Anmeldung bleibt nach Neuladen, nur Auth/Profil-Aufrufe, nach Löschen keine Sitzung, 390 px, axe (✅ `account.spec.ts`); ohne Anmeldung keine Anfrage an Supabase (✅ `privacy.spec.ts`) |
 | ACC-5 | Konto freigeschaltet (2026-11-03) | Mehr → Konto zeigt Formular statt „Demnächst“, ohne Eingabe keine Anfrage an Supabase, axe (✅ `account.spec.ts`) |
+| BADGE-1 | Abzeichen-Regeln | nur bekannte Abzeichen vom Server, gemerkter Stand nur für dieselbe Nutzer-ID, kaputter/manipulierter Speicher = keins (✅ `domain/badges.test.ts`) |
+| BADGE-2 | Kontoseite | FOUNDER nur beim Konto, dem der Server es gibt; anderes Konto auf demselben Gerät ohne (✅ `AccountPage.test.tsx`) |
+| BADGE-3 | FOUNDER sichtbar | Konto, Profil (groß), Beitrag und Kommentar (klein), 390 px, axe hell/dunkel (✅ `account.spec.ts`) |
+| BADGE-4 | Manipulation | normales Konto ohne Abzeichen; selbst eingetragenes Abzeichen im Gerätespeicher wird vom Server überschrieben; Abmelden löscht es (✅ `account.spec.ts`); Schreiben in `user_badges` ohne Rechte (RLS, keine Schreib-Policy, `revoke`) – nach dem Einspielen live geprüft [O] |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |

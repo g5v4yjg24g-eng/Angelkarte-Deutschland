@@ -8,6 +8,8 @@ import { Button } from '../../design/components/Button';
 import { Notice } from '../../design/components/Notice';
 import { TextField } from '../../design/components/Field';
 import { useProviders } from '../../ports/providersContext';
+import { FounderBadge } from '../badges/FounderBadge';
+import { clearBadges, refreshBadges, useMyBadges } from '../badges/badgeStore';
 import type { AccountProvider, AccountUser } from '../../ports/account';
 import {
   accountErrorKind,
@@ -274,6 +276,7 @@ function ProfileView({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [status, setStatus] = useState<string>();
+  const founder = useMyBadges(user.id).includes('founder');
 
   const run = async (fn: () => Promise<void>) => {
     setBusy(true);
@@ -293,6 +296,7 @@ function ProfileView({
       <div className={pageStyles.card}>
         <div className={styles.profile}>
           <strong className={styles.displayName}>{profile.displayName}</strong>
+          {founder && <FounderBadge variant="full" />}
           <span className="muted">{t.usernameShown(profile.username)}</span>
           <span className={`muted ${styles.small}`}>{t.signedInAs(user.email)}</span>
         </div>
@@ -422,6 +426,11 @@ export function AccountPage() {
   }, [account]);
 
   const uid = user?.id;
+  // Abzeichen kommen nur vom Server: bei Anmeldung neu lesen, bei Abmeldung vergessen
+  useEffect(() => {
+    if (uid) void refreshBadges(account, uid);
+    else if (user === null) clearBadges();
+  }, [account, uid, user]);
   useEffect(() => {
     if (!uid) return;
     let live = true;

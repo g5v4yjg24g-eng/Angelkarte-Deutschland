@@ -15,6 +15,8 @@ import { postReactions, removePost, toggleLike, updatePost } from '../../data/pr
 import { likeIdOf, POST_CAPTION_MAX } from '../../domain/profile';
 import { LOCAL_AUTHOR, type Photo, type Post } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
+import { FounderBadge } from '../badges/FounderBadge';
+import { useMyBadges } from '../badges/badgeStore';
 import { Avatar } from './Avatar';
 import { catchSummary } from './catchSummary';
 import { CommentsSheet } from './CommentsSheet';
@@ -93,6 +95,7 @@ export function PostPage() {
   const reactions = useLiveQuery(() => postReactions(id), [id]);
   const photos = usePhotos(post?.photoIds);
   const profile = useProfile();
+  const founder = useMyBadges().includes('founder');
   const [editing, setEditing] = useState(false);
   const [index, setIndex] = useState(0);
   const [burst, setBurst] = useState(0);
@@ -132,6 +135,7 @@ export function PostPage() {
       <div className={styles.postHead}>
         <Avatar photoId={profile?.avatarPhotoId} size={36} />
         <strong>{name}</strong>
+        {founder && <FounderBadge />}
       </div>
       <div className={styles.carouselWrap}>
         <div className={styles.carouselBox}>
@@ -203,7 +207,8 @@ export function PostPage() {
         <div className={styles.top}>
           {post.caption && (
             <p className={styles.bio}>
-              <strong>{name}</strong> {post.caption}
+              <strong>{name}</strong>
+              {founder && <FounderBadge />} {post.caption}
             </p>
           )}
           <p className={`muted ${styles.note}`}>
@@ -225,6 +230,7 @@ export function PostPage() {
         open={commentsOpen}
         postId={post.id}
         name={name}
+        founder={founder}
         avatarPhotoId={profile?.avatarPhotoId}
         onClose={() => setCommentsOpen(false)}
       />

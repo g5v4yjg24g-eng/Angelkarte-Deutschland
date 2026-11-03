@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page, type Route } from './fixtures';
+import type { Locator } from '@playwright/test';
 import { collectErrors, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
@@ -10,7 +11,7 @@ const EXP = Math.floor(Date.now() / 1000) + 3600;
 const TOKEN = `${b64({ alg: 'HS256', typ: 'JWT' })}.${b64({ sub: 'u-1', exp: EXP, role: 'authenticated', aud: 'authenticated', email: 'max@example.de' })}.sig`;
 
 /** Nachgebildeter Supabase-Server: Auth (Code) und REST (profiles, Funktionen) – der echte wird nie gerufen. */
-async function fakeSupabase(page: Page) {
+async function fakeSupabase(page: Page, badges: string[] = []) {
   const calls: string[] = [];
   let profile: { id: string; username: string; display_name: string } | null = null;
   const user = { id: 'u-1', aud: 'authenticated', role: 'authenticated', email: 'max@example.de' };
@@ -66,6 +67,11 @@ async function fakeSupabase(page: Page) {
         profile = { ...(profile as NonNullable<typeof profile>), display_name: b.display_name };
         return json(route, single ? profile : [profile]);
       }
+      case 'GET /rest/v1/user_badges':
+        return json(
+          route,
+          badges.map((badge) => ({ badge })),
+        );
       case 'POST /rest/v1/rpc/delete_my_account':
         profile = null;
         return route.fulfill({ status: 204 });
@@ -133,7 +139,7 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   // keine Fangdaten an Supabase
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|rest\/v1\/(profiles|rpc\/(username_available|delete_my_account)))/.test(c),
+      /\/(auth\/v1|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account)))/.test(c),
     ),
   ).toBe(true);
   expect(await page.evaluate(() => localStorage.getItem('fangpunkt.auth'))).toBeNull();
@@ -182,4 +188,108 @@ test('ACC-5: Konto freigeschaltet – Mehr → Konto zeigt das Anmeldeformular, 
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   // Ohne Eingabe keine Anfrage an Supabase
   expect(calls).toEqual([]);
+});
+
+/** Anmelden und Profil anlegen (gemeinsam für die Abzeichen-Tests) */
+async function signInWithProfile(page: Page, username: string) {
+  await page.goto('/mehr/konto');
+  await waitForApp(page);
+  await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('max@example.de');
+  await page.getByRole('button', { name: 'Code senden' }).click();
+  await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('123456');
+  await page.getByRole('button', { name: 'Anmelden' }).click();
+  await page.getByRole('textbox', { name: 'Nutzername' }).fill(username);
+  await expect(page.getByText('Frei.')).toBeVisible();
+  await page.getByRole('textbox', { name: 'Anzeigename' }).fill('Kevin');
+  await page.getByRole('button', { name: 'Profil speichern' }).click();
+  await expect(page.getByText(`@${username}`)).toBeVisible();
+}
+
+async function jpeg(page: Page) {
+  const bytes = await page.evaluate(async () => {
+    const c = document.createElement('canvas');
+    c.width = 800;
+    c.height = 600;
+    const ctx = c.getContext('2d');
+    if (!ctx) throw new Error('kein Canvas');
+    ctx.fillStyle = '#2d9cdb';
+    ctx.fillRect(0, 0, 800, 600);
+    const blob = await new Promise<Blob | null>((r) => c.toBlob(r, 'image/jpeg', 0.9));
+    return Array.from(new Uint8Array(await (blob as Blob).arrayBuffer()));
+  });
+  return { name: 'fang.jpg', mimeType: 'image/jpeg', buffer: Buffer.from(bytes) };
+}
+
+const founderBadge = (page: Page | Locator) => page.getByRole('img', { name: /Abzeichen: Founder/ });
+
+test('BADGE-3: FOUNDER vom Server – im Konto, auf dem Profil (groß), am Beitrag und am Kommentar (klein)', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await fakeSupabase(page, ['founder']);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await expect(founderBadge(page)).toBeVisible();
+  await expect(page.getByText('FOUNDER')).toBeVisible();
+
+  await page.goto('/profil');
+  await waitForApp(page);
+  await expect(founderBadge(page)).toBeVisible();
+  await expect(page.getByText('FOUNDER')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
+  await expect(page.getByRole('img', { name: 'Foto 1' })).toBeVisible();
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await expect(founderBadge(page).first()).toBeVisible();
+
+  await page.getByRole('button', { name: 'Kommentieren' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Kommentare' });
+  await sheet.getByLabel('Kommentar hinzufügen').fill('Petri Heil!');
+  await sheet.getByLabel('Kommentar hinzufügen').press('Enter');
+  await expect(sheet.getByText('Petri Heil!')).toBeVisible();
+  await expect(founderBadge(sheet)).toBeVisible();
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  expect(errors).toEqual([]);
+});
+
+test('BADGE-4: normales Konto ohne Abzeichen – auch ein manipulierter Speicher ändert das nicht', async ({
+  page,
+}) => {
+  await fakeSupabase(page, []);
+  await signInWithProfile(page, 'max');
+  await expect(founderBadge(page)).toHaveCount(0);
+
+  // Abzeichen im Gerätespeicher selbst eintragen: der Server sagt beim nächsten Start „keins“
+  await page.evaluate(() =>
+    localStorage.setItem(
+      'fangpunkt.badges',
+      JSON.stringify({ userId: 'u-1', badges: ['founder'], checkedAt: 1 }),
+    ),
+  );
+  await page.goto('/profil');
+  await waitForApp(page);
+  await expect(page.getByRole('heading', { level: 1, name: 'Profil' })).toBeVisible();
+  await expect(founderBadge(page)).toHaveCount(0);
+  expect(
+    JSON.parse((await page.evaluate(() => localStorage.getItem('fangpunkt.badges'))) ?? '{}'),
+  ).toMatchObject({
+    userId: 'u-1',
+    badges: [],
+  });
+
+  // abmelden: gemerkte Abzeichen werden vergessen
+  await page.goto('/mehr/konto');
+  await page.getByRole('button', { name: 'Abmelden' }).click();
+  await expect(page.getByText('Du bist abgemeldet.')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('fangpunkt.badges'))).toBeNull();
 });
