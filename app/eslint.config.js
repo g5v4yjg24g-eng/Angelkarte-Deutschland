@@ -6,7 +6,7 @@ import importX from 'eslint-plugin-import-x';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['dist', 'coverage', 'playwright-report', 'test-results', 'dev-dist'] },
+  { ignores: ['dist', 'coverage', 'playwright-report', 'test-results', 'dev-dist', 'ios'] },
   {
     files: ['**/*.{ts,tsx}'],
     extends: [js.configs.recommended, ...tseslint.configs.strict],

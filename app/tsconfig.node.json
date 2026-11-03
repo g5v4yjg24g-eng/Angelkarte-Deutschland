@@ -11,5 +11,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["vite.config.ts", "playwright.config.ts", "tests/e2e", "scripts/*.d.mts"]
+  "include": ["vite.config.ts", "capacitor.config.ts", "playwright.config.ts", "tests/e2e", "scripts/*.d.mts"]
 }

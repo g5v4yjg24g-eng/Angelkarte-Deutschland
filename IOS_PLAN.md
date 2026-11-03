@@ -1,7 +1,10 @@
 # iPhone-App (App Store) – Plan
 
 Stand 2026-11-02. Wunsch Nutzer: mit Apple anfangen (kein Android-Gerät vorhanden), **kein Mac**.
-Status: **nur Plan** – Capacitor ist als Abhängigkeit noch **nicht freigegeben** (Entscheidung Nutzer 2026-11-02: „Erst nur Plan“).
+Status: **Etappe 1 umgesetzt** (Freigabe Nutzer 2026-11-03, Bundle-ID `com.fangpunkt.app`): Capacitor 8.5.3, iOS-Projekt `app/ios/`
+(Swift Package Manager), Bau `pnpm -C app build:ios`, Workflow `.github/workflows/ios.yml` (von Hand starten → TestFlight).
+Wartet auf: App in App Store Connect + Secrets `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_PRIVATE_KEY`.
+Erste TestFlight-Version noch nicht gebaut [O].
 Gewünschte Gerätefunktionen (Nutzer 2026-11-02): Erinnerungen, Teilen, Kamera & Fotos, Haptik.
 
 Kennzeichnung: **[V]** verifiziert (Quelle, Datum), **[A]** Annahme, **[O]** offen.
@@ -49,7 +52,10 @@ Privatkonten, Doku codemagic.io, abgerufen 2026-11-02) [A].
   Läuft erst, wenn die Secrets da sind; sonst bricht er mit klarer Meldung ab.
 - Laut mehreren Drittquellen sind Standard-macOS-Runner für öffentliche Repos kostenlos [A]; das Repo ist öffentlich [V 2026-11-02]. Vor dem Einrichten offiziell prüfen.
 
-**Prüfen in Etappe 1 [O]:** Fremddienste antworten der App-Herkunft `capacitor://localhost` (CORS): Open-Meteo, Bright Sky, PEGELONLINE,
+**CORS [V 2026-11-03, curl mit `Origin: capacitor://localhost`]:** Open-Meteo, Bright Sky, OpenFreeMap, PEGELONLINE,
+OpenGeoData.NRW und GoatCounter antworten mit `Access-Control-Allow-Origin: *`. Am Gerät noch zu bestätigen [O].
+
+~~**Prüfen in Etappe 1 [O]:**~~ Fremddienste antworten der App-Herkunft `capacitor://localhost` (CORS): Open-Meteo, Bright Sky, PEGELONLINE,
 OpenHygon NRW, OpenFreeMap, GoatCounter, eigene PMTiles auf GitHub Pages. Falls einer nicht mitspielt: native HTTP-Brücke von Capacitor nur für diesen Adapter.
 
 ## 4. Gerätefunktionen (Etappe 2) – alle über `ports/` + `adapters/`
@@ -64,6 +70,12 @@ Je Funktion ein Port mit Web-Adapter (heutiges Verhalten) und Capacitor-Adapter;
 | **Haptik** | `@capacitor/haptics` | Fang gespeichert, Gefällt mir, Schritt in Knoten | Kurz und sparsam; abschaltbar in den Einstellungen |
 
 Optional später: `@capacitor/geolocation` (vermeidet die doppelte Standort-Frage der Webansicht [A]).
+
+**Hintergrund-Route bei Sessions** (Wunsch Nutzer 2026-11-03, direkt nach der ersten TestFlight-Version, vor dem Einreichen):
+natives Modul zeichnet den Standort auch bei gesperrtem Bildschirm auf, nur während einer laufenden Session
+(blaues Standort-Symbol von iOS, Berechtigung „Immer“, `UIBackgroundModes: location`), Punkte grob genug für den Akku;
+die Web-App übernimmt sie beim Öffnen in `tracks`. Plugin vor Einbau auswählen und begründen [O]. Apple prüft
+Hintergrund-Standort streng → Zweck im Prüfhinweis erklären; Datenschutzseite + Website ergänzen.
 
 ## 5. Store-Material (Etappe 3)
 
