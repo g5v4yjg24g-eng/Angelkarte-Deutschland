@@ -4,7 +4,10 @@ Stand 2026-11-02. Wunsch Nutzer: mit Apple anfangen (kein Android-Gerät vorhand
 Status: **Etappe 1 umgesetzt** (Freigabe Nutzer 2026-11-03, Bundle-ID `com.fangpunkt.app`): Capacitor 8.5.3, iOS-Projekt `app/ios/`
 (Swift Package Manager), Bau `pnpm -C app build:ios`, Workflow `.github/workflows/ios.yml` (von Hand starten → TestFlight).
 Wartet auf: App in App Store Connect + Secrets `APPLE_TEAM_ID`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_PRIVATE_KEY`.
-Erste TestFlight-Version noch nicht gebaut [O].
+Erste Version am 2026-11-03 zu TestFlight hochgeladen [V, Lauf 41623461713]. Erkenntnisse: Schlüssel braucht Rolle **Admin**
+(Teamschlüssel); Archiv wird **unsigniert** gebaut (Entwickler-Signatur bräuchte ein registriertes Gerät), signiert wird
+beim Export für den App Store; Apple-Chip-Runner oft ausgelastet → Standard `macos-15-intel` (wählbar beim Start);
+Prüfschritt `ios/ci/check-asc.mjs` testet die Zugangsdaten vorab und gibt **nie** Secret-Inhalte aus.
 Gewünschte Gerätefunktionen (Nutzer 2026-11-02): Erinnerungen, Teilen, Kamera & Fotos, Haptik.
 
 Kennzeichnung: **[V]** verifiziert (Quelle, Datum), **[A]** Annahme, **[O]** offen.
