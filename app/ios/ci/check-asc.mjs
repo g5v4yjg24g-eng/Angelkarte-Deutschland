@@ -16,6 +16,11 @@ if (!/^[A-Z0-9]{10}$/.test(team.trim())) problems.push(`APPLE_TEAM_ID hat nicht 
 if (lines[0] !== '-----BEGIN PRIVATE KEY-----') problems.push('ASC_PRIVATE_KEY beginnt nicht mit -----BEGIN PRIVATE KEY-----');
 if (lines.at(-1) !== '-----END PRIVATE KEY-----') problems.push('ASC_PRIVATE_KEY endet nicht mit -----END PRIVATE KEY-----');
 console.log(`Schlüsseldatei: ${lines.length} Zeilen`);
+// Kennungen (keine Geheimnisse) zum Abgleich mit App Store Connect; mit Leerzeichen, weil GitHub Secret-Werte sonst durch *** ersetzt
+const spaced = (v) => v.trim().split('').join(' ');
+console.log(`Key-ID:          ${spaced(kid)}`);
+console.log(`Issuer-ID (Anf.): ${spaced(iss.slice(0, 8))} …`);
+console.log(`Team-ID:         ${spaced(team)}`);
 
 let key;
 try {
