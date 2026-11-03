@@ -185,7 +185,9 @@ function SolunarSection({ f, dayT }: { f: Forecast; dayT: number }) {
   return (
     <section className={styles.detailSection} aria-labelledby="dd-solunar">
       <h3 id="dd-solunar">{b.solunarTitle}</h3>
-      <p className="muted">{b.phase(b.phases[phaseName(s.phase.phase)], Math.round(s.phase.fraction * 100))}</p>
+      <p className="muted">
+        {b.phase(b.phases[phaseName(s.phase.phase)], Math.round(s.phase.fraction * 100))}
+      </p>
       {s.windows.length === 0 ? (
         <p className="muted">{b.none}</p>
       ) : (

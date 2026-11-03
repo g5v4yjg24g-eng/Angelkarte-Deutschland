@@ -258,6 +258,13 @@ export const PostSchema = MetaSchema.extend({
   catchId: id.optional(),
   /** Wer den Beitrag später (mit Konto) sehen, liken und kommentieren darf; fehlt = Freunde (Entscheidung 2026-10-27) */
   visibility: z.enum(['friends', 'public']).optional(),
+  /**
+   * Teilen über das Konto (Etappe 2, Wunsch Nutzer 2026-11-03): fehlt = nur auf diesem Gerät,
+   * `pending` = soll hochgeladen werden, `shared` = auf dem Server, `unshare` = soll vom Server entfernt werden
+   */
+  share: z.enum(['pending', 'shared', 'unshare']).optional(),
+  /** Stand (`rev`), der zuletzt auf dem Server angekommen ist */
+  sharedRev: z.number().int().min(0).optional(),
 });
 
 /** Verfasser: vorerst nur `me` (dieses Gerät); mit dem Konto die Nutzer-ID */

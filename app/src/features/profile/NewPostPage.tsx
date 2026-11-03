@@ -13,6 +13,7 @@ import type { Post } from '../../domain/schemas';
 import { CloseIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
 import { createPost } from '../../data/profileService';
+import { storedUserId } from '../badges/badgeStore';
 import { newId } from '../../domain/id';
 import { canPublish, MAX_PHOTOS_PER_POST, photoRoom, POST_CAPTION_MAX } from '../../domain/profile';
 import { processPhoto, type ProcessedPhoto } from '../../lib/processPhoto';
@@ -77,6 +78,8 @@ export function NewPostPage() {
         caption: caption.trim(),
         catchId: chosen?.id,
         visibility,
+        // angemeldet: mit dem Konto teilen (Etappe 2); sonst bleibt der Beitrag auf dem Gerät
+        ...(storedUserId() ? { share: 'pending' as const } : {}),
         photos: pending.map((p) => p.photo),
         catchPhotoIds: takenFromCatch.map((p) => p.id),
       });
@@ -211,7 +214,7 @@ export function VisibilityField({
           { value: 'public', label: t.visibility.public },
         ]}
       />
-      <small className="muted">{t.visibilityHint}</small>
+      <small className="muted">{storedUserId() ? t.visibilityHintShared : t.visibilityHint}</small>
     </div>
   );
 }

@@ -76,6 +76,8 @@ export async function createPost(
     caption?: string | undefined;
     catchId?: string | undefined;
     visibility?: Post['visibility'];
+    /** `pending`: mit dem Konto teilen (Etappe 2) */
+    share?: 'pending';
     photos: NewPhoto[];
     catchPhotoIds?: string[];
   },
@@ -107,6 +109,7 @@ export async function createPost(
       ...(args.caption ? { caption: args.caption } : {}),
       ...(args.catchId ? { catchId: args.catchId } : {}),
       ...(args.visibility ? { visibility: args.visibility } : {}),
+      ...(args.share ? { share: args.share } : {}),
     });
   });
 }

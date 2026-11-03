@@ -24,6 +24,11 @@ type FakeFriend = {
 
 async function fakeSupabase(page: Page, badges: string[] = [], friends: FakeFriend[] = []) {
   const calls: string[] = [];
+  const storage = new Map<string, number>();
+  const posts = new Map<
+    string,
+    { id: string; caption: string | null; visibility: string; photo_paths: string[] }
+  >();
   let profile: { id: string; username: string; display_name: string } | null = null;
   const user = { id: 'u-1', aud: 'authenticated', role: 'authenticated', email: 'max@example.de' };
   const exp = EXP;
@@ -38,6 +43,52 @@ async function fakeSupabase(page: Page, badges: string[] = [], friends: FakeFrie
     calls.push(key);
     const single = (req.headers()['accept'] ?? '').includes('vnd.pgrst.object');
     if (req.method() === 'OPTIONS') return route.fulfill({ status: 204 });
+    // Fotospeicher (Etappe 2): hochladen, auflisten, löschen
+    if (url.pathname.startsWith('/storage/v1/object/')) {
+      const rest = url.pathname.slice('/storage/v1/object/'.length);
+      if (req.method() === 'POST' && rest.startsWith('list/')) {
+        const { prefix } = req.postDataJSON() as { prefix: string };
+        const names = [...storage.keys()]
+          .filter((k) => k.startsWith(`${prefix}/`))
+          .map((k) => k.slice(prefix.length + 1).split('/')[0] as string);
+        return json(
+          route,
+          [...new Set(names)].map((name) => ({ name })),
+        );
+      }
+      if (req.method() === 'POST' || req.method() === 'PUT') {
+        storage.set(rest.replace(/^post-photos\//, ''), (req.postDataBuffer() ?? Buffer.alloc(0)).length);
+        return json(route, { Key: rest });
+      }
+      if (req.method() === 'DELETE') {
+        const { prefixes } = req.postDataJSON() as { prefixes: string[] };
+        prefixes.forEach((k) => storage.delete(k));
+        return json(route, []);
+      }
+    }
+    if (url.pathname === '/rest/v1/posts') {
+      const id = url.searchParams.get('id')?.replace('eq.', '');
+      if (req.method() === 'POST') {
+        const b = req.postDataJSON() as {
+          id: string;
+          caption: string | null;
+          visibility: string;
+          photo_paths: string[];
+        };
+        posts.set(b.id, b);
+        return route.fulfill({ status: 201 });
+      }
+      if (req.method() === 'PATCH' && id) {
+        const b = req.postDataJSON() as { caption: string | null; visibility: string };
+        const cur = posts.get(id);
+        if (cur) posts.set(id, { ...cur, ...b });
+        return route.fulfill({ status: 204 });
+      }
+      if (req.method() === 'DELETE' && id) {
+        posts.delete(id);
+        return route.fulfill({ status: 204 });
+      }
+    }
     switch (key) {
       case 'POST /auth/v1/otp':
         return json(route, {});
@@ -127,7 +178,14 @@ async function fakeSupabase(page: Page, badges: string[] = [], friends: FakeFrie
         return json(route, { message: `nicht nachgebildet: ${key}` }, 404);
     }
   });
-  return calls;
+  // nicht aufzählbar, damit `expect(calls).toEqual([...])` nur die Aufrufe vergleicht
+  return Object.defineProperties(calls, {
+    storage: { value: storage },
+    posts: { value: posts },
+  }) as string[] & {
+    storage: typeof storage;
+    posts: typeof posts;
+  };
 }
 
 test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto löschen', async ({ page }) => {
@@ -184,10 +242,10 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   await expect(page.getByText('Dein Konto wurde gelöscht.')).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'E-Mail-Adresse' })).toBeVisible();
   expect(calls).toContain('POST /rest/v1/rpc/delete_my_account');
-  // keine Fangdaten an Supabase
+  // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/post-photos|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends)))/.test(
         c,
       ),
     ),
@@ -417,4 +475,53 @@ test('FRD-3: Freunde ohne Anmeldung – Hinweis aufs Konto, keine Anfrage an Sup
   await page.getByRole('link', { name: 'Zum Konto' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Konto' })).toBeVisible();
   expect(calls).toEqual([]);
+});
+
+test('PST-3: Beitrag teilen – angemeldet wird er mit Fotos hochgeladen, Änderungen folgen, „Nicht mehr teilen“ entfernt ihn', async ({
+  page,
+}) => {
+  const server = await fakeSupabase(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await expect(page.getByText(/Wird mit deinem Konto geteilt/)).toBeVisible();
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
+  await page.getByLabel('Text').fill('Hecht vom Steg');
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await expect(page.getByRole('status').filter({ hasText: 'Geteilt' })).toBeVisible();
+  expect([...server.posts.values()]).toEqual([
+    expect.objectContaining({ caption: 'Hecht vom Steg', visibility: 'friends' }),
+  ]);
+  expect([...server.storage.keys()]).toEqual([expect.stringMatching(/^u-1\/[0-9a-f-]+\/1\.jpg$/)]);
+
+  await page.getByRole('button', { name: 'Bearbeiten' }).click();
+  await page.getByLabel('Text').fill('Hecht vom Steg, 92 cm');
+  await page.getByRole('radio', { name: 'Alle' }).check({ force: true });
+  await page.getByRole('button', { name: 'Speichern' }).click();
+  await expect.poll(() => [...server.posts.values()][0]?.caption).toBe('Hecht vom Steg, 92 cm');
+  expect([...server.posts.values()][0]?.visibility).toBe('public');
+
+  await page.getByRole('button', { name: 'Nicht mehr teilen' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Nur auf diesem Gerät' })).toBeVisible();
+  await expect.poll(() => server.posts.size).toBe(0);
+  expect(server.storage.size).toBe(0);
+  await page.getByRole('button', { name: 'Teilen' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Geteilt' })).toBeVisible();
+  await expect.poll(() => server.posts.size).toBe(1);
+});
+
+test('PST-4: ohne Anmeldung bleibt ein neuer Beitrag auf dem Gerät', async ({ page }) => {
+  const server = await fakeSupabase(page);
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await expect(page.getByText(/Ohne Konto bleibt der Beitrag nur auf diesem Gerät/)).toBeVisible();
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await expect(page.getByRole('status').filter({ hasText: 'Nur auf diesem Gerät' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Teilen' })).toHaveCount(0);
+  expect(server).toEqual([]);
 });

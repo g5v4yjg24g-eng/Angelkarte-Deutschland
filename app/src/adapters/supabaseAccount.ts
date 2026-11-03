@@ -1,11 +1,12 @@
 // Supabase (Auth + Postgres, Region EU/Irland): freiwilliges Konto. Der Client wird erst geladen, wenn das Konto
 // gebraucht wird (eigener Chunk); ohne gespeicherte Anmeldung sendet die App nichts an Supabase.
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
-// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen). Nur der öffentliche Schlüssel steht in der App.
+// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“). Nur der öffentliche Schlüssel steht in der App.
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
 import { FriendRequestResultSchema, parseFriendRows } from '../domain/friends';
+import { photoExt } from '../domain/postSync';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
 
 type Row = { id: string; username: string; display_name: string };
@@ -17,6 +18,19 @@ const fail = (
 ): never => {
   throw new AccountError(e?.message ?? 'Unbekannter Fehler', e?.status, e?.code);
 };
+
+const POST_BUCKET = 'post-photos';
+
+/** Alle Dateien eines Ordners im Fotospeicher löschen */
+async function removeFolder(c: SupabaseClient, folder: string) {
+  const { data, error } = await c.storage.from(POST_BUCKET).list(folder, { limit: 100 });
+  if (error) fail(error);
+  const files = (data ?? []).map((f) => `${folder}/${f.name}`);
+  if (files.length) {
+    const { error: e } = await c.storage.from(POST_BUCKET).remove(files);
+    if (e) fail(e);
+  }
+}
 
 export function supabaseAccount(
   url: string | undefined,
@@ -159,8 +173,54 @@ export function supabaseAccount(
       const { error } = await (await get()).rpc('remove_friend', { other: userId });
       if (error) fail(error);
     },
+    async publishPost(post) {
+      const c = await get();
+      const id = await uid(c);
+      const paths: string[] = [];
+      for (const [i, photo] of post.photos.entries()) {
+        const path = `${id}/${post.id}/${i + 1}.${photoExt(photo.mime)}`;
+        const { error } = await c.storage
+          .from(POST_BUCKET)
+          .upload(path, photo.blob, { contentType: photo.mime, upsert: true });
+        if (error) fail(error);
+        paths.push(path);
+      }
+      const { error } = await c.from('posts').upsert({
+        id: post.id,
+        author_id: id,
+        caption: post.caption ?? null,
+        visibility: post.visibility,
+        photo_paths: paths,
+        created_at: post.createdAt,
+        updated_at: new Date().toISOString(),
+      });
+      if (error) fail(error);
+    },
+    async updateSharedPost(postId, changes) {
+      const c = await get();
+      const { error } = await c
+        .from('posts')
+        .update({
+          caption: changes.caption ?? null,
+          visibility: changes.visibility,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', postId);
+      if (error) fail(error);
+    },
+    async deleteSharedPost(postId) {
+      const c = await get();
+      const id = await uid(c);
+      await removeFolder(c, `${id}/${postId}`);
+      const { error } = await c.from('posts').delete().eq('id', postId);
+      if (error) fail(error);
+    },
     async deleteAccount() {
       const c = await get();
+      // Fotos liegen im Speicher, nicht in der Datenbank: vor dem Konto löschen
+      const me = await uid(c);
+      const { data: folders } = await c.storage.from(POST_BUCKET).list(me, { limit: 1000 });
+      for (const f of folders ?? []) await removeFolder(c, `${me}/${f.name}`);
       const { error } = await c.rpc('delete_my_account');
       if (error) fail(error);
       // Server-Konto ist weg: lokale Anmeldung entfernen
