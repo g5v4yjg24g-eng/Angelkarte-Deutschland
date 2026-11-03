@@ -45,7 +45,7 @@ test('PRF-4: Profil einrichten, Beitrag mit zwei Fotos posten, ansehen, Text än
   await nav.getByRole('link', { name: 'Profil' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Profil' })).toBeVisible();
   await expect(page.getByText('Noch keine Beiträge')).toBeVisible();
-  await expect(page.getByText('Follower')).toBeVisible();
+  await expect(page.getByText('Freunde', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Profil teilen' }).click();
   await expect(page.getByText('Kommt mit dem Konto – demnächst.')).toBeVisible();
   expect(await axe(page)).toEqual([]);

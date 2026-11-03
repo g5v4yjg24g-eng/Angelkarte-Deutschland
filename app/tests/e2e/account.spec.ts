@@ -11,7 +11,18 @@ const EXP = Math.floor(Date.now() / 1000) + 3600;
 const TOKEN = `${b64({ alg: 'HS256', typ: 'JWT' })}.${b64({ sub: 'u-1', exp: EXP, role: 'authenticated', aud: 'authenticated', email: 'max@example.de' })}.sig`;
 
 /** Nachgebildeter Supabase-Server: Auth (Code) und REST (profiles, Funktionen) – der echte wird nie gerufen. */
-async function fakeSupabase(page: Page, badges: string[] = []) {
+type FakeFriend = {
+  request_id: string;
+  user_id: string;
+  username: string;
+  display_name: string;
+  status: 'pending' | 'accepted';
+  direction: 'incoming' | 'outgoing';
+  badges: string[];
+  since: string;
+};
+
+async function fakeSupabase(page: Page, badges: string[] = [], friends: FakeFriend[] = []) {
   const calls: string[] = [];
   let profile: { id: string; username: string; display_name: string } | null = null;
   const user = { id: 'u-1', aud: 'authenticated', role: 'authenticated', email: 'max@example.de' };
@@ -72,6 +83,43 @@ async function fakeSupabase(page: Page, badges: string[] = []) {
           route,
           badges.map((badge) => ({ badge })),
         );
+      case 'POST /rest/v1/rpc/my_friends':
+        return json(route, friends);
+      case 'POST /rest/v1/rpc/send_friend_request': {
+        const { name } = req.postDataJSON() as { name: string };
+        if (name === 'gibtsnicht') return json(route, { code: 'P0001', message: 'not_found' }, 400);
+        const back = friends.find((f) => f.username === name && f.direction === 'incoming');
+        if (back) {
+          back.status = 'accepted';
+          return json(route, 'accepted');
+        }
+        friends.push({
+          request_id: `r-${name}`,
+          user_id: `u-${name}`,
+          username: name,
+          display_name: name,
+          status: 'pending',
+          direction: 'outgoing',
+          badges: [],
+          since: '2026-11-04T10:00:00Z',
+        });
+        return json(route, 'sent');
+      }
+      case 'POST /rest/v1/rpc/respond_friend_request': {
+        const { request, accept } = req.postDataJSON() as { request: string; accept: boolean };
+        const i = friends.findIndex((f) => f.request_id === request);
+        if (accept) (friends[i] as FakeFriend).status = 'accepted';
+        else friends.splice(i, 1);
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/remove_friend': {
+        const { other } = req.postDataJSON() as { other: string };
+        friends.splice(
+          friends.findIndex((f) => f.user_id === other),
+          1,
+        );
+        return route.fulfill({ status: 204 });
+      }
       case 'POST /rest/v1/rpc/delete_my_account':
         profile = null;
         return route.fulfill({ status: 204 });
@@ -139,7 +187,9 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   // keine Fangdaten an Supabase
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account)))/.test(c),
+      /\/(auth\/v1|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends)))/.test(
+        c,
+      ),
     ),
   ).toBe(true);
   expect(await page.evaluate(() => localStorage.getItem('fangpunkt.auth'))).toBeNull();
@@ -292,4 +342,79 @@ test('BADGE-4: normales Konto ohne Abzeichen – auch ein manipulierter Speicher
   await page.getByRole('button', { name: 'Abmelden' }).click();
   await expect(page.getByText('Du bist abgemeldet.')).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('fangpunkt.badges'))).toBeNull();
+});
+
+test('FRD-2: Freunde – Anfrage annehmen, senden, zurückziehen, entfernen; Zahl im Profil', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await fakeSupabase(
+    page,
+    [],
+    [
+      {
+        request_id: 'r-anna',
+        user_id: 'u-anna',
+        username: 'anna',
+        display_name: 'Anna',
+        status: 'pending',
+        direction: 'incoming',
+        badges: ['founder'],
+        since: '2026-11-04T09:00:00Z',
+      },
+    ],
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Freunde hinzufügen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Freunde' })).toBeVisible();
+  await expect(page.getByText('Dein Nutzername: @kevin')).toBeVisible();
+
+  const incoming = page.getByRole('region', { name: 'Anfragen an dich' });
+  await expect(incoming.getByText('Anna', { exact: true })).toBeVisible();
+  await expect(incoming.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
+  await incoming.getByRole('button', { name: 'Annehmen' }).click();
+  await expect(page.getByText('Du und @anna seid jetzt befreundet.')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Deine Freunde (1)' }).getByText('@anna')).toBeVisible();
+
+  await page.getByRole('textbox', { name: 'Nutzername' }).fill('gibtsnicht');
+  await page.getByRole('button', { name: 'Anfrage senden' }).click();
+  await expect(page.getByText('Diesen Nutzernamen gibt es nicht.', { exact: false })).toBeVisible();
+  await page.getByRole('textbox', { name: 'Nutzername' }).fill('@Zander');
+  await page.getByRole('button', { name: 'Anfrage senden' }).click();
+  await expect(page.getByText('Anfrage an @zander gesendet.')).toBeVisible();
+  const outgoing = page.getByRole('region', { name: 'Gesendete Anfragen' });
+  await expect(outgoing.getByText('@zander')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await outgoing.getByRole('button', { name: 'Zurückziehen' }).click();
+  await expect(page.getByRole('region', { name: 'Gesendete Anfragen' })).toHaveCount(0);
+
+  await page.goto('/profil');
+  await expect(page.getByText('1', { exact: true }).locator('xpath=..')).toContainText('Freunde');
+  await page.goto('/profil/freunde');
+  const friendsList = page.getByRole('region', { name: 'Deine Freunde (1)' });
+  await friendsList.getByRole('button', { name: 'Entfernen' }).click();
+  await friendsList.getByRole('button', { name: 'Ja, entfernen' }).click();
+  await expect(page.getByRole('region', { name: 'Deine Freunde (0)' })).toBeVisible();
+  // erwartet: die Antwort 400 auf den unbekannten Nutzernamen
+  expect(errors.filter((e) => !e.includes('status of 400'))).toEqual([]);
+});
+
+test('FRD-3: Freunde ohne Anmeldung – Hinweis aufs Konto, keine Anfrage an Supabase', async ({ page }) => {
+  const calls = await fakeSupabase(page);
+  await page.goto('/profil/freunde');
+  await waitForApp(page);
+  await expect(page.getByText(/Für Freunde brauchst du ein Konto/)).toBeVisible();
+  await page.getByRole('link', { name: 'Zum Konto' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Konto' })).toBeVisible();
+  expect(calls).toEqual([]);
 });

@@ -1,5 +1,5 @@
 // Profilseite (Wunsch Nutzer 2026-10-27, Vorbild Instagram ohne Story-Highlights und Reiterzeile): Profilbild, Name,
-// Zahlen, Text, Knöpfe und Raster der Beiträge. Follower/Gefolgt, Teilen und Freunde hinzufügen kommen mit dem Konto.
+// Zahlen, Text, Knöpfe und Raster der Beiträge. Freunde (Etappe 1) über /profil/freunde; „Profil teilen“ folgt.
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { de } from '../../i18n/de';
@@ -14,6 +14,7 @@ import type { Post } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useMyBadges } from '../badges/badgeStore';
+import { useFriends } from '../friends/useFriends';
 import { Avatar } from './Avatar';
 import { usePhotos, usePosts, useProfile } from './usePhoto';
 import styles from './Profile.module.css';
@@ -58,6 +59,11 @@ export function ProfilePage() {
   const profile = useProfile();
   const posts = usePosts();
   const founder = useMyBadges().includes('founder');
+  const { state: friends } = useFriends();
+  const friendCount =
+    friends.kind === 'ready'
+      ? friends.list.filter((f) => f.status === 'accepted').length.toLocaleString('de-DE')
+      : t.noCount;
   const navigate = useNavigate();
   const location = useLocation();
   const [soon, setSoon] = useState(false);
@@ -91,8 +97,7 @@ export function ProfilePage() {
             )}
             <div className={styles.counts}>
               <Count value={posts.length.toLocaleString('de-DE')} label={t.posts} />
-              <Count value={t.noCount} label={t.followers} />
-              <Count value={t.noCount} label={t.following} />
+              <Count value={friendCount} label={t.friendsCount} />
             </div>
           </div>
         </section>
@@ -107,8 +112,8 @@ export function ProfilePage() {
           <IconButton
             label={t.addFriends}
             icon={<UserPlusIcon size={20} />}
-            className={`${styles.squareButton} ${styles.soon}`}
-            onClick={() => setSoon(true)}
+            className={styles.squareButton}
+            onClick={() => void navigate('/profil/freunde')}
           />
         </div>
       </div>

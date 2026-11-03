@@ -178,6 +178,9 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | BADGE-2 | Kontoseite | FOUNDER nur beim Konto, dem der Server es gibt; anderes Konto auf demselben Gerät ohne (✅ `AccountPage.test.tsx`) |
 | BADGE-3 | FOUNDER sichtbar | Konto, Profil (groß), Beitrag und Kommentar (klein), 390 px, axe hell/dunkel (✅ `account.spec.ts`) |
 | BADGE-4 | Manipulation | normales Konto ohne Abzeichen; selbst eingetragenes Abzeichen im Gerätespeicher wird vom Server überschrieben; Abmelden löscht es (✅ `account.spec.ts`); Schreiben in `user_badges` ohne Rechte (RLS, keine Schreib-Policy, `revoke`) – live geprüft [V 2026-11-03]: ohne Anmeldung Lesen/Eintragen/Löschen → 42501; Founder-Konto sieht das Abzeichen (vom Nutzer bestätigt) |
+| FRD-1 | Freunde-Regeln | Server-Antwort lesen (nur bekannte Abzeichen, Kaputtes fällt weg), Gruppen Anfragen/Gesendet/Freunde nach Name, Fehlerarten (✅ `domain/friends.test.ts`) |
+| FRD-2 | Freunde-Seite | Anfrage annehmen (mit Abzeichen), unbekannter Name, senden (mit @ und Großschreibung), zurückziehen, entfernen mit Bestätigung, Zahl im Profil, 390 px, axe hell/dunkel (✅ `account.spec.ts`) |
+| FRD-3 | Ohne Anmeldung | Hinweis aufs Konto, keine Anfrage an Supabase (✅ `account.spec.ts`) |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |

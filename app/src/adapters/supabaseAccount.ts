@@ -1,10 +1,11 @@
 // Supabase (Auth + Postgres, Region EU/Irland): freiwilliges Konto. Der Client wird erst geladen, wenn das Konto
 // gebraucht wird (eigener Chunk); ohne gespeicherte Anmeldung sendet die App nichts an Supabase.
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
-// delete_my_account) und *_user_badges.sql (nur lesbar). Nur der öffentliche Schlüssel steht in der App.
+// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen). Nur der öffentliche Schlüssel steht in der App.
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
+import { FriendRequestResultSchema, parseFriendRows } from '../domain/friends';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
 
 type Row = { id: string; username: string; display_name: string };
@@ -137,6 +138,26 @@ export function supabaseAccount(
       const { data, error } = await c.from('user_badges').select('badge').eq('user_id', id);
       if (error) fail(error);
       return parseBadges(data as { badge: unknown }[] | null);
+    },
+    async friends() {
+      const { data, error } = await (await get()).rpc('my_friends');
+      if (error) fail(error);
+      return parseFriendRows(data as unknown[] | null);
+    },
+    async sendFriendRequest(username) {
+      const { data, error } = await (await get()).rpc('send_friend_request', { name: username });
+      if (error) fail(error);
+      const r = FriendRequestResultSchema.safeParse(data);
+      if (!r.success) throw new AccountError('Unerwartete Antwort');
+      return r.data;
+    },
+    async respondFriendRequest(requestId, accept) {
+      const { error } = await (await get()).rpc('respond_friend_request', { request: requestId, accept });
+      if (error) fail(error);
+    },
+    async removeFriend(userId) {
+      const { error } = await (await get()).rpc('remove_friend', { other: userId });
+      if (error) fail(error);
     },
     async deleteAccount() {
       const c = await get();
