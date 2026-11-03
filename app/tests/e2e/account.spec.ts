@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page, type Route } from './fixtures';
 import type { Locator } from '@playwright/test';
-import { collectErrors, waitForApp } from './helpers';
+import { collectErrors, screenPoint, serveWaterFixture, tapRendered, waitForApp } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -32,6 +32,7 @@ async function fakeSupabase(
   badges: string[] = [],
   friends: FakeFriend[] = [],
   feed: unknown[] = [],
+  spots: Record<string, unknown>[] = [],
 ) {
   const calls: string[] = [];
   const storage = new Map<string, number>();
@@ -194,6 +195,46 @@ async function fakeSupabase(
         );
         return route.fulfill({ status: 204 });
       }
+      // Spots teilen (Etappe 4)
+      case 'POST /rest/v1/rpc/my_shared_spots':
+        return json(route, spots);
+      case 'POST /rest/v1/rpc/share_spot': {
+        const b = req.postDataJSON() as Record<string, unknown>;
+        const friend = friends.find((f) => f.user_id === b.recipient);
+        if (b.recipient && friend?.status !== 'accepted')
+          return json(route, { code: 'P0001', message: 'not_friends' }, 400);
+        const old = spots.findIndex(
+          (x) =>
+            x.direction === 'outgoing' && x.place_id === b.place && (x.recipient_id ?? null) === b.recipient,
+        );
+        const row = {
+          id: old >= 0 ? spots[old]?.id : `s-${spots.length + 1}`,
+          place_id: b.place,
+          direction: 'outgoing',
+          owner_id: 'u-1',
+          owner_username: profile?.username ?? '',
+          owner_display_name: profile?.display_name ?? '',
+          owner_badges: badges,
+          recipient_id: b.recipient ?? null,
+          recipient_username: friend?.username ?? null,
+          recipient_display_name: friend?.display_name ?? null,
+          place_type: b.kind,
+          name: b.spot_name ?? null,
+          note: b.spot_note ?? null,
+          lat: b.spot_lat,
+          lng: b.spot_lng,
+          updated_at: new Date().toISOString(),
+        };
+        if (old >= 0) spots[old] = row;
+        else spots.push(row);
+        return json(route, row.id);
+      }
+      case 'POST /rest/v1/rpc/unshare_spot': {
+        const { spot } = req.postDataJSON() as { spot: string };
+        const i = spots.findIndex((x) => x.id === spot && x.direction === 'outgoing');
+        if (i >= 0) spots.splice(i, 1);
+        return route.fulfill({ status: 204 });
+      }
       case 'POST /rest/v1/rpc/delete_my_account':
         profile = null;
         return route.fulfill({ status: 204 });
@@ -205,9 +246,11 @@ async function fakeSupabase(
   return Object.defineProperties(calls, {
     storage: { value: storage },
     posts: { value: posts },
+    spots: { value: spots },
   }) as string[] & {
     storage: typeof storage;
     posts: typeof posts;
+    spots: typeof spots;
   };
 }
 
@@ -623,4 +666,178 @@ test('FEED-3: leerer Feed führt zu „Freunde hinzufügen“; ohne Anmeldung Hi
   await expect(page.getByText('Noch keine Beiträge')).toBeVisible();
   await page.getByRole('link', { name: 'Freunde hinzufügen' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Freunde' })).toBeVisible();
+});
+
+const ANNA: FakeFriend = {
+  request_id: 'r-anna',
+  user_id: 'u-anna',
+  username: 'anna',
+  display_name: 'Anna',
+  status: 'accepted',
+  direction: 'incoming',
+  badges: ['founder'],
+  since: '2026-11-04T09:00:00Z',
+};
+const BUHNE = {
+  id: 's-anna-1',
+  place_id: 'anna-place-1',
+  direction: 'incoming',
+  owner_id: 'u-anna',
+  owner_username: 'anna',
+  owner_display_name: 'Anna',
+  owner_badges: ['founder'],
+  recipient_id: null,
+  recipient_username: null,
+  recipient_display_name: null,
+  place_type: 'spot',
+  name: 'Buhne 3',
+  note: 'Zander abends',
+  lat: 51.3283,
+  lng: 6.2448,
+  updated_at: '2026-11-07T08:00:00Z',
+};
+
+/** Karte ohne Fremdabrufe: Teststil statt OpenFreeMap, keine Gewässerdaten (Tipp ins Leere legt einen Ort an) */
+async function localMap(page: Page) {
+  await serveWaterFixture(page, { missing: true });
+  await page.route('https://tiles.openfreemap.org/**', (r) =>
+    r.fulfill({
+      json: {
+        version: 8,
+        sources: {},
+        layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#dfe8e8' } }],
+      },
+    }),
+  );
+  await page.addInitScript(() => {
+    localStorage.setItem('fangpunkt.mapView', JSON.stringify({ lng: 6.2418, lat: 51.3263, zoom: 15 }));
+  });
+}
+
+test('SPOT-3: Spots teilen – Spot von Anna auf der Karte übernehmen, eigenen Ort teilen, Teilen beenden', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }], [], [{ ...BUHNE }]);
+  await localMap(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/');
+  await waitForApp(page);
+  await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'), null, { timeout: 30_000 });
+
+  // Spot von Anna: violetter Pin (Spitze unten → etwas oberhalb tippen)
+  await tapRendered(page, 'fp-places', 6.2448, 51.3283, -14);
+  const shared = page.getByRole('dialog', { name: 'Geteilter Spot' });
+  await expect(shared.getByText('Buhne 3')).toBeVisible();
+  await expect(shared.getByText(/von Anna/)).toBeVisible();
+  await expect(shared.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
+  await expect(shared.getByText('Zander abends')).toBeVisible();
+  await shared.getByRole('button', { name: 'In meine Orte übernehmen' }).click();
+  await expect(page.getByText('Zu deinen Orten hinzugefügt.')).toBeVisible();
+  const adopted = page.getByRole('dialog', { name: 'Angelstelle' });
+  await expect(adopted.getByText('Geteilt von Anna (@anna)', { exact: false })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  // eigenen Ort anlegen und teilen
+  const p = await screenPoint(page, 6.2418, 51.3253);
+  await page.mouse.click(p.x, p.y);
+  await page
+    .getByRole('dialog', { name: 'Neu an dieser Stelle' })
+    .getByRole('button', { name: 'Angelsteg' })
+    .click();
+  const form = page.getByRole('dialog', { name: 'Angelsteg anlegen' });
+  await form.getByLabel('Bezeichnung (optional)').fill('Steg am Schilf');
+  await form.getByRole('button', { name: 'Speichern' }).click();
+  await tapRendered(page, 'fp-places', 6.2418, 51.3253);
+  await page.getByRole('dialog', { name: 'Angelsteg' }).getByRole('button', { name: 'Teilen' }).click();
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Spot teilen' })).toBeVisible();
+  await expect(page.getByText('Steg am Schilf')).toBeVisible();
+  await expect(page.getByRole('radio', { name: /Alle Freunde/ })).toBeChecked();
+  await page.getByRole('button', { name: 'Teilen', exact: true }).click();
+  await expect(page.getByText('Geteilt an alle Freunde.')).toBeVisible();
+  await page.getByRole('radio', { name: /Anna/ }).check();
+  await page.getByRole('button', { name: 'Teilen', exact: true }).click();
+  await expect(page.getByText('Geteilt an Anna.')).toBeVisible();
+  const current = page.getByRole('region', { name: 'Bereits geteilt' });
+  await expect(current.getByText('an alle Freunde')).toBeVisible();
+  await expect(current.getByText('an Anna')).toBeVisible();
+  // genau die gespeicherte Position, nur Art/Name/Position
+  const out = calls.spots.filter((x) => x.direction === 'outgoing');
+  expect(out).toHaveLength(2);
+  const local = await page.evaluate(
+    () =>
+      new Promise<{ lat: number; lng: number }>((resolve, reject) => {
+        const open = indexedDB.open('fangpunkt');
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const req = open.result.transaction('places').objectStore('places').getAll();
+          req.onsuccess = () => {
+            const rows = req.result as { name?: string; position: { lat: number; lng: number } }[];
+            const hit = rows.find((x) => x.name === 'Steg am Schilf');
+            if (hit) resolve(hit.position);
+            else reject(new Error('Ort fehlt'));
+          };
+        };
+      }),
+  );
+  expect(out[0]).toMatchObject({
+    place_type: 'jetty',
+    name: 'Steg am Schilf',
+    note: null,
+    lat: local.lat,
+    lng: local.lng,
+  });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await current
+    .getByRole('listitem')
+    .filter({ hasText: 'an alle Freunde' })
+    .getByRole('button', { name: 'Nicht mehr teilen' })
+    .click();
+  await expect(page.getByText('Wird nicht mehr geteilt.')).toBeVisible();
+  await expect(current.getByText('an alle Freunde')).toHaveCount(0);
+
+  // Übersicht im Profil
+  await page.goto('/profil');
+  await page.getByRole('button', { name: 'Geteilte Spots' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Geteilte Spots' })).toBeVisible();
+  const incoming = page.getByRole('region', { name: 'Mit dir geteilt' });
+  await expect(incoming.getByText('Buhne 3')).toBeVisible();
+  await expect(incoming.getByRole('button', { name: 'In deinen Orten' })).toBeDisabled();
+  const mine = page.getByRole('region', { name: 'Von dir geteilt' });
+  await expect(mine.getByText('Steg am Schilf')).toBeVisible();
+  await expect(mine.getByText(/an Anna/)).toBeVisible();
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await incoming.getByRole('button', { name: 'Auf der Karte' }).click();
+  await expect(page.getByRole('dialog', { name: 'Geteilter Spot' }).getByText('Buhne 3')).toBeVisible();
+  expect(errors.filter((e) => !/status of 404/.test(e))).toEqual([]);
+});
+
+test('SPOT-4: ohne Anmeldung – Hinweis aufs Konto, keine Anfrage an Supabase', async ({ page }) => {
+  const calls = await fakeSupabase(page);
+  await localMap(page);
+  await page.goto('/profil/spots');
+  await waitForApp(page);
+  await expect(page.getByText(/Zum Teilen von Spots brauchst du ein Konto/)).toBeVisible();
+  await page.goto('/');
+  await waitForApp(page);
+  await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'), null, { timeout: 30_000 });
+  await page.goto('/profil/spots/teilen/irgendwas');
+  await expect(page.getByText(/Zum Teilen von Spots brauchst du ein Konto/)).toBeVisible();
+  expect(calls).toEqual([]);
 });

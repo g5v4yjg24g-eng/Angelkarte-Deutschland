@@ -37,6 +37,11 @@ import {
 import { WaterProfile } from './WaterProfile';
 import { SearchSheet } from './SearchSheet';
 import { CatchDetails, Legend, NewHere, PlaceDetails, PlaceForm } from './MapSheets';
+import { adoptedPlace, incomingSpots } from '../../domain/sharedSpots';
+import { adoptSharedSpot } from '../../data/sharedSpotService';
+import { userMessage } from '../../data/errors';
+import { SharedSpotDetails } from '../spots/SharedSpotDetails';
+import { useSharedSpots } from '../spots/useSharedSpots';
 import { CatchForm, type CatchContext, type WaterChoice } from '../catches/CatchForm';
 import { useRunningSession } from '../sessions/useSessions';
 import { tryStartSession } from '../sessions/sessionActions';
@@ -56,6 +61,7 @@ type SheetState =
   | { kind: 'water'; info: WaterInfo; lat: number; lng: number }
   | { kind: 'search'; near: { lat: number; lng: number } }
   | { kind: 'place'; id: string }
+  | { kind: 'shared'; id: string }
   | { kind: 'catch'; id: string }
   | { kind: 'catchForm'; context?: CatchContext; id?: string }
   | { kind: 'assignWater'; id: string; candidates?: WaterInfo[] }
@@ -108,6 +114,8 @@ export interface MapFocusState {
   focusCatch?: string;
   /** Aus dem Fangbuch: Gewässer für diesen Eintrag zuordnen (M5.5) */
   assignWater?: string;
+  /** Aus „Geteilte Spots“: Spot eines Freundes zeigen (Etappe 4) */
+  focusShared?: string;
 }
 
 /** Gewässer an einem Bildschirmpunkt: Fläche unter dem Finger, sonst Fließgewässer im Umkreis. */
@@ -182,7 +190,7 @@ declare global {
 }
 
 export default function MapView() {
-  const { basemap, water } = useProviders();
+  const { basemap, water, account } = useProviders();
   const theme = useEffectiveTheme();
   const online = useOnline();
   const container = useRef<HTMLDivElement>(null);
@@ -230,7 +238,13 @@ export default function MapView() {
 
   const places = useLiveQuery(() => getDb().places.toArray(), []);
   const catches = useLiveQuery(() => getDb().catches.toArray(), []);
-  const features = useMemo(() => toFeatures(places ?? [], catches ?? []), [places, catches]);
+  // Von Freunden geteilte Spots (Etappe 4) – nur angemeldet, sonst leer und ohne Netz
+  const { state: sharedState } = useSharedSpots();
+  const shared = useMemo(
+    () => (sharedState.kind === 'ready' ? incomingSpots(sharedState.list) : []),
+    [sharedState],
+  );
+  const features = useMemo(() => toFeatures(places ?? [], catches ?? [], shared), [places, catches, shared]);
   // Heatmap der gelandeten Fische (P2); Wahl wird pro Gerät gemerkt
   // Mit Ziel aus dem Fangbuch ohne Heatmap starten, sonst wäre das gesuchte Fang-Symbol ausgeblendet
   const [heat, setHeat] = useState(() => {
@@ -373,7 +387,7 @@ export default function MapView() {
       const dist = (f: (typeof hits)[number]) => {
         const c = map.project((f.geometry as GeoJSON.Point).coordinates as [number, number]);
         // Pins stehen mit der Spitze auf dem Punkt; ihr sichtbarer Mittelpunkt liegt ~18 px darüber
-        const dy = f.properties.kind === 'place-spot' ? 18 : 0;
+        const dy = f.properties.kind === 'place-spot' || f.properties.kind === 'shared-spot' ? 18 : 0;
         return Math.hypot(c.x - e.point.x, c.y - dy - e.point.y);
       };
       const hit = hits.sort((a, b) => dist(a) - dist(b))[0];
@@ -386,7 +400,11 @@ export default function MapView() {
           );
         return;
       }
-      if (hit?.layer.id === LAYERS.places) return setSheet({ kind: 'place', id: String(hit.properties.id) });
+      if (hit?.layer.id === LAYERS.places)
+        return setSheet({
+          kind: hit.properties.entity === 'shared' ? 'shared' : 'place',
+          id: String(hit.properties.id),
+        });
       if (hit?.layer.id === LAYERS.catches) return setSheet({ kind: 'catch', id: String(hit.properties.id) });
       // Gewässer: Fläche unter dem Finger, sonst Fließgewässer im Umkreis (Flüsse laufen oft durch Seen)
       const info = waterAt(map, e.point);
@@ -645,6 +663,30 @@ export default function MapView() {
     });
   }, [assignFor, catches, ready, navigate]);
 
+  // Aus „Geteilte Spots“: Spot eines Freundes zeigen, sobald Karte und Liste bereit sind
+  const focusShared = (location.state as MapFocusState | null)?.focusShared;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !focusShared || sharedState.kind === 'loading') return;
+    void navigate('.', { replace: true, state: null });
+    const s = shared.find((x) => x.id === focusShared);
+    if (!s) return;
+    map.jumpTo({ center: [s.lng, s.lat], zoom: Math.max(map.getZoom(), 15) });
+    queueMicrotask(() => setSheet({ kind: 'shared', id: s.id }));
+  }, [focusShared, shared, sharedState.kind, ready, navigate]);
+
+  async function adopt(id: string) {
+    const s = shared.find((x) => x.id === id);
+    if (!s) return;
+    try {
+      const p = await adoptSharedSpot(s, de.spots.adoptOrigin);
+      setToast({ text: de.spots.adoptedToast });
+      setSheet({ kind: 'place', id: p.id });
+    } catch (e) {
+      setToast({ text: userMessage(e) });
+    }
+  }
+
   async function assignWater(id: string, w?: WaterInfo) {
     await repo('catches').update(id, {
       waterId: w?.wid,
@@ -662,6 +704,7 @@ export default function MapView() {
   const sheetPlace =
     sheet?.kind === 'place' ? places?.find((p) => p.id === sheet.id && !p.deletedAt) : undefined;
   const sheetCatch = sheet?.kind === 'catch' ? catches?.find((c) => c.id === sheet.id) : undefined;
+  const sheetShared = sheet?.kind === 'shared' ? shared.find((s) => s.id === sheet.id) : undefined;
 
   let sheetTitle = '';
   let sheetBody: React.ReactNode = null;
@@ -776,6 +819,9 @@ export default function MapView() {
           })
         }
         onDelete={() => void deletePlace(sheetPlace.id)}
+        {...(account.enabled
+          ? { onShare: () => void navigate(`/profil/spots/teilen/${encodeURIComponent(sheetPlace.id)}`) }
+          : {})}
         onAddCatch={() =>
           setSheet({
             kind: 'catchForm',
@@ -793,6 +839,15 @@ export default function MapView() {
             },
           })
         }
+      />
+    );
+  } else if (sheetShared) {
+    sheetTitle = de.spots.sheetTitle;
+    sheetBody = (
+      <SharedSpotDetails
+        spot={sheetShared}
+        adopted={!!places && !!adoptedPlace(sheetShared, places)}
+        onAdopt={() => void adopt(sheetShared.id)}
       />
     );
   } else if (sheetCatch) {
@@ -832,7 +887,7 @@ export default function MapView() {
     );
   } else if (sheet?.kind === 'legend') {
     sheetTitle = de.map.legendTitle;
-    sheetBody = <Legend clustersLabeled={!usingFallback} />;
+    sheetBody = <Legend clustersLabeled={!usingFallback} shared={shared.length > 0} />;
   } else if (sheet?.kind === 'locate') {
     sheetTitle = de.map.locateTitle;
     sheetBody = (

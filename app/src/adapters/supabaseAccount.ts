@@ -1,13 +1,14 @@
 // Supabase (Auth + Postgres, Region EU/Irland): freiwilliges Konto. Der Client wird erst geladen, wenn das Konto
 // gebraucht wird (eigener Chunk); ohne gespeicherte Anmeldung sendet die App nichts an Supabase.
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
-// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed). Nur der öffentliche Schlüssel steht in der App.
+// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen). Nur der öffentliche Schlüssel steht in der App.
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
 import { FriendRequestResultSchema, parseFriendRows } from '../domain/friends';
 import { photoExt } from '../domain/postSync';
 import { FEED_PAGE, parseFeedRows } from '../domain/feed';
+import { parseSharedSpotRows } from '../domain/sharedSpots';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
 
 type Row = { id: string; username: string; display_name: string };
@@ -230,6 +231,29 @@ export function supabaseAccount(
         for (const s of signed ?? []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
       }
       return posts.map((p) => ({ ...p, photoUrls: p.photoPaths.map((path) => urls.get(path) ?? '') }));
+    },
+    async sharedSpots() {
+      const { data, error } = await (await get()).rpc('my_shared_spots');
+      if (error) fail(error);
+      return parseSharedSpotRows(data as unknown[] | null);
+    },
+    async shareSpot(input) {
+      const { error } = await (
+        await get()
+      ).rpc('share_spot', {
+        place: input.placeId,
+        recipient: input.recipientId ?? null,
+        kind: input.type,
+        spot_name: input.name ?? null,
+        spot_note: input.note ?? null,
+        spot_lat: input.lat,
+        spot_lng: input.lng,
+      });
+      if (error) fail(error);
+    },
+    async unshareSpot(id) {
+      const { error } = await (await get()).rpc('unshare_spot', { spot: id });
+      if (error) fail(error);
     },
     async deleteAccount() {
       const c = await get();

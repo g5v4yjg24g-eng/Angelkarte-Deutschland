@@ -188,6 +188,10 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | FEED-1 | Feed-Regeln | Server-Antwort lesen (ohne Foto/kaputt fällt weg), Seiten ohne Doppelte zusammenführen, „mehr laden“ nur nach voller Seite, Anfangsbuchstabe (✅ `domain/feed.test.ts`) |
 | FEED-2 | Feed | Leiste mit 6 Punkten, Beiträge mit Fotos (zeitlich begrenzte Adressen), Name, Abzeichen, Text, Ende der Liste, 390 px, axe hell/dunkel (✅ `account.spec.ts`) |
 | FEED-3 | Leer / ohne Anmeldung | leerer Feed → „Freunde hinzufügen“; ohne Anmeldung Hinweis, keine Anfrage an Supabase (✅ `account.spec.ts`) |
+| SPOT-1 | Geteilte Spots lesen | Server-Zeilen mit genauer Position, kaputte fallen weg; derselbe Ort (persönlich + alle Freunde) nur einmal; übernommene nicht doppelt auf der Karte (✅ `sharedSpots.test.ts`, `geojson.test.ts`) |
+| SPOT-2 | Übernehmen | wird eigener Ort mit Art, Name, Notiz + Herkunft und genauer Position; zweimal übernehmen ergibt keinen zweiten (✅ `sharedSpotService.test.ts`) |
+| SPOT-3 | Teilen auf der Karte | Spot eines Freundes als violetter Pin, Blatt mit Name/Abzeichen/Notiz, übernehmen; eigenen Ort mit allen Freunden und einem Freund teilen (genau die gespeicherte Position), Teilen beenden; Übersicht im Profil; 390 px, hell/dunkel ohne axe-Verstöße (✅ `account.spec.ts`) |
+| SPOT-4 | Ohne Anmeldung | Übersicht und Teilen-Seite zeigen Hinweis aufs Konto, keine Anfrage an Supabase (✅ `account.spec.ts`) |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |

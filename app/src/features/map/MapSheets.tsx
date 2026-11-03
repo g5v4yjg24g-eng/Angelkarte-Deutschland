@@ -145,11 +145,14 @@ export function PlaceDetails({
   onEdit,
   onDelete,
   onAddCatch,
+  onShare,
 }: {
   place: Place;
   onEdit: () => void;
   onDelete: () => void;
   onAddCatch: () => void;
+  /** nur wenn ein Konto möglich ist (Etappe 4) */
+  onShare?: (() => void) | undefined;
 }) {
   return (
     <>
@@ -166,6 +169,11 @@ export function PlaceDetails({
       <Button variant="secondary" onClick={onAddCatch}>
         {de.map.addCatchHere}
       </Button>
+      {onShare && (
+        <Button variant="secondary" onClick={onShare}>
+          {de.spots.mapShare}
+        </Button>
+      )}
       <div className={styles.formActions}>
         <Button variant="danger" onClick={onDelete}>
           {de.map.delete}
@@ -199,7 +207,7 @@ export function CatchDetails({
   );
 }
 
-export function Legend({ clustersLabeled }: { clustersLabeled: boolean }) {
+export function Legend({ clustersLabeled, shared = false }: { clustersLabeled: boolean; shared?: boolean }) {
   return (
     <>
       <h3 className={styles.legendHead}>{de.map.legendPlaces}</h3>
@@ -210,6 +218,12 @@ export function Legend({ clustersLabeled }: { clustersLabeled: boolean }) {
             {de.map.placeTypes[t]}
           </li>
         ))}
+        {shared && (
+          <li>
+            <Icon kind="shared-spot" />
+            {de.spots.legend}
+          </li>
+        )}
       </ul>
       <h3 className={styles.legendHead}>{de.map.legendCatches}</h3>
       <ul className={styles.legend}>

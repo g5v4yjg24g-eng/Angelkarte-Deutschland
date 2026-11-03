@@ -259,7 +259,7 @@ export async function addOverlays(map: MlMap, data: OverlayData, glyphFont: stri
         'icon-image': ['get', 'kind'],
         'icon-allow-overlap': true,
         'icon-ignore-placement': true,
-        'icon-anchor': ['match', ['get', 'kind'], 'place-spot', 'bottom', 'center'],
+        'icon-anchor': ['match', ['get', 'kind'], ['place-spot', 'shared-spot'], 'bottom', 'center'],
       },
     });
   if (!map.getLayer(LAYERS.me))

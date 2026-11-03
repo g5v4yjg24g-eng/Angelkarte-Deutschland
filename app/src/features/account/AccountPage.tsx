@@ -10,6 +10,7 @@ import { TextField } from '../../design/components/Field';
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
 import { clearBadges, refreshBadges, useMyBadges } from '../badges/badgeStore';
+import { clearSharedSpots } from '../spots/useSharedSpots';
 import type { AccountProvider, AccountUser } from '../../ports/account';
 import {
   accountErrorKind,
@@ -429,7 +430,10 @@ export function AccountPage() {
   // Abzeichen kommen nur vom Server: bei Anmeldung neu lesen, bei Abmeldung vergessen
   useEffect(() => {
     if (uid) void refreshBadges(account, uid);
-    else if (user === null) clearBadges();
+    else if (user === null) {
+      clearBadges();
+      clearSharedSpots();
+    }
   }, [account, uid, user]);
   useEffect(() => {
     if (!uid) return;

@@ -2,7 +2,10 @@
 // jedes Symbol hat zusätzlich ein eigenes Zeichen. SVGs werden für die Karte und die Legende genutzt.
 import type { CatchOutcome, PlaceType } from '../../domain/schemas';
 
-export type MarkerKind = `place-${PlaceType}` | `catch-${CatchOutcome}`;
+export type MarkerKind = `place-${PlaceType}` | `catch-${CatchOutcome}` | 'shared-spot';
+
+// Von Freunden geteilter Spot (Etappe 4): Pin wie „Angelstelle“, aber violett und mit zwei Köpfen
+const SHARED = `<path d="M20 3C12.8 3 7 8.6 7 15.6 7 25 20 37 20 37s13-12 13-21.4C33 8.6 27.2 3 20 3Z" fill="#6B3FA0" stroke="#ffffff" stroke-width="2.5"/><circle cx="16.2" cy="13" r="2.9" fill="#ffffff"/><circle cx="23.8" cy="13" r="2.9" fill="#ffffff"/><path d="M11.6 22c.6-3 2.4-4.6 4.6-4.6s4 1.6 4.6 4.6M19.2 22c.6-3 2.4-4.6 4.6-4.6s4 1.6 4.6 4.6" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"/>`;
 
 const W = '#ffffff';
 const OUTLINE = 'stroke="#ffffff" stroke-width="2.5"';
@@ -29,9 +32,12 @@ export const PLACE_TYPES = Object.keys(PLACE) as PlaceType[];
 export const CATCH_OUTCOMES = Object.keys(CATCH) as CatchOutcome[];
 
 export function markerSvg(kind: MarkerKind): string {
-  const body = kind.startsWith('place-')
-    ? PLACE[kind.slice(6) as PlaceType]
-    : CATCH[kind.slice(6) as CatchOutcome];
+  const body =
+    kind === 'shared-spot'
+      ? SHARED
+      : kind.startsWith('place-')
+        ? PLACE[kind.slice(6) as PlaceType]
+        : CATCH[kind.slice(6) as CatchOutcome];
   return `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">${body}</svg>`;
 }
 
@@ -41,4 +47,5 @@ export const markerDataUrl = (kind: MarkerKind) =>
 export const ALL_MARKERS: MarkerKind[] = [
   ...PLACE_TYPES.map((t) => `place-${t}` as const),
   ...CATCH_OUTCOMES.map((o) => `catch-${o}` as const),
+  'shared-spot',
 ];

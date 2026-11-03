@@ -3,6 +3,7 @@ import type { Profile } from '../domain/account';
 import type { Badge } from '../domain/badges';
 import type { FriendEntry, FriendRequestResult } from '../domain/friends';
 import type { FeedPost } from '../domain/feed';
+import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
 
 export interface AccountUser {
   id: string;
@@ -63,6 +64,11 @@ export interface AccountProvider {
   deleteSharedPost(id: string): Promise<void>;
   /** Feed: eigene Beiträge und die von Freunden, neueste zuerst; `before` = Zeit des letzten geladenen Beitrags */
   feed(before?: string): Promise<FeedPost[]>;
+  /** Geteilte Spots: eigene Freigaben und die von Freunden (Server-Funktion my_shared_spots) */
+  sharedSpots(): Promise<SharedSpot[]>;
+  /** Ort teilen; derselbe Ort an denselben Empfänger erneut = Stand aktualisieren */
+  shareSpot(input: ShareSpotInput): Promise<void>;
+  unshareSpot(id: string): Promise<void>;
   /** Konto und Profil endgültig löschen, danach abgemeldet */
   deleteAccount(): Promise<void>;
 }

@@ -8,7 +8,7 @@ import { Button, IconButton } from '../../design/components/Button';
 import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
 import { Toast } from '../../design/components/Toast';
-import { ImagesIcon, PlusIcon, UserPlusIcon } from '../../design/icons';
+import { ImagesIcon, MapIcon, PlusIcon, UserPlusIcon } from '../../design/icons';
 import { restorePost } from '../../data/profileService';
 import type { Post } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
@@ -114,6 +114,12 @@ export function ProfilePage() {
             icon={<UserPlusIcon size={20} />}
             className={styles.squareButton}
             onClick={() => void navigate('/profil/freunde')}
+          />
+          <IconButton
+            label={de.spots.open}
+            icon={<MapIcon size={20} />}
+            className={styles.squareButton}
+            onClick={() => void navigate('/profil/spots')}
           />
         </div>
       </div>

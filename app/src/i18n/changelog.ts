@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-07',
+    title: 'Spots teilen',
+    items: [
+      'Spots teilen: Tippe auf der Karte auf einen deiner Orte und dann auf „Teilen“ – mit allen Freunden oder einem ausgewählten Freund, mit genauer Position.',
+      'Geteilte Spots: Spots deiner Freunde erscheinen als violette Pins auf der Karte und unter Profil → Geteilte Spots. Mit „In meine Orte übernehmen“ landen sie bei deinen eigenen Orten.',
+    ],
+  },
+  {
     id: '2026-11-06',
     title: 'Feed',
     items: [
