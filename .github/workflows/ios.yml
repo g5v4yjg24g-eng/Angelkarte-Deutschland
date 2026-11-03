@@ -66,6 +66,8 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/asc"
           printf '%s' "$ASC_PRIVATE_KEY" > "$RUNNER_TEMP/asc/AuthKey.p8"
+      - name: Zugangsdaten bei Apple prüfen
+        run: node app/ios/ci/check-asc.mjs "$RUNNER_TEMP/asc/AuthKey.p8"
       - name: Archiv bauen und signieren
         run: |
           version=$(node -p "require('./app/package.json').version")
