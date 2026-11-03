@@ -22,7 +22,7 @@ create policy "Abzeichen lesen" on public.user_badges
 revoke all on public.user_badges from anon, authenticated;
 grant select on public.user_badges to authenticated;
 
--- Vergabe: Konto des Gründers (Nutzer-ID, keine E-Mail im Repo). Ohne dieses Konto passiert nichts.
-insert into public.user_badges (user_id, badge)
-select u.id, 'founder' from auth.users u where u.id = '46df8a8b-a67e-45eb-8149-fbd76849e3b7'
-on conflict do nothing;
+-- Vergabe NICHT hier (keine Nutzer-IDs oder E-Mails im Repo): einmalig im SQL-Editor von Supabase als
+-- Datenbank-Eigentümer, z. B.
+--   insert into public.user_badges (user_id, badge)
+--   select id, 'founder' from auth.users where lower(email) = '<E-Mail des Gründers>' on conflict do nothing;
