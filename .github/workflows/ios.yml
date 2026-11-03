@@ -10,6 +10,14 @@ name: iPhone-App (TestFlight)
 
 on:
   workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Mac-Typ (bei Engpass „Apple-Chip“ den Intel-Mac wählen)'
+        type: choice
+        default: macos-15-intel
+        options:
+          - macos-15-intel
+          - macos-15
 
 concurrency:
   group: ios
@@ -17,7 +25,8 @@ concurrency:
 
 jobs:
   testflight:
-    runs-on: macos-15
+    # macos-15 = Apple-Chip (oft ausgelastet), macos-15-intel = Intel (laut GitHub bis Aug. 2027)
+    runs-on: ${{ inputs.runner || 'macos-15-intel' }}
     timeout-minutes: 60
     permissions:
       contents: read
@@ -37,6 +46,12 @@ jobs:
             echo "::error::Es fehlen Secrets:$missing (siehe Kopf dieser Datei)"; exit 1
           fi
       - uses: actions/checkout@v4
+      - name: API-Schlüssel ablegen
+        run: |
+          mkdir -p "$RUNNER_TEMP/asc"
+          printf '%s' "$ASC_PRIVATE_KEY" > "$RUNNER_TEMP/asc/AuthKey.p8"
+      - name: Zugangsdaten bei Apple prüfen
+        run: node app/ios/ci/check-asc.mjs "$RUNNER_TEMP/asc/AuthKey.p8"
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -62,26 +77,22 @@ jobs:
           xc=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
           sudo xcode-select -s "$xc"
           xcodebuild -version
-      - name: API-Schlüssel ablegen
-        run: |
-          mkdir -p "$RUNNER_TEMP/asc"
-          printf '%s' "$ASC_PRIVATE_KEY" > "$RUNNER_TEMP/asc/AuthKey.p8"
-      - name: Archiv bauen und signieren
+      # Archiv unsigniert bauen: eine Entwickler-Signatur bräuchte ein registriertes Testgerät. Signiert wird erst
+      # beim Export für den App Store (Distribution, ohne Gerät) über den API-Schlüssel.
+      - name: Archiv bauen
         run: |
           version=$(node -p "require('./app/package.json').version")
           xcodebuild archive \
             -project app/ios/App/App.xcodeproj -scheme App -configuration Release \
             -destination 'generic/platform=iOS' \
             -archivePath "$RUNNER_TEMP/Fangpunkt.xcarchive" \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$RUNNER_TEMP/asc/AuthKey.p8" \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
-            CODE_SIGN_STYLE=Automatic \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
             MARKETING_VERSION="$version" \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}"
-      - name: Zu TestFlight hochladen
+      - name: Für den App Store signieren und zu TestFlight hochladen
         run: |
           sed "s/TEAM_ID/$APPLE_TEAM_ID/" app/ios/ci/ExportOptions.plist > "$RUNNER_TEMP/ExportOptions.plist"
           xcodebuild -exportArchive \
