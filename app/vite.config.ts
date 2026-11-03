@@ -6,6 +6,8 @@ import { fishGroup } from './scripts/brand.mjs';
 
 // BASE_PATH z. B. "/Angelkarte-Deutschland/" für GitHub Pages; lokal "/".
 const base = process.env.BASE_PATH ?? '/';
+// iPhone-App (NATIVE_APP=1, `pnpm build:ios`): Dateien liegen in der App, kein Service Worker nötig.
+const native = process.env.NATIVE_APP === '1';
 
 export default defineConfig({
   base,
@@ -18,6 +20,7 @@ export default defineConfig({
       transformIndexHtml: (html) => html.replace('<!--FISH-->', fishGroup({ scale: 1, classes: true })),
     },
     VitePWA({
+      disable: native,
       // Neue Version wird im Hintergrund geladen; die App fragt, bevor sie neu lädt (ARCHITECTURE §7.1).
       registerType: 'prompt',
       injectRegister: false,
