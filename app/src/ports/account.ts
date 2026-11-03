@@ -1,6 +1,7 @@
 // Port für das freiwillige Nutzerkonto. Features kennen nur diese Schnittstelle, nicht den Anbieter.
 import type { Profile } from '../domain/account';
 import type { Badge } from '../domain/badges';
+import type { FriendEntry, FriendRequestResult } from '../domain/friends';
 
 export interface AccountUser {
   id: string;
@@ -35,6 +36,13 @@ export interface AccountProvider {
   updateDisplayName(displayName: string): Promise<Profile>;
   /** Abzeichen des angemeldeten Kontos – nur vom Server vergeben (Tabelle user_badges) */
   myBadges(): Promise<Badge[]>;
+  /** Freunde und offene Anfragen (Server-Funktion my_friends) */
+  friends(): Promise<FriendEntry[]>;
+  /** Anfrage per Nutzername; hat der andere schon angefragt, sind beide sofort befreundet */
+  sendFriendRequest(username: string): Promise<FriendRequestResult>;
+  respondFriendRequest(requestId: string, accept: boolean): Promise<void>;
+  /** Freundschaft beenden oder eigene Anfrage zurückziehen */
+  removeFriend(userId: string): Promise<void>;
   /** Konto und Profil endgültig löschen, danach abgemeldet */
   deleteAccount(): Promise<void>;
 }

@@ -22,6 +22,7 @@ import { ProfilePage } from '../features/profile/ProfilePage';
 import { EditProfilePage } from '../features/profile/EditProfilePage';
 import { NewPostPage } from '../features/profile/NewPostPage';
 import { PostPage } from '../features/profile/PostPage';
+import { FriendsPage } from '../features/friends/FriendsPage';
 import { RigDetailPage } from '../features/knots/RigDetailPage';
 import { RetrievesPage } from '../features/knots/RetrievesPage';
 import { RetrieveDetailPage } from '../features/knots/RetrieveDetailPage';
@@ -53,6 +54,7 @@ export const routes = [
           { path: 'profil/bearbeiten', element: <EditProfilePage /> },
           { path: 'profil/neu', element: <NewPostPage /> },
           { path: 'profil/beitrag/:id', element: <PostPage /> },
+          { path: 'profil/freunde', element: <FriendsPage /> },
           { path: 'mehr', element: <MorePage /> },
           { path: 'mehr/einstellungen', element: <SettingsPage /> },
           { path: 'mehr/koeder', element: <BaitPresetsPage /> },

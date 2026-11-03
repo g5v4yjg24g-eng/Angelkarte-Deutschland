@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-04',
+    title: 'Freunde',
+    items: [
+      'Freunde: Im Profil unter „Freunde hinzufügen“ schickst du Anfragen über den Nutzernamen, nimmst Anfragen an oder lehnst sie ab. Dafür brauchst du ein Konto (Mehr → Konto).',
+    ],
+  },
+  {
     id: '2026-11-03',
     title: 'Konto',
     items: [
