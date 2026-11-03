@@ -193,6 +193,14 @@ export const UserIcon = (p: IconProps) => (
     <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" />
   </Icon>
 );
+/** Feed: Beiträge von Freunden (zwei Personen) */
+export const FeedIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5" />
+    <path d="M15.5 4.8a3.5 3.5 0 0 1 0 6.4M17.5 14.8c2.1.7 3.5 2.4 4 5.2" />
+  </Icon>
+);
 export const PlusIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M12 5v14M5 12h14" />

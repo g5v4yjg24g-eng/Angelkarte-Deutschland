@@ -6,6 +6,11 @@ import { collectErrors, waitForApp } from './helpers';
 test.use({ serviceWorkers: 'block' });
 
 const SUPABASE = 'https://sgnyymciwnwjgvojptwu.supabase.co';
+/** 1×1-PNG für Fotos aus dem Speicher */
+const PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+  'base64',
+);
 const b64 = (o: object) => Buffer.from(JSON.stringify(o)).toString('base64url');
 const EXP = Math.floor(Date.now() / 1000) + 3600;
 const TOKEN = `${b64({ alg: 'HS256', typ: 'JWT' })}.${b64({ sub: 'u-1', exp: EXP, role: 'authenticated', aud: 'authenticated', email: 'max@example.de' })}.sig`;
@@ -22,7 +27,12 @@ type FakeFriend = {
   since: string;
 };
 
-async function fakeSupabase(page: Page, badges: string[] = [], friends: FakeFriend[] = []) {
+async function fakeSupabase(
+  page: Page,
+  badges: string[] = [],
+  friends: FakeFriend[] = [],
+  feed: unknown[] = [],
+) {
   const calls: string[] = [];
   const storage = new Map<string, number>();
   const posts = new Map<
@@ -43,6 +53,17 @@ async function fakeSupabase(page: Page, badges: string[] = [], friends: FakeFrie
     calls.push(key);
     const single = (req.headers()['accept'] ?? '').includes('vnd.pgrst.object');
     if (req.method() === 'OPTIONS') return route.fulfill({ status: 204 });
+    // Feed (Etappe 3): zeitlich begrenzte Foto-Adressen und die Fotos selbst
+    if (url.pathname.startsWith('/storage/v1/object/sign/')) {
+      if (req.method() === 'POST') {
+        const { paths } = req.postDataJSON() as { paths: string[] };
+        return json(
+          route,
+          paths.map((path) => ({ path, signedURL: `/object/sign/post-photos/${path}?token=t`, error: null })),
+        );
+      }
+      return route.fulfill({ status: 200, contentType: 'image/png', body: PNG });
+    }
     // Fotospeicher (Etappe 2): hochladen, auflisten, löschen
     if (url.pathname.startsWith('/storage/v1/object/')) {
       const rest = url.pathname.slice('/storage/v1/object/'.length);
@@ -134,6 +155,8 @@ async function fakeSupabase(page: Page, badges: string[] = [], friends: FakeFrie
           route,
           badges.map((badge) => ({ badge })),
         );
+      case 'POST /rest/v1/rpc/feed':
+        return json(route, feed);
       case 'POST /rest/v1/rpc/my_friends':
         return json(route, friends);
       case 'POST /rest/v1/rpc/send_friend_request': {
@@ -524,4 +547,80 @@ test('PST-4: ohne Anmeldung bleibt ein neuer Beitrag auf dem Gerät', async ({ p
   await expect(page.getByRole('status').filter({ hasText: 'Nur auf diesem Gerät' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Teilen' })).toHaveCount(0);
   expect(server).toEqual([]);
+});
+
+const feedRow = (o: Record<string, unknown>) => ({
+  id: '11111111-1111-4111-8111-111111111111',
+  author_id: 'u-anna',
+  username: 'anna',
+  display_name: 'Anna',
+  badges: [],
+  caption: 'Zander am Abend',
+  visibility: 'friends',
+  photo_paths: ['u-anna/p1/1.jpg', 'u-anna/p1/2.jpg'],
+  created_at: '2026-11-06T18:00:00+00:00',
+  ...o,
+});
+
+test('FEED-2: Feed in der Leiste – Beiträge von Freunden mit Fotos, Name, Abzeichen und Text', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await fakeSupabase(
+    page,
+    [],
+    [],
+    [
+      feedRow({}),
+      feedRow({
+        id: '22222222-2222-4222-8222-222222222222',
+        author_id: 'u-1',
+        username: 'kevin',
+        display_name: 'Kevin',
+        badges: ['founder'],
+        caption: null,
+        photo_paths: ['u-1/p2/1.jpg'],
+        created_at: '2026-11-05T08:00:00+00:00',
+      }),
+    ],
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
+  await expect(nav.getByRole('link')).toHaveText(['Karte', 'Fangbuch', 'Feed', 'Profil', 'Wetter', 'Mehr']);
+  await nav.getByRole('link', { name: 'Feed' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Feed' })).toBeVisible();
+
+  const anna = page.getByRole('article', { name: /^Beitrag von Anna/ });
+  await expect(anna.getByText('Zander am Abend')).toBeVisible();
+  await expect(anna.getByRole('list', { name: 'Fotos von Anna' }).getByRole('listitem')).toHaveCount(2);
+  await expect(anna.locator('img').first()).toHaveJSProperty('naturalWidth', 1);
+  const own = page.getByRole('article', { name: /^Beitrag von Kevin/ });
+  await expect(own.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
+  await expect(page.getByText('Das waren alle Beiträge.')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  expect(errors).toEqual([]);
+});
+
+test('FEED-3: leerer Feed führt zu „Freunde hinzufügen“; ohne Anmeldung Hinweis und keine Anfrage', async ({
+  page,
+}) => {
+  const calls = await fakeSupabase(page);
+  await page.goto('/feed');
+  await waitForApp(page);
+  await expect(page.getByText(/Dafür brauchst du ein Konto/)).toBeVisible();
+  expect(calls).toEqual([]);
+
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed');
+  await expect(page.getByText('Noch keine Beiträge')).toBeVisible();
+  await page.getByRole('link', { name: 'Freunde hinzufügen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Freunde' })).toBeVisible();
 });

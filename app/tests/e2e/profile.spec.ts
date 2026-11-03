@@ -41,7 +41,7 @@ test('PRF-4: Profil einrichten, Beitrag mit zwei Fotos posten, ansehen, Text än
   await page.goto('/');
   await waitForApp(page);
   const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
-  await expect(nav.getByRole('link')).toHaveText(['Karte', 'Fangbuch', 'Profil', 'Wetter', 'Mehr']);
+  await expect(nav.getByRole('link')).toHaveText(['Karte', 'Fangbuch', 'Feed', 'Profil', 'Wetter', 'Mehr']);
   await nav.getByRole('link', { name: 'Profil' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Profil' })).toBeVisible();
   await expect(page.getByText('Noch keine Beiträge')).toBeVisible();
