@@ -17,6 +17,9 @@ import { LOCAL_AUTHOR, type Photo, type Post } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useMyBadges } from '../badges/badgeStore';
+import { setShare } from '../../data/postSyncService';
+import { shareStatus } from '../../domain/postSync';
+import { storedUserId } from '../badges/badgeStore';
 import { Avatar } from './Avatar';
 import { catchSummary } from './catchSummary';
 import { CommentsSheet } from './CommentsSheet';
@@ -80,6 +83,26 @@ function EditForm({ post, onDone }: { post: Post; onDone: () => void }) {
         </Button>
       </div>
     </form>
+  );
+}
+
+/** Teilen-Stand (Etappe 2): nur auf dem Gerät, wird geteilt, geteilt – mit Knopf zum Teilen/Zurücknehmen */
+function ShareRow({ postId, status }: { postId: string; status: 'local' | 'pending' | 'shared' }) {
+  const signedIn = !!storedUserId();
+  return (
+    <p className={`muted ${styles.shareRow}`}>
+      <span role="status">{t.shareStatus[status]}</span>
+      {signedIn && status === 'local' && (
+        <Button variant="secondary" onClick={() => void setShare(postId, 'pending')}>
+          {t.shareNow}
+        </Button>
+      )}
+      {signedIn && status === 'shared' && (
+        <Button variant="ghost" onClick={() => void setShare(postId, 'unshare')}>
+          {t.unshare}
+        </Button>
+      )}
+    </p>
   );
 }
 
@@ -214,6 +237,7 @@ export function PostPage() {
           <p className={`muted ${styles.note}`}>
             {t.postedOn(dateOf(post.createdAt))} · {t.visibleFor(t.visibility[post.visibility ?? 'friends'])}
           </p>
+          <ShareRow postId={post.id} status={shareStatus(post)} />
           {linked && !linked.deletedAt && (
             <Link to={`/fangbuch/${linked.id}`} className={styles.catchLink}>
               {t.linkedCatch}: {catchSummary(linked)}

@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-05',
+    title: 'Beiträge teilen',
+    items: [
+      'Beiträge teilen: Bist du angemeldet, wird ein neuer Beitrag mit Fotos und Text geteilt – sichtbar für deine Freunde oder für alle. Ältere Beiträge teilst du über „Teilen“, zurücknehmen geht mit „Nicht mehr teilen“.',
+    ],
+  },
+  {
     id: '2026-11-04',
     title: 'Freunde',
     items: [

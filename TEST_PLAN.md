@@ -181,6 +181,10 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | FRD-1 | Freunde-Regeln | Server-Antwort lesen (nur bekannte Abzeichen, Kaputtes fällt weg), Gruppen Anfragen/Gesendet/Freunde nach Name, Fehlerarten (✅ `domain/friends.test.ts`) |
 | FRD-2 | Freunde-Seite | Anfrage annehmen (mit Abzeichen), unbekannter Name, senden (mit @ und Großschreibung), zurückziehen, entfernen mit Bestätigung, Zahl im Profil, 390 px, axe hell/dunkel (✅ `account.spec.ts`) |
 | FRD-3 | Ohne Anmeldung | Hinweis aufs Konto, keine Anfrage an Supabase (✅ `account.spec.ts`) |
+| PST-1 | Teilen-Plan | neu/geändert/unverändert/lokal, gelöscht oder „nicht mehr teilen“ entfernt nur Hochgeladenes, Anzeige (✅ `domain/postSync.test.ts`) |
+| PST-2 | Abgleich | hochladen, Änderung nachziehen, löschen + wiederherstellen, nicht mehr teilen + erneut, ohne Verbindung bleibt vorgemerkt (✅ `data/postSyncService.test.ts`) |
+| PST-3 | Beitrag teilen (Oberfläche) | angemeldet: Hinweis, Upload mit Foto-Pfad, Bearbeitung folgt, „Nicht mehr teilen“ entfernt Eintrag + Fotos, „Teilen“ lädt wieder hoch (✅ `account.spec.ts`) |
+| PST-4 | Ohne Anmeldung | Beitrag bleibt lokal, kein Teilen-Knopf, keine Anfrage an Supabase (✅ `account.spec.ts`) |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |

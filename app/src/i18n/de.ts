@@ -740,7 +740,17 @@ export const de = {
       'Gefällt mir und Kommentare sind vorerst nur deine eigenen. Mit dem Konto können Freunde mitmachen.',
     visibilityLabel: 'Sichtbar für',
     visibility: { friends: 'Freunde', public: 'Alle' },
-    visibilityHint: 'Gilt, sobald es Konten gibt – bis dahin bleibt alles auf diesem Gerät.',
+    visibilityHint:
+      'Ohne Konto bleibt der Beitrag nur auf diesem Gerät. Melde dich unter Mehr → Konto an, um ihn zu teilen.',
+    visibilityHintShared:
+      'Wird mit deinem Konto geteilt – „Freunde“: nur deine Freunde, „Alle“: alle mit Fangpunkt-Konto.',
+    shareStatus: {
+      local: 'Nur auf diesem Gerät',
+      pending: 'Wird geteilt …',
+      shared: 'Geteilt',
+    },
+    shareNow: 'Teilen',
+    unshare: 'Nicht mehr teilen',
     visibleFor: (who: string) => `Sichtbar für: ${who}`,
   },
   knots: {
@@ -2256,7 +2266,7 @@ export const de = {
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',
-        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename. Fänge, Fotos, Orte und Routen werden nicht übertragen. Die Anmeldung bleibt auf diesem Gerät gespeichert, bis du dich abmeldest. Löschen: Mehr → Konto → Konto löschen entfernt Konto und Profil endgültig.',
+        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, deine Freundschaften und Freundschaftsanfragen sowie Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto. Fänge, Orte und Routen werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Freundschaften und geteilte Beiträge samt Fotos endgültig.',
       },
       {
         name: 'GoatCounter (goatcounter.com)',

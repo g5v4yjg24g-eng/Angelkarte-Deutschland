@@ -190,7 +190,12 @@ export function solunarDay(f: Forecast, dayT: number): SolunarDay {
 }
 
 /** Lage eines Zeitfensters auf der Tagesleiste (0…100 %), am Tagesrand abgeschnitten */
-export function daySpan(from: number, to: number, dayT: number, dayEnd: number): { left: number; width: number } {
+export function daySpan(
+  from: number,
+  to: number,
+  dayT: number,
+  dayEnd: number,
+): { left: number; width: number } {
   const len = dayEnd - dayT;
   const a = Math.min(1, Math.max(0, (from - dayT) / len));
   const b = Math.min(1, Math.max(0, (to - dayT) / len));
