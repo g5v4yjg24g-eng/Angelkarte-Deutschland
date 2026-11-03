@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-03',
+    title: 'Konto',
+    items: [
+      'Konto: Unter Mehr → Konto kannst du jetzt freiwillig ein Konto mit Nutzernamen anlegen – angemeldet wird mit einem Code per E-Mail, ohne Passwort. Fangbuch, Fotos und Angelstellen bleiben weiter nur auf deinem Gerät.',
+    ],
+  },
+  {
     id: '2026-10-30',
     title: 'Solunar im Tagesdetail',
     items: [
