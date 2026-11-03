@@ -10,6 +10,14 @@ name: iPhone-App (TestFlight)
 
 on:
   workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Mac-Typ (bei Engpass „Apple-Chip“ den Intel-Mac wählen)'
+        type: choice
+        default: macos-15-intel
+        options:
+          - macos-15-intel
+          - macos-15
 
 concurrency:
   group: ios
@@ -17,7 +25,8 @@ concurrency:
 
 jobs:
   testflight:
-    runs-on: macos-15
+    # macos-15 = Apple-Chip (oft ausgelastet), macos-15-intel = Intel (laut GitHub bis Aug. 2027)
+    runs-on: ${{ inputs.runner || 'macos-15-intel' }}
     timeout-minutes: 60
     permissions:
       contents: read
