@@ -13,6 +13,9 @@ import { AccountError } from '../../ports/account';
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useFriends } from './useFriends';
+import { hiddenKey, type BlockedUser } from '../../domain/moderation';
+import { SafetyMenu } from '../moderation/SafetyMenu';
+import { unhideContent, useHidden } from '../moderation/hiddenStore';
 import styles from './Friends.module.css';
 
 const t = de.friends;
@@ -20,7 +23,15 @@ const t = de.friends;
 const errorText = (e: unknown) =>
   t.errors[friendErrorKind(e instanceof AccountError || e instanceof Error ? e : undefined)];
 
-function Person({ f, children }: { f: FriendEntry; children?: React.ReactNode }) {
+function Person({
+  f,
+  children,
+  onSafety,
+}: {
+  f: FriendEntry;
+  children?: React.ReactNode;
+  onSafety?: (message: string) => void;
+}) {
   return (
     <li className={styles.person}>
       <span className={styles.who}>
@@ -30,7 +41,17 @@ function Person({ f, children }: { f: FriendEntry; children?: React.ReactNode })
         </strong>
         <span className="muted">{t.handle(f.username)}</span>
       </span>
-      {children && <span className={styles.buttons}>{children}</span>}
+      <span className={styles.buttons}>
+        {children}
+        {onSafety && (
+          <SafetyMenu
+            kind="user"
+            targetId={f.userId}
+            owner={{ id: f.userId, name: f.displayName }}
+            onDone={onSafety}
+          />
+        )}
+      </span>
     </li>
   );
 }
@@ -44,6 +65,29 @@ export function FriendsPage() {
   const [status, setStatus] = useState<string>();
   const [error, setError] = useState<string>();
   const [confirm, setConfirm] = useState<string>();
+  const [blocked, setBlocked] = useState<BlockedUser[]>();
+  const [blockTick, setBlockTick] = useState(0);
+  const hidden = useHidden();
+
+  useEffect(() => {
+    if (state.kind === 'signedOut') return;
+    let live = true;
+    account
+      .blockedUsers()
+      .then((list) => live && setBlocked(list))
+      .catch(() => live && setBlocked(undefined));
+    return () => {
+      live = false;
+    };
+  }, [account, state.kind, blockTick]);
+
+  // nach Melden/Blockieren: Listen neu laden und Hinweis zeigen
+  const safetyDone = (message: string) => {
+    setError(undefined);
+    setStatus(message);
+    reload();
+    setBlockTick((n) => n + 1);
+  };
 
   useEffect(() => {
     if (state.kind === 'signedOut') return;
@@ -98,7 +142,12 @@ export function FriendsPage() {
       </Page>
     );
 
-  const groups = state.kind === 'ready' ? groupFriends(state.list) : undefined;
+  const groups =
+    state.kind === 'ready'
+      ? groupFriends(
+          state.list.filter((f) => !hidden.has(hiddenKey('user', f.userId)) || f.status === 'accepted'),
+        )
+      : undefined;
 
   return (
     <Page title={t.title} back="/profil">
@@ -134,7 +183,7 @@ export function FriendsPage() {
             <Section title={t.incomingTitle}>
               <ul className={styles.list}>
                 {groups.incoming.map((f) => (
-                  <Person key={f.requestId} f={f}>
+                  <Person key={f.requestId} f={f} onSafety={safetyDone}>
                     <Button
                       disabled={busy}
                       onClick={() =>
@@ -191,7 +240,7 @@ export function FriendsPage() {
             ) : (
               <ul className={styles.list}>
                 {groups.friends.map((f) => (
-                  <Person key={f.requestId} f={f}>
+                  <Person key={f.requestId} f={f} onSafety={safetyDone}>
                     {confirm === f.userId ? (
                       <>
                         <span className={styles.confirm}>{t.confirmRemove(f.displayName)}</span>
@@ -222,6 +271,36 @@ export function FriendsPage() {
             )}
           </Section>
         </>
+      )}
+      {blocked && blocked.length > 0 && (
+        <Section title={de.moderation.blockedTitle}>
+          <ul className={styles.list}>
+            {blocked.map((b) => (
+              <li key={b.userId} className={styles.person}>
+                <span className={styles.who}>
+                  <strong>{b.displayName}</strong>
+                  <span className="muted">{t.handle(b.username)}</span>
+                </span>
+                <span className={styles.buttons}>
+                  <Button
+                    variant="secondary"
+                    disabled={busy}
+                    onClick={() =>
+                      void run(async () => {
+                        await account.unblockUser(b.userId);
+                        unhideContent('user', b.userId);
+                        setBlockTick((n) => n + 1);
+                        return de.moderation.unblocked(b.displayName);
+                      })
+                    }
+                  >
+                    {de.moderation.unblock}
+                  </Button>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Section>
       )}
     </Page>
   );

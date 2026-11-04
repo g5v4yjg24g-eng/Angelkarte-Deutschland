@@ -2207,6 +2207,63 @@ export const de = {
     visibility: { friends: 'Freunde', public: 'Alle' },
     postLabel: (name: string, date: string) => `Beitrag von ${name}, ${date}`,
   },
+  moderation: {
+    rulesTitle: 'Regeln der Community',
+    rulesIntro:
+      'Fangpunkt lebt davon, dass sich alle wohlfühlen. Mit einem Konto hältst du dich an diese Regeln:',
+    rules: [
+      'Keine beleidigenden, bedrohenden oder diskriminierenden Inhalte.',
+      'Keine Nacktheit, keine Gewalt, keine Tierquälerei und keine anstößigen Bilder.',
+      'Kein Spam und keine Werbung.',
+      'Nur eigene Fotos und keine Daten anderer ohne deren Zustimmung.',
+      'Verstöße können gemeldet werden. Wir prüfen jede Meldung innerhalb von 24 Stunden und löschen unzulässige Inhalte; wer gegen die Regeln verstößt, wird ausgeschlossen.',
+    ],
+    rulesContact: 'Fragen oder Hinweise: moderation@fangpunkt.com',
+    accept: 'Akzeptieren',
+    decline: 'Ablehnen',
+    declined:
+      'Ohne Zustimmung zu den Regeln kann kein Konto angelegt werden. Es wurde keine E-Mail verschickt.',
+    rulesLink: 'Regeln der Community',
+    options: (name: string) => `Optionen zu ${name}`,
+    optionsTitle: 'Optionen',
+    report: 'Melden',
+    block: (name: string) => `${name} blockieren`,
+    reportTitle: 'Melden',
+    reportWhat: {
+      post: 'Was stimmt mit diesem Beitrag nicht?',
+      spot: 'Was stimmt mit diesem Spot nicht?',
+      user: 'Was stimmt mit diesem Konto nicht?',
+    },
+    reasons: {
+      spam: 'Spam oder Werbung',
+      abuse: 'Beleidigung, Bedrohung oder Hass',
+      nudity: 'Nacktheit oder sexuelle Inhalte',
+      violence: 'Gewalt oder Tierquälerei',
+      privacy: 'Daten anderer ohne Zustimmung',
+      other: 'Sonstiges',
+    },
+    detailsLabel: 'Hinweis (optional)',
+    detailsHint: 'Was sollen wir wissen? Höchstens 1000 Zeichen.',
+    send: 'Meldung senden',
+    sending: 'Wird gesendet …',
+    reported: 'Danke! Wir prüfen die Meldung innerhalb von 24 Stunden. Der Inhalt ist für dich ausgeblendet.',
+    blockTitle: (name: string) => `${name} blockieren?`,
+    blockText:
+      'Ihr seid dann nicht mehr befreundet, seht keine Beiträge und Spots des anderen mehr und könnt euch keine Anfragen schicken. Die andere Person erfährt davon nichts. Aufheben unter Profil → Freunde → Blockiert.',
+    blockConfirm: 'Blockieren',
+    blocked: (name: string) => `${name} ist blockiert.`,
+    cancel: 'Abbrechen',
+    blockedTitle: 'Blockiert',
+    unblock: 'Freigeben',
+    unblocked: (name: string) => `${name} ist nicht mehr blockiert.`,
+    errors: {
+      tooMany:
+        'Du hast heute schon sehr viele Meldungen geschickt. Bitte schreib an moderation@fangpunkt.com.',
+      notSignedIn: 'Du bist nicht mehr angemeldet. Melde dich unter Mehr → Konto an.',
+      offline: 'Keine Verbindung. Versuch es gleich noch einmal.',
+      unknown: 'Das hat nicht geklappt. Versuch es noch einmal.',
+    },
+  },
   spots: {
     title: 'Geteilte Spots',
     shareTitle: 'Spot teilen',
@@ -2337,7 +2394,7 @@ export const de = {
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',
-        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto – sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Freundschaften, geteilte Spots und geteilte Beiträge samt Fotos endgültig.',
+        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto – sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Freundschaften, Blockierungen, eigene Meldungen, geteilte Spots und geteilte Beiträge samt Fotos endgültig.',
       },
       {
         name: 'GoatCounter (goatcounter.com)',

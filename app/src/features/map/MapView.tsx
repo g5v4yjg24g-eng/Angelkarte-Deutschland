@@ -42,6 +42,8 @@ import { adoptSharedSpot } from '../../data/sharedSpotService';
 import { userMessage } from '../../data/errors';
 import { SharedSpotDetails } from '../spots/SharedSpotDetails';
 import { useSharedSpots } from '../spots/useSharedSpots';
+import { isHidden } from '../../domain/moderation';
+import { useHidden } from '../moderation/hiddenStore';
 import { CatchForm, type CatchContext, type WaterChoice } from '../catches/CatchForm';
 import { useRunningSession } from '../sessions/useSessions';
 import { tryStartSession } from '../sessions/sessionActions';
@@ -240,9 +242,13 @@ export default function MapView() {
   const catches = useLiveQuery(() => getDb().catches.toArray(), []);
   // Von Freunden geteilte Spots (Etappe 4) – nur angemeldet, sonst leer und ohne Netz
   const { state: sharedState } = useSharedSpots();
+  const hidden = useHidden();
   const shared = useMemo(
-    () => (sharedState.kind === 'ready' ? incomingSpots(sharedState.list) : []),
-    [sharedState],
+    () =>
+      sharedState.kind === 'ready'
+        ? incomingSpots(sharedState.list).filter((x) => !isHidden(hidden, 'spot', x.id, x.ownerId))
+        : [],
+    [sharedState, hidden],
   );
   const features = useMemo(() => toFeatures(places ?? [], catches ?? [], shared), [places, catches, shared]);
   // Heatmap der gelandeten Fische (P2); Wahl wird pro Gerät gemerkt
@@ -848,6 +854,10 @@ export default function MapView() {
         spot={sheetShared}
         adopted={!!places && !!adoptedPlace(sheetShared, places)}
         onAdopt={() => void adopt(sheetShared.id)}
+        onSafety={(text) => {
+          setSheet(null);
+          setToast({ text });
+        }}
       />
     );
   } else if (sheetCatch) {

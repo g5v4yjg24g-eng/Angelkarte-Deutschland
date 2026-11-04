@@ -1,7 +1,7 @@
 // Mehr → Konto (Etappe 1, Entscheidung Nutzer 2026-10-25): freiwillig, Anmeldung per E-Mail-Code, Profil mit
 // Nutzername, Anzeigename ändern, abmelden, Konto löschen. Fangdaten bleiben auf dem Gerät.
 import { useEffect, useState, type FormEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
@@ -11,6 +11,8 @@ import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
 import { clearBadges, refreshBadges, useMyBadges } from '../badges/badgeStore';
 import { clearSharedSpots } from '../spots/useSharedSpots';
+import { RulesConsent } from '../moderation/Rules';
+import { acceptRules, rulesAccepted } from '../moderation/rulesConsent';
 import type { AccountProvider, AccountUser } from '../../ports/account';
 import {
   accountErrorKind,
@@ -60,6 +62,9 @@ function SignIn({ account }: { account: AccountProvider }) {
   const [fieldError, setFieldError] = useState<string>();
   const now = useNow(1000);
   const wait = resendIn(sentAt, now);
+  // Regeln der Community vor dem ersten Code (Wunsch Nutzer 2026-11-03): Ablehnen verschickt nichts
+  const [askRules, setAskRules] = useState<string>();
+  const [declined, setDeclined] = useState(false);
 
   const send = async (to: string) => {
     setBusy(true);
@@ -79,7 +84,10 @@ function SignIn({ account }: { account: AccountProvider }) {
     e.preventDefault();
     if (!validEmail(email)) return setFieldError(t.emailInvalid);
     setFieldError(undefined);
-    void send(normalizeEmail(email));
+    setDeclined(false);
+    const to = normalizeEmail(email);
+    if (rulesAccepted()) void send(to);
+    else setAskRules(to);
   };
   const submitCode = async (e: FormEvent) => {
     e.preventDefault();
@@ -99,24 +107,43 @@ function SignIn({ account }: { account: AccountProvider }) {
 
   if (!sentTo)
     return (
-      <form className={styles.form} onSubmit={submitEmail} noValidate>
-        <TextField
-          label={t.emailLabel}
-          hint={t.emailHint}
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          value={email}
-          error={fieldError}
-          onChange={(e) => setEmail(e.target.value)}
+      <>
+        <form className={styles.form} onSubmit={submitEmail} noValidate>
+          <TextField
+            label={t.emailLabel}
+            hint={t.emailHint}
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            value={email}
+            error={fieldError}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          {error && <Notice tone="error">{error}</Notice>}
+          {declined && <Notice>{de.moderation.declined}</Notice>}
+          <div>
+            <Button type="submit" disabled={busy}>
+              {busy ? t.working : t.sendCode}
+            </Button>
+          </div>
+          <p>
+            <Link to="/mehr/regeln">{de.moderation.rulesLink}</Link>
+          </p>
+        </form>
+        <RulesConsent
+          open={!!askRules}
+          onAccept={() => {
+            const to = askRules;
+            acceptRules();
+            setAskRules(undefined);
+            if (to) void send(to);
+          }}
+          onDecline={() => {
+            setAskRules(undefined);
+            setDeclined(true);
+          }}
         />
-        {error && <Notice tone="error">{error}</Notice>}
-        <div>
-          <Button type="submit" disabled={busy}>
-            {busy ? t.working : t.sendCode}
-          </Button>
-        </div>
-      </form>
+      </>
     );
 
   return (

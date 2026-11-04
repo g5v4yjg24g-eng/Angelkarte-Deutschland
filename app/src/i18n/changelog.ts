@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-08',
+    title: 'Melden und Blockieren',
+    items: [
+      'Melden: Über „…“ an Beiträgen im Feed, geteilten Spots und Freunden meldest du Inhalte, die gegen die Regeln verstoßen. Wir prüfen jede Meldung innerhalb von 24 Stunden.',
+      'Blockieren: Blockierte Personen sehen deine Beiträge und Spots nicht mehr und können dir keine Anfragen schicken. Aufheben unter Profil → Freunde → Blockiert.',
+      'Regeln der Community: Vor dem ersten Anmeldecode bestätigst du die Regeln. Nachlesen über den Link unter Mehr → Konto.',
+    ],
+  },
+  {
     id: '2026-11-07',
     title: 'Spots teilen',
     items: [

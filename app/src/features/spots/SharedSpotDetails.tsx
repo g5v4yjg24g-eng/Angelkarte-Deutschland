@@ -6,6 +6,7 @@ import type { SharedSpot } from '../../domain/sharedSpots';
 import { formatDateTime } from '../../lib/storage';
 import { FounderBadge } from '../badges/FounderBadge';
 import { markerDataUrl, type MarkerKind } from '../map/markerIcons';
+import { SafetyMenu } from '../moderation/SafetyMenu';
 import styles from './Spots.module.css';
 
 const t = de.spots;
@@ -57,15 +58,28 @@ export function SharedSpotDetails({
   adopted,
   onAdopt,
   onShowMap,
+  onSafety,
 }: {
   spot: SharedSpot;
   adopted: boolean;
   onAdopt: () => void;
   onShowMap?: (() => void) | undefined;
+  /** Melden/Blockieren erledigt (Etappe 5) – Text für einen Hinweis */
+  onSafety?: ((message: string) => void) | undefined;
 }) {
   return (
     <>
-      <SpotHead spot={spot} />
+      <div className={styles.headRow}>
+        <SpotHead spot={spot} />
+        {onSafety && spot.direction === 'incoming' && (
+          <SafetyMenu
+            kind="spot"
+            targetId={spot.id}
+            owner={{ id: spot.ownerId, name: spot.ownerName }}
+            onDone={onSafety}
+          />
+        )}
+      </div>
       {spot.note && <p className={styles.note}>{spot.note}</p>}
       <p className="muted tabular">{de.map.coords(spot.lat, spot.lng)}</p>
       <p className="muted">{t.sharedOn(formatDateTime(spot.updatedAt))}</p>

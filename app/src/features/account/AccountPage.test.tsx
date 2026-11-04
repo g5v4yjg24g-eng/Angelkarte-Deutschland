@@ -58,6 +58,10 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
     sharedSpots: () => Promise.resolve([]),
     shareSpot: () => Promise.resolve(),
     unshareSpot: () => Promise.resolve(),
+    report: () => Promise.resolve(),
+    blockUser: () => Promise.resolve(),
+    unblockUser: () => Promise.resolve(),
+    blockedUsers: () => Promise.resolve([]),
     myBadges: () => (user ? Promise.resolve(badges) : Promise.reject(new AccountError('not signed in', 401))),
     deleteAccount: () => {
       calls.push('delete');
@@ -68,6 +72,15 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
     },
   };
 }
+
+// jsdom kennt <dialog>.showModal nur eingeschränkt (Regeln-Fenster): minimal nachbilden
+HTMLDialogElement.prototype.showModal ??= function (this: HTMLDialogElement) {
+  this.setAttribute('open', '');
+};
+HTMLDialogElement.prototype.close ??= function (this: HTMLDialogElement) {
+  this.removeAttribute('open');
+  setTimeout(() => this.dispatchEvent(new Event('close')), 0);
+};
 
 const renderWith = (account: AccountProvider) =>
   render(
@@ -87,8 +100,17 @@ describe('Mehr → Konto (ACC-2)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Code senden' }));
     expect(screen.getByText('Bitte eine gültige E-Mail-Adresse eingeben.')).toBeInTheDocument();
     fireEvent.change(email, { target: { value: ' Max@Example.de ' } });
+    // Regeln der Community: Ablehnen verschickt nichts (Wunsch Nutzer 2026-11-03)
+    localStorage.removeItem('fangpunkt.rulesAccepted');
     fireEvent.click(screen.getByRole('button', { name: 'Code senden' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Ablehnen' }));
+    expect(await screen.findByText(/Es wurde keine E-Mail verschickt/)).toBeInTheDocument();
+    expect(acc.calls).toEqual([]);
+    fireEvent.click(screen.getByRole('button', { name: 'Code senden' }));
+    expect(screen.getByText(/Kein Spam und keine Werbung/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Akzeptieren' }));
     expect(await screen.findByText(/Code an max@example\.de geschickt/)).toBeInTheDocument();
+    expect(localStorage.getItem('fangpunkt.rulesAccepted')).toBe('1');
     expect(acc.calls).toEqual(['code:max@example.de']);
     expect(screen.getByRole('button', { name: /Neuer Code in \d+ s möglich/ })).toBeDisabled();
 

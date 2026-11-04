@@ -24,6 +24,7 @@ import { NewPostPage } from '../features/profile/NewPostPage';
 import { PostPage } from '../features/profile/PostPage';
 import { SharedSpotsPage } from '../features/spots/SharedSpotsPage';
 import { ShareSpotPage } from '../features/spots/ShareSpotPage';
+import { RulesPage } from '../features/moderation/Rules';
 import { FriendsPage } from '../features/friends/FriendsPage';
 import { FeedPage } from '../features/feed/FeedPage';
 import { RigDetailPage } from '../features/knots/RigDetailPage';
@@ -72,6 +73,7 @@ export const routes = [
           { path: 'mehr/koederfuehrung/:retrieve', element: <RetrieveDetailPage /> },
           { path: 'mehr/info', element: <AboutPage /> },
           { path: 'mehr/datenschutz', element: <PrivacyPage /> },
+          { path: 'mehr/regeln', element: <RulesPage /> },
           { path: 'mehr/daten', element: <LazyBackupPage /> },
           { path: 'mehr/konto', element: <LazyAccountPage /> },
           { path: 'mehr/recht', element: <LawPage /> },

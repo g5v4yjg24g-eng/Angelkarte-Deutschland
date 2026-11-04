@@ -23,6 +23,10 @@
   font-weight: 700;
   color: var(--color-primary);
 }
+.menu {
+  margin-left: auto;
+  flex: none;
+}
 .who {
   display: grid;
   min-width: 0;

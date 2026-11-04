@@ -4,6 +4,7 @@ import type { Badge } from '../domain/badges';
 import type { FriendEntry, FriendRequestResult } from '../domain/friends';
 import type { FeedPost } from '../domain/feed';
 import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
+import type { BlockedUser, ReportInput } from '../domain/moderation';
 
 export interface AccountUser {
   id: string;
@@ -69,6 +70,12 @@ export interface AccountProvider {
   /** Ort teilen; derselbe Ort an denselben Empfänger erneut = Stand aktualisieren */
   shareSpot(input: ShareSpotInput): Promise<void>;
   unshareSpot(id: string): Promise<void>;
+  /** Inhalt oder Konto melden (Server-Funktion report_content, Mail an moderation@fangpunkt.com) */
+  report(input: ReportInput): Promise<void>;
+  /** Blockieren beendet die Freundschaft und blendet beide gegenseitig aus */
+  blockUser(userId: string): Promise<void>;
+  unblockUser(userId: string): Promise<void>;
+  blockedUsers(): Promise<BlockedUser[]>;
   /** Konto und Profil endgültig löschen, danach abgemeldet */
   deleteAccount(): Promise<void>;
 }
