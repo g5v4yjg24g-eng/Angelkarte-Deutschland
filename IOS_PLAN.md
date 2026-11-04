@@ -80,6 +80,9 @@ natives Modul zeichnet den Standort auch bei gesperrtem Bildschirm auf, nur wäh
 die Web-App übernimmt sie beim Öffnen in `tracks`. Plugin vor Einbau auswählen und begründen [O]. Apple prüft
 Hintergrund-Standort streng → Zweck im Prüfhinweis erklären; Datenschutzseite + Website ergänzen.
 
+**Moderationsbereich** (Wunsch Nutzer 2026-11-04, Variante A, `MODERATION_PLAN.md`): **vor dem nächsten Upload zu Apple
+bauen** – Meldungen ansehen, Inhalte löschen, Nutzer sperren. Bis dahin nur SQL-Editor [O].
+
 ## 5. Store-Material (Etappe 3)
 
 - **Datenschutzerklärung als eigene, öffentlich erreichbare Seite** (statische HTML-Datei auf GitHub Pages, nicht die SPA-Route), Inhalt aus `PrivacyPage`, um „iPhone-App“ ergänzt.
