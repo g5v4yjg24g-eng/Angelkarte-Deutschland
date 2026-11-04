@@ -7,6 +7,14 @@ import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
 import type { BlockedUser, ReportInput } from '../domain/moderation';
 import type { ServerComment, ServerReactions } from '../domain/reactions';
 import type { PushPrefs } from '../domain/push';
+import type {
+  BanDuration,
+  ModContent,
+  ModLogEntry,
+  ModReport,
+  ModUser,
+  ModUserItem,
+} from '../domain/modAdmin';
 
 export interface AccountUser {
   id: string;
@@ -90,6 +98,27 @@ export interface AccountProvider {
   unregisterPushDevice(token: string): Promise<void>;
   pushPrefs(): Promise<PushPrefs>;
   setPushPrefs(prefs: PushPrefs): Promise<void>;
+  /** Moderationsbereich (nur Moderatoren; der Server prüft jede Anfrage selbst) */
+  isModerator(): Promise<boolean>;
+  modReports(state: 'open' | 'done' | 'all'): Promise<ModReport[]>;
+  modContent(kind: 'post' | 'comment' | 'spot', id: string): Promise<ModContent | undefined>;
+  modUser(userId: string): Promise<ModUser | undefined>;
+  modUserContent(userId: string): Promise<ModUserItem[]>;
+  modUserLog(userId: string): Promise<ModLogEntry[]>;
+  /** zeitlich begrenzte Adressen für Fotos (Moderatoren sehen alle) */
+  modPhotoUrls(paths: string[]): Promise<string[]>;
+  /** Inhalt löschen; Fotos eines Beitrags werden vorher aus dem Speicher entfernt */
+  modDeleteContent(
+    kind: 'post' | 'comment' | 'spot',
+    id: string,
+    photoPaths: string[],
+    reportId?: string,
+    note?: string,
+  ): Promise<void>;
+  modWarn(userId: string, note: string, reportId?: string): Promise<void>;
+  modResolve(reportId: string, note?: string): Promise<void>;
+  modBan(userId: string, days: BanDuration, reason: string, reportId?: string): Promise<void>;
+  modUnban(userId: string, note?: string): Promise<void>;
   /** Konto und Profil endgültig löschen, danach abgemeldet */
   deleteAccount(): Promise<void>;
 }

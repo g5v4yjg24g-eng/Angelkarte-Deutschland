@@ -1,7 +1,7 @@
 # Moderationsbereich in der App (Plan, Variante A)
 
 Entscheidung Nutzer 2026-11-04: **Variante A** – versteckter Moderationsbereich in der App statt SQL-Befehlen.
-Status: **[O] geplant, noch nicht gebaut.** **Pflicht vor dem nächsten Upload zu Apple** (TestFlight/App Store):
+Status: **gebaut (2026-11-05)**, Server-Teil vom Nutzer einzuspielen. War Pflicht vor dem nächsten Upload zu Apple (TestFlight/App Store):
 Apple erwartet, dass auf Meldungen reagiert werden kann (Inhalte entfernen, Nutzer ausschließen).
 
 ## Ausgangslage

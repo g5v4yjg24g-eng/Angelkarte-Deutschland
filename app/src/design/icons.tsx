@@ -104,6 +104,13 @@ export const LockIcon = (p: IconProps) => (
     <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" />
   </Icon>
 );
+/** Schild (Moderation) */
+export const ShieldIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3 5 6v5.5c0 4.3 3 7.9 7 9.5 4-1.6 7-5.2 7-9.5V6l-7-3Z" />
+    <path d="m9 12 2 2 4-4" />
+  </Icon>
+);
 export const WeatherIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="8.5" cy="8.5" r="3" />

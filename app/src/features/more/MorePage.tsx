@@ -2,6 +2,7 @@ import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
 import { ListLink } from '../../design/components/ListLink';
 import {
+  ShieldIcon,
   DatabaseIcon,
   HookIcon,
   InfoIcon,
@@ -12,6 +13,7 @@ import {
   UserIcon,
 } from '../../design/icons';
 import { ACCOUNT_STORAGE_KEY } from '../../ports/account';
+import { useIsModerator } from '../moderation/admin/useIsModerator';
 import styles from '../../design/components/Page.module.css';
 
 /** Nur prüfen, ob eine Anmeldung gespeichert ist – ohne den Konto-Anbieter zu laden */
@@ -24,8 +26,19 @@ function hasStoredSession(): boolean {
 }
 
 export function MorePage() {
+  const moderator = useIsModerator();
   return (
     <Page title={de.more.title}>
+      {moderator && (
+        <div className={styles.card}>
+          <ListLink
+            to="/mehr/moderation"
+            icon={<ShieldIcon />}
+            title={de.modAdmin.title}
+            hint={de.modAdmin.moreHint}
+          />
+        </div>
+      )}
       <div className={styles.card}>
         <ListLink
           to="/mehr/konto"
