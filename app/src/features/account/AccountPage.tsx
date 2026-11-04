@@ -12,6 +12,7 @@ import { FounderBadge } from '../badges/FounderBadge';
 import { clearBadges, refreshBadges, useMyBadges } from '../badges/badgeStore';
 import { clearSharedSpots } from '../spots/useSharedSpots';
 import { RulesConsent } from '../moderation/Rules';
+import { unregisterDevice } from '../push/pushDevice';
 import { acceptRules, rulesAccepted } from '../moderation/rulesConsent';
 import type { AccountProvider, AccountUser } from '../../ports/account';
 import {
@@ -370,7 +371,17 @@ function ProfileView({
           >
             {t.editDisplayName}
           </Button>
-          <Button variant="secondary" disabled={busy} onClick={() => void run(() => account.signOut())}>
+          <Button
+            variant="secondary"
+            disabled={busy}
+            onClick={() =>
+              void run(async () => {
+                // dieses Gerät bekommt danach keine Mitteilungen mehr für das Konto
+                await unregisterDevice(account).catch(() => undefined);
+                await account.signOut();
+              })
+            }
+          >
             {t.signOut}
           </Button>
         </div>

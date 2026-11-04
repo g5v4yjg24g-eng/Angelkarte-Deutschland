@@ -6,6 +6,7 @@ import { applyTheme, readTheme, type ThemeChoice } from '../../lib/theme';
 import { setSetting } from '../../data/settings';
 import { useWeatherEnabled } from '../weather/useWeatherEnabled';
 import { useBoolSetting } from './useBoolSetting';
+import { PushSettings } from '../push/PushSettings';
 
 const OPTIONS = [
   { value: 'system', label: de.settings.themeSystem },
@@ -86,6 +87,7 @@ export function SettingsPage() {
         )}
         <p className="muted">{de.settings.usageHint}</p>
       </Section>
+      <PushSettings />
       <Section title={de.settings.weather}>
         {weather !== undefined && (
           <SegmentedControl

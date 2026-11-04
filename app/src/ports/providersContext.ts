@@ -7,6 +7,7 @@ import type { AlertsProvider } from './alerts';
 import type { GaugesProvider, NrwGaugesProvider } from './gauges';
 import type { UsageCounter } from './usage';
 import type { AccountProvider } from './account';
+import type { PushProvider } from './push';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
@@ -19,6 +20,7 @@ export interface Providers {
   gaugesNrw: NrwGaugesProvider;
   usage: UsageCounter;
   account: AccountProvider;
+  push: PushProvider;
 }
 
 export const ProvidersContext = createContext<Providers | null>(null);

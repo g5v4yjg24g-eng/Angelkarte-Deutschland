@@ -6,6 +6,7 @@ import type { FeedPost } from '../domain/feed';
 import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
 import type { BlockedUser, ReportInput } from '../domain/moderation';
 import type { ServerComment, ServerReactions } from '../domain/reactions';
+import type { PushPrefs } from '../domain/push';
 
 export interface AccountUser {
   id: string;
@@ -84,6 +85,11 @@ export interface AccountProvider {
   postComments(postId: string): Promise<ServerComment[]>;
   addComment(postId: string, text: string): Promise<void>;
   deleteComment(commentId: string): Promise<void>;
+  /** Push-Mitteilungen: Geräte-Token beim Konto an- und abmelden, Arten ein-/ausschalten */
+  registerPushDevice(token: string): Promise<void>;
+  unregisterPushDevice(token: string): Promise<void>;
+  pushPrefs(): Promise<PushPrefs>;
+  setPushPrefs(prefs: PushPrefs): Promise<void>;
   /** Konto und Profil endgültig löschen, danach abgemeldet */
   deleteAccount(): Promise<void>;
 }

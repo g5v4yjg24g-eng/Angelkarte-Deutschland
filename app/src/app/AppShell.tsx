@@ -16,6 +16,7 @@ import { BackupReminder } from '../features/backup/BackupReminder';
 import { SessionChip } from '../features/sessions/SessionChip';
 import { WeatherSync } from '../features/weather/WeatherSync';
 import { PostSync } from '../features/sharing/PostSync';
+import { PushSetup } from '../features/push/PushSetup';
 import { WhatsNew } from '../features/whatsNew/WhatsNew';
 import { UsageTracker } from '../features/usage/UsageTracker';
 import { AuthRedirect } from '../features/account/AuthRedirect';
@@ -211,6 +212,7 @@ export function AppShell() {
       <UpdatePrompt />
       <WeatherSync />
       <PostSync />
+      <PushSetup />
       <WhatsNew />
       <UsageTracker />
       <AuthRedirect />

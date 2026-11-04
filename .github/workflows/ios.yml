@@ -103,6 +103,14 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             MARKETING_VERSION="$version" \
             CURRENT_PROJECT_VERSION="${{ github.run_number }}"
+      # Das Archiv ist unsigniert und trägt deshalb keine Berechtigungen. Für Push-Mitteilungen (aps-environment)
+      # bekommt die App vorläufig eine Ad-hoc-Signatur mit App.entitlements; der Export ersetzt sie durch die
+      # App-Store-Signatur und übernimmt die Berechtigung (Xcode setzt dabei „production“ ein).
+      - name: Berechtigungen ins Archiv
+        run: |
+          app="$RUNNER_TEMP/Fangpunkt.xcarchive/Products/Applications/App.app"
+          codesign --force --sign - --entitlements app/ios/App/App/App.entitlements "$app"
+          codesign -d --entitlements - "$app"
       - name: Für den App Store signieren und zu TestFlight hochladen
         run: |
           sed "s/TEAM_ID/$APPLE_TEAM_ID/" app/ios/ci/ExportOptions.plist > "$RUNNER_TEMP/ExportOptions.plist"

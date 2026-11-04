@@ -200,6 +200,10 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | REACT-1 | Reaktionen-Logik | Zahlen und Kommentare vom Server lesen (kaputte/leere fallen weg, älteste zuerst), Daumen sofort umschalten ohne negative Zahl, Fehler zuordnen (✅ `reactions.test.ts`) |
 | REACT-2 | Feed | Daumen hoch mit Zahl, Kommentar schreiben und eigenen löschen, fremden nicht löschbar, aber meldbar (danach ausgeblendet); Fenster hell/dunkel ohne axe-Verstöße (✅ `account.spec.ts`) |
 | REACT-3 | Eigener geteilter Beitrag | Gefällt mir und Kommentare gehen an den Server, nichts landet lokal (✅ `account.spec.ts`) |
+| PUSH-1 | Push-Logik | Einstellungen lesen (fehlend/kaputt = alles an), Antippen nur in bekannte Bereiche, Token nur Hexziffern (✅ `push.test.ts`) |
+| PUSH-2 | Gerät anmelden | einmal von selbst fragen, nach „Nein“ nicht erneut; mit Erlaubnis Token an den Server; Abmelden entfernt es; im Browser nichts (✅ `pushDevice.test.ts`) |
+| PUSH-3 | Einstellungen → Mitteilungen | im Browser unsichtbar; jede Art einzeln, auf dem Server gespeichert; Knopf „Erlauben“ bzw. Hinweis auf die iPhone-Einstellungen (✅ `PushSettings.test.tsx`) |
+| PUSH-4 | Auf dem iPhone (von Hand, TestFlight) | Erlaubnis-Dialog nach der Anmeldung; Mitteilung bei Anfrage, Gefällt mir, Kommentar, Spot; Antippen öffnet den Bereich [O] |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |
