@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-11',
+    title: 'Wetter im Fangpunkt-Look',
+    items: [
+      'Wetter: Die Vorhersage hat jetzt die Farben von Fangpunkt – hell wie dunkel passend zum Rest der App.',
+    ],
+  },
+  {
     id: '2026-11-10',
     title: 'Mitteilungen in der iPhone-App',
     items: [
