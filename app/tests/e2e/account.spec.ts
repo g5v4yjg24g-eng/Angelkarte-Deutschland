@@ -39,6 +39,14 @@ async function fakeSupabase(
   const blocks: { user_id: string; username: string; display_name: string }[] = [];
   // Gefällt mir / Kommentare (Wunsch Nutzer 2026-11-04): je Beitrag Anzahl fremder Likes, eigener Like, Kommentare
   const likes = new Map<string, { others: number; mine: boolean }>();
+  // Moderationsbereich: vom Test vorher befüllt
+  const mod = {
+    moderator: false,
+    reports: [] as Record<string, unknown>[],
+    content: new Map<string, Record<string, unknown>>(),
+    users: new Map<string, Record<string, unknown>>(),
+    log: [] as { action: string; who: unknown; detail: unknown }[],
+  };
   const comments: {
     id: string;
     post_id: string;
@@ -329,6 +337,86 @@ async function fakeSupabase(
         if (i >= 0) comments.splice(i, 1);
         return route.fulfill({ status: 204 });
       }
+      // Moderationsbereich
+      case 'POST /rest/v1/rpc/is_moderator':
+        return json(route, mod.moderator);
+      case 'POST /rest/v1/rpc/mod_reports': {
+        if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
+        const { state } = req.postDataJSON() as { state: string };
+        return json(
+          route,
+          mod.reports.filter((r) => state === 'all' || r.status === state),
+        );
+      }
+      case 'POST /rest/v1/rpc/mod_content': {
+        const { target } = req.postDataJSON() as { target: string };
+        const c = mod.content.get(target);
+        return json(route, c ? [c] : []);
+      }
+      case 'POST /rest/v1/rpc/mod_user': {
+        const { who } = req.postDataJSON() as { who: string };
+        const u = mod.users.get(who);
+        return json(route, u ? [u] : []);
+      }
+      case 'POST /rest/v1/rpc/mod_user_content':
+        return json(route, []);
+      case 'POST /rest/v1/rpc/mod_user_log': {
+        const { who } = req.postDataJSON() as { who: string };
+        return json(
+          route,
+          mod.log
+            .filter((l) => l.who === who)
+            .map((l) => ({
+              action: l.action,
+              detail: l.detail,
+              created_at: '2026-11-05T12:00:00Z',
+              moderator_name: 'Kevin',
+            })),
+        );
+      }
+      case 'POST /rest/v1/rpc/mod_delete_content': {
+        const b = req.postDataJSON() as { kind: string; target: string; note: string | null };
+        const c = mod.content.get(b.target);
+        mod.content.delete(b.target);
+        mod.log.push({ action: `delete_${b.kind}`, who: c?.author, detail: b.note });
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/mod_warn': {
+        const b = req.postDataJSON() as { who: string; note: string };
+        mod.log.push({ action: 'warn', who: b.who, detail: b.note });
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/mod_resolve': {
+        const b = req.postDataJSON() as { report: string; note: string | null };
+        const r = mod.reports.find((x) => x.id === b.report);
+        if (r) r.status = 'done';
+        mod.log.push({ action: 'resolve', who: r?.target_user, detail: b.note });
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/mod_ban': {
+        const b = req.postDataJSON() as { who: string; days: number | null; reason: string };
+        const u = mod.users.get(b.who);
+        if (u) {
+          u.banned = true;
+          u.ban_until = b.days === null ? null : new Date(Date.now() + b.days * 86_400_000).toISOString();
+          u.ban_reason = b.reason;
+        }
+        mod.reports.forEach((r) => r.target_user === b.who && (r.target_banned = true));
+        mod.log.push({ action: 'ban', who: b.who, detail: `${b.days ?? 'dauerhaft'}: ${b.reason}` });
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/mod_unban': {
+        const b = req.postDataJSON() as { who: string; note: string | null };
+        const u = mod.users.get(b.who);
+        if (u) {
+          u.banned = false;
+          u.ban_until = null;
+          u.ban_reason = null;
+        }
+        mod.reports.forEach((r) => r.target_user === b.who && (r.target_banned = false));
+        mod.log.push({ action: 'unban', who: b.who, detail: b.note });
+        return route.fulfill({ status: 204 });
+      }
       case 'POST /rest/v1/rpc/delete_my_account':
         profile = null;
         return route.fulfill({ status: 204 });
@@ -345,7 +433,9 @@ async function fakeSupabase(
     blocks: { value: blocks },
     likes: { value: likes },
     comments: { value: comments },
+    mod: { value: mod },
   }) as string[] & {
+    mod: typeof mod;
     likes: typeof likes;
     comments: typeof comments;
     reports: typeof reports;
@@ -421,7 +511,7 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/post-photos|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/post-photos|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|is_moderator)))/.test(
         c,
       ),
     ),
@@ -1182,4 +1272,125 @@ test('REACT-3: eigener geteilter Beitrag – Gefällt mir und Kommentare kommen 
   );
   expect(local).toBe(0);
   expect(errors).toEqual([]);
+});
+
+test('MODA-2: Moderationsbereich – Meldung ansehen, Inhalt löschen, sperren (7 Tage), Sperre aufheben, erledigt', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  calls.mod.moderator = true;
+  calls.mod.reports.push({
+    id: 'r-1',
+    target_type: 'comment',
+    target_id: 'c-bad',
+    reason: 'abuse',
+    details: 'Beleidigt andere',
+    status: 'open',
+    created_at: '2026-11-05T10:00:00Z',
+    reporter: 'u-ben',
+    reporter_name: 'Ben',
+    target_user: 'u-anna',
+    target_name: 'Anna',
+    target_username: 'anna',
+    target_banned: false,
+    open_against: 1,
+  });
+  calls.mod.content.set('c-bad', {
+    author: 'u-anna',
+    body: 'Du bist ein schlechter Angler',
+    photo_paths: null,
+    post_id: 'p-1',
+    extra: 'Zander am Abend',
+    created_at: '2026-11-05T09:00:00Z',
+  });
+  calls.mod.users.set('u-anna', {
+    user_id: 'u-anna',
+    username: 'anna',
+    display_name: 'Anna',
+    banned: false,
+    ban_until: null,
+    ban_reason: null,
+    posts: 1,
+    comments: 1,
+    spots: 0,
+    reports_against: 1,
+    joined: '2026-11-01T08:00:00Z',
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/mehr');
+  await waitForApp(page);
+  await page.getByRole('link', { name: /^Moderation/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Moderation' })).toBeVisible();
+  await page.getByRole('link', { name: /Kommentar: Beleidigung/ }).click();
+  await expect(page.getByText('Du bist ein schlechter Angler')).toBeVisible();
+  await expect(page.getByText('Beleidigt andere')).toBeVisible();
+  await expect(page.getByText('Unter dem Beitrag: „Zander am Abend“')).toBeVisible();
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  // Inhalt löschen
+  await page.getByRole('button', { name: 'Inhalt löschen' }).click();
+  await page
+    .getByRole('dialog', { name: 'Inhalt löschen?' })
+    .getByRole('button', { name: 'Bestätigen' })
+    .click();
+  await expect(page.getByText('Dieser Inhalt ist nicht mehr vorhanden', { exact: false })).toBeVisible();
+
+  // Sperren: Grund ist Pflicht, Dauer 7 Tage
+  await page.getByRole('button', { name: 'Sperren' }).click();
+  const ban = page.getByRole('dialog', { name: 'Anna sperren' });
+  await expect(ban.getByRole('radio', { name: '7 Tage' })).toBeChecked();
+  await expect(ban.getByRole('button', { name: 'Bestätigen' })).toBeDisabled();
+  await ban.getByRole('textbox', { name: /Grund/ }).fill('Beleidigungen');
+  await ban.getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(page.getByText('Gesperrt. Die Person bekommt eine Mail.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sperre aufheben' })).toBeVisible();
+  expect(calls.mod.users.get('u-anna')?.banned).toBe(true);
+
+  // Konto-Seite: Sperre mit Restzeit, Protokoll, Aufheben
+  await page.getByRole('link', { name: 'Alles von dieser Person ansehen' }).click();
+  await expect(page.getByText(/Gesperrt bis/)).toBeVisible();
+  const protocol = page.getByRole('region', { name: 'Protokoll' });
+  await expect(protocol.getByText('Kommentar gelöscht')).toBeVisible();
+  await expect(protocol.getByText('Gesperrt', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Sperre aufheben' }).click();
+  await page
+    .getByRole('dialog', { name: 'Sperre von Anna aufheben?' })
+    .getByRole('button', { name: 'Bestätigen' })
+    .click();
+  await expect(page.getByText('Sperre aufgehoben. Die Person bekommt eine Mail.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sperren' })).toBeVisible();
+  expect(calls.mod.users.get('u-anna')?.banned).toBe(false);
+
+  // zurück zur Meldung und erledigen
+  await page.goto('/mehr/moderation/r-1');
+  await page.getByRole('button', { name: 'Meldung erledigt' }).click();
+  await page
+    .getByRole('dialog', { name: 'Meldung erledigt' })
+    .getByRole('button', { name: 'Bestätigen' })
+    .click();
+  await expect(page.getByText('Meldung als erledigt markiert.')).toBeVisible();
+  await page.goto('/mehr/moderation');
+  await expect(page.getByText('Keine offenen Meldungen – alles erledigt.')).toBeVisible();
+  expect(calls.mod.log.map((l) => l.action)).toEqual(['delete_comment', 'ban', 'unban', 'resolve']);
+  expect(errors).toEqual([]);
+});
+
+test('MODA-3: ohne Moderatoren-Recht kein Eintrag unter Mehr und kein Zugriff', async ({ page }) => {
+  await fakeSupabase(page);
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/mehr');
+  await waitForApp(page);
+  await expect(page.getByRole('link', { name: /^Konto/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /^Moderation/ })).toHaveCount(0);
+  await page.goto('/mehr/moderation');
+  await expect(page.getByText('Diesen Bereich sehen nur Moderatoren.')).toBeVisible();
 });

@@ -1,0 +1,128 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.item {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.item p {
+  margin: 0;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.tag {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border-radius: 999px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  background: var(--color-surface-2);
+}
+.tagDanger {
+  composes: tag;
+  background: var(--color-danger);
+  color: var(--color-on-danger);
+}
+.facts {
+  display: grid;
+  grid-template-columns: minmax(6rem, 38%) 1fr;
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+}
+.facts dt {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.quote {
+  margin: 0;
+  padding: var(--space-3);
+  border-left: 4px solid var(--color-primary);
+  background: var(--color-surface);
+  border-radius: var(--radius-md, 12px);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.photos img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radius-md, 12px);
+  display: block;
+}
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.form {
+  display: grid;
+  gap: var(--space-3);
+}
+.form p {
+  margin: 0;
+}
+.durations {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+}
+.durations legend {
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+  padding: 0;
+}
+.duration {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+.duration:has(input:checked) {
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+.duration input {
+  margin: 0;
+  accent-color: var(--color-primary);
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}

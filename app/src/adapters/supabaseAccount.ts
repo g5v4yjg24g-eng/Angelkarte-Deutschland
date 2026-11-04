@@ -1,7 +1,7 @@
 // Supabase (Auth + Postgres, Region EU/Irland): freiwilliges Konto. Der Client wird erst geladen, wenn das Konto
 // gebraucht wird (eigener Chunk); ohne gespeicherte Anmeldung sendet die App nichts an Supabase.
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
-// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen), *_push.sql (Geräte und Einstellungen für Mitteilungen). Nur der öffentliche Schlüssel steht in der App.
+// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen), *_push.sql (Geräte und Einstellungen für Mitteilungen), *_moderators.sql (Moderationsbereich, jede Funktion prüft is_moderator). Nur der öffentliche Schlüssel steht in der App.
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
@@ -12,6 +12,13 @@ import { parseSharedSpotRows } from '../domain/sharedSpots';
 import { parseBlockRows } from '../domain/moderation';
 import { parseCommentRows, parseReactionRows } from '../domain/reactions';
 import { parsePushPrefs } from '../domain/push';
+import {
+  parseModContent,
+  parseModLog,
+  parseModReports,
+  parseModUser,
+  parseModUserItems,
+} from '../domain/modAdmin';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
 
 type Row = { id: string; username: string; display_name: string };
@@ -322,6 +329,80 @@ export function supabaseAccount(
     },
     async setPushPrefs(prefs) {
       const { error } = await (await get()).rpc('set_push_prefs', prefs);
+      if (error) fail(error);
+    },
+    async isModerator() {
+      const { data, error } = await (await get()).rpc('is_moderator');
+      if (error) fail(error);
+      return data === true;
+    },
+    async modReports(state) {
+      const { data, error } = await (await get()).rpc('mod_reports', { state });
+      if (error) fail(error);
+      return parseModReports(data as unknown[] | null);
+    },
+    async modContent(kind, id) {
+      const { data, error } = await (await get()).rpc('mod_content', { kind, target: id });
+      if (error) fail(error);
+      return parseModContent(data as unknown[] | null);
+    },
+    async modUser(userId) {
+      const { data, error } = await (await get()).rpc('mod_user', { who: userId });
+      if (error) fail(error);
+      return parseModUser(data as unknown[] | null);
+    },
+    async modUserContent(userId) {
+      const { data, error } = await (await get()).rpc('mod_user_content', { who: userId });
+      if (error) fail(error);
+      return parseModUserItems(data as unknown[] | null);
+    },
+    async modUserLog(userId) {
+      const { data, error } = await (await get()).rpc('mod_user_log', { who: userId });
+      if (error) fail(error);
+      return parseModLog(data as unknown[] | null);
+    },
+    async modPhotoUrls(paths) {
+      if (paths.length === 0) return [];
+      const { data, error } = await (await get()).storage.from(POST_BUCKET).createSignedUrls(paths, 3600);
+      if (error) fail(error);
+      const urls = new Map((data ?? []).map((s) => [s.path, s.signedUrl]));
+      return paths.map((p) => urls.get(p) ?? '');
+    },
+    async modDeleteContent(kind, id, photoPaths, reportId, note) {
+      const c = await get();
+      if (kind === 'post' && photoPaths.length) {
+        const { error } = await c.storage.from(POST_BUCKET).remove(photoPaths);
+        if (error) fail(error);
+      }
+      const { error } = await c.rpc('mod_delete_content', {
+        kind,
+        target: id,
+        report: reportId ?? null,
+        note: note ?? null,
+      });
+      if (error) fail(error);
+    },
+    async modWarn(userId, note, reportId) {
+      const { error } = await (await get()).rpc('mod_warn', { who: userId, report: reportId ?? null, note });
+      if (error) fail(error);
+    },
+    async modResolve(reportId, note) {
+      const { error } = await (await get()).rpc('mod_resolve', { report: reportId, note: note ?? null });
+      if (error) fail(error);
+    },
+    async modBan(userId, days, reason, reportId) {
+      const { error } = await (
+        await get()
+      ).rpc('mod_ban', {
+        who: userId,
+        days,
+        reason,
+        report: reportId ?? null,
+      });
+      if (error) fail(error);
+    },
+    async modUnban(userId, note) {
+      const { error } = await (await get()).rpc('mod_unban', { who: userId, note: note ?? null });
       if (error) fail(error);
     },
     async deleteAccount() {

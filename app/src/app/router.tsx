@@ -25,6 +25,9 @@ import { PostPage } from '../features/profile/PostPage';
 import { SharedSpotsPage } from '../features/spots/SharedSpotsPage';
 import { ShareSpotPage } from '../features/spots/ShareSpotPage';
 import { RulesPage } from '../features/moderation/Rules';
+import { ModerationPage } from '../features/moderation/admin/ModerationPage';
+import { ModReportPage } from '../features/moderation/admin/ModReportPage';
+import { ModUserPage } from '../features/moderation/admin/ModUserPage';
 import { FriendsPage } from '../features/friends/FriendsPage';
 import { FeedPage } from '../features/feed/FeedPage';
 import { RigDetailPage } from '../features/knots/RigDetailPage';
@@ -74,6 +77,9 @@ export const routes = [
           { path: 'mehr/info', element: <AboutPage /> },
           { path: 'mehr/datenschutz', element: <PrivacyPage /> },
           { path: 'mehr/regeln', element: <RulesPage /> },
+          { path: 'mehr/moderation', element: <ModerationPage /> },
+          { path: 'mehr/moderation/nutzer/:uid', element: <ModUserPage /> },
+          { path: 'mehr/moderation/:id', element: <ModReportPage /> },
           { path: 'mehr/daten', element: <LazyBackupPage /> },
           { path: 'mehr/konto', element: <LazyAccountPage /> },
           { path: 'mehr/recht', element: <LawPage /> },
