@@ -1,6 +1,8 @@
 // Kommentare als Fenster von unten (Wunsch Nutzer 2026-10-27, Vorbild Instagram): Liste, Emoji-Leiste, Eingabe unten.
 // Schließen: herunterziehen (am Griff/Titel, oder in der Liste, wenn sie oben steht), Hintergrund antippen, Escape.
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+// Die Anzeige (`CommentsSheetView`) kennt keine Datenquelle: `CommentsSheet` liest die Kommentare vom Gerät
+// (Beitrag nicht geteilt), `ServerCommentsSheet` (eigene Datei) die vom Server (Wunsch Nutzer 2026-11-04).
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
 import { IconButton } from '../../design/components/Button';
@@ -20,6 +22,20 @@ const EMOJIS = ['👍', '🎣', '🔥', '👏', '🙌', '😍', '😮', '😂'];
 const ago = (iso: string) =>
   new Date(iso).toLocaleDateString('de-DE', { dateStyle: 'medium', timeZone: 'Europe/Berlin' });
 
+/** Ein Kommentar, so wie das Fenster ihn zeigt */
+export interface ViewComment {
+  id: string;
+  name: string;
+  founder: boolean;
+  avatarPhotoId?: string | undefined;
+  createdAt: string;
+  text: string;
+  canDelete: boolean;
+  /** Melden/Blockieren (nur fremde Kommentare vom Server) */
+  extra?: ReactNode;
+}
+
+/** Kommentare vom Gerät (Beitrag nicht geteilt): alle stammen von diesem Gerät */
 export function CommentsSheet({
   open,
   postId,
@@ -36,13 +52,63 @@ export function CommentsSheet({
   avatarPhotoId?: string | undefined;
   onClose: () => void;
 }) {
+  const reactions = useLiveQuery(() => postReactions(postId), [postId]);
+  const comments: ViewComment[] = (reactions?.comments ?? []).map((c) => ({
+    id: c.id,
+    name,
+    founder: founder && c.authorId === LOCAL_AUTHOR,
+    avatarPhotoId: c.authorId === LOCAL_AUTHOR ? avatarPhotoId : undefined,
+    createdAt: c.createdAt,
+    text: c.text,
+    canDelete: c.authorId === LOCAL_AUTHOR,
+  }));
+  return (
+    <CommentsSheetView
+      open={open}
+      comments={comments}
+      myAvatarPhotoId={avatarPhotoId}
+      onClose={onClose}
+      onSend={async (text) => {
+        await addComment(postId, text);
+      }}
+      onDelete={(id) => removeComment(id).then(() => undefined)}
+      onRestore={(id) => restoreComment(id).then(() => undefined)}
+    />
+  );
+}
+
+export function CommentsSheetView({
+  open,
+  comments,
+  myAvatarPhotoId,
+  loading = false,
+  error,
+  onClose,
+  onSend,
+  onDelete,
+  onRestore,
+  notice,
+}: {
+  open: boolean;
+  comments: ViewComment[];
+  myAvatarPhotoId?: string | undefined;
+  loading?: boolean;
+  error?: string | undefined;
+  onClose: () => void;
+  onSend: (text: string) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+  /** fehlt: Löschen ist endgültig (Server), der Hinweis kommt ohne „Rückgängig“ */
+  onRestore?: ((id: string) => Promise<void>) | undefined;
+  /** zusätzlicher Hinweis im Fenster (z. B. nach dem Melden) – außerhalb wäre er hinter dem Dialog */
+  notice?: ReactNode;
+}) {
   const dialog = useRef<HTMLDialogElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLUListElement>(null);
   const input = useRef<HTMLInputElement>(null);
-  const reactions = useLiveQuery(() => postReactions(postId), [postId]);
-  const comments = reactions?.comments ?? [];
   const [text, setText] = useState('');
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState<string>();
   const [undo, setUndo] = useState<{ id: string; restored: boolean }>();
   const close = useRef(onClose);
   useEffect(() => {
@@ -107,11 +173,16 @@ export function CommentsSheet({
 
   const send = (e: FormEvent) => {
     e.preventDefault();
-    if (!commentValid(text)) return;
-    void addComment(postId, text).then(() => {
-      setText('');
-      requestAnimationFrame(() => list.current?.scrollTo({ top: list.current.scrollHeight }));
-    });
+    if (!commentValid(text) || sending) return;
+    setSending(true);
+    setSendError(undefined);
+    onSend(text)
+      .then(() => {
+        setText('');
+        requestAnimationFrame(() => list.current?.scrollTo({ top: list.current.scrollHeight }));
+      })
+      .catch((err: unknown) => setSendError(err instanceof Error ? err.message : String(err)))
+      .finally(() => setSending(false));
   };
 
   return (
@@ -140,7 +211,12 @@ export function CommentsSheet({
               onClick={onClose}
             />
           </header>
-          {comments.length === 0 ? (
+          {error && <p className={styles.error}>{error}</p>}
+          {loading && comments.length === 0 ? (
+            <div className={styles.empty}>
+              <p className="muted">{t.loading}</p>
+            </div>
+          ) : comments.length === 0 ? (
             <div className={styles.empty}>
               <p className={styles.emptyTitle}>{t.noComments}</p>
               <p className="muted">{t.firstComment}</p>
@@ -149,22 +225,26 @@ export function CommentsSheet({
             <ul ref={list} className={styles.list}>
               {comments.map((c) => (
                 <li key={c.id} className={styles.comment}>
-                  <Avatar photoId={c.authorId === LOCAL_AUTHOR ? avatarPhotoId : undefined} size={36} />
+                  <Avatar photoId={c.avatarPhotoId} size={36} />
                   <div className={styles.body}>
                     <p className={styles.meta}>
-                      <strong>{name}</strong>
-                      {founder && c.authorId === LOCAL_AUTHOR && <FounderBadge />}{' '}
-                      <span className="muted">{ago(c.createdAt)}</span>
+                      <strong>{c.name}</strong>
+                      {c.founder && <FounderBadge />} <span className="muted">{ago(c.createdAt)}</span>
                     </p>
                     <p className={styles.text}>{c.text}</p>
                   </div>
-                  {c.authorId === LOCAL_AUTHOR && (
+                  {c.extra}
+                  {c.canDelete && (
                     <IconButton
                       label={t.deleteComment}
                       icon={<CloseIcon size={16} />}
                       className={styles.delete}
                       onClick={() =>
-                        void removeComment(c.id).then(() => setUndo({ id: c.id, restored: false }))
+                        void onDelete(c.id)
+                          .then(() => setUndo({ id: c.id, restored: false }))
+                          .catch((err: unknown) =>
+                            setSendError(err instanceof Error ? err.message : String(err)),
+                          )
                       }
                     />
                   )}
@@ -189,8 +269,9 @@ export function CommentsSheet({
                 </button>
               ))}
             </div>
+            {sendError && <p className={styles.error}>{sendError}</p>}
             <form className={styles.form} onSubmit={send}>
-              <Avatar photoId={avatarPhotoId} size={36} />
+              <Avatar photoId={myAvatarPhotoId} size={36} />
               <input
                 ref={input}
                 className={styles.input}
@@ -206,7 +287,7 @@ export function CommentsSheet({
                 label={t.commentSend}
                 icon={<SendIcon size={22} />}
                 className={styles.send}
-                disabled={!commentValid(text)}
+                disabled={!commentValid(text) || sending}
               />
             </form>
           </div>
@@ -214,13 +295,12 @@ export function CommentsSheet({
             <Toast
               onDismiss={() => setUndo(undefined)}
               actions={
-                !undo.restored && (
+                !undo.restored &&
+                onRestore && (
                   <button
                     type="button"
                     className={styles.undo}
-                    onClick={() =>
-                      void restoreComment(undo.id).then(() => setUndo({ ...undo, restored: true }))
-                    }
+                    onClick={() => void onRestore(undo.id).then(() => setUndo({ ...undo, restored: true }))}
                   >
                     {t.undo}
                   </button>
@@ -230,6 +310,7 @@ export function CommentsSheet({
               {undo.restored ? t.commentRestored : t.commentDeleted}
             </Toast>
           )}
+          {notice}
         </div>
       )}
     </dialog>

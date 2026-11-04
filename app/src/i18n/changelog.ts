@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-09',
+    title: 'Gefällt mir und Kommentare mit Freunden',
+    items: [
+      'Feed: Unter jedem Beitrag kannst du jetzt „Gefällt mir“ geben und kommentieren – deine Freunde sehen es.',
+      'Eigene Beiträge: Ist ein Beitrag geteilt, siehst du, wem er gefällt und was deine Freunde schreiben. Unpassende Kommentare kannst du unter deinem Beitrag löschen oder melden.',
+    ],
+  },
+  {
     id: '2026-11-08',
     title: 'Melden und Blockieren',
     items: [

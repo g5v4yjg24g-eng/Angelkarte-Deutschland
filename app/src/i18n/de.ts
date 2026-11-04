@@ -738,7 +738,7 @@ export const de = {
     commentDeleted: 'Kommentar gelöscht.',
     commentRestored: 'Kommentar wiederhergestellt.',
     reactionsNote:
-      'Gefällt mir und Kommentare sind vorerst nur deine eigenen. Mit dem Konto können Freunde mitmachen.',
+      'Dieser Beitrag ist nur auf deinem Gerät: Gefällt mir und Kommentare sind nur deine eigenen. Teilst du ihn mit deinem Konto, können Freunde mitmachen.',
     visibilityLabel: 'Sichtbar für',
     visibility: { friends: 'Freunde', public: 'Alle' },
     visibilityHint:
@@ -2207,6 +2207,19 @@ export const de = {
     visibility: { friends: 'Freunde', public: 'Alle' },
     postLabel: (name: string, date: string) => `Beitrag von ${name}, ${date}`,
   },
+  reactions: {
+    errors: {
+      notFound: 'Diesen Beitrag gibt es nicht mehr oder du darfst ihn nicht mehr sehen.',
+      tooMany: 'Du hast heute schon sehr viele Kommentare geschrieben. Morgen geht es weiter.',
+      notSignedIn: 'Du bist nicht mehr angemeldet. Melde dich unter Mehr → Konto an.',
+      offline: 'Keine Verbindung. Versuch es gleich noch einmal.',
+      unknown: 'Das hat nicht geklappt. Versuch es noch einmal.',
+    },
+    loadError: 'Kommentare konnten nicht geladen werden. Prüfe die Verbindung.',
+    sharedNote: 'Gefällt mir und Kommentare sehen alle, die diesen Beitrag sehen dürfen.',
+    reportedComment:
+      'Danke! Wir prüfen die Meldung innerhalb von 24 Stunden. Der Kommentar ist für dich ausgeblendet.',
+  },
   moderation: {
     rulesTitle: 'Regeln der Community',
     rulesIntro:
@@ -2233,6 +2246,7 @@ export const de = {
       post: 'Was stimmt mit diesem Beitrag nicht?',
       spot: 'Was stimmt mit diesem Spot nicht?',
       user: 'Was stimmt mit diesem Konto nicht?',
+      comment: 'Was stimmt mit diesem Kommentar nicht?',
     },
     reasons: {
       spam: 'Spam oder Werbung',
@@ -2394,7 +2408,7 @@ export const de = {
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',
-        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto – sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Freundschaften, Blockierungen, eigene Meldungen, geteilte Spots und geteilte Beiträge samt Fotos endgültig.',
+        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto – sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Freundschaften, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, geteilte Spots und geteilte Beiträge samt Fotos endgültig.',
       },
       {
         name: 'GoatCounter (goatcounter.com)',

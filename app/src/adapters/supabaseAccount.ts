@@ -1,7 +1,7 @@
 // Supabase (Auth + Postgres, Region EU/Irland): freiwilliges Konto. Der Client wird erst geladen, wenn das Konto
 // gebraucht wird (eigener Chunk); ohne gespeicherte Anmeldung sendet die App nichts an Supabase.
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
-// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen). Nur der öffentliche Schlüssel steht in der App.
+// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen). Nur der öffentliche Schlüssel steht in der App.
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
@@ -10,6 +10,7 @@ import { photoExt } from '../domain/postSync';
 import { FEED_PAGE, parseFeedRows } from '../domain/feed';
 import { parseSharedSpotRows } from '../domain/sharedSpots';
 import { parseBlockRows } from '../domain/moderation';
+import { parseCommentRows, parseReactionRows } from '../domain/reactions';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
 
 type Row = { id: string; username: string; display_name: string };
@@ -280,6 +281,30 @@ export function supabaseAccount(
       const { data, error } = await (await get()).rpc('my_blocks');
       if (error) fail(error);
       return parseBlockRows(data as unknown[] | null);
+    },
+    async postReactions(postIds) {
+      if (postIds.length === 0) return new Map();
+      const { data, error } = await (await get()).rpc('post_reactions', { posts: postIds.slice(0, 100) });
+      if (error) fail(error);
+      return parseReactionRows(data as unknown[] | null);
+    },
+    async toggleLike(postId) {
+      const { data, error } = await (await get()).rpc('toggle_like', { post: postId });
+      if (error) fail(error);
+      return data === true;
+    },
+    async postComments(postId) {
+      const { data, error } = await (await get()).rpc('post_comment_list', { post: postId });
+      if (error) fail(error);
+      return parseCommentRows(data as unknown[] | null);
+    },
+    async addComment(postId, text) {
+      const { error } = await (await get()).rpc('add_comment', { post: postId, body: text });
+      if (error) fail(error);
+    },
+    async deleteComment(commentId) {
+      const { error } = await (await get()).rpc('delete_comment', { comment: commentId });
+      if (error) fail(error);
     },
     async deleteAccount() {
       const c = await get();

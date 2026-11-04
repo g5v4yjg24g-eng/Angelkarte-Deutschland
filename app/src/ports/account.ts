@@ -5,6 +5,7 @@ import type { FriendEntry, FriendRequestResult } from '../domain/friends';
 import type { FeedPost } from '../domain/feed';
 import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
 import type { BlockedUser, ReportInput } from '../domain/moderation';
+import type { ServerComment, ServerReactions } from '../domain/reactions';
 
 export interface AccountUser {
   id: string;
@@ -76,6 +77,13 @@ export interface AccountProvider {
   blockUser(userId: string): Promise<void>;
   unblockUser(userId: string): Promise<void>;
   blockedUsers(): Promise<BlockedUser[]>;
+  /** „Gefällt mir“ und Kommentarzahl für mehrere geteilte Beiträge (fehlt einer, ist er nicht sichtbar) */
+  postReactions(postIds: string[]): Promise<Map<string, ServerReactions>>;
+  /** „Gefällt mir“ umschalten; liefert den neuen Stand */
+  toggleLike(postId: string): Promise<boolean>;
+  postComments(postId: string): Promise<ServerComment[]>;
+  addComment(postId: string, text: string): Promise<void>;
+  deleteComment(commentId: string): Promise<void>;
   /** Konto und Profil endgültig löschen, danach abgemeldet */
   deleteAccount(): Promise<void>;
 }

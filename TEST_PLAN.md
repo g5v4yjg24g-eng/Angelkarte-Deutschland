@@ -197,6 +197,9 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | MOD-3 | Blockieren | Freund blockieren → Freundschaft endet, Liste „Blockiert“, Beiträge weg; Freigeben; 390 px, hell/dunkel (✅ `account.spec.ts`) |
 | MOD-4 | Spot melden | geteilten Spot melden → aus der Liste verschwunden (✅ `account.spec.ts`) |
 | MOD-5 | Regeln vor dem Code | „Code senden“ öffnet die Regeln; Ablehnen verschickt keine Mail, Akzeptieren schon (✅ `AccountPage.test.tsx`, ACC-3 in `account.spec.ts`) |
+| REACT-1 | Reaktionen-Logik | Zahlen und Kommentare vom Server lesen (kaputte/leere fallen weg, älteste zuerst), Daumen sofort umschalten ohne negative Zahl, Fehler zuordnen (✅ `reactions.test.ts`) |
+| REACT-2 | Feed | Daumen hoch mit Zahl, Kommentar schreiben und eigenen löschen, fremden nicht löschbar, aber meldbar (danach ausgeblendet); Fenster hell/dunkel ohne axe-Verstöße (✅ `account.spec.ts`) |
+| REACT-3 | Eigener geteilter Beitrag | Gefällt mir und Kommentare gehen an den Server, nichts landet lokal (✅ `account.spec.ts`) |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |
