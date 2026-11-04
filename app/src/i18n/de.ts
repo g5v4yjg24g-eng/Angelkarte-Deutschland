@@ -2207,6 +2207,25 @@ export const de = {
     visibility: { friends: 'Freunde', public: 'Alle' },
     postLabel: (name: string, date: string) => `Beitrag von ${name}, ${date}`,
   },
+  push: {
+    title: 'Mitteilungen',
+    intro: 'Mitteilungen aufs iPhone, wenn sich bei deinen Freunden etwas tut.',
+    signedOut: 'Mitteilungen gibt es mit Konto. Melde dich unter Mehr → Konto an.',
+    allow: 'Mitteilungen erlauben',
+    denied:
+      'Mitteilungen sind für Fangpunkt ausgeschaltet. Erlauben kannst du sie in den iPhone-Einstellungen → Fangpunkt → Mitteilungen.',
+    registerError:
+      'Das iPhone konnte nicht für Mitteilungen angemeldet werden. Versuch es später noch einmal.',
+    loadError: 'Einstellungen konnten nicht geladen werden. Prüfe die Verbindung.',
+    saveError: 'Konnte nicht gespeichert werden. Prüfe die Verbindung.',
+    kinds: {
+      friends: 'Freundschaftsanfragen und angenommene Anfragen',
+      likes: '„Gefällt mir“ an deinen Beiträgen',
+      comments: 'Kommentare unter deinen Beiträgen',
+      spots: 'Spots, die Freunde mit dir teilen',
+    },
+    note: 'Mitteilungen laufen über Apple. Sie enthalten den Namen der Person und bei Kommentaren den Anfang des Textes.',
+  },
   reactions: {
     errors: {
       notFound: 'Diesen Beitrag gibt es nicht mehr oder du darfst ihn nicht mehr sehen.',
@@ -2408,7 +2427,7 @@ export const de = {
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',
-        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto – sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Freundschaften, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, geteilte Spots und geteilte Beiträge samt Fotos endgültig.',
+        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto – sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person und bei Kommentaren dem Anfang des Textes). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Freundschaften, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, geteilte Spots und geteilte Beiträge samt Fotos endgültig.',
       },
       {
         name: 'GoatCounter (goatcounter.com)',

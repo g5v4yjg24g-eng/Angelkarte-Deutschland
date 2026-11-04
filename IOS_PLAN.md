@@ -70,6 +70,7 @@ Je Funktion ein Port mit Web-Adapter (heutiges Verhalten) und Capacitor-Adapter;
 | **Erinnerungen** | `@capacitor/local-notifications` | Mitteilung vor Angelterminen (`trips`), Sicherungs-Erinnerung | Lokal, ohne Server. Einstellung „Erinnerungen“ + Vorlaufzeit; Planen/Neuplanen bei jeder Änderung eines Termins (rein: Logik `domain/reminders.ts`) |
 | **Teilen** | `@capacitor/share` (+ `@capacitor/filesystem` für Dateien) | Sicherung (ZIP), CSV, Kalenderdatei, Fang/Beitrag teilen | Ersetzt `downloadBlob` in der App; im Web bleibt der Download |
 | **Kamera & Fotos** | `@capacitor/camera` | Fangfoto, Profilbild, Beitrag | `<input type=file>` öffnet in iOS schon Kamera/Fotos – Plugin bringt v. a. Apples Fotoauswahl; Fotos laufen weiter durch `processPhoto` (EXIF weg) |
+| **Push-Mitteilungen** ✅ (Wunsch Nutzer 2026-11-04, direkt über Apple) | `@capacitor/push-notifications` 8.1.3 | Freundschaftsanfragen, Gefällt mir, Kommentare, geteilte Spots | Server: `*_push.sql` + Edge Function `send-push` (APNs, ES256). Nutzer: Push-Fähigkeit am Identifier, APNs-Schlüssel (.p8) als Secrets, Function mit genau diesem Namen, „Verify JWT“ aus. Auf dem Gerät noch ungeprüft [O] |
 | **Haptik** | `@capacitor/haptics` | Fang gespeichert, Gefällt mir, Schritt in Knoten | Kurz und sparsam; abschaltbar in den Einstellungen |
 
 Optional später: `@capacitor/geolocation` (vermeidet die doppelte Standort-Frage der Webansicht [A]).

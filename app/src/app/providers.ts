@@ -6,6 +6,7 @@ import { pegelonline } from '../adapters/pegelonline';
 import { hygonNrw } from '../adapters/hygonNrw';
 import { goatCounter } from '../adapters/goatCounter';
 import { supabaseAccount } from '../adapters/supabaseAccount';
+import { capacitorPush } from '../adapters/capacitorPush';
 import type { Providers } from '../ports/providersContext';
 
 /** Zusammenstecken der Anbieter (einzige Stelle, die Adapter kennt). */
@@ -26,5 +27,7 @@ export const providers: Providers = {
     // Anmelde-Link führt auf die Startseite (= „Site URL“ im Supabase-Projekt); AuthRedirect leitet weiter
     typeof location === 'undefined' ? undefined : `${location.origin}${import.meta.env.BASE_URL}`,
   ),
+  // Push-Mitteilungen nur in der iPhone-App (Capacitor); im Browser aus
+  push: capacitorPush(),
   water: staticWaterData(import.meta.env.VITE_WATER_BASE_URL ?? `${import.meta.env.BASE_URL}data/water/`),
 };

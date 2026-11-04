@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-10',
+    title: 'Mitteilungen in der iPhone-App',
+    items: [
+      'Mitteilungen: In der iPhone-App bekommst du eine Mitteilung bei Freundschaftsanfragen, „Gefällt mir“, Kommentaren und geteilten Spots. Antippen öffnet die passende Stelle.',
+      'Einstellungen: Unter Mehr → Einstellungen → Mitteilungen schaltest du jede Art einzeln ab.',
+    ],
+  },
+  {
     id: '2026-11-09',
     title: 'Gefällt mir und Kommentare mit Freunden',
     items: [
