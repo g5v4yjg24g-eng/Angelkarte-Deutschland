@@ -511,7 +511,7 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/post-photos|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/post-photos|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|is_moderator)))/.test(
         c,
       ),
     ),
