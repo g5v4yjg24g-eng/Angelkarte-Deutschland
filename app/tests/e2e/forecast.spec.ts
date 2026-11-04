@@ -716,7 +716,12 @@ test('FC-6: Tag antippen öffnet die Wetterlage – Datumsleiste, Temperatur tat
   await expect(strip.getByRole('button').first()).toHaveAttribute('aria-pressed', 'true');
   await expect(sheet.getByText('H: 12° T: 5°')).toBeVisible();
   await expect(sheet.getByRole('img', { name: /^Temperatur am .*: 9° bis 9°/ })).toBeVisible();
-  await sheet.getByRole('radio', { name: 'Gefühlt' }).check({ force: true });
+  // das Fenster fährt von unten herein: erst klicken, wenn es ganz da ist (sonst gelegentlich „outside of the viewport“)
+  await expect(sheet.getByRole('heading', { name: 'Temperatur', exact: true })).toBeInViewport();
+  const feels = sheet.getByRole('radio', { name: 'Gefühlt' });
+  await feels.scrollIntoViewIfNeeded();
+  await feels.check({ force: true });
+  await expect(sheet.getByRole('radio', { name: 'Gefühlt' })).toBeChecked();
   await expect(sheet.getByRole('img', { name: /^Temperatur \(Gefühlt\) am .*: 6° bis 6°/ })).toBeVisible();
   await expect(sheet.getByText('Wahrscheinlichkeit heute: 70 %')).toBeVisible();
   await expect(sheet.getByRole('heading', { name: 'Wind' })).toBeVisible();
