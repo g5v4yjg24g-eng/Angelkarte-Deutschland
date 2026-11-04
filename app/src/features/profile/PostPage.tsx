@@ -1,5 +1,6 @@
-// Ein Beitrag: Fotos zum Wischen (Doppeltipp = „Gefällt mir“), Herz und Kommentare, Text, Datum, verknüpfter Fang,
-// Sichtbarkeit; bearbeiten, löschen (Rückgängig im Profil). Likes und Kommentare sind vorerst nur die eigenen.
+// Ein Beitrag: Fotos zum Wischen (Doppeltipp = „Gefällt mir“), Daumen und Kommentare, Text, Datum, verknüpfter Fang,
+// Sichtbarkeit; bearbeiten, löschen (Rückgängig im Profil). Ist der Beitrag geteilt und das Konto angemeldet, kommen
+// „Gefällt mir“ und Kommentare vom Server (Wunsch Nutzer 2026-11-04), sonst bleiben sie auf dem Gerät.
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -9,7 +10,7 @@ import { Button } from '../../design/components/Button';
 import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
 import { TextArea } from '../../design/components/Field';
-import { CommentIcon, ImagesIcon, ThumbsUpIcon } from '../../design/icons';
+import { ImagesIcon, ThumbsUpIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
 import { postReactions, removePost, toggleLike, updatePost } from '../../data/profileService';
 import { likeIdOf, POST_CAPTION_MAX } from '../../domain/profile';
@@ -23,6 +24,9 @@ import { storedUserId } from '../badges/badgeStore';
 import { Avatar } from './Avatar';
 import { catchSummary } from './catchSummary';
 import { CommentsSheet } from './CommentsSheet';
+import { ReactionBar } from '../reactions/ReactionBar';
+import { ServerCommentsSheet } from '../reactions/ServerCommentsSheet';
+import { useServerReactions } from '../reactions/useServerReactions';
 import { VisibilityField } from './NewPostPage';
 import type { ProfileState } from './ProfilePage';
 import { usePhotos, useProfile } from './usePhoto';
@@ -123,6 +127,9 @@ export function PostPage() {
   const [index, setIndex] = useState(0);
   const [burst, setBurst] = useState(0);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  // geteilt + angemeldet: Reaktionen vom Server
+  const server = !!post && !post.deletedAt && !!storedUserId() && shareStatus(post) === 'shared';
+  const srv = useServerReactions(post ? [post.id] : [], server);
 
   if (post === undefined)
     return (
@@ -148,10 +155,14 @@ export function PostPage() {
   const likes = reactions?.likes ?? [];
   const comments = reactions?.comments ?? [];
   const liked = likes.some((l) => l.id === likeIdOf(LOCAL_AUTHOR, post.id));
+  const serverReactions = srv.get(post.id);
   const likeByDoubleTap = () => {
     setBurst((b) => b + 1);
-    if (!liked) void toggleLike(post.id);
+    if (server) {
+      if (!serverReactions.liked) srv.toggle(post.id);
+    } else if (!liked) void toggleLike(post.id);
   };
+  const commentTotal = server ? serverReactions.commentCount : comments.length;
 
   return (
     <Page title={t.postTitle} back="/profil">
@@ -190,40 +201,14 @@ export function PostPage() {
           </p>
         )}
       </div>
-      {(likes.length > 0 || comments.length > 0) && (
-        <div className={styles.counts2}>
-          <span>
-            {likes.length > 0 && (
-              <>
-                <span className={styles.likeBadge} aria-hidden="true">
-                  <ThumbsUpIcon filled size={12} />
-                </span>{' '}
-                {t.likeCount(likes.length)}
-              </>
-            )}
-          </span>
-          {comments.length > 0 && (
-            <button type="button" className={styles.linkish} onClick={() => setCommentsOpen(true)}>
-              {t.commentCount(comments.length)}
-            </button>
-          )}
-        </div>
-      )}
-      <div className={styles.actionRow}>
-        <button
-          type="button"
-          className={[styles.action, liked ? styles.liked : ''].join(' ')}
-          aria-pressed={liked}
-          onClick={() => void toggleLike(post.id)}
-        >
-          <ThumbsUpIcon filled={liked} size={22} />
-          <span>{t.like}</span>
-        </button>
-        <button type="button" className={styles.action} onClick={() => setCommentsOpen(true)}>
-          <CommentIcon size={22} />
-          <span>{t.commentAction}</span>
-        </button>
-      </div>
+      <ReactionBar
+        likeCount={server ? serverReactions.likeCount : likes.length}
+        commentCount={server ? serverReactions.commentCount : comments.length}
+        liked={server ? serverReactions.liked : liked}
+        onLike={() => (server ? srv.toggle(post.id) : void toggleLike(post.id))}
+        onComments={() => setCommentsOpen(true)}
+      />
+      {srv.error && server && <Notice tone="error">{srv.error}</Notice>}
       {editing ? (
         <EditForm post={post} onDone={() => setEditing(false)} />
       ) : (
@@ -245,20 +230,30 @@ export function PostPage() {
           )}
         </div>
       )}
-      {comments.length > 0 && (
+      {commentTotal > 0 && (
         <button type="button" className={`${styles.linkish} muted`} onClick={() => setCommentsOpen(true)}>
-          {t.viewComments(comments.length)}
+          {t.viewComments(commentTotal)}
         </button>
       )}
-      <CommentsSheet
-        open={commentsOpen}
-        postId={post.id}
-        name={name}
-        founder={founder}
-        avatarPhotoId={profile?.avatarPhotoId}
-        onClose={() => setCommentsOpen(false)}
-      />
-      <p className={`muted ${styles.note}`}>{t.reactionsNote}</p>
+      {server ? (
+        <ServerCommentsSheet
+          open={commentsOpen}
+          postId={post.id}
+          myAvatarPhotoId={profile?.avatarPhotoId}
+          onClose={() => setCommentsOpen(false)}
+          onCountChange={(d) => srv.addComments(post.id, d)}
+        />
+      ) : (
+        <CommentsSheet
+          open={commentsOpen}
+          postId={post.id}
+          name={name}
+          founder={founder}
+          avatarPhotoId={profile?.avatarPhotoId}
+          onClose={() => setCommentsOpen(false)}
+        />
+      )}
+      <p className={`muted ${styles.note}`}>{server ? de.reactions.sharedNote : t.reactionsNote}</p>
       {!editing && (
         <div className={styles.formActions}>
           <Button variant="secondary" onClick={() => setEditing(true)}>

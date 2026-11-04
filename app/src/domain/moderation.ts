@@ -4,7 +4,7 @@ import { z } from 'zod';
 /** Gründe – dieselben Werte prüft der Server (reports.reason) */
 export const REPORT_REASONS = ['spam', 'abuse', 'nudity', 'violence', 'privacy', 'other'] as const;
 export type ReportReason = (typeof REPORT_REASONS)[number];
-export type ReportTarget = 'post' | 'spot' | 'user';
+export type ReportTarget = 'post' | 'spot' | 'user' | 'comment';
 
 export interface ReportInput {
   kind: ReportTarget;

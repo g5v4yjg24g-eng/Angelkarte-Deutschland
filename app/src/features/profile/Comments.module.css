@@ -159,3 +159,9 @@
   font-weight: 700;
   cursor: pointer;
 }
+.error {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  color: var(--color-danger);
+  font-weight: 600;
+}

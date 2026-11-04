@@ -16,6 +16,10 @@ import { storedUserId } from '../badges/badgeStore';
 import { Toast } from '../../design/components/Toast';
 import { isHidden } from '../../domain/moderation';
 import { SafetyMenu } from '../moderation/SafetyMenu';
+import type { ServerReactions } from '../../domain/reactions';
+import { ReactionBar } from '../reactions/ReactionBar';
+import { ServerCommentsSheet } from '../reactions/ServerCommentsSheet';
+import { useServerReactions } from '../reactions/useServerReactions';
 import { useHidden } from '../moderation/hiddenStore';
 import styles from './Feed.module.css';
 
@@ -28,7 +32,20 @@ const dateOf = (iso: string) =>
     timeZone: 'Europe/Berlin',
   });
 
-function FeedCard({ post, onDone }: { post: FeedPost; onDone: (message: string) => void }) {
+function FeedCard({
+  post,
+  onDone,
+  reactions,
+  onLike,
+  onCommentCount,
+}: {
+  post: FeedPost;
+  onDone: (message: string) => void;
+  reactions: ServerReactions;
+  onLike: () => void;
+  onCommentCount: (delta: number) => void;
+}) {
+  const [commentsOpen, setCommentsOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const total = post.photoUrls.length;
   return (
@@ -88,6 +105,19 @@ function FeedCard({ post, onDone }: { post: FeedPost; onDone: (message: string) 
           <strong>{post.displayName}</strong> {post.caption}
         </p>
       )}
+      <ReactionBar
+        likeCount={reactions.likeCount}
+        commentCount={reactions.commentCount}
+        liked={reactions.liked}
+        onLike={onLike}
+        onComments={() => setCommentsOpen(true)}
+      />
+      <ServerCommentsSheet
+        open={commentsOpen}
+        postId={post.id}
+        onClose={() => setCommentsOpen(false)}
+        onCountChange={onCommentCount}
+      />
     </article>
   );
 }
@@ -109,6 +139,8 @@ export function FeedPage() {
   const refresh = useCallback(() => setTick((n) => n + 1), []);
   const hidden = useHidden();
   const [toast, setToast] = useState<string>();
+  const ids = state.kind === 'ready' ? state.posts.map((p) => p.id) : [];
+  const reactions = useServerReactions(ids, signedIn);
 
   useEffect(() => {
     if (!signedIn) return;
@@ -176,7 +208,14 @@ export function FeedPage() {
         ) : (
           <div className={styles.list}>
             {visible(state.posts, hidden).map((p) => (
-              <FeedCard key={p.id} post={p} onDone={setToast} />
+              <FeedCard
+                key={p.id}
+                post={p}
+                onDone={setToast}
+                reactions={reactions.get(p.id)}
+                onLike={() => reactions.toggle(p.id)}
+                onCommentCount={(d) => reactions.addComments(p.id, d)}
+              />
             ))}
             {state.more ? (
               <div>
@@ -190,6 +229,7 @@ export function FeedPage() {
           </div>
         ))}
       {toast && <Toast onDismiss={() => setToast(undefined)}>{toast}</Toast>}
+      {reactions.error && <Toast onDismiss={reactions.clearError}>{reactions.error}</Toast>}
     </Page>
   );
 }

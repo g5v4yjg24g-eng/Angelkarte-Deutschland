@@ -37,6 +37,18 @@ async function fakeSupabase(
   const calls: string[] = [];
   const reports: Record<string, unknown>[] = [];
   const blocks: { user_id: string; username: string; display_name: string }[] = [];
+  // Gefällt mir / Kommentare (Wunsch Nutzer 2026-11-04): je Beitrag Anzahl fremder Likes, eigener Like, Kommentare
+  const likes = new Map<string, { others: number; mine: boolean }>();
+  const comments: {
+    id: string;
+    post_id: string;
+    author_id: string;
+    username: string;
+    display_name: string;
+    badges: string[];
+    body: string;
+    created_at: string;
+  }[] = [];
   const storage = new Map<string, number>();
   const posts = new Map<
     string,
@@ -262,6 +274,61 @@ async function fakeSupabase(
       }
       case 'POST /rest/v1/rpc/my_blocks':
         return json(route, blocks);
+      case 'POST /rest/v1/rpc/post_reactions': {
+        const { posts: ids } = req.postDataJSON() as { posts: string[] };
+        return json(
+          route,
+          ids.map((id) => {
+            const l = likes.get(id) ?? { others: 0, mine: false };
+            return {
+              post_id: id,
+              like_count: l.others + (l.mine ? 1 : 0),
+              liked: l.mine,
+              comment_count: comments.filter((c) => c.post_id === id).length,
+            };
+          }),
+        );
+      }
+      case 'POST /rest/v1/rpc/toggle_like': {
+        const { post } = req.postDataJSON() as { post: string };
+        const l = likes.get(post) ?? { others: 0, mine: false };
+        likes.set(post, { ...l, mine: !l.mine });
+        return json(route, !l.mine);
+      }
+      case 'POST /rest/v1/rpc/post_comment_list': {
+        const { post } = req.postDataJSON() as { post: string };
+        const owner = feed.find((x) => (x as { id: string }).id === post) as
+          { author_id: string } | undefined;
+        return json(
+          route,
+          comments
+            .filter((c) => c.post_id === post)
+            .map((c) => ({
+              ...c,
+              can_delete: c.author_id === 'u-1' || owner?.author_id === 'u-1' || !owner,
+            })),
+        );
+      }
+      case 'POST /rest/v1/rpc/add_comment': {
+        const { post, body } = req.postDataJSON() as { post: string; body: string };
+        comments.push({
+          id: `c-${comments.length + 1}`,
+          post_id: post,
+          author_id: 'u-1',
+          username: profile?.username ?? '',
+          display_name: profile?.display_name ?? '',
+          badges,
+          body,
+          created_at: new Date(Date.now() + comments.length).toISOString(),
+        });
+        return json(route, `c-${comments.length}`);
+      }
+      case 'POST /rest/v1/rpc/delete_comment': {
+        const { comment } = req.postDataJSON() as { comment: string };
+        const i = comments.findIndex((c) => c.id === comment);
+        if (i >= 0) comments.splice(i, 1);
+        return route.fulfill({ status: 204 });
+      }
       case 'POST /rest/v1/rpc/delete_my_account':
         profile = null;
         return route.fulfill({ status: 204 });
@@ -276,7 +343,11 @@ async function fakeSupabase(
     spots: { value: spots },
     reports: { value: reports },
     blocks: { value: blocks },
+    likes: { value: likes },
+    comments: { value: comments },
   }) as string[] & {
+    likes: typeof likes;
+    comments: typeof comments;
     reports: typeof reports;
     blocks: typeof blocks;
     storage: typeof storage;
@@ -1005,5 +1076,110 @@ test('MOD-4: geteilten Spot melden – auf der Karte und in der Liste ausgeblend
   expect(calls.reports).toEqual([
     { kind: 'spot', target: 's-anna-1', target_owner: 'u-anna', why: 'privacy', note: null },
   ]);
+  expect(errors).toEqual([]);
+});
+
+test('REACT-2: Feed – Daumen hoch und Kommentare bei Annas Beitrag, Annas Kommentar melden', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }], [FEED_ANNA]);
+  calls.likes.set('post-anna-1', { others: 2, mine: false });
+  calls.comments.push({
+    id: 'c-anna',
+    post_id: 'post-anna-1',
+    author_id: 'u-anna',
+    username: 'anna',
+    display_name: 'Anna',
+    badges: ['founder'],
+    body: 'Bei Sonnenuntergang gefangen',
+    created_at: '2026-11-07T18:05:00Z',
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed');
+  await waitForApp(page);
+  const card = page.getByRole('article', { name: /Beitrag von Anna/ });
+  await expect(card.getByText('2 „Gefällt mir“-Angaben')).toBeVisible();
+  await card.getByRole('button', { name: 'Gefällt mir' }).click();
+  await expect(card.getByRole('button', { name: 'Gefällt mir' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(card.getByText('3 „Gefällt mir“-Angaben')).toBeVisible();
+  await expect.poll(() => calls.likes.get('post-anna-1')?.mine).toBe(true);
+
+  await card.getByRole('button', { name: '1 Kommentar' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Kommentare' });
+  await expect(sheet.getByText('Bei Sonnenuntergang gefangen')).toBeVisible();
+  await expect(sheet.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
+  // fremden Kommentar darf ich nicht löschen, aber melden
+  await expect(sheet.getByRole('button', { name: 'Kommentar löschen' })).toHaveCount(0);
+  await sheet.getByRole('textbox', { name: 'Kommentar hinzufügen' }).fill('Petri Heil!');
+  await sheet.getByRole('button', { name: 'Senden' }).click();
+  await expect(sheet.getByText('Petri Heil!')).toBeVisible();
+  expect(calls.comments.map((c) => c.body)).toEqual(['Bei Sonnenuntergang gefangen', 'Petri Heil!']);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page })
+      .include('dialog[open]')
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  // eigenen Kommentar löschen
+  await sheet.getByRole('button', { name: 'Kommentar löschen' }).click();
+  await expect(sheet.getByText('Petri Heil!')).toHaveCount(0);
+  expect(calls.comments.map((c) => c.body)).toEqual(['Bei Sonnenuntergang gefangen']);
+  // Annas Kommentar melden
+  await sheet.getByRole('button', { name: 'Optionen zu Anna' }).click();
+  await page.getByRole('dialog', { name: 'Optionen' }).getByRole('button', { name: 'Melden' }).click();
+  const report = page.getByRole('dialog', { name: 'Melden' });
+  await expect(report.getByText('Was stimmt mit diesem Kommentar nicht?')).toBeVisible();
+  await report.getByRole('radio', { name: 'Spam oder Werbung' }).check();
+  await report.getByRole('button', { name: 'Meldung senden' }).click();
+  await expect(sheet.getByText('Bei Sonnenuntergang gefangen')).toHaveCount(0);
+  expect(calls.reports).toEqual([
+    { kind: 'comment', target: 'c-anna', target_owner: 'u-anna', why: 'spam', note: null },
+  ]);
+  expect(errors).toEqual([]);
+});
+
+test('REACT-3: eigener geteilter Beitrag – Gefällt mir und Kommentare kommen vom Server', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
+  await page.getByLabel('Text').fill('Barsch am Morgen');
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await expect(page.getByRole('status').filter({ hasText: 'Geteilt' })).toBeVisible();
+  await expect(page.getByText(/sehen alle, die diesen Beitrag sehen dürfen/)).toBeVisible();
+  const postId = [...calls.posts.keys()][0] ?? '';
+  await page.getByRole('button', { name: 'Gefällt mir' }).click();
+  await expect.poll(() => calls.likes.get(postId)?.mine).toBe(true);
+  await page.getByRole('button', { name: 'Kommentieren' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Kommentare' });
+  await sheet.getByRole('textbox', { name: 'Kommentar hinzufügen' }).fill('Schöner Morgen');
+  await sheet.getByRole('button', { name: 'Senden' }).click();
+  await expect(sheet.getByText('Schöner Morgen')).toBeVisible();
+  expect(calls.comments.map((c) => [c.post_id, c.body])).toEqual([[postId, 'Schöner Morgen']]);
+  // lokal wurde nichts gespeichert
+  const local = await page.evaluate(
+    () =>
+      new Promise<number>((resolve, reject) => {
+        const open = indexedDB.open('fangpunkt');
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const req = open.result.transaction('postComments').objectStore('postComments').count();
+          req.onsuccess = () => resolve(req.result);
+        };
+      }),
+  );
+  expect(local).toBe(0);
   expect(errors).toEqual([]);
 });

@@ -20,7 +20,7 @@ const REASONS: Record<string, string> = {
   privacy: 'Daten anderer ohne Zustimmung',
   other: 'Sonstiges',
 };
-const KINDS: Record<string, string> = { post: 'Beitrag', spot: 'Geteilter Spot', user: 'Konto' };
+const KINDS: Record<string, string> = { post: 'Beitrag', spot: 'Geteilter Spot', user: 'Konto', comment: 'Kommentar' };
 
 function secretKey(): string {
   try {
@@ -67,6 +67,9 @@ Deno.serve(async (req) => {
   } else if (report.target_type === 'spot') {
     const { data: spot } = await db.from('shared_spots').select('name, note').eq('id', report.target_id).maybeSingle();
     content = spot ? `Name: ${spot.name ?? '–'}\nNotiz: ${spot.note ?? '–'}` : 'Spot ist nicht mehr geteilt.';
+  } else if (report.target_type === 'comment') {
+    const { data: c } = await db.from('post_comments').select('body, post_id').eq('id', report.target_id).maybeSingle();
+    content = c ? `Kommentar: ${c.body}\nZu Beitrag: ${c.post_id}` : 'Kommentar ist nicht mehr vorhanden.';
   }
 
   const text = [
