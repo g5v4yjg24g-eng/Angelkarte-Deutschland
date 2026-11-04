@@ -115,9 +115,13 @@ test('WAT-1/2: Suche findet den De Wittsee; das Profil zeigt nur belegte Angaben
 
   const profile = page.getByRole('dialog', { name: 'De Wittsee' });
   await expect(profile).toBeVisible({ timeout: 20_000 });
-  await expect(profile.getByText('24,6 ha')).toBeVisible();
+  // Kurzüberblick oben: Art und Lage, Fläche, eigene Orte und Fänge (Wunsch Nutzer 2026-11-05: übersichtlicher)
+  await expect(profile.getByText(/Nettetal · Kreis Viersen · Nordrhein-Westfalen/).first()).toBeVisible();
+  await expect(profile.getByLabel('Überblick').getByText('24,6 ha')).toBeVisible();
+  await expect(profile.getByRole('button', { name: 'Hier markieren' })).toBeVisible();
+  // Einzelheiten zum Aufklappen
+  await profile.getByText('Weitere Angaben').click();
   await expect(profile.getByText('aus der Kartengeometrie berechnet', { exact: false })).toBeVisible();
-  await expect(profile.getByText('Nettetal · Kreis Viersen · Nordrhein-Westfalen')).toBeVisible();
   await expect(profile.getByText(/^Nicht verfügbar/)).toBeVisible();
   await expect(profile.getByText('Keine geprüften Angaben.')).toBeVisible();
   await expect(profile.getByText(/Datenstand 21\.10\.2026/)).toBeVisible();
@@ -172,6 +176,8 @@ test('Antippen: See, Fließgewässer und unbenanntes Gewässer', async ({ page }
   await page.mouse.click(unnamed?.x ?? 0, unnamed?.y ?? 0);
   const d = page.getByRole('dialog', { name: 'Unbenanntes Gewässer' });
   await expect(d).toBeVisible();
+  await expect(d.getByRole('button', { name: 'Hier markieren' })).toBeVisible();
+  await d.getByText('Weitere Angaben').click();
   await expect(d.getByText('Kartengewässer')).toBeVisible();
 });
 
@@ -179,7 +185,9 @@ test('MRK-3: Am Gewässer markieren ordnet den Ort dem Gewässer zu', async ({ p
   await openMapAt(page, 6.2425, 51.3245, 14.3);
   await tapWater(page, 6.2418, 51.3263);
   const profile = page.getByRole('dialog', { name: 'De Wittsee' });
-  await expect(profile.getByText('0 Orte · 0 Einträge im Fangbuch')).toBeVisible();
+  const overview = profile.getByLabel('Überblick');
+  await expect(overview).toContainText(/Deine Orte\s*0/);
+  await expect(overview).toContainText(/Deine Fänge\s*0/);
   await profile.getByRole('button', { name: 'Hier markieren' }).click();
   const neu = page.getByRole('dialog', { name: 'Neu an dieser Stelle' });
   await expect(neu.getByText(/^De Wittsee · /)).toBeVisible();
@@ -192,9 +200,9 @@ test('MRK-3: Am Gewässer markieren ordnet den Ort dem Gewässer zu', async ({ p
 
   // Profil zählt den Ort jetzt mit (Antippen neben dem neuen Symbol)
   await tapWater(page, 6.2405, 51.3285);
-  await expect(
-    page.getByRole('dialog', { name: 'De Wittsee' }).getByText('1 Ort · 0 Einträge im Fangbuch'),
-  ).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'De Wittsee' }).getByLabel('Überblick')).toContainText(
+    /Deine Orte\s*1/,
+  );
 });
 
 test('Ohne Gewässerdaten bleibt die Karte nutzbar; Suche erklärt den Zustand', async ({ page }) => {

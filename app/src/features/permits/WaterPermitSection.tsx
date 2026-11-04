@@ -52,10 +52,10 @@ function OwnLink({ waterId }: { waterId: string }) {
   if (link === undefined && !editing)
     return (
       <div className={styles.own}>
-        <Button variant="secondary" onClick={start}>
+        <Button variant="ghost" onClick={start}>
           {t.addOwn}
         </Button>
-        <p className="muted">{t.ownHint}</p>
+        <p className={`muted ${styles.small}`}>{t.ownHint}</p>
       </div>
     );
   if (editing)
@@ -134,17 +134,17 @@ export function WaterPermitSection({ waterId, state }: { waterId: string; state?
         </div>
       ) : (
         <div className={styles.block}>
-          <span>{t.none}</span>
+          <span className={`muted ${styles.small}`}>{t.none}</span>
           {assocs.length > 0 ? (
             <>
-              <span className="muted">{t.assocIntro}</span>
+              <span className={styles.kicker}>{t.assocIntro}</span>
               {assocs.map((a) => (
                 <div key={a.url} className={styles.assoc}>
                   <strong>{a.name}</strong>
                   <ExternalLink href={a.url}>{t.toAssoc}</ExternalLink>
                 </div>
               ))}
-              <span className="muted">{t.assocHint}</span>
+              <span className={`muted ${styles.small}`}>{t.assocHint}</span>
             </>
           ) : (
             <span className="muted">{state ? t.noAssoc : t.noState}</span>
