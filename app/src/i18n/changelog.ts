@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-12',
+    title: 'Gewässer übersichtlicher',
+    items: [
+      'Gewässer: Antippen zeigt oben das Wichtigste – Art, Lage, Fläche, deine Orte und Fänge und „Hier markieren“. Darunter „Angeln hier“ mit Landesrecht und Gewässerkarte; weitere Angaben zum Aufklappen.',
+    ],
+  },
+  {
     id: '2026-11-11',
     title: 'Wetter im Fangpunkt-Look',
     items: [

@@ -1,11 +1,14 @@
 // Gewässerprofil (PLAN M4): nur belegte Angaben; alles andere ausdrücklich als unbekannt/nicht verfügbar.
+// Aufbau (Wunsch Nutzer 2026-11-05: „unfassbar unübersichtlich“): Art und Lage unter dem Namen, Kurzüberblick in
+// Kacheln, Hauptaktion oben, „Angeln hier“ (Recht + Angelkarte) als Karte, „Weitere Angaben“ zum Aufklappen,
+// Quelle klein am Ende. Keine Angabe ist weggefallen.
 import { Link } from 'react-router';
 import { de } from '../../i18n/de';
-import { Badge } from '../../design/components/Badge';
 import { Button } from '../../design/components/Button';
+import { ChevronRightIcon } from '../../design/icons';
 import { osmUrl, type WaterInfo, type WaterManifest } from '../../domain/water';
 import { WaterPermitSection } from '../permits/WaterPermitSection';
-import styles from './MapView.module.css';
+import styles from './WaterProfile.module.css';
 
 const fmtDate = (iso: string) =>
   iso && !Number.isNaN(Date.parse(iso))
@@ -23,63 +26,92 @@ export function WaterProfile({
   counts: { places: number; catches: number };
   onMarkHere: () => void;
 }) {
-  const state = info.state ? de.water.states[info.state] : undefined;
+  const t = de.water;
+  const state = info.state ? t.states[info.state] : undefined;
   const where = [info.municipality, info.district !== info.municipality ? info.district : undefined, state]
     .filter(Boolean)
     .join(' · ');
   const link = osmUrl(info.wid);
   return (
-    <>
-      <div className={styles.badges}>
-        <Badge tone="info">{de.water.types[info.type]}</Badge>
-        <Badge>{de.water.level1}</Badge>
-      </div>
-      <p className="muted">{de.water.level1Hint}</p>
-      <dl className={styles.profileFacts}>
+    <div className={styles.profile}>
+      <p className={styles.subtitle}>
+        <strong>{t.types[info.type]}</strong>
+        {where && <span className="muted"> · {where}</span>}
+      </p>
+
+      {info.isLine && <p className={`muted ${styles.small}`}>{t.lineHint}</p>}
+
+      <dl className={styles.stats} aria-label={t.statsLabel}>
         {info.areaHa !== undefined && (
-          <>
-            <dt>{de.water.area}</dt>
-            <dd>
-              <span className="tabular">{de.water.areaValue(info.areaHa)}</span>{' '}
-              <span className="muted">({de.water.areaSource})</span>
-            </dd>
-          </>
+          <div className={styles.stat}>
+            <dt>{t.statArea}</dt>
+            <dd className="tabular">{t.areaValue(info.areaHa)}</dd>
+          </div>
         )}
-        <dt>{de.water.location}</dt>
-        <dd>{where || '–'}</dd>
-        <dt>{de.water.depthTitle}</dt>
-        <dd>{de.water.depthNone}</dd>
-        <dt>{de.water.speciesTitle}</dt>
-        <dd>{de.water.speciesNone}</dd>
-        <dt>{de.water.rulesTitle}</dt>
-        <dd>
-          {info.state && state ? (
-            <Link to={`/mehr/recht/${info.state}`}>{de.water.rulesState(state)}</Link>
-          ) : (
-            de.water.rulesNoState
-          )}
-          <br />
-          <span className="muted">{de.water.rulesWater}</span>
-        </dd>
-        <dt>{de.water.yourData}</dt>
-        <dd className="tabular">{de.water.yourDataValue(counts.places, counts.catches)}</dd>
+        <div className={styles.stat}>
+          <dt>{t.statPlaces}</dt>
+          <dd className="tabular">{counts.places}</dd>
+        </div>
+        <div className={styles.stat}>
+          <dt>{t.statCatches}</dt>
+          <dd className="tabular">{counts.catches}</dd>
+        </div>
       </dl>
-      <WaterPermitSection waterId={info.wid} state={info.state} />
-      {info.isLine && <p className="muted">{de.water.lineHint}</p>}
-      <p className="muted">
-        {de.water.sourceTitle}: {de.water.source(fmtDate(manifest?.dataDate ?? ''))}
+
+      <Button onClick={onMarkHere} className={styles.mainAction}>
+        {t.markHere}
+      </Button>
+
+      <section className={styles.card} aria-labelledby="water-fishing">
+        <h3 id="water-fishing" className={styles.cardTitle}>
+          {t.fishingTitle}
+        </h3>
+        {info.state && state ? (
+          <Link to={`/mehr/recht/${info.state}`} className={styles.rowLink}>
+            <span>{t.rulesState(state)}</span>
+            <ChevronRightIcon size={18} aria-hidden="true" />
+          </Link>
+        ) : (
+          <p className={styles.plain}>{t.rulesNoState}</p>
+        )}
+        <p className={`muted ${styles.small}`}>{t.rulesWater}</p>
+        <WaterPermitSection waterId={info.wid} state={info.state} />
+      </section>
+
+      <details className={styles.more}>
+        <summary>{t.moreTitle}</summary>
+        <dl className={styles.facts}>
+          <dt>{t.depthTitle}</dt>
+          <dd>{t.depthNone}</dd>
+          <dt>{t.speciesTitle}</dt>
+          <dd>{t.speciesNone}</dd>
+          {info.areaHa !== undefined && (
+            <>
+              <dt>{t.area}</dt>
+              <dd>
+                <span className="tabular">{t.areaValue(info.areaHa)}</span>{' '}
+                <span className="muted">({t.areaSource})</span>
+              </dd>
+            </>
+          )}
+          <dt>{t.location}</dt>
+          <dd>{where || '–'}</dd>
+          <dt>{t.level1}</dt>
+          <dd className="muted">{t.level1Hint}</dd>
+        </dl>
+      </details>
+
+      <p className={`muted ${styles.source}`}>
+        {t.sourceTitle}: {t.source(fmtDate(manifest?.dataDate ?? ''))}
         {link && (
           <>
             {' · '}
             <a href={link} target="_blank" rel="noreferrer">
-              {de.water.osmLink}
+              {t.osmLink}
             </a>
           </>
         )}
       </p>
-      <div className={styles.formActions}>
-        <Button onClick={onMarkHere}>{de.water.markHere}</Button>
-      </div>
-    </>
+    </div>
   );
 }

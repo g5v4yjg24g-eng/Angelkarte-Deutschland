@@ -1557,6 +1557,12 @@ export const de = {
       other: 'Gewässer (Art unbekannt)',
     },
     level1: 'Kartengewässer',
+    statsLabel: 'Überblick',
+    statArea: 'Fläche',
+    statPlaces: 'Deine Orte',
+    statCatches: 'Deine Fänge',
+    fishingTitle: 'Angeln hier',
+    moreTitle: 'Weitere Angaben',
     level1Hint: 'Lage und Umriss aus OpenStreetMap. Weitere geprüfte Angaben liegen noch nicht vor.',
     area: 'Fläche',
     areaValue: (ha: number) =>
@@ -1573,9 +1579,6 @@ export const de = {
     rulesNoState: 'Bundesland unbekannt.',
     rulesWater:
       'Wer hier angeln darf und welche Gewässerregeln gelten, ist unbekannt – frag den Verein bzw. Fischereiberechtigten.',
-    yourData: 'Deine Daten hier',
-    yourDataValue: (places: number, catches: number) =>
-      `${places === 1 ? '1 Ort' : `${places} Orte`} · ${catches === 1 ? '1 Eintrag im Fangbuch' : `${catches} Einträge im Fangbuch`}`,
     sourceTitle: 'Quelle',
     source: (date: string) => `© OpenStreetMap-Mitwirkende (ODbL) · Datenstand ${date}`,
     osmLink: 'Objekt bei OpenStreetMap ansehen',
