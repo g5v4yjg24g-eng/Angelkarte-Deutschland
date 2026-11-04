@@ -18,6 +18,12 @@ on:
         options:
           - macos-15-intel
           - macos-15
+      # Erinnerung (Wunsch Nutzer 2026-11-04): vor dem nächsten Upload muss der Moderationsbereich gebaut sein
+      # (MODERATION_PLAN.md). Ist er fertig, diese Abfrage und den Schritt „Moderationsbereich?“ entfernen.
+      moderation_ready:
+        description: 'Moderationsbereich (Meldungen ansehen, Inhalte löschen, Sperren) ist gebaut – siehe MODERATION_PLAN.md'
+        type: boolean
+        default: false
 
 concurrency:
   group: ios
@@ -36,6 +42,11 @@ jobs:
       ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
       ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
     steps:
+      - name: Moderationsbereich?
+        if: ${{ !inputs.moderation_ready }}
+        run: |
+          echo "::error::Erinnerung: Vor dem nächsten Upload zu Apple fehlt noch der Moderationsbereich (MODERATION_PLAN.md). Erst bauen – oder beim Starten bewusst das Häkchen setzen."
+          exit 1
       - name: Secrets prüfen
         run: |
           missing=""
