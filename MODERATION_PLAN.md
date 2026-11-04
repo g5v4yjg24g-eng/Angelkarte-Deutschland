@@ -32,6 +32,12 @@ Apple erwartet, dass auf Meldungen reagiert werden kann (Inhalte entfernen, Nutz
 7. **Tests:** Rechte (Nicht-Moderator kommt nirgends ran, auch nicht per RPC), Sperre wirkt überall, E2E für
    Liste → Meldung → Inhalt löschen → Sperren → Aufheben; 390 px, hell/dunkel.
 
-## Offene Fragen an den Nutzer (beim Bau klären)
-- Sperre zeitlich begrenzt (z. B. 7 Tage) und/oder dauerhaft?
-- Soll die gemeldete Person über eine Sperre informiert werden (Mail)?
+## Entscheidungen Nutzer (2026-11-04)
+- **Sperren zeitlich begrenzt und dauerhaft:** Auswahl beim Sperren (z. B. 1 Tag, 7 Tage, 30 Tage, dauerhaft);
+  befristete Sperren enden von selbst (`until`), Anzeige der Restdauer im Moderationsbereich.
+- **Mail an die gesperrte Person:** beim Sperren (mit Dauer und Grund) und beim Aufheben – über das vorhandene
+  Postfach noreply@fangpunkt.com (Edge Function wie `notify-report`, Vorlage in Deutsch, Kontakt
+  moderation@fangpunkt.com für Einspruch).
+- **Sperre rückgängig machen:** „Sperre aufheben“ jederzeit (z. B. bei Versehen) – stellt Anmeldung und
+  Sichtbarkeit der Inhalte sofort wieder her. Deshalb **beim Sperren nichts löschen**, Inhalte nur ausblenden;
+  Löschen bleibt eine eigene, bewusste Aktion („Inhalt löschen“). Jede Sperre/Aufhebung steht im Protokoll.
