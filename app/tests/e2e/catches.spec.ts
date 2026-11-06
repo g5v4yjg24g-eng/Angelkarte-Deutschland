@@ -8,6 +8,7 @@ import {
   useLocalExternals,
   waitForApp,
   startCatchAt,
+  pagesLoaded,
 } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
@@ -255,6 +256,8 @@ test('„Fang erfassen" am Gewässer ordnet den See zu; Filter im Fangbuch', asy
 test('Ohne Netz erfassen: Eintrag wird gespeichert und erscheint im Fangbuch', async ({ page, context }) => {
   await openMap(page);
   const FIELD = await dryPoint(page);
+  // erst offline gehen, wenn die App alle Seiten im Hintergrund nachgeladen hat
+  await pagesLoaded(page);
   await context.setOffline(true);
   const form = await newCatchAt(page, FIELD.lng, FIELD.lat);
   await form.getByLabel('Fischart').selectOption({ label: 'Flussbarsch' });

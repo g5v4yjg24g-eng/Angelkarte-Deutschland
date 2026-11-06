@@ -157,6 +157,8 @@ function useNavLens(paths: readonly string[]) {
 declare global {
   interface Window {
     __fangpunktAppReady?: () => void;
+    /** alle Seiten im Hintergrund nachgeladen (Test-Signal, siehe app/router.tsx) */
+    __fangpunktPagesLoaded?: boolean;
   }
 }
 
