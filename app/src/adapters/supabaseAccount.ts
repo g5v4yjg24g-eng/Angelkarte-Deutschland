@@ -1,7 +1,8 @@
 // Supabase (Auth + Postgres, Region EU/Irland): freiwilliges Konto. Der Client wird erst geladen, wenn das Konto
 // gebraucht wird (eigener Chunk); ohne gespeicherte Anmeldung sendet die App nichts an Supabase.
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
-// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen), *_push.sql (Geräte und Einstellungen für Mitteilungen), *_moderators.sql (Moderationsbereich, jede Funktion prüft is_moderator), *_avatars.sql (Profilbild im Speicher „avatars“, nur über Funktionen), *_post_saves.sql (Lesezeichen), *_discover.sql (Entdecken, höchstens 20 neue Beiträge in 24 h). Nur der öffentliche Schlüssel steht in der App.
+// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen), *_push.sql (Geräte und Einstellungen für Mitteilungen), *_moderators.sql (Moderationsbereich, jede Funktion prüft is_moderator), *_avatars.sql (Profilbild im Speicher „avatars“, nur über Funktionen), *_post_saves.sql (Lesezeichen), *_discover.sql (Entdecken, höchstens 20 neue Beiträge in 24 h), *_group_sessions.sql (gemeinsame Sessions, nur über Funktionen). Nur der öffentliche Schlüssel steht in der App.
+import { parseGroupMembers, parseGroupSessions } from '../domain/groupSessions';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
@@ -279,6 +280,49 @@ export function supabaseAccount(
       const { data, error } = await c.rpc('discover_feed', { before: before ?? null, max_rows: FEED_PAGE });
       if (error) fail(error);
       return withPhotoUrls(c, parseFeedRows(data as unknown[] | null));
+    },
+    async createGroupSession(input) {
+      const { data, error } = await (
+        await get()
+      ).rpc('create_group_session', {
+        title: input.title ?? null,
+        water_name: input.waterName ?? null,
+      });
+      if (error) fail(error);
+      if (typeof data !== 'string') throw new AccountError('Keine Session-ID');
+      return data;
+    },
+    async inviteToGroupSession(groupId, userIds) {
+      const { data, error } = await (
+        await get()
+      ).rpc('invite_to_group_session', {
+        session: groupId,
+        users: userIds.slice(0, 20),
+      });
+      if (error) fail(error);
+      return typeof data === 'number' ? data : 0;
+    },
+    async respondGroupInvite(groupId, accept) {
+      const { error } = await (await get()).rpc('respond_group_invite', { session: groupId, accept });
+      if (error) fail(error);
+    },
+    async leaveGroupSession(groupId) {
+      const { error } = await (await get()).rpc('leave_group_session', { session: groupId });
+      if (error) fail(error);
+    },
+    async endGroupSession(groupId) {
+      const { error } = await (await get()).rpc('end_group_session', { session: groupId });
+      if (error) fail(error);
+    },
+    async myGroupSessions() {
+      const { data, error } = await (await get()).rpc('my_group_sessions');
+      if (error) fail(error);
+      return parseGroupSessions(data as unknown[] | null);
+    },
+    async groupSessionMembers(groupId) {
+      const { data, error } = await (await get()).rpc('group_session_members_list', { session: groupId });
+      if (error) fail(error);
+      return parseGroupMembers(data as unknown[] | null);
     },
     async sharedSpots() {
       const { data, error } = await (await get()).rpc('my_shared_spots');

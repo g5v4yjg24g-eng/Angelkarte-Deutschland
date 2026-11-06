@@ -30,6 +30,8 @@ import { formatDateTime } from '../../lib/storage';
 import { useNow } from '../../lib/useNow';
 import { catchTitle } from '../catches/catchText';
 import { TrackingStatus } from './tracking/TrackingStatus';
+import { GroupSection } from './group/GroupSection';
+import { useProviders } from '../../ports/providersContext';
 import styles from './Sessions.module.css';
 
 const t = de.sessions;
@@ -196,6 +198,7 @@ export function SessionDetailPage() {
   const [message, setMessage] = useState<string>();
   const [error, setError] = useState<string>();
   const [keepRunning, setKeepRunning] = useState(false);
+  const { account } = useProviders();
 
   if (!data)
     return (
@@ -239,7 +242,11 @@ export function SessionDetailPage() {
             <CorrectEnd
               session={s}
               suggested={suggestedEnd(s, data.catches)}
-              onDone={(ended) => navigate(`/fangbuch/sessions/${ended.id}/rueckblick`)}
+              onDone={(ended) => {
+                if (ended.groupId && account.enabled)
+                  account.endGroupSession(ended.groupId).catch(() => undefined);
+                navigate(`/fangbuch/sessions/${ended.id}/rueckblick`);
+              }}
             />
             <div>
               <Button variant="secondary" onClick={() => setKeepRunning(true)}>
@@ -294,6 +301,12 @@ export function SessionDetailPage() {
               onClick={() =>
                 // Erst speichern, dann den Rückblick öffnen (er liest nur gespeicherte Daten)
                 void endSession(s.id)
+                  .then((ended) => {
+                    // Gastgeber beendet damit auch die gemeinsame Session (für andere: Server meldet not_found)
+                    if (ended.groupId && account.enabled)
+                      account.endGroupSession(ended.groupId).catch(() => undefined);
+                    return ended;
+                  })
                   .then((ended) => navigate(`/fangbuch/sessions/${ended.id}/rueckblick`))
                   .catch((err: unknown) => setError(userMessage(err)))
               }
@@ -303,6 +316,7 @@ export function SessionDetailPage() {
           </div>
         )}
         {running && <TrackingStatus sessionId={s.id} />}
+        <GroupSection session={s} />
         {!running && (
           <div className={styles.actions}>
             <Button onClick={() => navigate(`/fangbuch/sessions/${s.id}/rueckblick`)}>{t.reviewOpen}</Button>

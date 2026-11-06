@@ -160,6 +160,8 @@ export const SessionSchema = MetaSchema.extend({
   /** Pausen (aktive Angelzeit); `to` fehlt nur bei der laufenden Pause einer laufenden Session */
   pauses: z.array(z.object({ from: isoDateTime, to: isoDateTime.optional() })).optional(),
   defaults: z.object({ method: MethodSchema.optional(), baitPresetId: id.optional() }).optional(),
+  /** Gemeinsame Session auf dem Server (Paket 8a); fehlt = nur eigene Session */
+  groupId: id.optional(),
   legacy: LegacySchema.optional(),
 })
   .refine((s) => !s.endAt || Date.parse(s.endAt) >= Date.parse(s.startAt), {

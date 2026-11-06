@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-24',
+    title: 'Gemeinsam angeln',
+    items: [
+      'Sessions: Lade während einer Session Freunde ein – höchstens 10 Personen sind gemeinsam dabei. Eingeladene sagen unter Fangbuch → Sessions zu oder ab und bekommen eine eigene Session.',
+      'Geteilt wird nur, wer dabei ist (und auf Wunsch der Gewässername). Positionen, Routen und Fänge bleiben auf deinem Gerät.',
+    ],
+  },
+  {
     id: '2026-11-23',
     title: 'Entdecken',
     items: [

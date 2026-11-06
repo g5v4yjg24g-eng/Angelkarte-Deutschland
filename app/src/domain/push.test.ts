@@ -8,7 +8,11 @@ describe('Push-Mitteilungen (PUSH-1)', () => {
       likes: false,
       comments: true,
       spots: false,
+      sessions: true, // älterer Server ohne Spalte
     });
+    expect(
+      parsePushPrefs([{ friends: true, likes: true, comments: true, spots: true, sessions: false }]).sessions,
+    ).toBe(false);
     expect(parsePushPrefs([])).toEqual(DEFAULT_PUSH_PREFS);
     expect(parsePushPrefs([{ friends: 'ja' }])).toEqual(DEFAULT_PUSH_PREFS);
     expect(parsePushPrefs(null)).toEqual(DEFAULT_PUSH_PREFS);
@@ -17,6 +21,7 @@ describe('Push-Mitteilungen (PUSH-1)', () => {
   it('springt beim Antippen nur in bekannte Bereiche der App', () => {
     expect(pushTarget({ path: '/profil/freunde' })).toBe('/profil/freunde');
     expect(pushTarget({ path: '/profil/spots' })).toBe('/profil/spots');
+    expect(pushTarget({ path: '/fangbuch/sessions' })).toBe('/fangbuch/sessions');
     expect(pushTarget({ path: '/profil/beitrag/2648da34-224f-4ce7-bcb3-e530f11d5b22' })).toBe(
       '/profil/beitrag/2648da34-224f-4ce7-bcb3-e530f11d5b22',
     );
