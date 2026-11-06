@@ -734,7 +734,7 @@ test('FC-6: Tag antippen öffnet die Wetterlage – Datumsleiste, Temperatur tat
   await expect(sheet.getByText(/Luftdruck fällt leicht \(−2,\d hPa\)/)).toBeVisible();
   await expect(sheet.getByText('Mäßiger Wind (4 m/s)')).toBeVisible();
   await expect(sheet.getByText(/Dämmerung, oft eine gute Zeit: 07:00–09:00 · 17:00–19:00/)).toBeVisible();
-  await expect(sheet.getByText(/keine Fanggarantie/)).toBeVisible();
+  await expect(sheet.getByText(/Punkte · Faustregel/)).toBeVisible();
   // Solunar-Zeiten des Tages (offline berechnet) mit Theorie-Hinweis
   await expect(sheet.getByRole('heading', { name: 'Solunar-Zeiten (Theorie)' })).toBeVisible();
   await expect(sheet.getByText(/% beleuchtet/)).toBeVisible();

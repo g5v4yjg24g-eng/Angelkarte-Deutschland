@@ -8,7 +8,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     title: 'Beißprognose',
     items: [
       'Wetter: Jeder Tag der Vorhersage zeigt jetzt „günstig“, „mittel“ oder „schwierig“. Im Tagesdetail stehen die Gründe – Luftdruck-Verlauf, Wind, Bewölkung, Regen, Temperatur – und die Dämmerungszeiten.',
-      'Das sind Faustregeln aus der Anglerpraxis, keine Fanggarantie. Bei Gewitter oder Sturm gibt es zusätzlich einen Sicherheitshinweis.',
+      'Das ist eine Faustregel, keine Fanggarantie. Bei Gewitter oder Sturm gibt es zusätzlich einen Sicherheitshinweis.',
     ],
   },
   {

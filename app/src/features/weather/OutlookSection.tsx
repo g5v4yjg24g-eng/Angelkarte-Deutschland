@@ -1,5 +1,6 @@
 // Beißprognose im Tagesdetail (Paket 5, Regeln vom Nutzer freigegeben 2026-11-06): Einordnung, Gründe aus den
-// Wetterdaten, Dämmerung, Sicherheitshinweis, fester Hinweis „Faustregeln – keine Fanggarantie“.
+// Wetterdaten, Dämmerung, Sicherheitshinweis. Kennzeichnung nur kurz als „Faustregel“ (Wunsch Nutzer 2026-11-06:
+// langer Erklärungstext zu unübersichtlich).
 import { de } from '../../i18n/de';
 import { Notice } from '../../design/components/Notice';
 import type { DaySummary } from '../../domain/forecast';
@@ -48,7 +49,9 @@ export function OutlookSection({ day }: { day: DaySummary }) {
         <>
           <p className={styles.outlookHead}>
             <OutlookChip level={o.level} />
-            <span className="muted">{t.score(o.score)}</span>
+            <span className="muted">
+              {t.score(o.score)} · {t.ruleOfThumb}
+            </span>
           </p>
           <ul className={styles.reasons}>
             {o.reasons.map((r) => {
@@ -76,7 +79,6 @@ export function OutlookSection({ day }: { day: DaySummary }) {
       {(o.safety.thunder || o.safety.storm) && (
         <Notice tone="warning">{o.safety.thunder ? t.safetyThunder : t.safetyStorm}</Notice>
       )}
-      <p className="muted">{t.disclaimer}</p>
     </section>
   );
 }

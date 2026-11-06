@@ -1843,8 +1843,7 @@ export const de = {
     safetyThunder:
       'Gewitter möglich: Mit Rute und Carbon nicht am Wasser bleiben – bei Donner sofort weg vom Ufer.',
     safetyStorm: 'Starker Wind oder Sturmböen: Vorsicht unter Bäumen und auf dem Boot.',
-    disclaimer:
-      'Faustregeln aus der Anglerpraxis, berechnet aus der Wettervorhersage (Luftdruck, Wind, Bewölkung, Regen, Temperatur) – keine Fanggarantie. Wassertemperatur und Mond fließen nicht ein.',
+    ruleOfThumb: 'Faustregel',
   },
   forecast: {
     title: 'Wetter',
