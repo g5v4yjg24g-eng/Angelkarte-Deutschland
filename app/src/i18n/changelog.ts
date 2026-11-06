@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-20',
+    title: 'Erfolge',
+    items: [
+      'Profil: Neue Erfolge in Bronze, Silber und Gold – für Fänge, Fischarten, Gewässer, Sessions, Hecht, Zander und Großfisch, dazu „Erster Fang“. Unter „Alle ansehen“ siehst du, was zur nächsten Stufe fehlt.',
+      'Berechnet aus deinem Fangbuch auf dem Gerät. Eine erreichte Stufe bleibt, auch wenn du später Einträge löschst.',
+    ],
+  },
+  {
     id: '2026-11-19',
     title: 'Beißprognose',
     items: [
