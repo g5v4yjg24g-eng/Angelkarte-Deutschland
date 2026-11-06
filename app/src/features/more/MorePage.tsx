@@ -1,20 +1,26 @@
+// Mehr: in Gruppen geordnet (Wunsch Nutzer 2026-11-06, „weniger unübersichtlich, nicht mehr Ebenen“).
+// Moderation steht nur für Moderatoren oben.
 import { de } from '../../i18n/de';
-import { Page } from '../../design/components/Page';
+import { Page, Section } from '../../design/components/Page';
 import { ListLink } from '../../design/components/ListLink';
 import {
-  ShieldIcon,
+  CalendarIcon,
   DatabaseIcon,
+  FeedIcon,
   HookIcon,
   InfoIcon,
   KnotIcon,
   LockIcon,
   ParagraphIcon,
+  ShieldIcon,
   SlidersIcon,
   UserIcon,
 } from '../../design/icons';
 import { ACCOUNT_STORAGE_KEY } from '../../ports/account';
 import { useIsModerator } from '../moderation/admin/useIsModerator';
 import styles from '../../design/components/Page.module.css';
+
+const t = de.more;
 
 /** Nur prüfen, ob eine Anmeldung gespeichert ist – ohne den Konto-Anbieter zu laden */
 function hasStoredSession(): boolean {
@@ -28,7 +34,7 @@ function hasStoredSession(): boolean {
 export function MorePage() {
   const moderator = useIsModerator();
   return (
-    <Page title={de.more.title}>
+    <Page title={t.title}>
       {moderator && (
         <div className={styles.card}>
           <ListLink
@@ -39,40 +45,52 @@ export function MorePage() {
           />
         </div>
       )}
-      <div className={styles.card}>
-        <ListLink
-          to="/mehr/konto"
-          icon={<UserIcon />}
-          title={de.more.account}
-          hint={hasStoredSession() ? de.more.accountHintSignedIn : de.more.accountHint}
-        />
-      </div>
-      <div className={styles.card}>
-        <ListLink
-          to="/mehr/recht"
-          icon={<ParagraphIcon />}
-          title={de.more.regulations}
-          hint={de.more.regulationsHint}
-        />
-        <ListLink to="/mehr/koeder" icon={<HookIcon />} title={de.more.baits} hint={de.more.baitsHint} />
-        <ListLink to="/mehr/knoten" icon={<KnotIcon />} title={de.more.knots} hint={de.more.knotsHint} />
-        <ListLink to="/mehr/daten" icon={<DatabaseIcon />} title={de.more.backup} hint={de.more.backupHint} />
-      </div>
-      <div className={styles.card}>
-        <ListLink
-          to="/mehr/einstellungen"
-          icon={<SlidersIcon />}
-          title={de.more.settings}
-          hint={de.more.settingsHint}
-        />
-        <ListLink
-          to="/mehr/datenschutz"
-          icon={<LockIcon />}
-          title={de.more.privacy}
-          hint={de.more.privacyHint}
-        />
-        <ListLink to="/mehr/info" icon={<InfoIcon />} title={de.more.about} hint={de.more.aboutHint} />
-      </div>
+      <Section title={t.groupPlan}>
+        <div className={styles.card}>
+          <ListLink to="/wetter/kalender" icon={<CalendarIcon />} title={t.calendar} hint={t.calendarHint} />
+          <ListLink to="/mehr/knoten" icon={<KnotIcon />} title={t.knots} hint={t.knotsHint} />
+          <ListLink to="/mehr/koeder" icon={<HookIcon />} title={t.baits} hint={t.baitsHint} />
+        </div>
+      </Section>
+      <Section title={t.groupRules}>
+        <div className={styles.card}>
+          <ListLink
+            to="/mehr/recht"
+            icon={<ParagraphIcon />}
+            title={t.regulations}
+            hint={t.regulationsHint}
+          />
+          <ListLink
+            to="/mehr/regeln"
+            icon={<FeedIcon />}
+            title={t.communityRules}
+            hint={t.communityRulesHint}
+          />
+        </div>
+      </Section>
+      <Section title={t.groupAccount}>
+        <div className={styles.card}>
+          <ListLink
+            to="/mehr/konto"
+            icon={<UserIcon />}
+            title={t.account}
+            hint={hasStoredSession() ? t.accountHintSignedIn : t.accountHint}
+          />
+          <ListLink to="/mehr/daten" icon={<DatabaseIcon />} title={t.backup} hint={t.backupHint} />
+        </div>
+      </Section>
+      <Section title={t.groupApp}>
+        <div className={styles.card}>
+          <ListLink
+            to="/mehr/einstellungen"
+            icon={<SlidersIcon />}
+            title={t.settings}
+            hint={t.settingsHint}
+          />
+          <ListLink to="/mehr/datenschutz" icon={<LockIcon />} title={t.privacy} hint={t.privacyHint} />
+          <ListLink to="/mehr/info" icon={<InfoIcon />} title={t.about} hint={t.aboutHint} />
+        </div>
+      </Section>
     </Page>
   );
 }

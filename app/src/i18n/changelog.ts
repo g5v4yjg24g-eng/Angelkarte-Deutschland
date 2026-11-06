@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-17',
+    title: '„Mehr“ übersichtlicher',
+    items: [
+      'Mehr: Die Bereiche stehen jetzt in Gruppen – Planen & Lernen, Recht & Regeln, Konto & Daten, App. Neu dort: der Angelkalender und die Regeln der Community.',
+    ],
+  },
+  {
     id: '2026-11-16',
     title: 'Hecht beim Doppeltipp',
     items: [

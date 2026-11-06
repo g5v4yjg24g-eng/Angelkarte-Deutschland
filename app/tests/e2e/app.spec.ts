@@ -170,3 +170,32 @@ test('NAV-2: Leiste ist durchsichtig (Inhalt scheint durch), bei „Transparenz 
     });
   expect(await alpha()).toBeLessThan(0.5);
 });
+
+test('MORE-1: Mehr ist in Gruppen geordnet – jede Gruppe benannt, alle Bereiche erreichbar', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/mehr');
+  await waitForApp(page);
+  const groups = {
+    'Planen & Lernen': ['Angelkalender', 'Knoten, Montagen & Köderführung', 'Köder-Favoriten'],
+    'Recht & Regeln': ['Angelrecht der Länder', 'Regeln der Community'],
+    'Konto & Daten': ['Konto', 'Daten & Sicherung'],
+    App: ['Einstellungen', 'Datenschutz', 'Über Fangpunkt & Quellen'],
+  };
+  for (const [name, links] of Object.entries(groups)) {
+    const region = page.getByRole('region', { name });
+    for (const l of links)
+      await expect(
+        region.getByRole('link', { name: new RegExp(`^${l.replace(/[&()]/g, '\\$&')}`) }),
+      ).toBeVisible();
+  }
+  await page.getByRole('link', { name: /^Angelkalender/ }).click();
+  await expect(page).toHaveURL(/\/wetter\/kalender$/);
+  await page.goto('/mehr');
+  await page.getByRole('link', { name: /^Regeln der Community/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Regeln der Community' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});
