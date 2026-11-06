@@ -24,6 +24,7 @@ import { useHidden } from '../moderation/hiddenStore';
 import { useAvatarUrls } from '../profile/avatarUrls';
 import { usePikeLike } from '../reactions/usePikeLike';
 import { useHaptics } from '../haptics/useHaptics';
+import { CatchTag } from '../profile/CatchInfoFields';
 import styles from './Feed.module.css';
 
 const t = de.feed;
@@ -126,6 +127,7 @@ function FeedCard({
           ))}
         </div>
       )}
+      <CatchTag speciesId={post.speciesId} lengthCm={post.lengthCm} />
       {post.caption && (
         <p className={styles.caption}>
           <strong>{post.displayName}</strong> {post.caption}

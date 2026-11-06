@@ -46,6 +46,8 @@ export async function syncPosts(
         visibility: p.visibility ?? 'friends',
         createdAt: p.createdAt,
         photos,
+        speciesId: p.speciesId,
+        lengthCm: p.lengthCm,
       });
       // hochgeladen ist der Stand `p.rev`; spätere Änderungen zieht der nächste Lauf nach
       await db.posts
@@ -60,7 +62,12 @@ export async function syncPosts(
     });
   for (const p of plan.update)
     await step(async () => {
-      await account.updateSharedPost(p.id, { caption: p.caption, visibility: p.visibility ?? 'friends' });
+      await account.updateSharedPost(p.id, {
+        caption: p.caption,
+        visibility: p.visibility ?? 'friends',
+        speciesId: p.speciesId,
+        lengthCm: p.lengthCm,
+      });
       await db.posts
         .where('id')
         .equals(p.id)

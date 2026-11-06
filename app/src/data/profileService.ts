@@ -76,6 +76,8 @@ export async function createPost(
     caption?: string | undefined;
     catchId?: string | undefined;
     visibility?: Post['visibility'];
+    speciesId?: string | undefined;
+    lengthCm?: number | undefined;
     /** `pending`: mit dem Konto teilen (Etappe 2) */
     share?: 'pending';
     photos: NewPhoto[];
@@ -109,6 +111,8 @@ export async function createPost(
       ...(args.caption ? { caption: args.caption } : {}),
       ...(args.catchId ? { catchId: args.catchId } : {}),
       ...(args.visibility ? { visibility: args.visibility } : {}),
+      ...(args.speciesId ? { speciesId: args.speciesId } : {}),
+      ...(args.lengthCm !== undefined ? { lengthCm: args.lengthCm } : {}),
       ...(args.share ? { share: args.share } : {}),
     });
   });
@@ -116,9 +120,20 @@ export async function createPost(
 
 export const updatePost = (
   id: string,
-  changes: { caption: string; visibility: NonNullable<Post['visibility']> },
+  changes: {
+    caption: string;
+    visibility: NonNullable<Post['visibility']>;
+    speciesId?: string | undefined;
+    lengthCm?: number | undefined;
+  },
   db: FangpunktDB = getDb(),
-) => repo('posts', db).update(id, { caption: changes.caption || undefined, visibility: changes.visibility });
+) =>
+  repo('posts', db).update(id, {
+    caption: changes.caption || undefined,
+    visibility: changes.visibility,
+    speciesId: changes.speciesId || undefined,
+    lengthCm: changes.lengthCm,
+  });
 
 /** „Gefällt mir“ setzen oder zurücknehmen; liefert den neuen Stand. */
 export async function toggleLike(

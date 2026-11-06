@@ -116,6 +116,14 @@ test('PRF-5: Beitrag aus einem Fang – Fangfoto wird übernommen, Beitrag verwe
   await startCatchAt(page);
   const form = page.getByRole('dialog', { name: 'Fang oder Kontakt erfassen' });
   await form.getByLabel('Fischart').selectOption({ label: 'Hecht' });
+  // Länge im Formular (Details aufklappen, falls nötig)
+  const len = form.getByLabel(/^Länge/);
+  if (!(await len.isVisible()))
+    await form
+      .getByText(/Mehr Angaben|Details/)
+      .first()
+      .click();
+  await len.fill('68');
   await form.getByLabel('Aus Galerie').setInputFiles(await jpeg(page, '#2d9cdb'));
   await expect(form.getByRole('img', { name: 'Foto 1' })).toBeVisible();
   await form.getByRole('button', { name: 'Speichern' }).click();
@@ -131,9 +139,20 @@ test('PRF-5: Beitrag aus einem Fang – Fangfoto wird übernommen, Beitrag verwe
     'aria-pressed',
     'true',
   );
+  // Fischart und Länge sind aus dem Fang vorausgefüllt (freiwillig, änderbar)
+  const info = page.getByRole('group', { name: 'Angaben zum Fang (freiwillig)' });
+  await expect(info.getByLabel('Fischart')).toHaveValue('pike');
+  await expect(info.getByLabel('Länge in cm')).toHaveValue('68');
+  await info.getByLabel('Länge in cm').fill('300');
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await expect(
+    page.getByText('Bitte eine Länge zwischen 1 und 250 cm eingeben – oder das Feld leer lassen.'),
+  ).toBeVisible();
+  await info.getByLabel('Länge in cm').fill('68,5');
   await page.getByRole('button', { name: 'Posten' }).click();
 
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await expect(page.getByText('Hecht · 68,5 cm')).toBeVisible();
   await page.getByRole('link', { name: /^Zum Fang: Fang · Hecht/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Fang' })).toBeVisible();
 
@@ -153,6 +172,8 @@ test('PRF-6: Gefällt mir per Daumen und Doppeltipp, Kommentare im Fenster von u
   await waitForApp(page);
   await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page, '#2d9cdb'));
   await expect(page.getByRole('img', { name: 'Foto 1' })).toBeVisible();
+  // das Formular ist länger geworden (Fischart/Länge): erst in die Mitte scrollen, sonst liegt die Leiste darüber
+  await page.getByRole('radio', { name: 'Alle' }).evaluate((el) => el.scrollIntoView({ block: 'center' }));
   await page.getByRole('radio', { name: 'Alle' }).check({ force: true });
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();

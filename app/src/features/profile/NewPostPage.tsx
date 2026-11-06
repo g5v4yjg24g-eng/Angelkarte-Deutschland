@@ -15,7 +15,15 @@ import { getDb } from '../../data/db';
 import { createPost } from '../../data/profileService';
 import { storedUserId } from '../badges/badgeStore';
 import { newId } from '../../domain/id';
-import { canPublish, MAX_PHOTOS_PER_POST, photoRoom, POST_CAPTION_MAX } from '../../domain/profile';
+import {
+  canPublish,
+  lengthText,
+  MAX_PHOTOS_PER_POST,
+  parsePostLength,
+  photoRoom,
+  POST_CAPTION_MAX,
+} from '../../domain/profile';
+import { CatchInfoFields } from './CatchInfoFields';
 import { processPhoto, type ProcessedPhoto } from '../../lib/processPhoto';
 import { PhotoThumb } from '../catches/CatchPhotos';
 import { catchSummary } from './catchSummary';
@@ -36,6 +44,9 @@ export function NewPostPage() {
   const [visibility, setVisibility] = useState<NonNullable<Post['visibility']>>('friends');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
+  // Fischart/Länge: folgen dem gewählten Fang, bis sie selbst geändert werden
+  const [info, setInfo] = useState<{ species: string; length: string }>();
+  const [lengthError, setLengthError] = useState<string>();
 
   const catches = useLiveQuery(
     async () => (await getDb().catches.orderBy('at').reverse().toArray()).filter((c) => !c.deletedAt),
@@ -44,6 +55,8 @@ export function NewPostPage() {
   const chosen = catches?.find((c) => c.id === catchId);
   const catchPhotos = usePhotos(chosen?.photoIds);
   const takenFromCatch = (catchPhotos ?? []).filter((p) => !skipped.includes(p.id));
+  const species = info?.species ?? chosen?.speciesId ?? '';
+  const length = info?.length ?? lengthText(chosen?.lengthCm);
   const count = takenFromCatch.length + pending.length;
   const options = useMemo(
     () => [
@@ -72,12 +85,17 @@ export function NewPostPage() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (!canPublish(count)) return setError(count ? t.photoLimit(MAX_PHOTOS_PER_POST) : t.needPhoto);
+    const lengthCm = parsePostLength(length);
+    if (lengthCm === 'invalid') return setLengthError(t.catchInfo.lengthInvalid);
+    setLengthError(undefined);
     setBusy(true);
     try {
       await createPost({
         caption: caption.trim(),
         catchId: chosen?.id,
         visibility,
+        speciesId: species || undefined,
+        lengthCm,
         // angemeldet: mit dem Konto teilen (Etappe 2); sonst bleibt der Beitrag auf dem Gerät
         ...(storedUserId() ? { share: 'pending' as const } : {}),
         photos: pending.map((p) => p.photo),
@@ -120,6 +138,7 @@ export function NewPostPage() {
           onChange={(e) => {
             setCatchId(e.target.value);
             setSkipped([]);
+            setInfo(undefined);
           }}
         />
         {!!catchPhotos?.length && (
@@ -177,6 +196,13 @@ export function NewPostPage() {
           rows={4}
           maxLength={POST_CAPTION_MAX}
           onChange={(e) => setCaption(e.target.value)}
+        />
+        <CatchInfoFields
+          speciesId={species}
+          length={length}
+          lengthError={lengthError}
+          onSpecies={(v) => setInfo({ species: v, length })}
+          onLength={(v) => setInfo({ species, length: v })}
         />
         <VisibilityField value={visibility} onChange={setVisibility} />
         {error && <Notice tone="error">{error}</Notice>}

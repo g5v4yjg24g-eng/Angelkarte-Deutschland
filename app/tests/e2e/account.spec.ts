@@ -800,6 +800,8 @@ test('PST-3: Beitrag teilen – angemeldet wird er mit Fotos hochgeladen, Änder
 
   await page.getByRole('button', { name: 'Bearbeiten' }).click();
   await page.getByLabel('Text').fill('Hecht vom Steg, 92 cm');
+  // das Formular ist länger geworden (Fischart/Länge): erst hinscrollen, sonst liegt die Leiste darüber
+  await page.getByRole('radio', { name: 'Alle' }).evaluate((el) => el.scrollIntoView({ block: 'center' }));
   await page.getByRole('radio', { name: 'Alle' }).check({ force: true });
   await page.getByRole('button', { name: 'Speichern' }).click();
   await expect.poll(() => [...server.posts.values()][0]?.caption).toBe('Hecht vom Steg, 92 cm');
@@ -1608,5 +1610,50 @@ test('FEED-4: Doppeltipp im Feed – Hecht schwimmt zum Daumen, „Gefällt mir�
   await page.waitForTimeout(1300);
   expect(calls.filter((c) => c.endsWith('/rpc/toggle_like'))).toHaveLength(1);
   expect(calls.likes.get('post-anna-1')?.mine).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test('FEED-5: Fischart und Länge – gehen mit dem Beitrag auf den Server und stehen im Feed', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(
+    page,
+    [],
+    [{ ...ANNA }],
+    [
+      { ...FEED_ANNA, species_id: 'zander', length_cm: 71 },
+      { ...FEED_ANNA, id: 'post-anna-2', created_at: '2026-11-06T18:00:00Z', caption: 'Ohne Angaben' },
+    ],
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed');
+  await waitForApp(page);
+  await expect(
+    page
+      .getByRole('article', { name: /Beitrag von Anna/ })
+      .first()
+      .getByText('Zander · 71 cm'),
+  ).toBeVisible();
+  await expect(
+    page
+      .getByRole('article', { name: /Beitrag von Anna/ })
+      .nth(1)
+      .getByText(/ · \d+ cm|Zander/),
+  ).toHaveCount(0);
+
+  // eigener Beitrag mit Fischart und Länge → hochgeladen mit species_id / length_cm
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpegFile(page));
+  const info = page.getByRole('group', { name: 'Angaben zum Fang (freiwillig)' });
+  await info.getByLabel('Fischart').selectOption({ label: 'Hecht' });
+  await info.getByLabel('Länge in cm').fill('92');
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await expect.poll(() => [...calls.posts.values()].length).toBe(1);
+  const sent = [...calls.posts.values()][0] as unknown as { species_id: string; length_cm: number };
+  expect(sent.species_id).toBe('pike');
+  expect(sent.length_cm).toBe(92);
   expect(errors).toEqual([]);
 });

@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-21',
+    title: 'Fischart und Länge am Beitrag',
+    items: [
+      'Beiträge: Fischart und Länge lassen sich jetzt freiwillig angeben – beim Posten aus einem Fang sind sie schon ausgefüllt. Im Feed steht dann z. B. „Hecht · 87 cm“. Der Fangort wird nie geteilt.',
+    ],
+  },
+  {
     id: '2026-11-20',
     title: 'Erfolge',
     items: [
