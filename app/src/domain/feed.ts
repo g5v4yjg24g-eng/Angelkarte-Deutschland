@@ -15,6 +15,8 @@ export interface FeedPost {
   /** Fischart und Länge (Paket 7a, freiwillig) */
   speciesId?: string | undefined;
   lengthCm?: number | undefined;
+  /** nur bei „Gespeichert“: wann gespeichert (Sortierung, Nachladen) */
+  savedAt?: string | undefined;
   /** zeitlich begrenzte Adressen der Fotos (gleiche Reihenfolge wie photoPaths; fehlt eins, ist es leer) */
   photoUrls: string[];
 }
@@ -33,6 +35,7 @@ const RowSchema = z.object({
   created_at: z.string(),
   species_id: z.string().nullable().optional(),
   length_cm: z.union([z.number(), z.string()]).nullable().optional(),
+  saved_at: z.string().nullable().optional(),
 });
 
 export function parseFeedRows(rows: readonly unknown[] | null | undefined): Omit<FeedPost, 'photoUrls'>[] {
@@ -55,6 +58,7 @@ export function parseFeedRows(rows: readonly unknown[] | null | undefined): Omit
       ...(d.length_cm !== null && d.length_cm !== undefined && Number.isFinite(Number(d.length_cm))
         ? { lengthCm: Number(d.length_cm) }
         : {}),
+      ...(d.saved_at ? { savedAt: d.saved_at } : {}),
     });
   }
   return out;

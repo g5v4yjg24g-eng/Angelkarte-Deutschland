@@ -24,6 +24,7 @@ import { NewPostPage } from '../features/profile/NewPostPage';
 import { PostPage } from '../features/profile/PostPage';
 import { SharedSpotsPage } from '../features/spots/SharedSpotsPage';
 import { ShareSpotPage } from '../features/spots/ShareSpotPage';
+import { SavedPostsPage } from '../features/feed/SavedPostsPage';
 import { AchievementsPage } from '../features/achievements/AchievementsPage';
 import { RulesPage } from '../features/moderation/Rules';
 import { ModerationPage } from '../features/moderation/admin/ModerationPage';
@@ -65,6 +66,7 @@ export const routes = [
           { path: 'profil/freunde', element: <FriendsPage /> },
           { path: 'profil/spots', element: <SharedSpotsPage /> },
           { path: 'profil/erfolge', element: <AchievementsPage /> },
+          { path: 'profil/gespeichert', element: <SavedPostsPage /> },
           { path: 'profil/spots/teilen/:placeId', element: <ShareSpotPage /> },
           { path: 'feed', element: <FeedPage /> },
           { path: 'mehr', element: <MorePage /> },

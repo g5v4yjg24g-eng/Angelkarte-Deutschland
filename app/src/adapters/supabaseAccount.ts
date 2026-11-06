@@ -7,7 +7,7 @@ import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
 import { FriendRequestResultSchema, parseFriendRows } from '../domain/friends';
 import { photoExt } from '../domain/postSync';
-import { FEED_PAGE, parseFeedRows } from '../domain/feed';
+import { FEED_PAGE, parseFeedRows, type FeedPost } from '../domain/feed';
 import { parseSharedSpotRows } from '../domain/sharedSpots';
 import { parseBlockRows } from '../domain/moderation';
 import { parseCommentRows, parseReactionRows } from '../domain/reactions';
@@ -34,6 +34,18 @@ const fail = (
 };
 
 const POST_BUCKET = 'post-photos';
+
+/** Zeitlich begrenzte Foto-Adressen (1 h); der Speicher prüft dabei selbst, ob man den Beitrag sehen darf */
+async function withPhotoUrls(c: SupabaseClient, posts: Omit<FeedPost, 'photoUrls'>[]): Promise<FeedPost[]> {
+  const paths = posts.flatMap((p) => p.photoPaths);
+  const urls = new Map<string, string>();
+  if (paths.length) {
+    const { data: signed, error } = await c.storage.from(POST_BUCKET).createSignedUrls(paths, 3600);
+    if (error) fail(error);
+    for (const s of signed ?? []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
+  }
+  return posts.map((p) => ({ ...p, photoUrls: p.photoPaths.map((path) => urls.get(path) ?? '') }));
+}
 const AVATAR_BUCKET = 'avatars';
 
 /** Alle Dateien eines Ordners im Fotospeicher löschen */
@@ -238,16 +250,24 @@ export function supabaseAccount(
       const c = await get();
       const { data, error } = await c.rpc('feed', { before: before ?? null, max_rows: FEED_PAGE });
       if (error) fail(error);
-      const posts = parseFeedRows(data as unknown[] | null);
-      const paths = posts.flatMap((p) => p.photoPaths);
-      const urls = new Map<string, string>();
-      if (paths.length) {
-        // zeitlich begrenzte Adressen (1 h); der Speicher prüft dabei selbst, ob man den Beitrag sehen darf
-        const { data: signed, error: e } = await c.storage.from(POST_BUCKET).createSignedUrls(paths, 3600);
-        if (e) fail(e);
-        for (const s of signed ?? []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
-      }
-      return posts.map((p) => ({ ...p, photoUrls: p.photoPaths.map((path) => urls.get(path) ?? '') }));
+      return withPhotoUrls(c, parseFeedRows(data as unknown[] | null));
+    },
+    async toggleSave(postId) {
+      const { data, error } = await (await get()).rpc('toggle_save', { post: postId });
+      if (error) fail(error);
+      return data === true;
+    },
+    async savedIds(postIds) {
+      if (postIds.length === 0) return new Set();
+      const { data, error } = await (await get()).rpc('my_saved_ids', { posts: postIds.slice(0, 100) });
+      if (error) fail(error);
+      return new Set((Array.isArray(data) ? data : []).filter((x): x is string => typeof x === 'string'));
+    },
+    async savedPosts(before) {
+      const c = await get();
+      const { data, error } = await c.rpc('saved_posts', { before: before ?? null, max_rows: FEED_PAGE });
+      if (error) fail(error);
+      return withPhotoUrls(c, parseFeedRows(data as unknown[] | null));
     },
     async sharedSpots() {
       const { data, error } = await (await get()).rpc('my_shared_spots');

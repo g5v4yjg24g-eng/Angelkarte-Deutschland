@@ -8,7 +8,7 @@ import { Button, IconButton } from '../../design/components/Button';
 import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
 import { Toast } from '../../design/components/Toast';
-import { ImagesIcon, MapIcon, PlusIcon, UserPlusIcon } from '../../design/icons';
+import { ImagesIcon, MapIcon, PlusIcon, UserPlusIcon, BookmarkIcon } from '../../design/icons';
 import { restorePost } from '../../data/profileService';
 import type { Post } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
@@ -121,6 +121,12 @@ export function ProfilePage() {
             icon={<MapIcon size={20} />}
             className={styles.squareButton}
             onClick={() => void navigate('/profil/spots')}
+          />
+          <IconButton
+            label={de.feed.savedTitle}
+            icon={<BookmarkIcon size={20} />}
+            className={styles.squareButton}
+            onClick={() => void navigate('/profil/gespeichert')}
           />
         </div>
       </div>

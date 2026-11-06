@@ -82,6 +82,10 @@ export interface AccountProvider {
   deleteSharedPost(id: string): Promise<void>;
   /** Feed: eigene Beiträge und die von Freunden, neueste zuerst; `before` = Zeit des letzten geladenen Beitrags */
   feed(before?: string): Promise<FeedPost[]>;
+  /** Lesezeichen (Paket 7b): umschalten (neuer Stand), welche gespeichert sind, gespeicherte Beiträge */
+  toggleSave(postId: string): Promise<boolean>;
+  savedIds(postIds: string[]): Promise<Set<string>>;
+  savedPosts(before?: string): Promise<FeedPost[]>;
   /** Geteilte Spots: eigene Freigaben und die von Freunden (Server-Funktion my_shared_spots) */
   sharedSpots(): Promise<SharedSpot[]>;
   /** Ort teilen; derselbe Ort an denselben Empfänger erneut = Stand aktualisieren */
