@@ -8,10 +8,16 @@ const config: CapacitorConfig = {
   ios: {
     // Ränder (Statusleiste, Home-Indikator) regelt die Web-App selbst über env(safe-area-inset-*)
     contentInset: 'never',
+    // Wie eine echte App (Weg 1, Freigabe Nutzer 2026-11-06): Die ganze Fläche federt nicht mehr nach – Listen und
+    // Karte scrollen in ihren eigenen Bereichen weiter. Kein Vorschau-Fenster bei langem Druck auf Links.
+    scrollEnabled: false,
+    allowsLinkPreview: false,
   },
   plugins: {
     // Mitteilungen auch zeigen, wenn die App gerade offen ist (Wunsch Nutzer 2026-11-04)
     PushNotifications: { presentationOptions: ['badge', 'sound', 'alert'] },
+    // Tastatur verkleinert die Ansicht, statt die Seite hochzuschieben
+    Keyboard: { resize: 'native' },
   },
 };
 

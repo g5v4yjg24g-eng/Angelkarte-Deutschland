@@ -7,6 +7,7 @@ import { hygonNrw } from '../adapters/hygonNrw';
 import { goatCounter } from '../adapters/goatCounter';
 import { supabaseAccount } from '../adapters/supabaseAccount';
 import { capacitorPush } from '../adapters/capacitorPush';
+import { capacitorHaptics } from '../adapters/capacitorHaptics';
 import type { Providers } from '../ports/providersContext';
 
 /** Zusammenstecken der Anbieter (einzige Stelle, die Adapter kennt). */
@@ -29,5 +30,7 @@ export const providers: Providers = {
   ),
   // Push-Mitteilungen nur in der iPhone-App (Capacitor); im Browser aus
   push: capacitorPush(),
+  // Vibration nur in der iPhone-App (Weg 1, Freigabe Nutzer 2026-11-06)
+  haptics: capacitorHaptics(),
   water: staticWaterData(import.meta.env.VITE_WATER_BASE_URL ?? `${import.meta.env.BASE_URL}data/water/`),
 };

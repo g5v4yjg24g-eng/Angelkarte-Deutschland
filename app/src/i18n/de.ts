@@ -1759,6 +1759,11 @@ export const de = {
     weather: 'Wetter am Fang',
     weatherOff: 'Aus',
     weatherOn: 'Automatisch laden',
+    haptics: 'Vibration',
+    hapticsOff: 'Aus',
+    hapticsOn: 'An',
+    hapticsHint:
+      'Kurze Vibration beim Speichern eines Fangs, bei „Gefällt mir“ und beim Wischen über die untere Leiste. Standard: an.',
     location: 'Standort',
     locationOff: 'Nur auf Knopfdruck',
     locationOn: 'Beim Kartenstart',

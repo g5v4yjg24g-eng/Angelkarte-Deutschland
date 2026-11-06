@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-13',
+    title: 'iPhone-App fühlt sich nativer an',
+    items: [
+      'iPhone-App: Die Oberfläche federt nicht mehr nach, zoomt nicht ungewollt und markiert keinen Text mehr – die Karte lässt sich wie gewohnt verschieben und zoomen.',
+      'Tastatur: Die Ansicht schiebt sich nicht mehr nach oben, die untere Leiste macht beim Tippen Platz.',
+      'Vibration: Kurzes Feedback beim Speichern eines Fangs, bei „Gefällt mir“ und beim Wischen über die Leiste – abschaltbar unter Einstellungen.',
+    ],
+  },
+  {
     id: '2026-11-12',
     title: 'Gewässer übersichtlicher',
     items: [

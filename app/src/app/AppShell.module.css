@@ -170,6 +170,14 @@
   }
 }
 
+/* iPhone-App: Bei offener Tastatur verschwindet die Leiste wie in nativen Apps (nativeShell.ts) */
+:global(html[data-keyboard]) .shell {
+  --nav-clearance: 0px;
+}
+:global(html[data-keyboard]) .nav {
+  display: none;
+}
+
 @media (min-width: 900px) {
   .shell {
     --nav-clearance: 0px;

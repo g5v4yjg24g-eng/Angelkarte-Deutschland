@@ -7,6 +7,7 @@ import { setSetting } from '../../data/settings';
 import { useWeatherEnabled } from '../weather/useWeatherEnabled';
 import { useBoolSetting } from './useBoolSetting';
 import { PushSettings } from '../push/PushSettings';
+import { useProviders } from '../../ports/providersContext';
 
 const OPTIONS = [
   { value: 'system', label: de.settings.themeSystem },
@@ -29,6 +30,11 @@ const TRACKING_OPTIONS = [
   { value: 'on', label: de.settings.trackingOn },
 ] as const;
 
+const HAPTICS_OPTIONS = [
+  { value: 'off', label: de.settings.hapticsOff },
+  { value: 'on', label: de.settings.hapticsOn },
+] as const;
+
 const WEATHER_OPTIONS = [
   { value: 'off', label: de.settings.weatherOff },
   { value: 'on', label: de.settings.weatherOn },
@@ -40,6 +46,9 @@ export function SettingsPage() {
   const locateOnStart = useBoolSetting('locateOnStart', true);
   const trackSessions = useBoolSetting('trackSessions', true);
   const usageCount = useBoolSetting('usageCount', true);
+  // Vibration gibt es nur in der iPhone-App
+  const { haptics } = useProviders();
+  const hapticsOn = useBoolSetting('haptics', true);
   return (
     <Page title={de.settings.title} back="/mehr">
       <Section title={de.settings.theme}>
@@ -88,6 +97,19 @@ export function SettingsPage() {
         <p className="muted">{de.settings.usageHint}</p>
       </Section>
       <PushSettings />
+      {haptics.available && (
+        <Section title={de.settings.haptics}>
+          {hapticsOn !== undefined && (
+            <SegmentedControl
+              label={de.settings.haptics}
+              options={HAPTICS_OPTIONS}
+              value={hapticsOn ? 'on' : 'off'}
+              onChange={(v) => void setSetting('haptics', v === 'on')}
+            />
+          )}
+          <p className="muted">{de.settings.hapticsHint}</p>
+        </Section>
+      )}
       <Section title={de.settings.weather}>
         {weather !== undefined && (
           <SegmentedControl

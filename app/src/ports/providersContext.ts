@@ -8,6 +8,7 @@ import type { GaugesProvider, NrwGaugesProvider } from './gauges';
 import type { UsageCounter } from './usage';
 import type { AccountProvider } from './account';
 import type { PushProvider } from './push';
+import type { HapticsProvider } from './haptics';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
@@ -21,6 +22,7 @@ export interface Providers {
   usage: UsageCounter;
   account: AccountProvider;
   push: PushProvider;
+  haptics: HapticsProvider;
 }
 
 export const ProvidersContext = createContext<Providers | null>(null);
