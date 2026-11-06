@@ -83,6 +83,9 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
     modResolve: () => Promise.resolve(),
     modBan: () => Promise.resolve(),
     modUnban: () => Promise.resolve(),
+    publishAvatar: () => Promise.resolve(),
+    avatarUrls: () => Promise.resolve(new Map()),
+    modClearAvatar: () => Promise.resolve(),
     myBadges: () => (user ? Promise.resolve(badges) : Promise.reject(new AccountError('not signed in', 401))),
     deleteAccount: () => {
       calls.push('delete');

@@ -16,6 +16,8 @@ import { useFriends } from './useFriends';
 import { hiddenKey, type BlockedUser } from '../../domain/moderation';
 import { SafetyMenu } from '../moderation/SafetyMenu';
 import { unhideContent, useHidden } from '../moderation/hiddenStore';
+import { Avatar } from '../profile/Avatar';
+import { useAvatarUrl } from '../profile/avatarUrls';
 import styles from './Friends.module.css';
 
 const t = de.friends;
@@ -32,8 +34,10 @@ function Person({
   children?: React.ReactNode;
   onSafety?: (message: string) => void;
 }) {
+  const avatarUrl = useAvatarUrl(f.userId);
   return (
     <li className={styles.person}>
+      <Avatar url={avatarUrl} size={40} />
       <span className={styles.who}>
         <strong>
           {f.displayName}

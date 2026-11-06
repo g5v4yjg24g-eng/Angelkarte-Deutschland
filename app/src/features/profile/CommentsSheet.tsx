@@ -28,6 +28,8 @@ export interface ViewComment {
   name: string;
   founder: boolean;
   avatarPhotoId?: string | undefined;
+  /** Profilbild vom Server */
+  avatarUrl?: string | undefined;
   createdAt: string;
   text: string;
   canDelete: boolean;
@@ -225,7 +227,7 @@ export function CommentsSheetView({
             <ul ref={list} className={styles.list}>
               {comments.map((c) => (
                 <li key={c.id} className={styles.comment}>
-                  <Avatar photoId={c.avatarPhotoId} size={36} />
+                  <Avatar photoId={c.avatarPhotoId} url={c.avatarUrl} size={36} />
                   <div className={styles.body}>
                     <p className={styles.meta}>
                       <strong>{c.name}</strong>

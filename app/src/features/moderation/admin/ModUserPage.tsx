@@ -18,6 +18,8 @@ import { useProviders } from '../../../ports/providersContext';
 import { ModActionSheet, type ModAction } from './ModActions';
 import { modDate, modErrorText } from './modErrors';
 import { useIsModerator } from './useIsModerator';
+import { Avatar } from '../../profile/Avatar';
+import { invalidateAvatar, useAvatarUrl } from '../../profile/avatarUrls';
 import styles from './ModAdmin.module.css';
 
 const t = de.modAdmin;
@@ -35,6 +37,7 @@ export function ModUserPage() {
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string>();
   const [toast, setToast] = useState<string>();
+  const avatarUrl = useAvatarUrl(moderator ? uid : undefined);
 
   const load = useCallback(async () => {
     try {
@@ -85,6 +88,10 @@ export function ModUserPage() {
     try {
       if (action.kind === 'delete' && target)
         await account.modDeleteContent(target.kind, target.id, target.photoPaths, undefined, note);
+      if (action.kind === 'avatar') {
+        await account.modClearAvatar(user.userId, undefined, note);
+        invalidateAvatar(user.userId);
+      }
       if (action.kind === 'warn') await account.modWarn(user.userId, note);
       if (action.kind === 'ban') await account.modBan(user.userId, days ?? null, note);
       if (action.kind === 'unban') await account.modUnban(user.userId, note);
@@ -102,6 +109,14 @@ export function ModUserPage() {
   return (
     <Page title={user.displayName} back="/mehr/moderation">
       <div className={styles.item}>
+        <span className={styles.row}>
+          <Avatar url={avatarUrl} size={56} />
+          {avatarUrl && (
+            <Button variant="danger" onClick={() => setAction({ kind: 'avatar' })}>
+              {t.removeAvatar}
+            </Button>
+          )}
+        </span>
         <p>
           <strong>{user.displayName}</strong> <span className="muted">{t.handle(user.username)}</span>
         </p>

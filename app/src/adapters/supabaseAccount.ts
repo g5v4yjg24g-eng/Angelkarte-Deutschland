@@ -1,7 +1,7 @@
 // Supabase (Auth + Postgres, Region EU/Irland): freiwilliges Konto. Der Client wird erst geladen, wenn das Konto
 // gebraucht wird (eigener Chunk); ohne gespeicherte Anmeldung sendet die App nichts an Supabase.
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
-// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen), *_push.sql (Geräte und Einstellungen für Mitteilungen), *_moderators.sql (Moderationsbereich, jede Funktion prüft is_moderator). Nur der öffentliche Schlüssel steht in der App.
+// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen), *_push.sql (Geräte und Einstellungen für Mitteilungen), *_moderators.sql (Moderationsbereich, jede Funktion prüft is_moderator), *_avatars.sql (Profilbild im Speicher „avatars“, nur über Funktionen). Nur der öffentliche Schlüssel steht in der App.
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
@@ -12,6 +12,8 @@ import { parseSharedSpotRows } from '../domain/sharedSpots';
 import { parseBlockRows } from '../domain/moderation';
 import { parseCommentRows, parseReactionRows } from '../domain/reactions';
 import { parsePushPrefs } from '../domain/push';
+import { avatarPath, parseAvatarRows } from '../domain/avatarSync';
+import { newId } from '../domain/id';
 import {
   parseModContent,
   parseModLog,
@@ -32,6 +34,7 @@ const fail = (
 };
 
 const POST_BUCKET = 'post-photos';
+const AVATAR_BUCKET = 'avatars';
 
 /** Alle Dateien eines Ordners im Fotospeicher löschen */
 async function removeFolder(c: SupabaseClient, folder: string) {
@@ -405,12 +408,67 @@ export function supabaseAccount(
       const { error } = await (await get()).rpc('mod_unban', { who: userId, note: note ?? null });
       if (error) fail(error);
     },
+    async publishAvatar(photo) {
+      const c = await get();
+      const me = await uid(c);
+      let path: string | null = null;
+      if (photo) {
+        path = avatarPath(me, newId());
+        const { error } = await c.storage
+          .from(AVATAR_BUCKET)
+          .upload(path, photo, { contentType: 'image/jpeg', upsert: false });
+        if (error) fail(error);
+      }
+      const { data: old, error } = await c.rpc('set_my_avatar', { path });
+      if (error) {
+        // Eintragen gescheitert: neue Datei wieder entfernen, das bisherige Bild bleibt
+        if (path) await c.storage.from(AVATAR_BUCKET).remove([path]);
+        fail(error);
+      }
+      // Altes Bild aufräumen; scheitert das, bleibt nur eine unsichtbare Datei übrig
+      if (typeof old === 'string' && old !== path) await c.storage.from(AVATAR_BUCKET).remove([old]);
+    },
+    async avatarUrls(userIds) {
+      const out = new Map<string, string>();
+      if (userIds.length === 0) return out;
+      const c = await get();
+      const { data, error } = await c.rpc('avatar_paths', { users: userIds.slice(0, 200) });
+      if (error) fail(error);
+      const paths = parseAvatarRows(data as unknown[] | null);
+      if (paths.size === 0) return out;
+      const { data: signed, error: e } = await c.storage
+        .from(AVATAR_BUCKET)
+        .createSignedUrls([...paths.values()], 3600);
+      if (e) fail(e);
+      const byPath = new Map((signed ?? []).map((s) => [s.path, s.signedUrl]));
+      for (const [id, path] of paths) {
+        const u = byPath.get(path);
+        if (u) out.set(id, u);
+      }
+      return out;
+    },
+    async modClearAvatar(userId, reportId, note) {
+      const c = await get();
+      const { data: old, error } = await c.rpc('mod_clear_avatar', {
+        who: userId,
+        report: reportId ?? null,
+        note: note ?? null,
+      });
+      if (error) fail(error);
+      if (typeof old === 'string') {
+        const { error: e } = await c.storage.from(AVATAR_BUCKET).remove([old]);
+        if (e) fail(e);
+      }
+    },
     async deleteAccount() {
       const c = await get();
       // Fotos liegen im Speicher, nicht in der Datenbank: vor dem Konto löschen
       const me = await uid(c);
       const { data: folders } = await c.storage.from(POST_BUCKET).list(me, { limit: 1000 });
       for (const f of folders ?? []) await removeFolder(c, `${me}/${f.name}`);
+      const { data: avatars } = await c.storage.from(AVATAR_BUCKET).list(me, { limit: 100 });
+      const avatarFiles = (avatars ?? []).map((f) => `${me}/${f.name}`);
+      if (avatarFiles.length) await c.storage.from(AVATAR_BUCKET).remove(avatarFiles);
       const { error } = await c.rpc('delete_my_account');
       if (error) fail(error);
       // Server-Konto ist weg: lokale Anmeldung entfernen

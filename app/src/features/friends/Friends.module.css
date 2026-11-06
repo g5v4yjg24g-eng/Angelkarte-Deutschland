@@ -29,6 +29,7 @@
   background: var(--color-surface);
 }
 .who {
+  flex: 1 1 8rem;
   display: grid;
   min-width: 0;
   overflow-wrap: anywhere;

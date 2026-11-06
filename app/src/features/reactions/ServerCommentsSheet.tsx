@@ -1,5 +1,6 @@
 // Kommentare eines geteilten Beitrags vom Server (Wunsch Nutzer 2026-11-04): mit Namen und Abzeichen; fremde
 // Kommentare lassen sich melden, Verfasser blockieren. Löschen: eigene und alle unter dem eigenen Beitrag.
+import { useAvatarUrls } from '../profile/avatarUrls';
 import { useCallback, useEffect, useState } from 'react';
 import { de } from '../../i18n/de';
 import { Toast } from '../../design/components/Toast';
@@ -48,6 +49,7 @@ export function ServerCommentsSheet({
     if (open) load();
   }, [open, load]);
 
+  const avatars = useAvatarUrls((list ?? []).map((c) => c.authorId));
   const comments: ViewComment[] = (list ?? [])
     .filter((c) => !isHidden(hidden, 'comment', c.id, c.authorId))
     .map((c) => ({
@@ -55,6 +57,7 @@ export function ServerCommentsSheet({
       name: c.displayName,
       founder: c.badges.includes('founder'),
       avatarPhotoId: c.authorId === me ? myAvatarPhotoId : undefined,
+      avatarUrl: avatars.get(c.authorId),
       createdAt: c.createdAt,
       text: c.text,
       canDelete: c.canDelete,
