@@ -578,6 +578,14 @@ export const de = {
 
   more: {
     title: 'Mehr',
+    groupPlan: 'Planen & Lernen',
+    groupRules: 'Recht & Regeln',
+    groupAccount: 'Konto & Daten',
+    groupApp: 'App',
+    calendar: 'Angelkalender',
+    calendarHint: 'Angeltermine planen, mit Wetter und Warnungen',
+    communityRules: 'Regeln der Community',
+    communityRulesHint: 'Was beim Teilen und Kommentieren gilt',
     regulations: 'Angelrecht der Länder',
     regulationsHint: 'Schonzeiten, Mindestmaße, Erlaubnisse',
     backup: 'Daten & Sicherung',
