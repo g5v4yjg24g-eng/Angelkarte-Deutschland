@@ -708,6 +708,8 @@ test('FC-6: Tag antippen öffnet die Wetterlage – Datumsleiste, Temperatur tat
   await fakeForecast(page);
   await page.goto('/wetter');
   await waitForApp(page);
+  // 10-Tage-Liste: Einordnung je Tag als Wort (nicht nur Farbe)
+  await expect(page.getByRole('button', { name: /^Heute/ })).toContainText(/günstig|mittel|schwierig/);
   await page.getByRole('button', { name: /^Heute/ }).click();
   const sheet = page.getByRole('dialog', { name: 'Wetterlage' });
   await expect(sheet).toBeVisible();
@@ -727,6 +729,12 @@ test('FC-6: Tag antippen öffnet die Wetterlage – Datumsleiste, Temperatur tat
   await expect(sheet.getByRole('heading', { name: 'Wind' })).toBeVisible();
   await expect(sheet.getByRole('heading', { name: 'Luftdruck' })).toBeVisible();
   await expect(sheet.getByText(/Aufgang 08:00 Uhr · Untergang 18:00 Uhr/)).toBeVisible();
+  // Beißprognose: Einordnung mit Gründen aus den Wetterdaten, Dämmerung, Hinweis „keine Fanggarantie“
+  await expect(sheet.getByRole('heading', { name: 'Beißprognose' })).toBeVisible();
+  await expect(sheet.getByText(/Luftdruck fällt leicht \(−2,\d hPa\)/)).toBeVisible();
+  await expect(sheet.getByText('Mäßiger Wind (4 m/s)')).toBeVisible();
+  await expect(sheet.getByText(/Dämmerung, oft eine gute Zeit: 07:00–09:00 · 17:00–19:00/)).toBeVisible();
+  await expect(sheet.getByText(/Punkte · Faustregel/)).toBeVisible();
   // Solunar-Zeiten des Tages (offline berechnet) mit Theorie-Hinweis
   await expect(sheet.getByRole('heading', { name: 'Solunar-Zeiten (Theorie)' })).toBeVisible();
   await expect(sheet.getByText(/% beleuchtet/)).toBeVisible();
