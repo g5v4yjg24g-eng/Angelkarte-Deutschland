@@ -13,6 +13,7 @@ import type {
   Track,
   Trip,
   WaterLink,
+  WaterRules,
 } from '../domain/schemas';
 import type { BackupFile } from '../domain/backup/format';
 
@@ -69,6 +70,8 @@ export const SCHEMA_VERSIONS: {
       postComments: 'id, postId, authorId, createdAt, updatedAt, deletedAt',
     },
   },
+  // v7 (2026-11-06): eigene Regeln je Gewässer (Paket 9A); neue Tabelle, vorhandene Daten bleiben unverändert
+  { version: 7, stores: { waterRules: 'id, waterId, updatedAt, deletedAt' } },
 ];
 export const SCHEMA_VERSION = SCHEMA_VERSIONS[SCHEMA_VERSIONS.length - 1]?.version ?? 1;
 
@@ -81,6 +84,7 @@ export class FangpunktDB extends Dexie {
   trips!: DexieTable<Trip, 'id'>;
   tracks!: DexieTable<Track, 'id'>;
   waterLinks!: DexieTable<WaterLink, 'id'>;
+  waterRules!: DexieTable<WaterRules, 'id'>;
   profiles!: DexieTable<Profile, 'id'>;
   posts!: DexieTable<Post, 'id'>;
   postLikes!: DexieTable<PostLike, 'id'>;

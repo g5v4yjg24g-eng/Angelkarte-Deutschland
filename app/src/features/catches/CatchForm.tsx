@@ -1,5 +1,6 @@
 // Fang, Fischkontakt, Fehlbiss oder Beobachtung erfassen bzw. bearbeiten (M5.1).
 // Erst das Nötigste (was, welche Art, wann); alles Weitere unter „Mehr Details".
+import { withWaterState } from '../../domain/regulationCheck';
 import { useMemo, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
@@ -57,6 +58,8 @@ export interface WaterChoice {
   /** Gemeinde, sonst Kreis */
   place?: string | undefined;
   type?: WaterType;
+  /** Bundesland des Gewässers aus den Gewässerdaten (für die Rechts-Prüfung) */
+  state?: StateCode | undefined;
 }
 export interface CatchContext {
   position?: NonNullable<Catch['position']>;
@@ -195,7 +198,9 @@ export function CatchForm({
     initial?.stateCode ? { key: posKey(initial.position), code: initial.stateCode } : undefined,
   );
   const fixedState = stateChoice?.key === posKey(position) ? stateChoice.code : undefined;
-  const resolution = useStateResolution(position, fixedState);
+  // Land des zugeordneten Gewässers zählt mit (nicht allein die Position); gewählt/gespeichert hat Vorrang
+  const positionResolution = useStateResolution(position, fixedState);
+  const resolution = fixedState ? positionResolution : withWaterState(positionResolution, chosenWater?.state);
   const lawInput = useMemo(() => {
     const { fields } = draftToFields(draft, initial ? { base: initial } : {});
     return fields ?? { outcome: draft.outcome, at: '' };
@@ -561,6 +566,7 @@ export function CatchForm({
       <LawCheckPanel
         check={lawCheck}
         hasPosition={!!position}
+        waterId={chosenWater?.wid ?? initial?.waterId}
         onChooseState={(code) => setStateChoice({ key: posKey(position), code })}
       />
 

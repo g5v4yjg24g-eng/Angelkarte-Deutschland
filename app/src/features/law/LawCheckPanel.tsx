@@ -1,5 +1,6 @@
 // Rechts-Warnung zu einem Fang (Fangformular und Eintrag): Bundesland, Befunde mit Fundstelle, Hinweis
 // „keine Rechtsauskunft". Warnt nur – Speichern bleibt immer möglich.
+import { WaterRulesNote } from '../permits/WaterRulesSection';
 import { Link } from 'react-router';
 import { de } from '../../i18n/de';
 import { Notice } from '../../design/components/Notice';
@@ -50,9 +51,12 @@ export function LawCheckPanel({
   check,
   hasPosition,
   onChooseState,
+  waterId,
 }: {
   check: LawCheck | undefined;
   hasPosition: boolean;
+  /** zugeordnetes Gewässer: eigene Regeln dazu zeigen (Paket 9A) */
+  waterId?: string | undefined;
   /** nur im Formular: Land in Grenznähe wählen */
   onChooseState?: (code: StateCode) => void;
 }) {
@@ -64,7 +68,7 @@ export function LawCheckPanel({
   else if (check.status === 'chooseState')
     body = (
       <>
-        <p>{t.chooseState}</p>
+        <p>{check.reason === 'water' ? t.chooseStateWater : t.chooseState}</p>
         {onChooseState && (
           <div className={styles.choices} role="group" aria-label={t.chooseState}>
             {check.candidates.map((c) => (
@@ -117,6 +121,7 @@ export function LawCheckPanel({
     <section className={styles.check} aria-label={title}>
       <h3 className={styles.checkTitle}>{title}</h3>
       {body}
+      <WaterRulesNote waterId={waterId} />
     </section>
   );
 }

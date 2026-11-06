@@ -102,6 +102,7 @@ export function CatchFacts({ item }: { item: Catch }) {
       <LawCheckPanel
         check={lawCheck}
         hasPosition={!!item.position}
+        waterId={item.waterId}
         onChooseState={(code) => void repo('catches').update(item.id, { stateCode: code })}
       />
       <CatchWeather item={item} />

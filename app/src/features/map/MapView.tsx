@@ -183,6 +183,7 @@ const toChoice = (w: WaterInfo): WaterChoice => ({
   type: w.type,
   ...(w.name ? { name: w.name } : {}),
   ...(waterPlace(w) ? { place: waterPlace(w) } : {}),
+  ...(w.state ? { state: w.state } : {}),
 });
 
 /** Kontext für ein neues Formular: genau ein Gewässer → zugeordnet; mehrere → Auswahl, vorbelegt mit dem unter dem Punkt. */
@@ -932,7 +933,11 @@ export default function MapView() {
             kind: 'new',
             lat: sheet.lat,
             lng: sheet.lng,
-            water: { wid: info.wid, ...(info.name ? { name: info.name } : {}) },
+            water: {
+              wid: info.wid,
+              ...(info.name ? { name: info.name } : {}),
+              ...(info.state ? { state: info.state } : {}),
+            },
           })
         }
       />

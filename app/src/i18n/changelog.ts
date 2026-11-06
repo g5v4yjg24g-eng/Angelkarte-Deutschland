@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-26',
+    title: 'Eigene Gewässerregeln',
+    items: [
+      'Gewässerprofil: Trag die Regeln von deinem Erlaubnisschein ein, z. B. Mindestmaße oder Nachtangelverbot. Sie bleiben auf deinem Gerät und stehen beim Erfassen eines Fangs an diesem Gewässer neben dem Landesrecht – als deine Notiz, nicht von Fangpunkt geprüft.',
+      'Landesrecht beim Fang: Liegt das Gewässer laut Kartendaten in einem anderen Bundesland als der Fangpunkt, fragt Fangpunkt nach, welches Landesrecht gilt.',
+    ],
+  },
+  {
     id: '2026-11-25',
     title: 'Highlights gemeinsamer Sessions',
     items: [

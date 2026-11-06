@@ -159,7 +159,10 @@ describe('Migrationen', () => {
     const post = await repo('posts', v5).create({ photoIds: ['f1'] });
     v5.close();
 
-    const v6 = new FangpunktDB(name);
+    const v6 = new FangpunktDB(
+      name,
+      SCHEMA_VERSIONS.filter((v) => v.version <= 6),
+    );
     await v6.open();
     expect(v6.verno).toBe(6);
     expect(await v6.posts.get(post.id)).toEqual(post);
@@ -172,5 +175,24 @@ describe('Migrationen', () => {
     expect(await v6.postLikes.where('postId').equals(post.id).toArray()).toEqual([like]);
     expect(await v6.postComments.where('postId').equals(post.id).toArray()).toEqual([c]);
     v6.close();
+  });
+
+  it('Upgrade v6 → v7 (eigene Gewässerregeln): Daten bleiben, Regeln sind speicherbar', async () => {
+    const v6 = freshDb(SCHEMA_VERSIONS.filter((v) => v.version <= 6));
+    const name = v6.name;
+    const l = await repo('waterLinks', v6).create({ waterId: 'osm:r1', url: 'https://verein.example/' });
+    v6.close();
+
+    const v7 = new FangpunktDB(name);
+    await v7.open();
+    expect(v7.verno).toBe(7);
+    expect(await v7.waterLinks.get(l.id)).toEqual(l);
+    const r = await repo('waterRules', v7).create({
+      id: 'waterrules-osm:r1',
+      waterId: 'osm:r1',
+      text: 'Hecht ab 60 cm, 2 Stück am Tag',
+    });
+    expect(await v7.waterRules.where('waterId').equals('osm:r1').first()).toEqual(r);
+    v7.close();
   });
 });

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import BY from '../../data/regulations/BY.json';
 import HH from '../../data/regulations/HH.json';
 import { RegulationSetSchema, type RegulationSet } from './regulations';
-import { checkCatch, findings, violations, type StateResolution } from './regulationCheck';
+import { checkCatch, findings, violations, withWaterState, type StateResolution } from './regulationCheck';
 
 const by = RegulationSetSchema.parse(BY);
 const hh = RegulationSetSchema.parse(HH);
@@ -82,6 +82,7 @@ describe('Status ohne Prüfung', () => {
     expect(checkCatch(base, { kind: 'border', codes: ['NI', 'HB'] }, undefined)).toEqual({
       status: 'chooseState',
       candidates: ['NI', 'HB'],
+      reason: 'border',
     });
     expect(checkCatch(base, { kind: 'state', code: 'NW' }, undefined)).toEqual({
       status: 'noData',
@@ -99,5 +100,39 @@ describe('Status ohne Prüfung', () => {
     };
     const r = checkCatch(base, inBY, noId);
     expect(r.status === 'checked' && r.findings.some((f) => f.kind === 'closed')).toBe(false);
+  });
+});
+
+describe('Bundesland aus Gewässer und Position (LAW-7)', () => {
+  it('ohne Gewässerland bleibt die Position maßgeblich', () => {
+    expect(withWaterState({ kind: 'state', code: 'NW' }, undefined)).toEqual({ kind: 'state', code: 'NW' });
+    expect(withWaterState(undefined, undefined)).toBeUndefined();
+  });
+  it('gleiches Land oder Grenznähe mit passendem Gewässerland → dieses Land', () => {
+    expect(withWaterState({ kind: 'state', code: 'NW' }, 'NW')).toEqual({ kind: 'state', code: 'NW' });
+    expect(withWaterState({ kind: 'border', codes: ['NI', 'HB'] }, 'HB')).toEqual({
+      kind: 'state',
+      code: 'HB',
+    });
+  });
+  it('Widerspruch → Wahl, Gewässerland zuerst; Grund „water“ in der Prüfung', () => {
+    const r = withWaterState({ kind: 'state', code: 'RP' }, 'NW');
+    expect(r).toEqual({ kind: 'border', codes: ['NW', 'RP'], reason: 'water' });
+    const fish = pike('2026-03-10T10:00:00+01:00', 45);
+    expect(checkCatch(fish, r as StateResolution, undefined)).toEqual({
+      status: 'chooseState',
+      candidates: ['NW', 'RP'],
+      reason: 'water',
+    });
+    expect(withWaterState({ kind: 'border', codes: ['NI', 'HB'] }, 'SH')).toEqual({
+      kind: 'border',
+      codes: ['SH', 'NI', 'HB'],
+      reason: 'water',
+    });
+  });
+  it('ohne Position oder außerhalb der Grenzen gilt das Gewässerland; Laden bleibt Laden', () => {
+    expect(withWaterState({ kind: 'unknown' }, 'BY')).toEqual({ kind: 'state', code: 'BY' });
+    expect(withWaterState({ kind: 'outside' }, 'BY')).toEqual({ kind: 'state', code: 'BY' });
+    expect(withWaterState(undefined, 'BY')).toBeUndefined();
   });
 });

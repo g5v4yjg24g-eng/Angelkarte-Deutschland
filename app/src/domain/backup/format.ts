@@ -14,6 +14,7 @@ import {
   type Track,
   type Trip,
   type WaterLink,
+  type WaterRules,
 } from '../schemas';
 
 export const BACKUP_FORMAT = 'fangpunkt-backup';
@@ -29,6 +30,8 @@ export interface BackupData {
   tracks: Track[];
   /** eigene Links zur Angelkarte (seit DB v4) */
   waterLinks: WaterLink[];
+  /** eigene Regeln je Gewässer (seit DB v7) */
+  waterRules: WaterRules[];
   /** eigenes Profil (seit DB v5) */
   profiles: Profile[];
   /** Beiträge im Profil (seit DB v5) */
@@ -72,6 +75,7 @@ export const BackupEnvelopeSchema = z.object({
     tracks: z.array(z.unknown()).default([]),
     /** seit DB v4; ältere Sicherungen haben keine eigenen Gewässer-Links */
     waterLinks: z.array(z.unknown()).default([]),
+    waterRules: z.array(z.unknown()).default([]),
     /** seit DB v5; ältere Sicherungen haben kein Profil und keine Beiträge */
     profiles: z.array(z.unknown()).default([]),
     posts: z.array(z.unknown()).default([]),
@@ -112,6 +116,7 @@ export async function buildBackup(
       trips: data.trips.length,
       tracks: data.tracks.length,
       waterLinks: data.waterLinks.length,
+      waterRules: data.waterRules.length,
       profiles: data.profiles.length,
       posts: data.posts.length,
       postLikes: data.postLikes.length,

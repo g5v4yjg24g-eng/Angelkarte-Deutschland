@@ -25,8 +25,8 @@ export type LawCheck =
   /** nur gelandete Fische mit Art werden geprüft */
   | { status: 'notApplicable' }
   | { status: 'noState' }
-  /** Grenznähe: Nutzer wählt das Land */
-  | { status: 'chooseState'; candidates: StateCode[] }
+  /** Grenznähe oder Gewässer in anderem Land als der Fangort: Nutzer wählt das Land */
+  | { status: 'chooseState'; candidates: StateCode[]; reason: 'border' | 'water' }
   /** keine (sichtbaren) Daten für dieses Land → „keine Prüfung möglich" */
   | { status: 'noData'; state: StateCode }
   | {
@@ -42,7 +42,8 @@ export type LawCheck =
 
 export type StateResolution =
   | { kind: 'state'; code: StateCode }
-  | { kind: 'border'; codes: StateCode[] }
+  /** `reason: 'water'`: Gewässer (Kartendaten) und Fangort liegen in verschiedenen Ländern */
+  | { kind: 'border'; codes: StateCode[]; reason?: 'water' }
   | { kind: 'outside' }
   | { kind: 'unknown' };
 
@@ -79,7 +80,8 @@ export function checkCatch(
   regulation: RegulationSet | undefined,
 ): LawCheck {
   if (c.outcome !== 'caught' || !c.speciesId || c.speciesId === 'other') return { status: 'notApplicable' };
-  if (state.kind === 'border') return { status: 'chooseState', candidates: state.codes };
+  if (state.kind === 'border')
+    return { status: 'chooseState', candidates: state.codes, reason: state.reason ?? 'border' };
   if (state.kind !== 'state') return { status: 'noState' };
   if (!regulation || !isShown(regulation)) return { status: 'noData', state: state.code };
   return {
@@ -94,3 +96,28 @@ export function checkCatch(
 
 /** Echte Verstöße (ohne „Länge fehlt"). */
 export const violations = (fs: readonly Finding[]) => fs.filter((f) => f.kind !== 'needsLength');
+
+/**
+ * Bundesland nicht allein aus der Position (Masterprompt §9.6): Ist der Fang einem Gewässer zugeordnet, zählt
+ * dessen Land aus den Gewässerdaten. Passt es zur Position oder zu einem Land in Grenznähe, gilt es; widerspricht
+ * es der Position, wählt der Nutzer (Gewässerland zuerst). Ohne Position gilt das Gewässerland allein.
+ */
+export function withWaterState(
+  res: StateResolution | undefined,
+  waterState: StateCode | undefined,
+): StateResolution | undefined {
+  if (!waterState) return res;
+  if (!res) return undefined; // Landesgrenzen laden noch
+  switch (res.kind) {
+    case 'state':
+      return res.code === waterState
+        ? res
+        : { kind: 'border', codes: [waterState, res.code], reason: 'water' };
+    case 'border':
+      return res.codes.includes(waterState)
+        ? { kind: 'state', code: waterState }
+        : { kind: 'border', codes: [waterState, ...res.codes], reason: 'water' };
+    default:
+      return { kind: 'state', code: waterState };
+  }
+}
