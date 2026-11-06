@@ -524,6 +524,13 @@ async function fakeSupabase(
         group.members.set(session, list);
         return json(route, users.length);
       }
+      case 'POST /rest/v1/rpc/group_highlights': {
+        const { session } = req.postDataJSON() as { session: string };
+        return json(
+          route,
+          feed.filter((p) => (p as { group_session_id?: string }).group_session_id === session),
+        );
+      }
       case 'POST /rest/v1/rpc/my_group_sessions':
         return json(
           route,
@@ -1954,6 +1961,111 @@ test('GRP-2: Einladung ablehnen', async ({ page }) => {
   await expect(page.getByText('Einladung abgelehnt.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Zusagen' })).toHaveCount(0);
   expect(calls.group.responses).toEqual([{ session: 'g-anna', accept: false }]);
+});
+
+const HIGHLIGHT_ANNA = {
+  id: 'post-anna-hl',
+  author_id: 'u-anna',
+  username: 'anna',
+  display_name: 'Anna',
+  badges: [],
+  caption: 'Erster Zander des Abends',
+  visibility: 'friends',
+  photo_paths: ['u-anna/post-anna-hl/1.jpg'],
+  created_at: '2026-11-06T17:30:00Z',
+  group_session_id: 'g-anna',
+  group_title: 'Abendansitz',
+};
+
+test('GRP-3: Highlights – sichtbar in der Session und im Feed, eigener Fang als Highlight geteilt', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }], [HIGHLIGHT_ANNA]);
+  calls.group.sessions.push({
+    id: 'g-anna',
+    host_id: 'u-anna',
+    host_username: 'anna',
+    host_display_name: 'Anna',
+    title: 'Abendansitz',
+    water_name: null,
+    started_at: '2026-11-06T16:00:00Z',
+    ended_at: null,
+    my_status: 'invited',
+    joined_count: 1,
+  });
+  calls.group.members.set('g-anna', [
+    { user_id: 'u-anna', username: 'anna', display_name: 'Anna', status: 'joined', is_host: true },
+    { user_id: 'u-1', username: 'kevin', display_name: 'Kevin', status: 'invited', is_host: false },
+  ]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/fangbuch/sessions');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Zusagen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Abendansitz' })).toBeVisible();
+  const sessionId = new URL(page.url()).pathname.split('/').pop() ?? '';
+
+  // Annas Highlight in der Session-Zusammenfassung
+  const highlights = page.getByRole('region', { name: 'Highlights' });
+  await expect(highlights.getByText('Erster Zander des Abends')).toBeVisible();
+  await expect(page.getByText(/2 Personen dabei/)).toBeVisible();
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.emulateMedia({ colorScheme: 'light' });
+
+  // im Feed mit Kennzeichnung
+  await page.goto('/feed');
+  await waitForApp(page);
+  await expect(
+    page.getByRole('article', { name: /Beitrag von Anna/ }).getByText('Highlight · Abendansitz'),
+  ).toBeVisible();
+
+  // eigenen Fang dieser Session als Highlight teilen
+  await page.evaluate(async (sid) => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const r = indexedDB.open('fangpunkt');
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+    const now = new Date().toISOString();
+    const tx = db.transaction('catches', 'readwrite');
+    tx.objectStore('catches').put({
+      id: 'grp-fang',
+      createdAt: now,
+      updatedAt: now,
+      rev: 1,
+      at: now,
+      tz: 'Europe/Berlin',
+      outcome: 'caught',
+      sessionId: sid,
+    });
+    await new Promise((resolve, reject) => {
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  }, sessionId);
+  await page.goto('/profil/neu?fang=grp-fang');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
+  const pick = page.getByRole('checkbox', { name: /Als Highlight der gemeinsamen Session teilen/ });
+  await expect(page.getByRole('radio', { name: 'Alle' })).toBeVisible();
+  await pick.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await pick.check();
+  // Sichtbarkeit wählt man bei Highlights nicht
+  await expect(page.getByRole('radio', { name: 'Alle' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await expect
+    .poll(() => [...calls.posts.values()].map((p) => (p as { group_session_id?: string }).group_session_id))
+    .toEqual(['g-anna']);
+  expect([...calls.posts.values()][0]?.visibility).toBe('friends');
+  expect(errors).toEqual([]);
 });
 
 test('SAVE-1: Beitrag speichern – Lesezeichen im Feed, Liste „Gespeichert“ im Profil, wieder entfernen', async ({

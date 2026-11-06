@@ -335,3 +335,24 @@
   font-weight: 600;
   color: var(--color-text);
 }
+.highlightPick {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+.highlightPick input {
+  width: 22px;
+  height: 22px;
+  margin: 2px 0 0;
+  accent-color: var(--color-primary);
+  flex: none;
+}
+.highlightPick span {
+  display: grid;
+  gap: var(--space-1);
+}

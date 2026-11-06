@@ -96,4 +96,16 @@ describe('Beiträge teilen (PST-2)', () => {
     });
     expect((await db.posts.get(p.id))?.share).toBe('pending');
   });
+
+  it('Highlight geht mit der gemeinsamen Session hoch (GRP-3)', async () => {
+    const db = freshDb();
+    const s = server();
+    const p = await createPost(
+      { share: 'pending', groupId: 'g1', visibility: 'friends', photos: [photo()] },
+      db,
+    );
+    expect((await db.posts.get(p.id))?.groupId).toBe('g1');
+    await syncPosts(s.account, db);
+    expect(s.posts.get(p.id)).toMatchObject({ groupId: 'g1' });
+  });
 });

@@ -116,3 +116,8 @@
   font-weight: 650;
   text-decoration: none;
 }
+.highlightTag {
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}

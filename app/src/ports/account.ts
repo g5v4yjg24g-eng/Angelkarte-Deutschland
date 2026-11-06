@@ -31,6 +31,8 @@ export interface SharedPostInput {
   photos: { blob: Blob; mime: string }[];
   speciesId?: string | undefined;
   lengthCm?: number | undefined;
+  /** Highlight einer gemeinsamen Session (Paket 8b) */
+  groupId?: string | undefined;
 }
 
 export class AccountError extends Error {
@@ -97,6 +99,8 @@ export interface AccountProvider {
   endGroupSession(groupId: string): Promise<void>;
   myGroupSessions(): Promise<GroupSession[]>;
   groupSessionMembers(groupId: string): Promise<GroupMember[]>;
+  /** Highlights einer gemeinsamen Session (Paket 8b), neueste zuerst; `before` = createdAt */
+  groupHighlights(groupId: string, before?: string): Promise<FeedPost[]>;
   /** Entdecken (Paket 7c): Beiträge mit „Alle“ von anderen Konten, zuletzt geteilt zuerst; `before` = sharedAt */
   discoverFeed(before?: string): Promise<FeedPost[]>;
   /** Geteilte Spots: eigene Freigaben und die von Freunden (Server-Funktion my_shared_spots) */

@@ -92,6 +92,7 @@ function FeedCard({
           <span className="muted">
             {t.handle(post.username)} · {dateOf(post.createdAt)}
           </span>
+          {post.groupId && <span className={styles.highlightTag}>{t.highlight(post.groupTitle)}</span>}
         </span>
         {post.authorId !== storedUserId() && (
           <span className={styles.menu}>

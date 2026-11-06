@@ -15,6 +15,9 @@ export interface FeedPost {
   /** Fischart und Länge (Paket 7a, freiwillig) */
   speciesId?: string | undefined;
   lengthCm?: number | undefined;
+  /** Highlight einer gemeinsamen Session (Paket 8b) mit deren Titel */
+  groupId?: string | undefined;
+  groupTitle?: string | undefined;
   /** nur bei „Entdecken“: wann geteilt (Sortierung, Nachladen) */
   sharedAt?: string | undefined;
   /** nur bei „Gespeichert“: wann gespeichert (Sortierung, Nachladen) */
@@ -39,6 +42,8 @@ const RowSchema = z.object({
   length_cm: z.union([z.number(), z.string()]).nullable().optional(),
   saved_at: z.string().nullable().optional(),
   shared_at: z.string().nullable().optional(),
+  group_session_id: z.string().nullable().optional(),
+  group_title: z.string().nullable().optional(),
 });
 
 export function parseFeedRows(rows: readonly unknown[] | null | undefined): Omit<FeedPost, 'photoUrls'>[] {
@@ -63,6 +68,8 @@ export function parseFeedRows(rows: readonly unknown[] | null | undefined): Omit
         : {}),
       ...(d.saved_at ? { savedAt: d.saved_at } : {}),
       ...(d.shared_at ? { sharedAt: d.shared_at } : {}),
+      ...(d.group_session_id ? { groupId: d.group_session_id } : {}),
+      ...(d.group_title ? { groupTitle: d.group_title } : {}),
     });
   }
   return out;

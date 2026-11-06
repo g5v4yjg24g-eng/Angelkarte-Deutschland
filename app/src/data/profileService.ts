@@ -78,6 +78,8 @@ export async function createPost(
     visibility?: Post['visibility'];
     speciesId?: string | undefined;
     lengthCm?: number | undefined;
+    /** Highlight einer gemeinsamen Session (Paket 8b) */
+    groupId?: string | undefined;
     /** `pending`: mit dem Konto teilen (Etappe 2) */
     share?: 'pending';
     photos: NewPhoto[];
@@ -113,6 +115,7 @@ export async function createPost(
       ...(args.visibility ? { visibility: args.visibility } : {}),
       ...(args.speciesId ? { speciesId: args.speciesId } : {}),
       ...(args.lengthCm !== undefined ? { lengthCm: args.lengthCm } : {}),
+      ...(args.groupId ? { groupId: args.groupId } : {}),
       ...(args.share ? { share: args.share } : {}),
     });
   });

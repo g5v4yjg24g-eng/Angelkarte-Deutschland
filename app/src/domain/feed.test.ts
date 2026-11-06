@@ -33,6 +33,12 @@ describe('Feed (FEED-1)', () => {
     expect(list[0]?.sharedAt).toBeUndefined();
   });
 
+  it('Highlight einer gemeinsamen Session: ID und Titel (GRP-3)', () => {
+    const [p] = parseFeedRows([row({ group_session_id: 'g1', group_title: 'Abendansitz' })]);
+    expect(p).toMatchObject({ groupId: 'g1', groupTitle: 'Abendansitz' });
+    expect(parseFeedRows([row({ group_session_id: null })])[0]?.groupId).toBeUndefined();
+  });
+
   it('Entdecken: Zeitpunkt des Teilens wird gelesen (DISC-1)', () => {
     const [p] = parseFeedRows([row({ visibility: 'public', shared_at: '2026-11-07T08:00:00+00:00' })]);
     expect(p).toMatchObject({ visibility: 'public', sharedAt: '2026-11-07T08:00:00+00:00' });

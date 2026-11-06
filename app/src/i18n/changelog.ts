@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-25',
+    title: 'Highlights gemeinsamer Sessions',
+    items: [
+      'Gemeinsam angeln: Teile einen Fang der Session als Highlight – Fang öffnen, „Posten“, Haken bei „Als Highlight teilen“. Sehen können es nur die Teilnehmer, im Feed und in der Session.',
+      'In der Session stehen jetzt alle Highlights und wie viele dabei waren.',
+    ],
+  },
+  {
     id: '2026-11-24',
     title: 'Gemeinsam angeln',
     items: [

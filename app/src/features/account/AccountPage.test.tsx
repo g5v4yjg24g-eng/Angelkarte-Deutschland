@@ -96,6 +96,7 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
     endGroupSession: () => Promise.resolve(),
     myGroupSessions: () => Promise.resolve([]),
     groupSessionMembers: () => Promise.resolve([]),
+    groupHighlights: () => Promise.resolve([]),
     avatarUrls: () => Promise.resolve(new Map()),
     modClearAvatar: () => Promise.resolve(),
     myBadges: () => (user ? Promise.resolve(badges) : Promise.reject(new AccountError('not signed in', 401))),
