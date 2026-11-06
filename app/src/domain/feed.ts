@@ -12,6 +12,9 @@ export interface FeedPost {
   visibility: 'friends' | 'public';
   photoPaths: string[];
   createdAt: string;
+  /** Fischart und Länge (Paket 7a, freiwillig) */
+  speciesId?: string | undefined;
+  lengthCm?: number | undefined;
   /** zeitlich begrenzte Adressen der Fotos (gleiche Reihenfolge wie photoPaths; fehlt eins, ist es leer) */
   photoUrls: string[];
 }
@@ -28,6 +31,8 @@ const RowSchema = z.object({
   visibility: z.enum(['friends', 'public']),
   photo_paths: z.array(z.string()).min(1),
   created_at: z.string(),
+  species_id: z.string().nullable().optional(),
+  length_cm: z.union([z.number(), z.string()]).nullable().optional(),
 });
 
 export function parseFeedRows(rows: readonly unknown[] | null | undefined): Omit<FeedPost, 'photoUrls'>[] {
@@ -46,6 +51,10 @@ export function parseFeedRows(rows: readonly unknown[] | null | undefined): Omit
       visibility: d.visibility,
       photoPaths: d.photo_paths,
       createdAt: d.created_at,
+      ...(d.species_id ? { speciesId: d.species_id } : {}),
+      ...(d.length_cm !== null && d.length_cm !== undefined && Number.isFinite(Number(d.length_cm))
+        ? { lengthCm: Number(d.length_cm) }
+        : {}),
     });
   }
   return out;

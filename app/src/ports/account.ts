@@ -28,6 +28,8 @@ export interface SharedPostInput {
   visibility: 'friends' | 'public';
   createdAt: string;
   photos: { blob: Blob; mime: string }[];
+  speciesId?: string | undefined;
+  lengthCm?: number | undefined;
 }
 
 export class AccountError extends Error {
@@ -69,7 +71,12 @@ export interface AccountProvider {
   publishPost(post: SharedPostInput): Promise<void>;
   updateSharedPost(
     id: string,
-    changes: { caption?: string | undefined; visibility: 'friends' | 'public' },
+    changes: {
+      caption?: string | undefined;
+      visibility: 'friends' | 'public';
+      speciesId?: string | undefined;
+      lengthCm?: number | undefined;
+    },
   ): Promise<void>;
   /** Beitrag samt Fotos vom Server entfernen (fehlt er schon, ist das kein Fehler) */
   deleteSharedPost(id: string): Promise<void>;

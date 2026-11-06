@@ -207,6 +207,8 @@ export function supabaseAccount(
         visibility: post.visibility,
         photo_paths: paths,
         created_at: post.createdAt,
+        species_id: post.speciesId ?? null,
+        length_cm: post.lengthCm ?? null,
         updated_at: new Date().toISOString(),
       });
       if (error) fail(error);
@@ -218,6 +220,8 @@ export function supabaseAccount(
         .update({
           caption: changes.caption ?? null,
           visibility: changes.visibility,
+          species_id: changes.speciesId ?? null,
+          length_cm: changes.lengthCm ?? null,
           updated_at: new Date().toISOString(),
         })
         .eq('id', postId);

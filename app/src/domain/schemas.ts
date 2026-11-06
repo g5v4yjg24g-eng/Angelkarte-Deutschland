@@ -256,6 +256,12 @@ export const PostSchema = MetaSchema.extend({
   caption: text(2200).optional(),
   photoIds: z.array(id).min(1).max(MAX_PHOTOS_PER_POST),
   catchId: id.optional(),
+  /** Fischart und Länge am Beitrag (Paket 7a, freiwillig; beim Posten aus einem Fang vorausgefüllt) */
+  speciesId: z
+    .string()
+    .regex(/^[a-z][a-z0-9_]{1,39}$/)
+    .optional(),
+  lengthCm: z.number().gt(0).max(250).optional(),
   /** Wer den Beitrag später (mit Konto) sehen, liken und kommentieren darf; fehlt = Freunde (Entscheidung 2026-10-27) */
   visibility: z.enum(['friends', 'public']).optional(),
   /**

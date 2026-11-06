@@ -26,3 +26,18 @@ export const commentValid = (text: string) => {
   const t = text.trim();
   return t.length > 0 && t.length <= COMMENT_MAX;
 };
+
+/**
+ * Länge am Beitrag aus der Eingabe (Paket 7a): leer = keine Angabe, Komma erlaubt, 0 < Länge ≤ 250 cm, auf 0,5 cm
+ * gerundet wie im Fangbuch üblich. `invalid` bei unbrauchbarer Eingabe.
+ */
+export function parsePostLength(text: string): number | undefined | 'invalid' {
+  const t = text.trim().replace(',', '.');
+  if (!t) return undefined;
+  if (!/^\d{1,3}(\.\d+)?$/.test(t)) return 'invalid';
+  const n = Math.round(Number(t) * 10) / 10;
+  return n > 0 && n <= 250 ? n : 'invalid';
+}
+
+/** Länge zum Anzeigen im Eingabefeld (Komma) */
+export const lengthText = (cm: number | undefined) => (cm === undefined ? '' : String(cm).replace('.', ','));

@@ -691,6 +691,15 @@ export const de = {
     localNote:
       'Dein Profil und deine Beiträge bleiben vorerst nur auf diesem Gerät und sind Teil der Sicherung. Beiträge mit Freunden teilen folgt im nächsten Schritt.',
     avatarAlt: 'Profilbild',
+    catchInfo: {
+      title: 'Angaben zum Fang (freiwillig)',
+      species: 'Fischart',
+      noSpecies: '– keine Angabe –',
+      length: 'Länge in cm',
+      lengthInvalid: 'Bitte eine Länge zwischen 1 und 250 cm eingeben – oder das Feld leer lassen.',
+      hint: 'Wird mit dem Beitrag gezeigt. Der Fangort wird nie geteilt.',
+      tagLabel: 'Fang',
+    },
     avatarEditor: {
       title: 'Profilbild zuschneiden',
       hint: 'Verschieben mit dem Finger, zoomen mit zwei Fingern oder dem Regler. Im Kreis siehst du, wie dein Bild erscheint.',

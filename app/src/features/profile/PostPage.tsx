@@ -13,7 +13,7 @@ import { TextArea } from '../../design/components/Field';
 import { ImagesIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
 import { postReactions, removePost, toggleLike, updatePost } from '../../data/profileService';
-import { likeIdOf, POST_CAPTION_MAX } from '../../domain/profile';
+import { lengthText, likeIdOf, parsePostLength, POST_CAPTION_MAX } from '../../domain/profile';
 import { LOCAL_AUTHOR, type Photo, type Post } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
 import { FounderBadge } from '../badges/FounderBadge';
@@ -32,6 +32,7 @@ import type { ProfileState } from './ProfilePage';
 import { usePhotos, useProfile } from './usePhoto';
 import { useHaptics } from '../haptics/useHaptics';
 import { usePikeLike } from '../reactions/usePikeLike';
+import { CatchInfoFields, CatchTag } from './CatchInfoFields';
 import styles from './Profile.module.css';
 
 const t = de.profile;
@@ -51,12 +52,22 @@ function Slide({ photo, n, total }: { photo: Photo; n: number; total: number }) 
 function EditForm({ post, onDone }: { post: Post; onDone: () => void }) {
   const [caption, setCaption] = useState(post.caption ?? '');
   const [visibility, setVisibility] = useState(post.visibility ?? 'friends');
+  const [species, setSpecies] = useState(post.speciesId ?? '');
+  const [length, setLength] = useState(lengthText(post.lengthCm));
+  const [lengthError, setLengthError] = useState<string>();
   return (
     <form
       className={styles.form}
       onSubmit={(e) => {
         e.preventDefault();
-        void updatePost(post.id, { caption: caption.trim(), visibility }).then(onDone);
+        const lengthCm = parsePostLength(length);
+        if (lengthCm === 'invalid') return setLengthError(t.catchInfo.lengthInvalid);
+        void updatePost(post.id, {
+          caption: caption.trim(),
+          visibility,
+          speciesId: species || undefined,
+          lengthCm,
+        }).then(onDone);
       }}
     >
       <TextArea
@@ -65,6 +76,13 @@ function EditForm({ post, onDone }: { post: Post; onDone: () => void }) {
         rows={4}
         maxLength={POST_CAPTION_MAX}
         onChange={(e) => setCaption(e.target.value)}
+      />
+      <CatchInfoFields
+        speciesId={species}
+        length={length}
+        lengthError={lengthError}
+        onSpecies={setSpecies}
+        onLength={setLength}
       />
       <VisibilityField value={visibility} onChange={setVisibility} />
       <div className={styles.formActions}>
@@ -218,6 +236,7 @@ export function PostPage() {
         <EditForm post={post} onDone={() => setEditing(false)} />
       ) : (
         <div className={styles.top}>
+          <CatchTag speciesId={post.speciesId} lengthCm={post.lengthCm} />
           {post.caption && (
             <p className={styles.bio}>
               <strong>{name}</strong>
