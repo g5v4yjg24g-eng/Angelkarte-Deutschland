@@ -1,5 +1,5 @@
 import { expect, test, type Page } from './fixtures';
-import { collectErrors, useLocalExternals, waitForApp } from './helpers';
+import { collectErrors, useLocalExternals, waitForApp, animationsDone } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -377,6 +377,7 @@ test('REV-4: Lange Session (6 000 Punkte), 390 px, Dunkelmodus, ohne Netz', asyn
       return s.scrollWidth <= s.clientWidth;
     }),
   ).toBe(true);
+  await animationsDone(dialog);
   await expect(page.getByRole('button', { name: 'Rückblick schließen' })).toBeInViewport();
   await context.setOffline(false);
   expect(errors.filter((e) => !/status of 404|ERR_INTERNET_DISCONNECTED|Failed to fetch/.test(e))).toEqual(

@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-27',
+    title: 'Kleine Verbesserungen',
+    items: [
+      'Session-Rückblick: Der Knopf zum Schließen bleibt beim Scrollen oben rechts sichtbar.',
+      'Suche: Ist auf deinem Gerät „Bewegung reduzieren“ eingeschaltet, springt die Karte direkt zum Treffer statt zu fliegen.',
+    ],
+  },
+  {
     id: '2026-11-26',
     title: 'Eigene Gewässerregeln',
     items: [

@@ -118,3 +118,10 @@ export async function startCatchAt(page: Page, at?: { lng: number; lat: number }
   }, at);
   await page.mouse.click(p.x, p.y);
 }
+
+/** Warten, bis alle CSS-Animationen und Übergänge im Element fertig sind (z. B. ein hereinfahrendes Fenster) */
+export async function animationsDone(locator: import('@playwright/test').Locator) {
+  await locator.evaluate((el) =>
+    Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished.catch(() => undefined))),
+  );
+}

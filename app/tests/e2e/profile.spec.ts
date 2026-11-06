@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from './fixtures';
-import { collectErrors, startCatchAt, useLocalExternals, waitForApp } from './helpers';
+import { collectErrors, startCatchAt, useLocalExternals, waitForApp, animationsDone } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 test.beforeEach(async ({ page }) => {
@@ -241,6 +241,8 @@ test('PRF-7: Kommentar-Fenster schließt beim Herunterziehen, kurzes Ziehen fede
   await page.getByRole('button', { name: 'Kommentieren' }).click();
   const sheet = page.getByRole('dialog', { name: 'Kommentare' });
   await expect(sheet).toBeVisible();
+  // erst messen, wenn das Fenster fertig hereingefahren ist (unter Last sonst zu tief)
+  await animationsDone(sheet);
   const top = (await sheet.getByRole('heading', { name: 'Kommentare' }).boundingBox())?.y ?? 200;
 
   const cdp = await page.context().newCDPSession(page);
@@ -257,8 +259,9 @@ test('PRF-7: Kommentar-Fenster schließt beim Herunterziehen, kurzes Ziehen fede
   };
   // langsam und kurz: federt zurück
   await drag(60, 120);
-  await page.waitForTimeout(400);
   await expect(sheet).toBeVisible();
+  // Zurückfedern abwarten, bevor der zweite Zug beginnt
+  await animationsDone(sheet);
   await drag(360, 20);
   await expect(sheet).toBeHidden();
 });
@@ -389,7 +392,7 @@ test('PRF-9: Doppeltipp – Hecht schwimmt im Bild zum Daumen, setzt „Gefällt
   await expect(like).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByText('1 „Gefällt mir“-Angabe')).toBeVisible();
   // danach ist die Ebene wieder leer, der Daumen bleibt gesetzt
-  await expect.poll(() => pikeVisible(page), { timeout: 3000 }).toBe(false);
+  await expect.poll(() => pikeVisible(page), { timeout: 10_000 }).toBe(false);
   await slide.dblclick();
   await page.waitForTimeout(1300);
   await expect(like).toHaveAttribute('aria-pressed', 'true');
@@ -413,11 +416,32 @@ test('PRF-9: Doppeltipp – Hecht schwimmt im Bild zum Daumen, setzt „Gefällt
   // Mitten in der Animation die Seite verlassen: „Gefällt mir“ wird trotzdem gesetzt
   const url = page.url();
   await slide.dblclick();
+  // erst gehen, wenn der Doppeltipp erkannt ist (Hecht schwimmt)
+  await expect.poll(() => pikeVisible(page)).toBe(true);
   await page
     .getByRole('link', { name: /Zurück/ })
     .first()
     .click();
   await expect(page.getByRole('heading', { level: 1, name: 'Profil' })).toBeVisible();
+  // gespeichert, bevor neu geladen wird
+  await expect
+    .poll(() =>
+      page.evaluate(async () => {
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+          const r = indexedDB.open('fangpunkt');
+          r.onsuccess = () => resolve(r.result);
+          r.onerror = () => reject(r.error);
+        });
+        const n = await new Promise<number>((resolve) => {
+          const all = db.transaction('postLikes').objectStore('postLikes').getAll();
+          all.onsuccess = () =>
+            resolve((all.result as { deletedAt?: string }[]).filter((l) => !l.deletedAt).length);
+        });
+        db.close();
+        return n;
+      }),
+    )
+    .toBe(1);
   await page.goto(url);
   await waitForApp(page);
   await expect(page.getByRole('button', { name: 'Gefällt mir' })).toHaveAttribute('aria-pressed', 'true');
