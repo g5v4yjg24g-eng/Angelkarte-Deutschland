@@ -30,6 +30,7 @@ async function collect(
     trips,
     tracks,
     waterLinks,
+    waterRules,
     profiles,
     posts,
     postLikes,
@@ -43,6 +44,7 @@ async function collect(
     db.trips.toArray(),
     db.tracks.toArray(),
     db.waterLinks.toArray(),
+    db.waterRules.toArray(),
     db.profiles.toArray(),
     db.posts.toArray(),
     db.postLikes.toArray(),
@@ -64,6 +66,7 @@ async function collect(
       trips,
       tracks,
       waterLinks,
+      waterRules,
       profiles,
       posts,
       postLikes,
@@ -213,6 +216,7 @@ export async function applyImport(
       db.trips,
       db.tracks,
       db.waterLinks,
+      db.waterRules,
       db.profiles,
       db.posts,
       db.postLikes,
@@ -276,6 +280,7 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
       db.trips,
       db.tracks,
       db.waterLinks,
+      db.waterRules,
       db.profiles,
       db.posts,
       db.postLikes,
@@ -291,6 +296,7 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
         db.trips.clear(),
         db.tracks.clear(),
         db.waterLinks.clear(),
+        db.waterRules.clear(),
         db.profiles.clear(),
         db.posts.clear(),
         db.postLikes.clear(),
@@ -307,6 +313,8 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
       await db.tracks.bulkPut(d.tracks ?? []);
       // Snapshots vor DB v4 haben keine eigenen Gewässer-Links
       await db.waterLinks.bulkPut(d.waterLinks ?? []);
+      // Snapshots vor DB v7 haben keine eigenen Gewässerregeln
+      await db.waterRules.bulkPut(d.waterRules ?? []);
       // Snapshots vor DB v5 haben kein Profil und keine Beiträge
       await db.profiles.bulkPut(d.profiles ?? []);
       await db.posts.bulkPut(d.posts ?? []);

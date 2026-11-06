@@ -145,11 +145,13 @@ Die Altprojekt-Angaben (NRW, HH) gelten als **Ausgangspunkt**, nicht als geprüf
 
 ### 5.3 Pflege- und Aktualisierungsprozess
 1. Jede Landesdatei `app/data/regulations/<KÜRZEL>.json` (z. B. `NW.json`) enthält `checkedAt`, `checkedBy`, `legalBasis[]` (Titel, Fassung, URL, Abrufdatum) und je Regel den **Paragrafen**.
-2. CI-Check (`pnpm validate:data`, auch Teil von `pnpm test`): Schema gültig; jede Regel hat Quelle und Paragraf, sonst rot. `checkedAt` älter als **180 Tage** erzeugt eine Warnung im Testlauf; ein automatisches Issue gibt es noch nicht [O].
+2. CI-Check (`pnpm validate:data`, auch Teil von `pnpm test`): Schema gültig; jede Regel hat Quelle und Paragraf, sonst rot. `checkedAt` älter als **180 Tage** erzeugt eine Warnung im Testlauf. Seit Paket 9C (2026-11-06) prüft der Workflow „Rechtsdaten prüfen“ (`.github/workflows/rechtsdaten.yml`, wöchentlich und von Hand) mit `app/scripts/regulation-review.ts` (Logik `reviewDue` in `domain/regulations.ts`), welche Länder in 30 Tagen „möglicherweise veraltet“ sind, und legt dann ein Issue mit Label `rechtsdaten-pruefung` an bzw. aktualisiert es. Ändert keine Daten.
 3. In der App: Banner „Zuletzt geprüft am … – möglicherweise veraltet", sobald 180 Tage überschritten sind; ab 365 Tagen deutlicher Warnhinweis. Status `partial` listet fehlende Teile.
 4. Erfassung immer zuerst als `draft`; sichtbar (`verified`/`partial`) erst nach Gegenprüfung durch dich am amtlichen Text (Entscheidung 2026-10-22).
 5. Halbjährlicher Prüftermin (Kalendererinnerung für dich). Änderungen per Pull Request mit Link zur Fundstelle.
-6. Disclaimer in jeder Rechtsansicht: „Keine Rechtsauskunft. Maßgeblich sind der amtliche Text und die Bedingungen deines Erlaubnisscheins."
+6. **Gewässerregeln** (Verein, Pächter, Erlaubnisschein): keine verlässliche, einheitliche Quelle – werden nicht erfasst und nie aus OSM oder Webseiten abgeleitet [O, dokumentierte Lücke]. Kostenlose Abhilfe (Paket 9A): der Nutzer trägt die Regeln seines Erlaubnisscheins selbst ein (Tabelle `waterRules`, nur auf dem Gerät, gekennzeichnet „nicht von Fangpunkt geprüft“); sie erscheinen im Gewässerprofil und neben der Landesprüfung.
+7. **Bundesland der Prüfung** (Paket 9B): nicht allein aus der Position – ist ein Fang einem Gewässer zugeordnet, zählt dessen Land aus den Gewässerdaten; widerspricht es dem Land der Fangposition, wählt der Nutzer.
+8. Disclaimer in jeder Rechtsansicht: „Keine Rechtsauskunft. Maßgeblich sind der amtliche Text und die Bedingungen deines Erlaubnisscheins."
 
 ---
 

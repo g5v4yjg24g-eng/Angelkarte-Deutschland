@@ -46,6 +46,7 @@ export const emptyRecords = (): Records => ({
   trips: [],
   tracks: [],
   waterLinks: [],
+  waterRules: [],
   profiles: [],
   posts: [],
   postLikes: [],

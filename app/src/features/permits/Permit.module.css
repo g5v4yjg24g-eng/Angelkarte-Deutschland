@@ -78,3 +78,8 @@
   margin: 0;
   font-size: var(--text-sm);
 }
+.rulesText {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

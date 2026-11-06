@@ -1476,6 +1476,8 @@ export const de = {
     noPosition: 'Ohne Fangort keine Prüfung möglich.',
     noState: 'Bundesland unbekannt – keine Prüfung möglich.',
     chooseState: 'Der Fangort liegt nah an einer Landesgrenze. In welchem Bundesland hast du gefangen?',
+    chooseStateWater:
+      'Das Gewässer liegt laut Kartendaten in einem anderen Bundesland als der Fangpunkt. Welches Landesrecht gilt?',
     noData: (state: string) =>
       `${state}: keine Prüfung möglich – für dieses Land sind noch keine Regeln erfasst.`,
     noFindings: (state: string) =>
@@ -1750,6 +1752,7 @@ export const de = {
       trips: 'Angeltermine',
       tracks: 'Routen',
       waterLinks: 'Gewässer-Links',
+      waterRules: 'Eigene Gewässerregeln',
       profiles: 'Profil',
       posts: 'Beiträge',
       postLikes: 'Gefällt mir',
@@ -2456,6 +2459,20 @@ export const de = {
       offline: 'Keine Verbindung. Versuch es gleich noch einmal.',
       unknown: 'Das hat nicht geklappt. Versuch es noch einmal.',
     },
+  },
+  waterRules: {
+    title: 'Deine Regeln für dieses Gewässer',
+    unchecked: 'Deine Notiz – nicht von Fangpunkt geprüft',
+    add: 'Eigene Gewässerregeln eintragen',
+    addHint:
+      'Zum Beispiel vom Erlaubnisschein: Mindestmaße, Fangbegrenzung, Nachtangeln. Bleibt auf deinem Gerät und erscheint beim Erfassen eines Fangs hier.',
+    label: 'Regeln (vom Erlaubnisschein oder Verein)',
+    placeholder: 'z. B. Hecht ab 60 cm, höchstens 2 am Tag, kein Nachtangeln',
+    edit: 'Bearbeiten',
+    remove: 'Entfernen',
+    save: 'Speichern',
+    cancel: 'Abbrechen',
+    inCheck: 'Deine Regeln für dieses Gewässer (nicht geprüft)',
   },
   groupSessions: {
     title: 'Gemeinsam angeln',

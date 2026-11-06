@@ -8,6 +8,7 @@ import { Button } from '../../design/components/Button';
 import { ChevronRightIcon } from '../../design/icons';
 import { osmUrl, type WaterInfo, type WaterManifest } from '../../domain/water';
 import { WaterPermitSection } from '../permits/WaterPermitSection';
+import { WaterRulesSection } from '../permits/WaterRulesSection';
 import styles from './WaterProfile.module.css';
 
 const fmtDate = (iso: string) =>
@@ -75,6 +76,7 @@ export function WaterProfile({
           <p className={styles.plain}>{t.rulesNoState}</p>
         )}
         <p className={`muted ${styles.small}`}>{t.rulesWater}</p>
+        <WaterRulesSection waterId={info.wid} />
         <WaterPermitSection waterId={info.wid} state={info.state} />
       </section>
 

@@ -286,3 +286,41 @@ test('PRM-5: Gewässerkarte – Landesverbände in NRW, eigener Link wird gespei
   await again.getByRole('button', { name: 'Entfernen' }).click();
   await expect(again.getByRole('button', { name: 'Eigenen Link speichern' })).toBeVisible();
 });
+
+test('LAW-8: eigene Gewässerregeln im Gewässerprofil eintragen, bleiben, entfernen', async ({ page }) => {
+  await openMapAt(page, 6.2425, 51.3245, 14.3);
+  await tapWater(page, 6.2418, 51.3263);
+  const profile = page.getByRole('dialog', { name: 'De Wittsee' });
+  await profile.getByRole('button', { name: 'Eigene Gewässerregeln eintragen' }).click();
+  await profile
+    .getByRole('textbox', { name: 'Regeln (vom Erlaubnisschein oder Verein)' })
+    .fill('Hecht ab 60 cm\nkein Nachtangeln');
+  await profile.getByRole('button', { name: 'Speichern', exact: true }).click();
+  const own = profile.getByRole('region', { name: 'Deine Regeln für dieses Gewässer' });
+  await expect(own).toContainText('kein Nachtangeln');
+  await expect(own).toContainText('nicht von Fangpunkt geprüft');
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page })
+      .include('section[aria-labelledby="water-fishing"]')
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.keyboard.press('Escape');
+  await page.reload();
+  await waitForApp(page);
+  await tapWater(page, 6.2418, 51.3263);
+  const again = page
+    .getByRole('dialog', { name: 'De Wittsee' })
+    .getByRole('region', { name: 'Deine Regeln für dieses Gewässer' });
+  await expect(again).toContainText('Hecht ab 60 cm');
+  await again.getByRole('button', { name: 'Entfernen' }).click();
+  await expect(
+    page
+      .getByRole('dialog', { name: 'De Wittsee' })
+      .getByRole('button', { name: 'Eigene Gewässerregeln eintragen' }),
+  ).toBeVisible();
+});

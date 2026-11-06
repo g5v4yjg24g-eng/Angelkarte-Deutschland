@@ -239,6 +239,15 @@ export const WaterLinkSchema = MetaSchema.extend({
   label: text(80).optional(),
 });
 
+/**
+ * Eigene Regeln eines Gewässers (Paket 9A, Freigabe Nutzer 2026-11-06), z. B. vom Erlaubnisschein abgetippt. Freier
+ * Text des Nutzers, nicht von Fangpunkt geprüft; bleibt auf dem Gerät. Je Gewässer einer (ID `waterrules-<waterId>`).
+ */
+export const WaterRulesSchema = MetaSchema.extend({
+  waterId: id,
+  text: z.string().trim().min(1).max(2000),
+});
+
 /** Höchstzahl Fotos je Beitrag (wie ein Karussell) */
 export const MAX_PHOTOS_PER_POST = 10;
 export const PROFILE_ID = 'me';
@@ -308,6 +317,7 @@ export type BaitPreset = z.infer<typeof BaitPresetSchema>;
 export type Trip = z.infer<typeof TripSchema>;
 export type Track = z.infer<typeof TrackSchema>;
 export type WaterLink = z.infer<typeof WaterLinkSchema>;
+export type WaterRules = z.infer<typeof WaterRulesSchema>;
 export type TrackPoint = z.infer<typeof TrackPointSchema>;
 export type Profile = z.infer<typeof ProfileSchema>;
 export type Post = z.infer<typeof PostSchema>;
@@ -323,6 +333,7 @@ export const ENTITY_SCHEMAS = {
   trips: TripSchema,
   tracks: TrackSchema,
   waterLinks: WaterLinkSchema,
+  waterRules: WaterRulesSchema,
   profiles: ProfileSchema,
   posts: PostSchema,
   postLikes: PostLikeSchema,
@@ -337,6 +348,7 @@ export interface EntityMap {
   trips: Trip;
   tracks: Track;
   waterLinks: WaterLink;
+  waterRules: WaterRules;
   profiles: Profile;
   posts: Post;
   postLikes: PostLike;

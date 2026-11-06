@@ -155,6 +155,42 @@ export function freshness(checkedAt: string, nowMs: number): Freshness {
   return 'current';
 }
 
+/** Vorlauf der Prüf-Erinnerung (Paket 9C): so viele Tage, bevor ein Land als „möglicherweise veraltet“ gilt */
+export const REVIEW_LEAD_DAYS = 30;
+
+export interface ReviewDue {
+  stateCode: StateCode;
+  checkedAt: string;
+  /** ab hier „möglicherweise veraltet“ (JJJJ-MM-TT) */
+  staleFrom: string;
+  overdue: boolean;
+}
+
+/**
+ * Länder, deren erneute Prüfung bald fällig (innerhalb des Vorlaufs) oder überfällig ist – früheste zuerst.
+ * Entwürfe zählen nicht (werden nie gezeigt).
+ */
+export function reviewDue(
+  sets: readonly Pick<RegulationSet, 'stateCode' | 'checkedAt' | 'status'>[],
+  nowMs: number,
+  leadDays = REVIEW_LEAD_DAYS,
+): ReviewDue[] {
+  return sets
+    .filter((s) => s.status !== 'draft')
+    .map((s) => {
+      const stale = Date.parse(`${s.checkedAt}T00:00:00Z`) + STALE_DAYS * 864e5;
+      return { s, stale };
+    })
+    .filter(({ stale }) => nowMs >= stale - leadDays * 864e5)
+    .sort((a, b) => a.stale - b.stale)
+    .map(({ s, stale }) => ({
+      stateCode: s.stateCode,
+      checkedAt: s.checkedAt,
+      staleFrom: new Date(stale).toISOString().slice(0, 10),
+      overdue: nowMs >= stale,
+    }));
+}
+
 /** Schonzeiten einer Art, die an diesem Tag gelten (mit Geltungsbereich, falls angegeben). */
 export function closedSeasonsOn(set: RegulationSet, speciesId: string, day: MonthDay): ClosedSeasonRule[] {
   return set.closedSeasons.filter((r) => r.speciesId === speciesId && inClosedSeason(r, day));

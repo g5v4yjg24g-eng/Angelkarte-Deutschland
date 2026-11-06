@@ -1,0 +1,40 @@
+name: Rechtsdaten prüfen
+
+# Prüf-Erinnerung (Paket 9C, Freigabe Nutzer 2026-11-06): wöchentlich nachsehen, ob ein Land in 30 Tagen als
+# „möglicherweise veraltet“ gilt (180 Tage nach der letzten Prüfung). Dann wird ein Issue angelegt bzw. aktualisiert.
+# Ändert keine Daten.
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Fällige Länder ermitteln
+        run: pnpm -C app exec tsx scripts/regulation-review.ts > review.md
+      - name: Issue anlegen oder aktualisieren
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -s review.md ]; then echo "Nichts fällig."; exit 0; fi
+          gh label create rechtsdaten-pruefung --color FBCA04 --description "Rechtsdaten erneut prüfen" --force
+          num=$(gh issue list --label rechtsdaten-pruefung --state open --json number --jq '.[0].number')
+          if [ -n "$num" ]; then
+            gh issue edit "$num" --body-file review.md
+          else
+            gh issue create --title "Rechtsdaten: erneute Prüfung fällig" --label rechtsdaten-pruefung --body-file review.md
+          fi

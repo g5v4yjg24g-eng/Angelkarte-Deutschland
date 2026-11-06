@@ -140,6 +140,41 @@ test('LAW-5: Warnung bei Schonzeit und Mindestmaß, Bundesland aus dem Fangort, 
   expect(errors).toEqual([]);
 });
 
+test('LAW-8: eigene Gewässerregeln erscheinen in der Prüfung, klar als ungeprüft gekennzeichnet', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await useLocalExternals(page);
+  await serveStates(page);
+  await page.goto('/fangbuch');
+  await waitForApp(page);
+  await put(page, [pike('see', 7, 51.5, { waterId: 'osm:r1', waterSnapshot: { name: 'Testsee' } })]);
+  await page.evaluate(async () => {
+    const req = indexedDB.open('fangpunkt');
+    const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(['waterRules'], 'readwrite');
+      const now = new Date().toISOString();
+      tx.objectStore('waterRules').put({
+        id: 'waterrules-osm:r1',
+        createdAt: now,
+        updatedAt: now,
+        rev: 0,
+        waterId: 'osm:r1',
+        text: 'Hecht ab 60 cm, höchstens 2 am Tag',
+      });
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error as Error);
+    });
+    db.close();
+  });
+  await open(page, 'see');
+  const panel = page.getByRole('region', { name: 'Landesrecht Nordrhein-Westfalen' });
+  await expect(panel).toContainText('Deine Regeln für dieses Gewässer (nicht geprüft)');
+  await expect(panel).toContainText('Hecht ab 60 cm, höchstens 2 am Tag');
+  expect(errors).toEqual([]);
+});
+
 test('LAW-6: ohne Landesgrenzen in den Daten → „Bundesland unbekannt – keine Prüfung möglich"', async ({
   page,
 }) => {

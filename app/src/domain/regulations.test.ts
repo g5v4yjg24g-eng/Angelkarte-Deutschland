@@ -6,6 +6,7 @@ import {
   filterSpeciesRules,
   matchesSpecies,
   freshness,
+  reviewDue,
   inClosedSeason,
   isShown,
   RegulationSetSchema,
@@ -151,5 +152,27 @@ describe('Suche und „nur Schonzeit“ (LAW-6)', () => {
       sizes: [],
       protectedSpecies: [],
     });
+  });
+});
+
+describe('Prüf-Erinnerung (LAW-9)', () => {
+  const ms = (d: string) => Date.parse(`${d}T12:00:00Z`);
+  const sets = [
+    { stateCode: 'NW' as const, checkedAt: '2026-10-25', status: 'partial' as const },
+    { stateCode: 'BY' as const, checkedAt: '2026-10-22', status: 'partial' as const },
+    { stateCode: 'HB' as const, checkedAt: '2026-01-01', status: 'draft' as const },
+  ];
+  it('nichts fällig, solange mehr als 30 Tage bis „möglicherweise veraltet“ bleiben', () => {
+    expect(reviewDue(sets, ms('2027-03-01'))).toEqual([]);
+  });
+  it('30 Tage vorher fällig, früheste zuerst; danach überfällig; Entwürfe nie', () => {
+    // BY: 2026-10-22 + 180 Tage = 2027-04-20; NW: 2027-04-23
+    expect(reviewDue(sets, ms('2027-03-22'))).toEqual([
+      { stateCode: 'BY', checkedAt: '2026-10-22', staleFrom: '2027-04-20', overdue: false },
+    ]);
+    expect(reviewDue(sets, ms('2027-04-21')).map((r) => [r.stateCode, r.overdue])).toEqual([
+      ['BY', true],
+      ['NW', false],
+    ]);
   });
 });
