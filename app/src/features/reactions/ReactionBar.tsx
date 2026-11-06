@@ -2,7 +2,7 @@
 // 2026-10-27) – gemeinsam für Beitragsseite (Gerät oder Server) und Feed.
 import { useState, type Ref } from 'react';
 import { de } from '../../i18n/de';
-import { CommentIcon, ThumbsUpIcon } from '../../design/icons';
+import { BookmarkIcon, CommentIcon, ThumbsUpIcon } from '../../design/icons';
 import { useHaptics } from '../haptics/useHaptics';
 import styles from '../profile/Profile.module.css';
 
@@ -16,6 +16,8 @@ export function ReactionBar({
   onComments,
   likeIconRef,
   pulse = 0,
+  saved,
+  onSave,
 }: {
   likeCount: number;
   commentCount: number;
@@ -26,6 +28,9 @@ export function ReactionBar({
   likeIconRef?: Ref<HTMLSpanElement>;
   /** Zähler: jede Erhöhung lässt den Daumen hüpfen (Hecht angekommen) */
   pulse?: number;
+  /** Lesezeichen (Paket 7b; nur bei Beiträgen vom Server) */
+  saved?: boolean;
+  onSave?: () => void;
 }) {
   const haptics = useHaptics();
   const [taps, setTaps] = useState(0);
@@ -51,7 +56,7 @@ export function ReactionBar({
           )}
         </div>
       )}
-      <div className={styles.actionRow}>
+      <div className={[styles.actionRow, onSave ? styles.actionRow3 : ''].join(' ')}>
         <button
           type="button"
           className={[styles.action, liked ? styles.liked : ''].join(' ')}
@@ -78,6 +83,17 @@ export function ReactionBar({
           <CommentIcon size={22} />
           <span>{t.commentAction}</span>
         </button>
+        {onSave && (
+          <button
+            type="button"
+            className={[styles.action, styles.saveAction, saved ? styles.liked : ''].join(' ')}
+            aria-pressed={!!saved}
+            onClick={onSave}
+          >
+            <BookmarkIcon filled={!!saved} size={22} />
+            <span className="visually-hidden">{saved ? de.feed.saved : de.feed.save}</span>
+          </button>
+        )}
       </div>
     </>
   );

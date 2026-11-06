@@ -2316,6 +2316,14 @@ export const de = {
   },
   feed: {
     title: 'Feed',
+    save: 'Speichern',
+    saved: 'Gespeichert',
+    saveError: 'Speichern hat nicht geklappt. Bitte gleich noch einmal versuchen.',
+    savedTitle: 'Gespeichert',
+    savedEmptyTitle: 'Noch nichts gespeichert',
+    savedEmptyText:
+      'Tippe unter einem Beitrag auf „Speichern“, um ihn hier wiederzufinden. Nur du siehst, was du gespeichert hast.',
+    savedSignedOut: 'Gespeicherte Beiträge gibt es mit Konto.',
     loading: 'Wird geladen …',
     signedOut: 'Im Feed siehst du die Beiträge deiner Freunde. Dafür brauchst du ein Konto.',
     toAccount: 'Zum Konto',

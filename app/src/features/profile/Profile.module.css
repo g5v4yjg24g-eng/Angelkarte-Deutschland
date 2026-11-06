@@ -256,6 +256,14 @@
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
 }
+.actionRow3 {
+  grid-template-columns: 1fr 1fr auto;
+}
+/* Lesezeichen als Symbol am rechten Rand (wie Instagram), Name nur für Screenreader */
+.saveAction {
+  min-width: var(--touch);
+  padding-inline: var(--space-3);
+}
 .action {
   display: inline-flex;
   align-items: center;

@@ -60,6 +60,8 @@ async function fakeSupabase(
   const storage = new Map<string, number>();
   // Profilbilder (Paket 2b): Nutzer-ID → Pfad im Speicher „avatars“
   const avatars = new Map<string, string>();
+  // Lesezeichen (Paket 7b): gespeicherte Beitrags-IDs in Reihenfolge des Speicherns
+  const saves: string[] = [];
   const posts = new Map<
     string,
     { id: string; caption: string | null; visibility: string; photo_paths: string[] }
@@ -421,6 +423,28 @@ async function fakeSupabase(
         mod.log.push({ action: 'unban', who: b.who, detail: b.note });
         return route.fulfill({ status: 204 });
       }
+      case 'POST /rest/v1/rpc/toggle_save': {
+        const { post } = req.postDataJSON() as { post: string };
+        const i = saves.indexOf(post);
+        if (i >= 0) saves.splice(i, 1);
+        else saves.unshift(post);
+        return json(route, i < 0);
+      }
+      case 'POST /rest/v1/rpc/my_saved_ids': {
+        const { posts } = req.postDataJSON() as { posts: string[] };
+        return json(
+          route,
+          posts.filter((p) => saves.includes(p)),
+        );
+      }
+      case 'POST /rest/v1/rpc/saved_posts':
+        return json(
+          route,
+          saves
+            .map((id) => (feed as { id: string }[]).find((p) => p.id === id))
+            .filter(Boolean)
+            .map((p) => ({ ...p, saved_at: '2026-11-08T10:00:00Z' })),
+        );
       case 'POST /rest/v1/rpc/avatar_paths': {
         const { users } = req.postDataJSON() as { users: string[] };
         return json(
@@ -463,7 +487,9 @@ async function fakeSupabase(
     comments: { value: comments },
     mod: { value: mod },
     avatars: { value: avatars },
+    saves: { value: saves },
   }) as string[] & {
+    saves: typeof saves;
     avatars: typeof avatars;
     mod: typeof mod;
     likes: typeof likes;
@@ -1655,5 +1681,49 @@ test('FEED-5: Fischart und Länge – gehen mit dem Beitrag auf den Server und s
   const sent = [...calls.posts.values()][0] as unknown as { species_id: string; length_cm: number };
   expect(sent.species_id).toBe('pike');
   expect(sent.length_cm).toBe(92);
+  expect(errors).toEqual([]);
+});
+
+test('SAVE-1: Beitrag speichern – Lesezeichen im Feed, Liste „Gespeichert“ im Profil, wieder entfernen', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }], [FEED_ANNA]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+
+  // leer
+  await page.goto('/profil/gespeichert');
+  await waitForApp(page);
+  await expect(page.getByText('Noch nichts gespeichert')).toBeVisible();
+
+  await page.goto('/feed');
+  await waitForApp(page);
+  const card = page.getByRole('article', { name: /Beitrag von Anna/ });
+  const save = card.getByRole('button', { name: 'Speichern' });
+  await expect(save).toHaveAttribute('aria-pressed', 'false');
+  await save.click();
+  await expect(card.getByRole('button', { name: 'Gespeichert' })).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => [...calls.saves]).toEqual(['post-anna-1']);
+
+  await page
+    .getByRole('navigation', { name: 'Hauptnavigation' })
+    .getByRole('link', { name: 'Profil' })
+    .click();
+  await page.getByRole('button', { name: 'Gespeichert' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Gespeichert' })).toBeVisible();
+  const savedCard = page.getByRole('article', { name: /Beitrag von Anna/ });
+  await expect(savedCard.getByText('Zander am Abend')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await savedCard.getByRole('button', { name: 'Gespeichert' }).click();
+  await expect(savedCard.getByRole('button', { name: 'Speichern' })).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => calls.saves.length).toBe(0);
   expect(errors).toEqual([]);
 });

@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-22',
+    title: 'Beiträge speichern',
+    items: [
+      'Feed: Mit dem Lesezeichen rechts unter einem Beitrag speicherst du ihn. Wiederfinden unter Profil → Gespeichert. Nur du siehst, was du gespeichert hast.',
+    ],
+  },
+  {
     id: '2026-11-21',
     title: 'Fischart und Länge am Beitrag',
     items: [
