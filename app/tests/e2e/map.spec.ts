@@ -4,7 +4,14 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { legacyExport } from '../../src/test/fixtures/legacy-angelkarte-v2';
-import { collectErrors, screenPoint, serveWaterFixture, tapRendered, waitForApp } from './helpers';
+import {
+  collectErrors,
+  screenPoint,
+  serveWaterFixture,
+  tapRendered,
+  waitForApp,
+  animationsDone,
+} from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -97,6 +104,8 @@ test('MAP-3/MRK-1: Tipp auf die Karte legt einen Steg an; bearbeiten, löschen, 
   const sheet = page.getByRole('dialog', { name: 'Neu an dieser Stelle' });
   await expect(sheet).toBeVisible();
   await expect(sheet.getByRole('button', { name: 'Fang oder Kontakt erfassen' })).toBeVisible();
+  // Kontrast erst messen, wenn das Blatt fertig eingeblendet ist (sonst halbtransparente Schrift)
+  await animationsDone(sheet);
   expect(
     (await new AxeBuilder({ page }).include('dialog').analyze()).violations.filter((v) =>
       ['serious', 'critical'].includes(v.impact ?? ''),

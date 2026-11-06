@@ -546,7 +546,8 @@ export default function MapView() {
     setSheet(null);
     if (!map) return;
     const zoom = r.isPlace ? (r.kind === 'place:city' ? 11 : 12.5) : 14;
-    map.flyTo({ center: [r.lng, r.lat], zoom, essential: true });
+    // bei „Bewegung reduzieren“ springt die Karte statt zu fliegen (essential: false)
+    map.flyTo({ center: [r.lng, r.lat], zoom, essential: false });
     if (!r.wid) return;
     const wid = r.wid;
     // Nach jedem nachgeladenen Kartenteil erneut suchen, bis das Gewässer da ist (langsame Netze/Geräte)

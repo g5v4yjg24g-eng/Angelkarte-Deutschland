@@ -100,6 +100,8 @@ test('WAT-1/2: Suche findet den De Wittsee; das Profil zeigt nur belegte Angaben
   page,
 }) => {
   const errors = collectErrors(page);
+  // „Bewegung reduzieren“: die Karte springt zum Treffer statt zu fliegen (prüft das und hält den Test unabhängig vom Tempo)
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await openMapAt(page, 6.28, 51.31, 11);
   await page.getByRole('button', { name: 'Gewässer oder Ort suchen' }).click();
   const sheet = page.getByRole('dialog', { name: 'Suchen' });
