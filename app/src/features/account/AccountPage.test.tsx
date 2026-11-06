@@ -87,6 +87,7 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
     toggleSave: () => Promise.resolve(true),
     savedIds: () => Promise.resolve(new Set<string>()),
     savedPosts: () => Promise.resolve([]),
+    discoverFeed: () => Promise.resolve([]),
     avatarUrls: () => Promise.resolve(new Map()),
     modClearAvatar: () => Promise.resolve(),
     myBadges: () => (user ? Promise.resolve(badges) : Promise.reject(new AccountError('not signed in', 401))),

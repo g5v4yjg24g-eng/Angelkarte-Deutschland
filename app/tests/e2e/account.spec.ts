@@ -185,7 +185,15 @@ async function fakeSupabase(
           badges.map((badge) => ({ badge })),
         );
       case 'POST /rest/v1/rpc/feed':
-        return json(route, feed);
+        return json(
+          route,
+          feed.filter((p) => !(p as { stranger?: boolean }).stranger),
+        );
+      case 'POST /rest/v1/rpc/discover_feed':
+        return json(
+          route,
+          feed.filter((p) => (p as { visibility?: string }).visibility === 'public'),
+        );
       case 'POST /rest/v1/rpc/my_friends':
         return json(route, friends);
       case 'POST /rest/v1/rpc/send_friend_request': {
@@ -829,6 +837,7 @@ test('PST-3: Beitrag teilen – angemeldet wird er mit Fotos hochgeladen, Änder
   // das Formular ist länger geworden (Fischart/Länge): erst hinscrollen, sonst liegt die Leiste darüber
   await page.getByRole('radio', { name: 'Alle' }).evaluate((el) => el.scrollIntoView({ block: 'center' }));
   await page.getByRole('radio', { name: 'Alle' }).check({ force: true });
+  await expect(page.getByText(/auch für Fremde unter Feed → Entdecken/)).toBeVisible();
   await page.getByRole('button', { name: 'Speichern' }).click();
   await expect.poll(() => [...server.posts.values()][0]?.caption).toBe('Hecht vom Steg, 92 cm');
   expect([...server.posts.values()][0]?.visibility).toBe('public');
@@ -1682,6 +1691,63 @@ test('FEED-5: Fischart und Länge – gehen mit dem Beitrag auf den Server und s
   expect(sent.species_id).toBe('pike');
   expect(sent.length_cm).toBe(92);
   expect(errors).toEqual([]);
+});
+
+const DISCOVER_OTTO = {
+  id: 'post-otto-1',
+  author_id: 'u-otto',
+  username: 'otto',
+  display_name: 'Otto',
+  badges: [],
+  caption: 'Barsch vom Boot',
+  visibility: 'public',
+  photo_paths: ['u-otto/post-otto-1/1.jpg'],
+  created_at: '2026-10-01T08:00:00Z',
+  shared_at: '2026-11-08T09:00:00Z',
+  stranger: true,
+};
+
+test('DISC-1: Entdecken – Reiter im Feed zeigt öffentliche Beiträge anderer, leerer Zustand', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await fakeSupabase(page, [], [{ ...ANNA }], [FEED_ANNA, DISCOVER_OTTO]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+
+  await page.goto('/feed');
+  await waitForApp(page);
+  await expect(page.getByRole('article', { name: /Beitrag von Anna/ })).toBeVisible();
+  await expect(page.getByRole('article', { name: /Beitrag von Otto/ })).toHaveCount(0);
+
+  await page
+    .getByRole('navigation', { name: 'Feed-Ansicht' })
+    .getByRole('link', { name: 'Entdecken' })
+    .click();
+  await expect(page).toHaveURL(/\/feed\/entdecken$/);
+  const otto = page.getByRole('article', { name: /Beitrag von Otto/ });
+  await expect(otto.getByText('Barsch vom Boot')).toBeVisible();
+  await expect(page.getByRole('article', { name: /Beitrag von Anna/ })).toHaveCount(0);
+  await expect(
+    page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }),
+  ).toHaveAttribute('aria-current', 'page');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  expect(errors).toEqual([]);
+});
+
+test('DISC-1: Entdecken ohne öffentliche Beiträge zeigt den leeren Zustand', async ({ page }) => {
+  await fakeSupabase(page, [], [{ ...ANNA }], [FEED_ANNA]);
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed/entdecken');
+  await waitForApp(page);
+  await expect(page.getByText('Noch nichts zu entdecken')).toBeVisible();
 });
 
 test('SAVE-1: Beitrag speichern – Lesezeichen im Feed, Liste „Gespeichert“ im Profil, wieder entfernen', async ({

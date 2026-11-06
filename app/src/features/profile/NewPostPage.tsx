@@ -240,7 +240,13 @@ export function VisibilityField({
           { value: 'public', label: t.visibility.public },
         ]}
       />
-      <small className="muted">{storedUserId() ? t.visibilityHintShared : t.visibilityHint}</small>
+      <small className="muted">
+        {!storedUserId()
+          ? t.visibilityHint
+          : value === 'public'
+            ? t.visibilityHintPublic
+            : t.visibilityHintShared}
+      </small>
     </div>
   );
 }

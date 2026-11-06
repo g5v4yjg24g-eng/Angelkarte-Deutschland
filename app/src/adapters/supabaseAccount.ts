@@ -1,7 +1,7 @@
 // Supabase (Auth + Postgres, Region EU/Irland): freiwilliges Konto. Der Client wird erst geladen, wenn das Konto
 // gebraucht wird (eigener Chunk); ohne gespeicherte Anmeldung sendet die App nichts an Supabase.
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
-// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen), *_push.sql (Geräte und Einstellungen für Mitteilungen), *_moderators.sql (Moderationsbereich, jede Funktion prüft is_moderator), *_avatars.sql (Profilbild im Speicher „avatars“, nur über Funktionen). Nur der öffentliche Schlüssel steht in der App.
+// delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen), *_push.sql (Geräte und Einstellungen für Mitteilungen), *_moderators.sql (Moderationsbereich, jede Funktion prüft is_moderator), *_avatars.sql (Profilbild im Speicher „avatars“, nur über Funktionen), *_post_saves.sql (Lesezeichen), *_discover.sql (Entdecken, höchstens 20 neue Beiträge in 24 h). Nur der öffentliche Schlüssel steht in der App.
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
@@ -223,7 +223,12 @@ export function supabaseAccount(
         length_cm: post.lengthCm ?? null,
         updated_at: new Date().toISOString(),
       });
-      if (error) fail(error);
+      if (error) {
+        // Tagesgrenze (*_discover.sql): hochgeladene Fotos wieder entfernen, sonst bleiben sie verwaist liegen
+        if (error.message.includes('too_many_posts'))
+          await removeFolder(c, `${id}/${post.id}`).catch(() => {});
+        fail(error);
+      }
     },
     async updateSharedPost(postId, changes) {
       const c = await get();
@@ -266,6 +271,12 @@ export function supabaseAccount(
     async savedPosts(before) {
       const c = await get();
       const { data, error } = await c.rpc('saved_posts', { before: before ?? null, max_rows: FEED_PAGE });
+      if (error) fail(error);
+      return withPhotoUrls(c, parseFeedRows(data as unknown[] | null));
+    },
+    async discoverFeed(before) {
+      const c = await get();
+      const { data, error } = await c.rpc('discover_feed', { before: before ?? null, max_rows: FEED_PAGE });
       if (error) fail(error);
       return withPhotoUrls(c, parseFeedRows(data as unknown[] | null));
     },

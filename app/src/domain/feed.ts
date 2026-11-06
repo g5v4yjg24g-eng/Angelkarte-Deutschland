@@ -1,4 +1,4 @@
-// Feed (Etappe 3): Beiträge von Freunden und eigene, neueste zuerst. Rein, ohne Netz.
+// Feed (Etappe 3): Beiträge von Freunden und eigene, neueste zuerst; Entdecken (Paket 7c). Rein, ohne Netz.
 import { z } from 'zod';
 import { parseBadges, type Badge } from './badges';
 
@@ -15,6 +15,8 @@ export interface FeedPost {
   /** Fischart und Länge (Paket 7a, freiwillig) */
   speciesId?: string | undefined;
   lengthCm?: number | undefined;
+  /** nur bei „Entdecken“: wann geteilt (Sortierung, Nachladen) */
+  sharedAt?: string | undefined;
   /** nur bei „Gespeichert“: wann gespeichert (Sortierung, Nachladen) */
   savedAt?: string | undefined;
   /** zeitlich begrenzte Adressen der Fotos (gleiche Reihenfolge wie photoPaths; fehlt eins, ist es leer) */
@@ -36,6 +38,7 @@ const RowSchema = z.object({
   species_id: z.string().nullable().optional(),
   length_cm: z.union([z.number(), z.string()]).nullable().optional(),
   saved_at: z.string().nullable().optional(),
+  shared_at: z.string().nullable().optional(),
 });
 
 export function parseFeedRows(rows: readonly unknown[] | null | undefined): Omit<FeedPost, 'photoUrls'>[] {
@@ -59,6 +62,7 @@ export function parseFeedRows(rows: readonly unknown[] | null | undefined): Omit
         ? { lengthCm: Number(d.length_cm) }
         : {}),
       ...(d.saved_at ? { savedAt: d.saved_at } : {}),
+      ...(d.shared_at ? { sharedAt: d.shared_at } : {}),
     });
   }
   return out;
