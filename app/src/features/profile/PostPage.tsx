@@ -1,7 +1,7 @@
 // Ein Beitrag: Fotos zum Wischen (Doppeltipp = „Gefällt mir“), Daumen und Kommentare, Text, Datum, verknüpfter Fang,
 // Sichtbarkeit; bearbeiten, löschen (Rückgängig im Profil). Ist der Beitrag geteilt und das Konto angemeldet, kommen
 // „Gefällt mir“ und Kommentare vom Server (Wunsch Nutzer 2026-11-04), sonst bleiben sie auf dem Gerät.
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
@@ -10,7 +10,7 @@ import { Button } from '../../design/components/Button';
 import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
 import { TextArea } from '../../design/components/Field';
-import { ImagesIcon, ThumbsUpIcon } from '../../design/icons';
+import { ImagesIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
 import { postReactions, removePost, toggleLike, updatePost } from '../../data/profileService';
 import { likeIdOf, POST_CAPTION_MAX } from '../../domain/profile';
@@ -31,6 +31,7 @@ import { VisibilityField } from './NewPostPage';
 import type { ProfileState } from './ProfilePage';
 import { usePhotos, useProfile } from './usePhoto';
 import { useHaptics } from '../haptics/useHaptics';
+import { usePikeLike } from '../reactions/usePikeLike';
 import styles from './Profile.module.css';
 
 const t = de.profile;
@@ -38,25 +39,10 @@ const t = de.profile;
 const dateOf = (iso: string, style: 'long' | 'medium' = 'long') =>
   new Date(iso).toLocaleDateString('de-DE', { dateStyle: style, timeZone: 'Europe/Berlin' });
 
-function Slide({
-  photo,
-  n,
-  total,
-  onDoubleTap,
-}: {
-  photo: Photo;
-  n: number;
-  total: number;
-  onDoubleTap: () => void;
-}) {
+function Slide({ photo, n, total }: { photo: Photo; n: number; total: number }) {
   const url = useObjectUrl(photo.blob);
   return (
-    <li
-      className={styles.slide}
-      aria-roledescription="slide"
-      aria-label={t.photoOf(n, total)}
-      onDoubleClick={onDoubleTap}
-    >
+    <li className={styles.slide} aria-roledescription="slide" aria-label={t.photoOf(n, total)}>
       {url && <img src={url} alt={t.photoAlt(n)} draggable={false} />}
     </li>
   );
@@ -126,12 +112,36 @@ export function PostPage() {
   const founder = useMyBadges().includes('founder');
   const [editing, setEditing] = useState(false);
   const [index, setIndex] = useState(0);
-  const [burst, setBurst] = useState(0);
+  const [pulse, setPulse] = useState(0);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const likeIconRef = useRef<HTMLSpanElement>(null);
   const [commentsOpen, setCommentsOpen] = useState(false);
   // geteilt + angemeldet: Reaktionen vom Server
   const server = !!post && !post.deletedAt && !!storedUserId() && shareStatus(post) === 'shared';
   const srv = useServerReactions(post ? [post.id] : [], server);
   const haptics = useHaptics();
+  const likedNow =
+    !!post &&
+    (server
+      ? srv.get(post.id).liked
+      : (reactions?.likes ?? []).some((l) => l.id === likeIdOf(LOCAL_AUTHOR, post.id)));
+  // Doppeltipp aufs Foto: Hecht schwimmt zum Daumen; setzt „Gefällt mir“ (nie zurücknehmen)
+  const pike = usePikeLike({
+    frame: frameRef,
+    canvas: canvasRef,
+    target: likeIconRef,
+    liked: likedNow,
+    onLike: () => {
+      if (!post) return;
+      if (server) srv.toggle(post.id);
+      else void toggleLike(post.id);
+    },
+    onArrive: () => {
+      setPulse((n) => n + 1);
+      haptics.light();
+    },
+  });
 
   if (post === undefined)
     return (
@@ -158,14 +168,6 @@ export function PostPage() {
   const comments = reactions?.comments ?? [];
   const liked = likes.some((l) => l.id === likeIdOf(LOCAL_AUTHOR, post.id));
   const serverReactions = srv.get(post.id);
-  const likeByDoubleTap = () => {
-    setBurst((b) => b + 1);
-    const already = server ? serverReactions.liked : liked;
-    if (!already) haptics.light();
-    if (server) {
-      if (!already) srv.toggle(post.id);
-    } else if (!already) void toggleLike(post.id);
-  };
   const commentTotal = server ? serverReactions.commentCount : comments.length;
 
   return (
@@ -176,8 +178,9 @@ export function PostPage() {
         {founder && <FounderBadge />}
       </div>
       <div className={styles.carouselWrap}>
-        <div className={styles.carouselBox}>
+        <div className={styles.carouselBox} ref={frameRef}>
           <ul
+            {...pike.handlers}
             className={styles.carousel}
             aria-label={t.postPhotos}
             // mit der Tastatur wischbar (Pfeiltasten)
@@ -188,14 +191,10 @@ export function PostPage() {
             }}
           >
             {(photos ?? []).map((p, i) => (
-              <Slide key={p.id} photo={p} n={i + 1} total={total} onDoubleTap={likeByDoubleTap} />
+              <Slide key={p.id} photo={p} n={i + 1} total={total} />
             ))}
           </ul>
-          {burst > 0 && (
-            <span key={burst} className={styles.burst} aria-hidden="true">
-              <ThumbsUpIcon filled size={96} />
-            </span>
-          )}
+          <canvas ref={canvasRef} className={styles.pikeLayer} aria-hidden="true" />
         </div>
         {total > 1 && (
           <p className={styles.dots} aria-hidden="true">
@@ -211,6 +210,8 @@ export function PostPage() {
         liked={server ? serverReactions.liked : liked}
         onLike={() => (server ? srv.toggle(post.id) : void toggleLike(post.id))}
         onComments={() => setCommentsOpen(true)}
+        likeIconRef={likeIconRef}
+        pulse={pulse}
       />
       {srv.error && server && <Notice tone="error">{srv.error}</Notice>}
       {editing ? (

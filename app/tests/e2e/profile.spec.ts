@@ -331,3 +331,88 @@ test('PRF-8: Profilbild zuschneiden – verschieben, zoomen, zurücksetzen, abbr
   expect(px.b).toBeLessThan(100);
   expect(errors).toEqual([]);
 });
+
+/** Ist gerade etwas auf der Hecht-Ebene gezeichnet? */
+const pikeVisible = (page: Page) =>
+  page
+    .locator('canvas[aria-hidden="true"]')
+    .first()
+    .evaluate((el) => {
+      const c = el as HTMLCanvasElement;
+      const ctx = c.getContext('2d');
+      if (!ctx || !c.width || !c.height) return false;
+      const d = ctx.getImageData(0, 0, c.width, c.height).data;
+      for (let i = 3; i < d.length; i += 4 * 7) if ((d[i] ?? 0) > 0) return true;
+      return false;
+    });
+
+test('PRF-9: Doppeltipp – Hecht schwimmt im Bild zum Daumen, setzt „Gefällt mir“ einmal und nimmt nie zurück; Verlassen mittendrin verliert nichts', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page, '#2d9cdb'));
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  const like = page.getByRole('button', { name: 'Gefällt mir' });
+  await expect(like).toHaveAttribute('aria-pressed', 'false');
+  const slide = page.locator('li[aria-roledescription="slide"]').first();
+  const box = await slide.boundingBox();
+  if (!box) throw new Error('kein Foto');
+
+  // Doppeltipp: Hecht ist zu sehen, der Daumen wechselt erst, wenn er ankommt
+  await slide.dblclick({ position: { x: box.width * 0.7, y: box.height * 0.3 } });
+  await expect.poll(() => pikeVisible(page)).toBe(true);
+  await expect(like).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText('1 „Gefällt mir“-Angabe')).toBeVisible();
+  // danach ist die Ebene wieder leer, der Daumen bleibt gesetzt
+  await expect.poll(() => pikeVisible(page), { timeout: 3000 }).toBe(false);
+  await slide.dblclick();
+  await page.waitForTimeout(1300);
+  await expect(like).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText('1 „Gefällt mir“-Angabe')).toBeVisible();
+  // Knopf nimmt weiterhin zurück
+  await like.click();
+  await expect(like).toHaveAttribute('aria-pressed', 'false');
+
+  // Wischen im Karussell ist kein Doppeltipp
+  await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.2, box.y + box.height / 2, { steps: 5 });
+  await page.mouse.up();
+  await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.2, box.y + box.height / 2, { steps: 5 });
+  await page.mouse.up();
+  await page.waitForTimeout(1000);
+  await expect(like).toHaveAttribute('aria-pressed', 'false');
+
+  // Mitten in der Animation die Seite verlassen: „Gefällt mir“ wird trotzdem gesetzt
+  const url = page.url();
+  await slide.dblclick();
+  await page
+    .getByRole('link', { name: /Zurück/ })
+    .first()
+    .click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Profil' })).toBeVisible();
+  await page.goto(url);
+  await waitForApp(page);
+  await expect(page.getByRole('button', { name: 'Gefällt mir' })).toHaveAttribute('aria-pressed', 'true');
+  expect(errors).toEqual([]);
+});
+
+test('PRF-10: Doppeltipp bei reduzierter Bewegung – kein Hecht, „Gefällt mir“ sofort', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page, '#2d9cdb'));
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  const like = page.getByRole('button', { name: 'Gefällt mir' });
+  await page.locator('li[aria-roledescription="slide"]').first().dblclick();
+  await expect(like).toHaveAttribute('aria-pressed', 'true', { timeout: 300 });
+  expect(await pikeVisible(page)).toBe(false);
+});

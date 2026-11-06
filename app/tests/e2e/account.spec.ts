@@ -1567,3 +1567,28 @@ test('MODA-4: Moderator entfernt ein unpassendes Profilbild – mit Bestätigung
   await expect(page.getByRole('button', { name: 'Profilbild entfernen' })).toHaveCount(0);
   expect(errors).toEqual([]);
 });
+
+test('FEED-4: Doppeltipp im Feed – Hecht schwimmt zum Daumen, „Gefällt mir“ geht genau einmal an den Server', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }], [FEED_ANNA]);
+  calls.likes.set('post-anna-1', { others: 2, mine: false });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed');
+  await waitForApp(page);
+  const card = page.getByRole('article', { name: /Beitrag von Anna/ });
+  const photo = card.getByRole('listitem').first();
+  await expect(card.getByText('2 „Gefällt mir“-Angaben')).toBeVisible();
+  await photo.dblclick();
+  await photo.dblclick();
+  await expect(card.getByRole('button', { name: 'Gefällt mir' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(card.getByText('3 „Gefällt mir“-Angaben')).toBeVisible();
+  await page.waitForTimeout(1500);
+  await photo.dblclick();
+  await page.waitForTimeout(1300);
+  expect(calls.filter((c) => c.endsWith('/rpc/toggle_like'))).toHaveLength(1);
+  expect(calls.likes.get('post-anna-1')?.mine).toBe(true);
+  expect(errors).toEqual([]);
+});

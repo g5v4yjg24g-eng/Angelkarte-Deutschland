@@ -38,11 +38,26 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
+.photoFrame {
+  position: relative;
+  margin: 0 calc(-1 * var(--space-4));
+}
+/* Hecht beim Doppeltipp: Zeichenfläche über dem Bild, nimmt keine Tipps an */
+.pikeLayer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
 .photos {
   list-style: none;
-  margin: 0 calc(-1 * var(--space-4));
+  margin: 0;
   padding: 0;
   display: flex;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;

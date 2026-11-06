@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-16',
+    title: 'Hecht beim Doppeltipp',
+    items: [
+      'Gefällt mir: Tippst du zweimal auf ein Foto im Feed oder in deinem Beitrag, schwimmt ein kleiner Hecht durchs Bild zum Daumen – und der Beitrag gefällt dir.',
+      'Ein Doppeltipp nimmt „Gefällt mir“ nie zurück. Bei reduzierter Bewegung wechselt nur der Daumen.',
+    ],
+  },
+  {
     id: '2026-11-15',
     title: 'Profilbilder für Freunde',
     items: [

@@ -1,6 +1,6 @@
 // Feed (Etappe 3, Wunsch Nutzer 2026-11-03): geteilte Beiträge von Freunden und eigene, neueste zuerst.
 // Nur angemeldet – sonst kein Netz und ein Hinweis aufs Konto.
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
@@ -22,6 +22,8 @@ import { ServerCommentsSheet } from '../reactions/ServerCommentsSheet';
 import { useServerReactions } from '../reactions/useServerReactions';
 import { useHidden } from '../moderation/hiddenStore';
 import { useAvatarUrls } from '../profile/avatarUrls';
+import { usePikeLike } from '../reactions/usePikeLike';
+import { useHaptics } from '../haptics/useHaptics';
 import styles from './Feed.module.css';
 
 const t = de.feed;
@@ -50,6 +52,23 @@ function FeedCard({
 }) {
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [index, setIndex] = useState(0);
+  const [pulse, setPulse] = useState(0);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const likeIconRef = useRef<HTMLSpanElement>(null);
+  const haptics = useHaptics();
+  // Doppeltipp aufs Foto: Hecht schwimmt zum Daumen und setzt „Gefällt mir“ (nie zurücknehmen)
+  const pike = usePikeLike({
+    frame: frameRef,
+    canvas: canvasRef,
+    target: likeIconRef,
+    liked: reactions.liked,
+    onLike,
+    onArrive: () => {
+      setPulse((n) => n + 1);
+      haptics.light();
+    },
+  });
   const total = post.photoUrls.length;
   return (
     <article className={styles.card} aria-label={t.postLabel(post.displayName, dateOf(post.createdAt))}>
@@ -77,25 +96,29 @@ function FeedCard({
           </span>
         )}
       </header>
-      <ul
-        className={styles.photos}
-        aria-label={t.photos(post.displayName)}
-        tabIndex={0}
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          setIndex(Math.round(el.scrollLeft / Math.max(1, el.clientWidth)));
-        }}
-      >
-        {post.photoUrls.map((url, i) => (
-          <li key={post.photoPaths[i] ?? i} aria-roledescription="slide" aria-label={t.photo(i + 1, total)}>
-            {url ? (
-              <img src={url} alt="" loading="lazy" decoding="async" />
-            ) : (
-              <span className={styles.missing}>{t.photoMissing}</span>
-            )}
-          </li>
-        ))}
-      </ul>
+      <div className={styles.photoFrame} ref={frameRef}>
+        <ul
+          {...pike.handlers}
+          className={styles.photos}
+          aria-label={t.photos(post.displayName)}
+          tabIndex={0}
+          onScroll={(e) => {
+            const el = e.currentTarget;
+            setIndex(Math.round(el.scrollLeft / Math.max(1, el.clientWidth)));
+          }}
+        >
+          {post.photoUrls.map((url, i) => (
+            <li key={post.photoPaths[i] ?? i} aria-roledescription="slide" aria-label={t.photo(i + 1, total)}>
+              {url ? (
+                <img src={url} alt="" loading="lazy" decoding="async" />
+              ) : (
+                <span className={styles.missing}>{t.photoMissing}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+        <canvas ref={canvasRef} className={styles.pikeLayer} aria-hidden="true" />
+      </div>
       {total > 1 && (
         <div className={styles.dots} aria-hidden="true">
           {post.photoUrls.map((_, i) => (
@@ -114,6 +137,8 @@ function FeedCard({
         liked={reactions.liked}
         onLike={onLike}
         onComments={() => setCommentsOpen(true)}
+        likeIconRef={likeIconRef}
+        pulse={pulse}
       />
       <ServerCommentsSheet
         open={commentsOpen}
