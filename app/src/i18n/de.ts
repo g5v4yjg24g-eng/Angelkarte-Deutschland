@@ -1801,6 +1801,44 @@ export const de = {
     weatherHint:
       'Lädt zu jedem Fang mit Standort Modellwerte von Open-Meteo (Temperatur, Wind, Luftdruck, Bewölkung, Niederschlag). Dafür wird die auf etwa 100 m gerundete Position mit Datum und Stunde an Open-Meteo gesendet. Ohne Netz wird später nachgeladen. Verfügbar für Fänge ab 2022. Außerdem wird der Wasserstand am nächsten Pegel (bis 15 km) zum Fangzeitpunkt gespeichert; dafür lädt die App ganze Stationslisten von PEGELONLINE bzw. dem Land NRW und überträgt keine Position. Standard: an.',
   },
+  achievements: {
+    title: 'Erfolge',
+    loading: 'Wird geladen …',
+    count: (n: number, total: number) => `${n} von ${total} Stufen`,
+    summary: (n: number, total: number) =>
+      `${n} von ${total} Stufen erreicht. Berechnet aus deinem Fangbuch auf diesem Gerät.`,
+    showAll: 'Alle ansehen',
+    open: 'Noch offen',
+    notYet: 'Noch nicht erreicht',
+    maxed: 'Höchste Stufe erreicht',
+    since: (d: string) => `Seit ${d}`,
+    ofNext: (have: string, next: string) => `${have} von ${next}`,
+    biggest: (v: string) => `Größter: ${v}`,
+    next: (tier: string) => `nächste: ${tier}`,
+    stepsLabel: 'Stufen',
+    tiers: { bronze: 'Bronze', silver: 'Silber', gold: 'Gold', start: 'Start' },
+    first: { name: 'Erster Fang', how: 'Ersten Fisch eingetragen' },
+    families: {
+      catches: { name: 'Fänge', how: (n: string) => `${n} Fische gelandet` },
+      species: { name: 'Fischarten', how: (n: string) => `${n} verschiedene Arten gelandet` },
+      waters: { name: 'Gewässer', how: (n: string) => `An ${n} Gewässern gefangen` },
+      sessions: { name: 'Sessions', how: (n: string) => `${n} Sessions beendet` },
+      pike: {
+        name: 'Hecht',
+        how: (n: string) => (n === '1' ? 'Einen Hecht gelandet' : `${n} Hechte gelandet`),
+      },
+      zander: {
+        name: 'Zander',
+        how: (n: string) => (n === '1' ? 'Einen Zander gelandet' : `${n} Zander gelandet`),
+      },
+      big: { name: 'Großfisch', how: (n: string) => `Fisch ab ${n}, gemessen` },
+    },
+    newTag: 'Neu',
+    newTierShort: (family: string, tier: string) => `${family} in ${tier}`,
+    andMore: (n: number) => ` und ${n} weitere`,
+    rules:
+      'Es zählen gelandete Fische, die mindestens einen Tag im Fangbuch stehen. Fischart nur bei „sicher“ oder „wahrscheinlich“, Großfisch nur gemessen. Eine erreichte Stufe bleibt, auch wenn du Einträge später löschst.',
+  },
   outlook: {
     title: 'Beißprognose',
     label: 'Beißprognose',

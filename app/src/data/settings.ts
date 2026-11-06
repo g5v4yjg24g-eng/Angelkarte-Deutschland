@@ -15,6 +15,10 @@ export interface Settings {
   usageCount: boolean;
   /** Vibration bei Speichern, „Gefällt mir“ und Wischen über die Leiste (nur iPhone-App); Standard: an */
   haptics: boolean;
+  /** Erreichte Erfolgs-Stufen (Schlüssel → Datum); Variante A: werden nie entfernt */
+  achievements: Record<string, string>;
+  /** Neu erreichte, noch nicht angesehene Stufen (bis die Erfolge-Übersicht geöffnet wird) */
+  achievementsNew: string[];
   /** ID des zuletzt gesehenen Neuigkeiten-Eintrags (Fenster „Neu in Fangpunkt“) */
   lastSeenChangelog: string;
 }

@@ -17,6 +17,7 @@ import { useMyBadges } from '../badges/badgeStore';
 import { useFriends } from '../friends/useFriends';
 import { Avatar } from './Avatar';
 import { usePhotos, usePosts, useProfile } from './usePhoto';
+import { ProfileAchievements } from '../achievements/ProfileAchievements';
 import styles from './Profile.module.css';
 
 const t = de.profile;
@@ -123,6 +124,8 @@ export function ProfilePage() {
           />
         </div>
       </div>
+
+      <ProfileAchievements />
 
       {posts.length === 0 ? (
         <EmptyState

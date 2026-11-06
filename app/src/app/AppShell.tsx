@@ -17,6 +17,7 @@ import { SessionChip } from '../features/sessions/SessionChip';
 import { WeatherSync } from '../features/weather/WeatherSync';
 import { PostSync } from '../features/sharing/PostSync';
 import { AvatarSync } from '../features/profile/AvatarSync';
+import { AchievementSync } from '../features/achievements/AchievementSync';
 import { PushSetup } from '../features/push/PushSetup';
 import { WhatsNew } from '../features/whatsNew/WhatsNew';
 import { UsageTracker } from '../features/usage/UsageTracker';
@@ -225,6 +226,7 @@ export function AppShell() {
       <WeatherSync />
       <PostSync />
       <AvatarSync />
+      <AchievementSync />
       <PushSetup />
       <WhatsNew />
       <UsageTracker />
