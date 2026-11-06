@@ -30,6 +30,7 @@ import { useServerReactions } from '../reactions/useServerReactions';
 import { VisibilityField } from './NewPostPage';
 import type { ProfileState } from './ProfilePage';
 import { usePhotos, useProfile } from './usePhoto';
+import { useHaptics } from '../haptics/useHaptics';
 import styles from './Profile.module.css';
 
 const t = de.profile;
@@ -130,6 +131,7 @@ export function PostPage() {
   // geteilt + angemeldet: Reaktionen vom Server
   const server = !!post && !post.deletedAt && !!storedUserId() && shareStatus(post) === 'shared';
   const srv = useServerReactions(post ? [post.id] : [], server);
+  const haptics = useHaptics();
 
   if (post === undefined)
     return (
@@ -158,9 +160,11 @@ export function PostPage() {
   const serverReactions = srv.get(post.id);
   const likeByDoubleTap = () => {
     setBurst((b) => b + 1);
+    const already = server ? serverReactions.liked : liked;
+    if (!already) haptics.light();
     if (server) {
-      if (!serverReactions.liked) srv.toggle(post.id);
-    } else if (!liked) void toggleLike(post.id);
+      if (!already) srv.toggle(post.id);
+    } else if (!already) void toggleLike(post.id);
   };
   const commentTotal = server ? serverReactions.commentCount : comments.length;
 

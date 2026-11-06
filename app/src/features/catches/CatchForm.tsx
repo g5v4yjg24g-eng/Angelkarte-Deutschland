@@ -9,6 +9,7 @@ import { SegmentedControl } from '../../design/components/SegmentedControl';
 import { SelectField, TextArea, TextField } from '../../design/components/Field';
 import { getDb } from '../../data/db';
 import { saveCatch } from '../../data/catchService';
+import { useHaptics } from '../haptics/useHaptics';
 import { repo } from '../../data/repository';
 import { isQuotaError, userMessage } from '../../data/errors';
 import { MAX_PHOTOS_PER_CATCH } from '../../domain/photo';
@@ -139,6 +140,7 @@ export function CatchForm({
 
   const all = useLiveQuery(() => getDb().catches.toArray(), []);
   const recent = useMemo(() => recentSpecies(all ?? []), [all]);
+  const haptics = useHaptics();
   const presets = useLiveQuery(() => getDb().baitPresets.toArray(), []);
   const favorites = useMemo(() => sortPresets(presets ?? []), [presets]);
   // Zuletzt benutzte Köder, die schon Favoriten sind, nicht doppelt zeigen
@@ -258,6 +260,7 @@ export function CatchForm({
             },
             addPhotos,
           });
+      haptics.success();
       onSaved(saved);
     } catch (err) {
       console.error(err);

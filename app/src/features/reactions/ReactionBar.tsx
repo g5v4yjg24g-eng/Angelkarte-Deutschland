@@ -2,6 +2,7 @@
 // 2026-10-27) – gemeinsam für Beitragsseite (Gerät oder Server) und Feed.
 import { de } from '../../i18n/de';
 import { CommentIcon, ThumbsUpIcon } from '../../design/icons';
+import { useHaptics } from '../haptics/useHaptics';
 import styles from '../profile/Profile.module.css';
 
 const t = de.profile;
@@ -19,6 +20,7 @@ export function ReactionBar({
   onLike: () => void;
   onComments: () => void;
 }) {
+  const haptics = useHaptics();
   return (
     <>
       {(likeCount > 0 || commentCount > 0) && (
@@ -45,7 +47,10 @@ export function ReactionBar({
           type="button"
           className={[styles.action, liked ? styles.liked : ''].join(' ')}
           aria-pressed={liked}
-          onClick={onLike}
+          onClick={() => {
+            if (!liked) haptics.light();
+            onLike();
+          }}
         >
           <ThumbsUpIcon filled={liked} size={22} />
           <span>{t.like}</span>

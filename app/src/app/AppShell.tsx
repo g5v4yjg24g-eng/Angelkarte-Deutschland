@@ -24,6 +24,7 @@ import { SessionTracker } from '../features/sessions/tracking/SessionTracker';
 import { GaugeSync } from '../features/weather/GaugeSync';
 import { ProfileNavIcon } from '../features/profile/ProfileNavIcon';
 import { DRAG_START_PX, itemAt, lensCenter, type Span } from './navLens';
+import { useHaptics } from '../features/haptics/useHaptics';
 import styles from './AppShell.module.css';
 
 // Fünf Punkte, Profil in der Mitte (Entscheidung Nutzer 2026-10-27); die Statistik ist ein Reiter im Fangbuch.
@@ -54,7 +55,10 @@ function useNavLens(paths: readonly string[]) {
   const navigate = useNavigate();
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-  const drag = useRef<{ id: number; startX: number; moved: boolean; spans: Span[] } | null>(null);
+  const drag = useRef<{ id: number; startX: number; moved: boolean; spans: Span[]; index: number } | null>(
+    null,
+  );
+  const haptics = useHaptics();
   const suppressClick = useRef(false);
   const [lens, setLens] = useState<Lens | null>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -80,7 +84,7 @@ function useNavLens(paths: readonly string[]) {
     const index = itemAt(x, sp);
     const item = sp[index];
     if (!item) return;
-    drag.current = { id: e.pointerId, startX: e.clientX, moved: false, spans: sp };
+    drag.current = { id: e.pointerId, startX: e.clientX, moved: false, spans: sp, index };
     setLens({ center: item.left + item.width / 2, width: item.width * LENS_SCALE, index, snapping: false });
   };
   const onPointerMove = (e: PointerEvent<HTMLElement>) => {
@@ -89,6 +93,7 @@ function useNavLens(paths: readonly string[]) {
     if (!d.moved) {
       if (Math.abs(e.clientX - d.startX) < DRAG_START_PX) return;
       d.moved = true;
+      haptics.selectionStart();
       // Erst beim Wischen festhalten: Ein einfacher Tipp bleibt ein normaler Link-Klick
       try {
         e.currentTarget.setPointerCapture(e.pointerId);
@@ -98,6 +103,11 @@ function useNavLens(paths: readonly string[]) {
     }
     const x = localX(e);
     const index = itemAt(x, d.spans);
+    // Spürbarer Klick, sobald die Linse auf einen anderen Punkt wechselt (nur iPhone-App)
+    if (index !== d.index) {
+      d.index = index;
+      haptics.selectionChanged();
+    }
     setLens((l) => l && { ...l, center: lensCenter(x, d.spans), index });
   };
   const finish = (e: PointerEvent<HTMLElement>, select: boolean) => {
@@ -105,6 +115,7 @@ function useNavLens(paths: readonly string[]) {
     if (!d || d.id !== e.pointerId) return;
     drag.current = null;
     if (!d.moved) return setLens(null);
+    haptics.selectionEnd();
     suppressClick.current = true;
     const index = itemAt(localX(e), d.spans);
     const item = d.spans[index];
