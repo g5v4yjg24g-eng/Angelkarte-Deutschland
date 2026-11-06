@@ -127,7 +127,7 @@
 }
 .dayRow {
   display: grid;
-  grid-template-columns: 3.4rem 2.6rem 2.4rem minmax(3rem, 1fr) 2.4rem;
+  grid-template-columns: 4.4rem 2.6rem 2.4rem minmax(3rem, 1fr) 2.4rem;
   align-items: center;
   gap: var(--space-2);
   width: 100%;
@@ -566,4 +566,80 @@
 .pressureStop2 {
   stop-color: var(--color-chart);
   stop-opacity: 0.03;
+}
+
+/* Beißprognose (Paket 5): Wort + Farbe, Gründe mit Plus/Minus */
+.dayName {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+}
+.outlookChip {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 650;
+  line-height: 1.5;
+  border: 1px solid transparent;
+}
+.chipGood {
+  color: var(--color-success);
+  border-color: currentColor;
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+}
+.chipMedium {
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  background: var(--color-surface-2);
+}
+.chipHard {
+  color: var(--color-warning-text);
+  border-color: currentColor;
+  background: var(--color-warning-bg);
+}
+.outlookHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+.outlookHead .outlookChip {
+  font-size: var(--text-sm);
+  padding: 2px 10px;
+}
+.reasons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+.reasons li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.effect {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+.effectPlus {
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 14%, transparent);
+}
+.effectZero {
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+}
+.effectMinus {
+  color: var(--color-warning-text);
+  background: var(--color-warning-bg);
 }

@@ -7,6 +7,8 @@ import { barSpan, hourStrip, pct, tempBounds, tempColor, weatherIcon } from '../
 import { ClockIcon, CalendarIcon } from '../../design/icons';
 import { WeatherIcon } from './WeatherIcon';
 import { DayDetailSheet } from './DayDetailSheet';
+import { OutlookChip } from './OutlookChip';
+import { dayOutlook } from '../../domain/fishingOutlook';
 import styles from './WeatherView.module.css';
 
 const t = de.forecast;
@@ -95,7 +97,10 @@ export function ForecastOverview({
             return (
               <li key={d.t}>
                 <button type="button" className={styles.dayRow} onClick={() => setOpenDay(d.t)}>
-                  <span className={styles.dayName}>{dayName(d.t)}</span>
+                  <span className={styles.dayName}>
+                    {dayName(d.t)}
+                    <OutlookChip level={dayOutlook(d).level} />
+                  </span>
                   <span className="visually-hidden">{codeText(code)}</span>
                   <span className={styles.dayIcon}>
                     <WeatherIcon icon={weatherIcon(code, false)} size={30} />

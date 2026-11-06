@@ -1801,6 +1801,51 @@ export const de = {
     weatherHint:
       'Lädt zu jedem Fang mit Standort Modellwerte von Open-Meteo (Temperatur, Wind, Luftdruck, Bewölkung, Niederschlag). Dafür wird die auf etwa 100 m gerundete Position mit Datum und Stunde an Open-Meteo gesendet. Ohne Netz wird später nachgeladen. Verfügbar für Fänge ab 2022. Außerdem wird der Wasserstand am nächsten Pegel (bis 15 km) zum Fangzeitpunkt gespeichert; dafür lädt die App ganze Stationslisten von PEGELONLINE bzw. dem Land NRW und überträgt keine Position. Standard: an.',
   },
+  outlook: {
+    title: 'Beißprognose',
+    label: 'Beißprognose',
+    levels: { good: 'günstig', medium: 'mittel', hard: 'schwierig' },
+    score: (n: number) =>
+      n === 1 || n === -1
+        ? `${n > 0 ? '+' : '−'}1 Punkt`
+        : `${n > 0 ? '+' : n < 0 ? '−' : ''}${Math.abs(n)} Punkte`,
+    unknown: 'Zu wenig Wetterdaten für eine Einschätzung (Luftdruck und Wind fehlen).',
+    pressure: {
+      fallingSlightly: (d: string) => `Luftdruck fällt leicht (${d} hPa)`,
+      fallingStrongly: (d: string) => `Luftdruck fällt stark (${d} hPa) – eine Front zieht auf`,
+      steady: (d: string) => `Luftdruck stabil (${d} hPa)`,
+      risingSlightly: (d: string) => `Luftdruck steigt leicht (${d} hPa)`,
+      rising: (d: string) => `Luftdruck steigt deutlich (${d} hPa) – oft nach einer Front`,
+    },
+    wind: {
+      moderate: (w: string) => `Mäßiger Wind (${w} m/s)`,
+      calm: (w: string) => `Kaum Wind (${w} m/s)`,
+      fresh: (w: string) => `Frischer Wind (${w} m/s)`,
+      strong: (w: string, g?: string) => `Starker Wind (bis ${w} m/s${g ? `, Böen ${g} m/s` : ''})`,
+    },
+    cloud: {
+      overcast: (c: string) => `Überwiegend bedeckt (${c} %)`,
+      mixed: (c: string) => `Wenig bis mittel bewölkt (${c} %)`,
+    },
+    rain: {
+      dry: () => 'Trocken',
+      light: () => 'Leichter Regen',
+      heavy: (mm: string) => `Starkregen (bis ${mm} mm pro Stunde)`,
+      thunder: () => 'Gewitter möglich',
+    },
+    temp: {
+      normal: (lo: string, hi: string) => `Temperatur ${lo} bis ${hi} °C`,
+      frost: (lo: string) => `Frost (bis ${lo} °C)`,
+      heat: (_lo: string, hi: string) => `Hitze (bis ${hi} °C)`,
+    },
+    effect: { plus: 'spricht dafür', zero: 'neutral', minus: 'spricht dagegen' },
+    twilight: (times: string) => `Dämmerung, oft eine gute Zeit: ${times}`,
+    safetyThunder:
+      'Gewitter möglich: Mit Rute und Carbon nicht am Wasser bleiben – bei Donner sofort weg vom Ufer.',
+    safetyStorm: 'Starker Wind oder Sturmböen: Vorsicht unter Bäumen und auf dem Boot.',
+    disclaimer:
+      'Faustregeln aus der Anglerpraxis, berechnet aus der Wettervorhersage (Luftdruck, Wind, Bewölkung, Regen, Temperatur) – keine Fanggarantie. Wassertemperatur und Mond fließen nicht ein.',
+  },
   forecast: {
     title: 'Wetter',
     place: 'Ort',

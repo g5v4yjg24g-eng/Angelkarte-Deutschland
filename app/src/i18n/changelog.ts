@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-19',
+    title: 'Beißprognose',
+    items: [
+      'Wetter: Jeder Tag der Vorhersage zeigt jetzt „günstig“, „mittel“ oder „schwierig“. Im Tagesdetail stehen die Gründe – Luftdruck-Verlauf, Wind, Bewölkung, Regen, Temperatur – und die Dämmerungszeiten.',
+      'Das sind Faustregeln aus der Anglerpraxis, keine Fanggarantie. Bei Gewitter oder Sturm gibt es zusätzlich einen Sicherheitshinweis.',
+    ],
+  },
+  {
     id: '2026-11-18',
     title: 'Kartenfilter',
     items: [

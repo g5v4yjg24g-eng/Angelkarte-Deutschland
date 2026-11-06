@@ -11,6 +11,7 @@ import { dayDetail, daySpan, isNight, solunarDay, weatherIcon } from '../../doma
 import { phaseName } from '../../domain/solunar';
 import { DayChart, type ChartPoint } from './DayChart';
 import { WeatherIcon } from './WeatherIcon';
+import { OutlookSection } from './OutlookSection';
 import styles from './WeatherView.module.css';
 
 const t = de.forecast;
@@ -85,6 +86,8 @@ function DayBody({ f, day, nowMs }: { f: Forecast; day: DaySummary; nowMs: numbe
         </div>
         <p className={styles.detailSky}>{codeText(now?.code ?? day.day.code)}</p>
       </div>
+
+      <OutlookSection day={day} />
 
       <section className={styles.detailSection} aria-labelledby="dd-temp">
         <h3 id="dd-temp">{t.tempChart}</h3>
