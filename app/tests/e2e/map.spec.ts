@@ -143,7 +143,7 @@ test('Legende zeigt alle Symbole', async ({ page }) => {
   await mockBasemap(page);
   await openMap(page);
   await page.getByRole('button', { name: 'Legende' }).click();
-  const legend = page.getByRole('dialog', { name: 'Kartensymbole' });
+  const legend = page.getByRole('dialog', { name: 'Ebenen & Legende' });
   for (const name of [
     'Angelstelle',
     'Angelsteg',
@@ -253,7 +253,7 @@ test('MAP-2: Verweigerter Standort: beim Start still, auf Knopfdruck verständli
   await page.getByRole('button', { name: 'Meinen Standort zeigen' }).click();
   await expect(page.getByRole('alert')).toContainText('Standortzugriff ist blockiert');
   await page.getByRole('button', { name: 'Legende' }).click();
-  await expect(page.getByRole('dialog', { name: 'Kartensymbole' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Ebenen & Legende' })).toBeVisible();
 });
 
 test('MAP-5: Ohne Netz bleibt die Karte mit eigenen Markierungen nutzbar', async ({ page, context }) => {
@@ -395,4 +395,67 @@ test('MAP-6: OSM-Vermerk beim Start sichtbar, klappt nach 5 s zum ⓘ ein und l�
   await page.goto('/mehr/info');
   await waitForApp(page);
   await expect(page.getByText(/© OpenStreetMap-Mitwirkende/).first()).toBeVisible();
+});
+
+/** Anzahl Einträge in einer GeoJSON-Quelle der Karte (unabhängig von Gruppen und Ausschnitt) */
+const sourceCount = (page: Page, id: string) =>
+  page.evaluate((id) => {
+    const src = window.__fangpunktMap?.getSource(id) as { serialize?: () => { data?: unknown } } | undefined;
+    const data = src?.serialize?.().data as { features?: unknown[] } | undefined;
+    return data?.features?.length ?? -1;
+  }, id);
+
+test('MAP-8: Ebenen ein- und ausblenden – pro Art, gemerkt nach Neuladen, „Alle anzeigen“', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const dir = mkdtempSync(join(tmpdir(), 'fangpunkt-filter-'));
+  const file = join(dir, 'alt.json');
+  writeFileSync(file, JSON.stringify(legacyExport));
+  await mockBasemap(page);
+  await page.goto('/mehr/daten');
+  await waitForApp(page);
+  await page.locator('input[type="file"]').setInputFiles(file);
+  await page.getByRole('button', { name: /Datensätze importieren/ }).click();
+  await expect(page.getByText(/Datensätze importiert/)).toBeVisible();
+  await openMap(page);
+  await page.waitForFunction(() => !!window.__fangpunktMap?.getSource('fp-catches'));
+  await expect.poll(() => sourceCount(page, 'fp-places')).toBeGreaterThan(0);
+  const allCatches = await sourceCount(page, 'fp-catches');
+  const allPlaces = await sourceCount(page, 'fp-places');
+
+  const button = page.getByRole('button', { name: 'Ebenen & Legende' });
+  await button.click();
+  const sheet = page.getByRole('dialog', { name: 'Ebenen & Legende' });
+  const box = (name: string) => sheet.getByRole('checkbox', { name: new RegExp(`^${name}`) });
+  await expect(box('Fang')).toBeChecked();
+  await box('Fang').uncheck();
+  await expect.poll(() => sourceCount(page, 'fp-catches')).toBeLessThan(allCatches);
+  await box('Deine Orte').uncheck();
+  await expect.poll(() => sourceCount(page, 'fp-places')).toBe(0);
+  await expect(sheet.getByRole('button', { name: 'Alle anzeigen' })).toBeVisible();
+  expect(
+    await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze()
+      .then((r) =>
+        r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+      ),
+  ).toEqual([]);
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name: 'Ebenen & Legende (gefiltert)' })).toBeVisible();
+
+  // gemerkt nach Neuladen
+  await page.reload();
+  await waitForApp(page);
+  await page.waitForFunction(() => !!window.__fangpunktMap?.getSource('fp-places'));
+  await expect.poll(() => sourceCount(page, 'fp-places')).toBe(0);
+  await page.getByRole('button', { name: 'Ebenen & Legende (gefiltert)' }).click();
+  await page
+    .getByRole('dialog', { name: 'Ebenen & Legende' })
+    .getByRole('button', { name: 'Alle anzeigen' })
+    .click();
+  await expect.poll(() => sourceCount(page, 'fp-places')).toBe(allPlaces);
+  await expect.poll(() => sourceCount(page, 'fp-catches')).toBe(allCatches);
+  expect(unexpected(errors)).toEqual([]);
 });

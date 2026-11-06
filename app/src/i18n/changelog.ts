@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-18',
+    title: 'Kartenfilter',
+    items: [
+      'Karte: Unter „Ebenen & Legende“ blendest du Fänge, Fischkontakte, Fehlbisse, Beobachtungen, deine Orte und Spots von Freunden einzeln aus und ein. Die Auswahl merkt sich dein Gerät; ist etwas ausgeblendet, ist der Knopf hervorgehoben.',
+    ],
+  },
+  {
     id: '2026-11-17',
     title: '„Mehr“ übersichtlicher',
     items: [

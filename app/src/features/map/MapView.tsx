@@ -23,6 +23,13 @@ import { useEffectiveTheme } from '../../lib/useEffectiveTheme';
 import { useOnline } from '../../lib/useOnline';
 import { circlePolygon, toFeatures } from './geojson';
 import {
+  ALL_LAYERS,
+  isFiltered,
+  parseMapFilter,
+  visibleCatches,
+  type MapFilter,
+} from '../../domain/mapFilter';
+import {
   addOverlays,
   addWaterLayers,
   EMPTY,
@@ -36,7 +43,7 @@ import {
 } from './mapLayers';
 import { WaterProfile } from './WaterProfile';
 import { SearchSheet } from './SearchSheet';
-import { CatchDetails, Legend, NewHere, PlaceDetails, PlaceForm } from './MapSheets';
+import { CatchDetails, LayerSwitches, Legend, NewHere, PlaceDetails, PlaceForm } from './MapSheets';
 import { adoptedPlace, incomingSpots } from '../../domain/sharedSpots';
 import { adoptSharedSpot } from '../../data/sharedSpotService';
 import { userMessage } from '../../data/errors';
@@ -74,6 +81,15 @@ const VIEW_KEY = 'fangpunkt.mapView';
 const GERMANY = { center: [10.4, 51.2] as [number, number], zoom: 5.2 };
 const LOC_HINT_KEY = 'fangpunkt.locHintSeen';
 const HEAT_KEY = 'fangpunkt.heatmap';
+const FILTER_KEY = 'fangpunkt.mapFilter';
+
+function readFilter(): MapFilter {
+  try {
+    return parseMapFilter(localStorage.getItem(FILTER_KEY));
+  } catch {
+    return ALL_LAYERS;
+  }
+}
 const HEAT_MIN = 30;
 /** OSMF: Vermerk darf nach Interaktion oder 5 s einklappen, muss aber auffindbar bleiben */
 const ATTRIBUTION_COLLAPSE_MS = 5000;
@@ -250,7 +266,6 @@ export default function MapView() {
         : [],
     [sharedState, hidden],
   );
-  const features = useMemo(() => toFeatures(places ?? [], catches ?? [], shared), [places, catches, shared]);
   // Heatmap der gelandeten Fische (P2); Wahl wird pro Gerät gemerkt
   // Mit Ziel aus dem Fangbuch ohne Heatmap starten, sonst wäre das gesuchte Fang-Symbol ausgeblendet
   const [heat, setHeat] = useState(() => {
@@ -258,6 +273,38 @@ export default function MapView() {
     return readHeat() && !st?.focusCatch && !st?.assignWater;
   });
   const heatRef = useRef(heat);
+  // Kartenfilter (Paket 4): welche Arten zu sehen sind; pro Gerät gemerkt
+  const [filter, setFilter] = useState<MapFilter>(readFilter);
+  const changeFilter = (f: MapFilter) => {
+    setFilter(f);
+    try {
+      localStorage.setItem(FILTER_KEY, JSON.stringify(f));
+    } catch {
+      // Speicher gesperrt: gilt dann nur bis zum Neuladen
+    }
+  };
+  const keepCatch = (location.state as MapFocusState | null)?.focusCatch;
+  const features = useMemo(
+    () =>
+      toFeatures(
+        filter.places ? (places ?? []) : [],
+        visibleCatches(catches ?? [], filter, { keep: keepCatch, heat }),
+        filter.shared ? shared : [],
+      ),
+    [places, catches, shared, filter, keepCatch, heat],
+  );
+  const layerCounts = useMemo(() => {
+    const live = (catches ?? []).filter((c) => !c.deletedAt && c.position);
+    const n = (o: string) => live.filter((c) => c.outcome === o).length;
+    return {
+      caught: n('caught'),
+      contact: n('contact'),
+      missed_bite: n('missed_bite'),
+      observation: n('observation'),
+      places: (places ?? []).filter((p) => !p.deletedAt).length,
+      shared: shared.length,
+    };
+  }, [catches, places, shared]);
   const heatCount = useMemo(
     () => (catches ?? []).filter((c) => !c.deletedAt && c.outcome === 'caught' && c.position).length,
     [catches],
@@ -897,7 +944,17 @@ export default function MapView() {
     );
   } else if (sheet?.kind === 'legend') {
     sheetTitle = de.map.legendTitle;
-    sheetBody = <Legend clustersLabeled={!usingFallback} shared={shared.length > 0} />;
+    sheetBody = (
+      <>
+        <LayerSwitches
+          filter={filter}
+          counts={layerCounts}
+          shared={shared.length > 0}
+          onChange={changeFilter}
+        />
+        <Legend clustersLabeled={!usingFallback} withCatches={false} />
+      </>
+    );
   } else if (sheet?.kind === 'locate') {
     sheetTitle = de.map.locateTitle;
     sheetBody = (
@@ -971,8 +1028,8 @@ export default function MapView() {
           onClick={() => setHeat((h) => !h)}
         />
         <IconButton
-          className={styles.control}
-          label={de.map.legend}
+          className={[styles.control, isFiltered(filter) ? styles.controlOn : ''].join(' ')}
+          label={isFiltered(filter) ? de.map.legendFiltered : de.map.legend}
           icon={<InfoIcon />}
           onClick={() => setSheet({ kind: 'legend' })}
         />
