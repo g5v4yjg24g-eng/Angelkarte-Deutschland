@@ -961,6 +961,23 @@ test('SPOT-3: Spots teilen – Spot von Anna auf der Karte übernehmen, eigenen 
   await waitForApp(page);
   await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'), null, { timeout: 30_000 });
 
+  // Kartenfilter: Spots von Freunden lassen sich aus- und wieder einblenden
+  const sharedCount = () =>
+    page.evaluate(() => {
+      const src = window.__fangpunktMap?.getSource('fp-places') as
+        { serialize?: () => { data?: unknown } } | undefined;
+      const fc = src?.serialize?.().data as { features?: { properties?: { entity?: string } }[] } | undefined;
+      return (fc?.features ?? []).filter((f) => f.properties?.entity === 'shared').length;
+    });
+  await expect.poll(sharedCount).toBe(1);
+  await page.getByRole('button', { name: 'Ebenen & Legende' }).click();
+  const layers = page.getByRole('dialog', { name: 'Ebenen & Legende' });
+  await layers.getByRole('checkbox', { name: /^Spots von Freunden/ }).uncheck();
+  await expect.poll(sharedCount).toBe(0);
+  await layers.getByRole('checkbox', { name: /^Spots von Freunden/ }).check();
+  await expect.poll(sharedCount).toBe(1);
+  await page.keyboard.press('Escape');
+
   // Spot von Anna: violetter Pin (Spitze unten → etwas oberhalb tippen)
   await tapRendered(page, 'fp-places', 6.2448, 51.3283, -14);
   const shared = page.getByRole('dialog', { name: 'Geteilter Spot' });
@@ -1488,7 +1505,8 @@ test('AVA-1: Profilbild geht auf den Server – neues ersetzt das alte, Entferne
   await page.getByRole('button', { name: 'Bild entfernen' }).click();
   await page.getByRole('button', { name: 'Speichern' }).click();
   await expect.poll(() => calls.avatars.has('u-1')).toBe(false);
-  expect(avatarKeys(calls.storage)).toEqual([]);
+  // die Datei wird erst nach dem Austragen gelöscht
+  await expect.poll(() => avatarKeys(calls.storage)).toEqual([]);
   expect(calls.filter((c) => c.endsWith('/rpc/set_my_avatar'))).toHaveLength(3);
   expect(errors).toEqual([]);
 });

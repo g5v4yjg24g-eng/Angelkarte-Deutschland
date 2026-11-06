@@ -64,20 +64,20 @@ test('KEY-2: Dialog öffnet mit Fokus darin, Escape schließt, Fokus kehrt zum A
   await openMap(page);
   await page.getByRole('button', { name: 'Legende' }).focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog', { name: 'Kartensymbole' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Ebenen & Legende' })).toBeVisible();
   expect((await active(page)).inDialog).toBe(true);
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog', { name: 'Kartensymbole' })).toBeHidden();
-  expect((await active(page)).text).toBe('Legende');
+  await expect(page.getByRole('dialog', { name: 'Ebenen & Legende' })).toBeHidden();
+  expect((await active(page)).text).toBe('Ebenen & Legende');
   // Schließen-Knopf ebenso
   await page.keyboard.press('Enter');
   await page
-    .getByRole('dialog', { name: 'Kartensymbole' })
+    .getByRole('dialog', { name: 'Ebenen & Legende' })
     .getByRole('button', { name: 'Schließen' })
     .focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog', { name: 'Kartensymbole' })).toBeHidden();
-  expect((await active(page)).text).toBe('Legende');
+  await expect(page.getByRole('dialog', { name: 'Ebenen & Legende' })).toBeHidden();
+  expect((await active(page)).text).toBe('Ebenen & Legende');
 });
 
 test('KEY-3: Fang ganz ohne Maus erfassen (Kartenmitte)', async ({ page }) => {

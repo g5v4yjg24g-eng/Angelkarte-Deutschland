@@ -10,6 +10,7 @@ import type { Catch, Place, PlaceType } from '../../domain/schemas';
 import { CatchFacts, CatchHead } from '../catches/CatchFacts';
 import { formatDateTime } from '../../lib/storage';
 import { CATCH_OUTCOMES, markerDataUrl, PLACE_TYPES } from './markerIcons';
+import { ALL_LAYERS, isFiltered, type MapFilter, type MapLayerKey } from '../../domain/mapFilter';
 import styles from './MapView.module.css';
 
 const Icon = ({ kind }: { kind: Parameters<typeof markerDataUrl>[0] }) => (
@@ -207,7 +208,16 @@ export function CatchDetails({
   );
 }
 
-export function Legend({ clustersLabeled, shared = false }: { clustersLabeled: boolean; shared?: boolean }) {
+export function Legend({
+  clustersLabeled,
+  shared = false,
+  withCatches = true,
+}: {
+  clustersLabeled: boolean;
+  shared?: boolean;
+  /** false, wenn die Fang-Arten schon bei den Ebenen-Schaltern mit Symbol stehen */
+  withCatches?: boolean;
+}) {
   return (
     <>
       <h3 className={styles.legendHead}>{de.map.legendPlaces}</h3>
@@ -225,19 +235,74 @@ export function Legend({ clustersLabeled, shared = false }: { clustersLabeled: b
           </li>
         )}
       </ul>
-      <h3 className={styles.legendHead}>{de.map.legendCatches}</h3>
-      <ul className={styles.legend}>
-        {CATCH_OUTCOMES.map((o) => (
-          <li key={o}>
-            <Icon kind={`catch-${o}`} />
-            {de.map.outcomes[o]}
-          </li>
-        ))}
-      </ul>
+      {withCatches && (
+        <>
+          <h3 className={styles.legendHead}>{de.map.legendCatches}</h3>
+          <ul className={styles.legend}>
+            {CATCH_OUTCOMES.map((o) => (
+              <li key={o}>
+                <Icon kind={`catch-${o}`} />
+                {de.map.outcomes[o]}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
       {clustersLabeled && <p className="muted">{de.map.legendClusterHint}</p>}
       <h3 className={styles.legendHead}>{de.map.legendHeat}</h3>
       <div className={styles.heatScale} aria-hidden="true" />
       <p className="muted">{de.map.legendHeatHint}</p>
     </>
+  );
+}
+
+/** Ebenen ein-/ausblenden (Kartenfilter); Zahl = vorhandene Einträge mit Position */
+export function LayerSwitches({
+  filter,
+  counts,
+  shared,
+  onChange,
+}: {
+  filter: MapFilter;
+  counts: Readonly<Record<MapLayerKey, number>>;
+  shared: boolean;
+  onChange: (f: MapFilter) => void;
+}) {
+  const t = de.map.layers;
+  const rows: { key: MapLayerKey; icon: Parameters<typeof markerDataUrl>[0]; label: string }[] = [
+    ...CATCH_OUTCOMES.map((o) => ({
+      key: o as MapLayerKey,
+      icon: `catch-${o}` as const,
+      label: de.map.outcomes[o],
+    })),
+    { key: 'places', icon: 'place-spot', label: t.places },
+    ...(shared ? [{ key: 'shared' as const, icon: 'shared-spot' as const, label: t.shared }] : []),
+  ];
+  return (
+    <fieldset className={styles.layers}>
+      <legend className={styles.legendHead}>{t.title}</legend>
+      <ul>
+        {rows.map((r) => (
+          <li key={r.key}>
+            <label>
+              <input
+                type="checkbox"
+                checked={filter[r.key]}
+                onChange={(e) => onChange({ ...filter, [r.key]: e.target.checked })}
+              />
+              <Icon kind={r.icon} />
+              <span className={styles.layerName}>{r.label}</span>
+              <span className="muted">{counts[r.key]}</span>
+            </label>
+          </li>
+        ))}
+      </ul>
+      {isFiltered(filter) && (
+        <Button variant="ghost" onClick={() => onChange(ALL_LAYERS)}>
+          {t.showAll}
+        </Button>
+      )}
+      <p className="muted">{t.hint}</p>
+    </fieldset>
   );
 }
