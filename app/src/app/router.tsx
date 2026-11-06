@@ -1,3 +1,4 @@
+import { InvitePage } from '../features/sessions/group/InvitePage';
 import { createBrowserRouter } from 'react-router';
 import { AppShell } from './AppShell';
 import { RouteError } from './RouteError';
@@ -55,6 +56,7 @@ export const routes = [
           { path: 'fangbuch/sessions', element: <SessionsPage /> },
           { path: 'fangbuch/sessions/:id', element: <SessionDetailPage /> },
           { path: 'fangbuch/sessions/:id/rueckblick', element: <SessionReviewPage /> },
+          { path: 'fangbuch/sessions/:id/einladen', element: <InvitePage /> },
           { path: 'fangbuch/:id', element: <CatchDetailPage /> },
           { path: 'wetter', element: <WeatherPage /> },
           { path: 'wetter/kalender', element: <CalendarPage /> },

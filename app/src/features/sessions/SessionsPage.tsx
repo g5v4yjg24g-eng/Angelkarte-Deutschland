@@ -13,6 +13,7 @@ import { durationMs, formatDuration, isRunning } from '../../domain/session';
 import { formatDateTime } from '../../lib/storage';
 import { useNow } from '../../lib/useNow';
 import { tryStartSession } from './sessionActions';
+import { GroupInvites } from './group/GroupInvites';
 import styles from './Sessions.module.css';
 
 const t = de.sessions;
@@ -64,6 +65,7 @@ export function SessionsPage() {
 
   return (
     <Page title={t.title} back="/fangbuch">
+      <GroupInvites />
       {error && <Notice tone="error">{error}</Notice>}
       {data.sessions.length === 0 ? (
         <EmptyState icon={<BookIcon size={32} />} title={t.emptyTitle} action={start}>

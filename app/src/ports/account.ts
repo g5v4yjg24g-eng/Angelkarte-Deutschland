@@ -2,6 +2,7 @@
 import type { Profile } from '../domain/account';
 import type { Badge } from '../domain/badges';
 import type { FriendEntry, FriendRequestResult } from '../domain/friends';
+import type { GroupMember, GroupSession } from '../domain/groupSessions';
 import type { FeedPost } from '../domain/feed';
 import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
 import type { BlockedUser, ReportInput } from '../domain/moderation';
@@ -86,6 +87,16 @@ export interface AccountProvider {
   toggleSave(postId: string): Promise<boolean>;
   savedIds(postIds: string[]): Promise<Set<string>>;
   savedPosts(before?: string): Promise<FeedPost[]>;
+  /** Gemeinsame Sessions (Paket 8a): anlegen (Gastgeber ist dabei), liefert die ID */
+  createGroupSession(input: { title?: string | undefined; waterName?: string | undefined }): Promise<string>;
+  /** Freunde einladen (nur Gastgeber); liefert die Zahl neu Eingeladener */
+  inviteToGroupSession(groupId: string, userIds: string[]): Promise<number>;
+  respondGroupInvite(groupId: string, accept: boolean): Promise<void>;
+  leaveGroupSession(groupId: string): Promise<void>;
+  /** nur Gastgeber */
+  endGroupSession(groupId: string): Promise<void>;
+  myGroupSessions(): Promise<GroupSession[]>;
+  groupSessionMembers(groupId: string): Promise<GroupMember[]>;
   /** Entdecken (Paket 7c): Beiträge mit „Alle“ von anderen Konten, zuletzt geteilt zuerst; `before` = sharedAt */
   discoverFeed(before?: string): Promise<FeedPost[]>;
   /** Geteilte Spots: eigene Freigaben und die von Freunden (Server-Funktion my_shared_spots) */

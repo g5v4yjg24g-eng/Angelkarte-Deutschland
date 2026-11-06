@@ -16,7 +16,8 @@ function setup(available: boolean, permission: 'granted' | 'denied' | 'prompt', 
   };
   const account = {
     enabled: true,
-    pushPrefs: () => Promise.resolve({ friends: true, likes: true, comments: true, spots: true }),
+    pushPrefs: () =>
+      Promise.resolve({ friends: true, likes: true, comments: true, spots: true, sessions: true }),
     setPushPrefs: (p: PushPrefs) => {
       saved.push(p);
       return Promise.resolve();
@@ -48,7 +49,7 @@ describe('Einstellungen → Mitteilungen (PUSH-3)', () => {
     expect(likes).toBeChecked();
     fireEvent.click(likes);
     expect(likes).not.toBeChecked();
-    expect(saved).toEqual([{ friends: true, likes: false, comments: true, spots: true }]);
+    expect(saved).toEqual([{ friends: true, likes: false, comments: true, spots: true, sessions: true }]);
   });
 
   it('noch nicht gefragt: Knopf zum Erlauben; im iPhone abgeschaltet: Hinweis', async () => {

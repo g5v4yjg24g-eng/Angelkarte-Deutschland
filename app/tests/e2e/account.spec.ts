@@ -62,6 +62,21 @@ async function fakeSupabase(
   const avatars = new Map<string, string>();
   // Lesezeichen (Paket 7b): gespeicherte Beitrags-IDs in Reihenfolge des Speicherns
   const saves: string[] = [];
+  // Gemeinsame Sessions (Paket 8a): Sessions aus Sicht von u-1, Teilnehmer je Session, Antworten
+  type GroupMemberRow = {
+    user_id: string;
+    username: string;
+    display_name: string;
+    status: string;
+    is_host: boolean;
+  };
+  const group = {
+    sessions: [] as Record<string, unknown>[],
+    members: new Map<string, GroupMemberRow[]>(),
+    responses: [] as { session: string; accept: boolean }[],
+    ended: [] as string[],
+    left: [] as string[],
+  };
   const posts = new Map<
     string,
     { id: string; caption: string | null; visibility: string; photo_paths: string[] }
@@ -477,6 +492,64 @@ async function fakeSupabase(
         mod.log.push({ action: 'delete_avatar', who: b.who, detail: b.note });
         return json(route, old);
       }
+      case 'POST /rest/v1/rpc/create_group_session': {
+        const body = req.postDataJSON() as { title: string | null; water_name: string | null };
+        const id = `g-${group.sessions.length + 1}`;
+        group.sessions.push({
+          id,
+          host_id: 'u-1',
+          title: body.title,
+          water_name: body.water_name,
+          my_status: 'joined',
+        });
+        group.members.set(id, [
+          { user_id: 'u-1', username: 'kevin', display_name: 'Kevin', status: 'joined', is_host: true },
+        ]);
+        return json(route, id);
+      }
+      case 'POST /rest/v1/rpc/invite_to_group_session': {
+        const { session, users } = req.postDataJSON() as { session: string; users: string[] };
+        const list = group.members.get(session) ?? [];
+        for (const u of users) {
+          const f = friends.find((x) => x.user_id === u);
+          if (f)
+            list.push({
+              user_id: u,
+              username: f.username,
+              display_name: f.display_name,
+              status: 'invited',
+              is_host: false,
+            });
+        }
+        group.members.set(session, list);
+        return json(route, users.length);
+      }
+      case 'POST /rest/v1/rpc/my_group_sessions':
+        return json(
+          route,
+          group.sessions.filter((g) => 'host_username' in g),
+        );
+      case 'POST /rest/v1/rpc/group_session_members_list': {
+        const { session } = req.postDataJSON() as { session: string };
+        return json(route, group.members.get(session) ?? []);
+      }
+      case 'POST /rest/v1/rpc/respond_group_invite': {
+        const body = req.postDataJSON() as { session: string; accept: boolean };
+        group.responses.push(body);
+        const me = group.members.get(body.session)?.find((m) => m.user_id === 'u-1');
+        if (me) me.status = body.accept ? 'joined' : 'declined';
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/leave_group_session': {
+        const { session } = req.postDataJSON() as { session: string };
+        group.left.push(session);
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/end_group_session': {
+        const { session } = req.postDataJSON() as { session: string };
+        group.ended.push(session);
+        return route.fulfill({ status: 204 });
+      }
       case 'POST /rest/v1/rpc/delete_my_account':
         profile = null;
         return route.fulfill({ status: 204 });
@@ -496,7 +569,9 @@ async function fakeSupabase(
     mod: { value: mod },
     avatars: { value: avatars },
     saves: { value: saves },
+    group: { value: group },
   }) as string[] & {
+    group: typeof group;
     saves: typeof saves;
     avatars: typeof avatars;
     mod: typeof mod;
@@ -1748,6 +1823,137 @@ test('DISC-1: Entdecken ohne öffentliche Beiträge zeigt den leeren Zustand', a
   await page.goto('/feed/entdecken');
   await waitForApp(page);
   await expect(page.getByText('Noch nichts zu entdecken')).toBeVisible();
+});
+
+const BEN: FakeFriend = {
+  request_id: 'r-ben',
+  user_id: 'u-ben',
+  username: 'ben',
+  display_name: 'Ben',
+  status: 'accepted',
+  direction: 'outgoing',
+  badges: [],
+  since: '2026-11-05T09:00:00Z',
+};
+
+test('GRP-1: Freunde zur Session einladen – gemeinsame Session wird angelegt, Teilnehmer erscheinen', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }, { ...BEN }]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+
+  await page.goto('/fangbuch/sessions');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Session starten' }).first().click();
+  await expect(page.getByRole('heading', { name: 'Gemeinsam angeln' })).toBeVisible();
+  await page.getByRole('button', { name: 'Freunde einladen' }).click();
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Freunde einladen' })).toBeVisible();
+  await expect(page.getByText('Noch 9 Plätze frei.')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.getByRole('checkbox', { name: /Anna/ }).check();
+  await expect(page.getByText('Noch 8 Plätze frei.')).toBeVisible();
+  await page.getByRole('button', { name: '1 Person einladen' }).click();
+
+  // zurück in der Session: Gastgeber und Eingeladene
+  const members = page.getByRole('list', { name: 'Dabei' });
+  await expect(members.getByText('Kevin (du)')).toBeVisible();
+  await expect(members.getByText('@anna · eingeladen')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Weitere einladen' })).toBeVisible();
+  expect(calls.group.sessions).toHaveLength(1);
+  expect(calls.group.members.get('g-1')?.map((m) => m.user_id)).toEqual(['u-1', 'u-anna']);
+
+  // Beenden der eigenen Session beendet als Gastgeber auch die gemeinsame
+  await page.getByRole('button', { name: 'Session beenden' }).click();
+  await expect.poll(() => [...calls.group.ended]).toEqual(['g-1']);
+  expect(errors).toEqual([]);
+});
+
+test('GRP-2: Einladung annehmen startet eine eigene Session, Verlassen löst nur die Verknüpfung', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  calls.group.sessions.push({
+    id: 'g-anna',
+    host_id: 'u-anna',
+    host_username: 'anna',
+    host_display_name: 'Anna',
+    title: 'Abendansitz',
+    water_name: null,
+    started_at: '2026-11-06T16:00:00Z',
+    ended_at: null,
+    my_status: 'invited',
+    joined_count: 1,
+  });
+  calls.group.members.set('g-anna', [
+    { user_id: 'u-anna', username: 'anna', display_name: 'Anna', status: 'joined', is_host: true },
+    { user_id: 'u-1', username: 'kevin', display_name: 'Kevin', status: 'invited', is_host: false },
+  ]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+
+  await page.goto('/fangbuch/sessions');
+  await waitForApp(page);
+  await expect(page.getByText('Anna lädt dich zum gemeinsamen Angeln ein')).toBeVisible();
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.getByRole('button', { name: 'Zusagen' }).click();
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Abendansitz' })).toBeVisible();
+  await expect(page.getByText('Session läuft').first()).toBeVisible();
+  const members = page.getByRole('list', { name: 'Dabei' });
+  await expect(members.getByText('@anna · lädt ein')).toBeVisible();
+  await expect(members.getByText('@kevin · dabei')).toBeVisible();
+  expect(calls.group.responses).toEqual([{ session: 'g-anna', accept: true }]);
+  // nur der Gastgeber lädt ein
+  await expect(page.getByRole('button', { name: /einladen/ })).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Gemeinsame Session verlassen' }).click();
+  await expect(page.getByText('Du hast die gemeinsame Session verlassen.')).toBeVisible();
+  expect(calls.group.left).toEqual(['g-anna']);
+  await expect(page.getByText('Session läuft').first()).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('GRP-2: Einladung ablehnen', async ({ page }) => {
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  calls.group.sessions.push({
+    id: 'g-anna',
+    host_id: 'u-anna',
+    host_username: 'anna',
+    host_display_name: 'Anna',
+    title: null,
+    water_name: 'Baldeneysee',
+    started_at: '2026-11-06T16:00:00Z',
+    ended_at: null,
+    my_status: 'invited',
+    joined_count: 1,
+  });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/fangbuch/sessions');
+  await waitForApp(page);
+  await expect(page.getByText(/Baldeneysee · seit/)).toBeVisible();
+  await page.getByRole('button', { name: 'Ablehnen' }).click();
+  await expect(page.getByText('Einladung abgelehnt.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Zusagen' })).toHaveCount(0);
+  expect(calls.group.responses).toEqual([{ session: 'g-anna', accept: false }]);
 });
 
 test('SAVE-1: Beitrag speichern – Lesezeichen im Feed, Liste „Gespeichert“ im Profil, wieder entfernen', async ({

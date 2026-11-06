@@ -13,7 +13,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2.49.1';
 
 const TOPIC = 'com.fangpunkt.app';
 
-type Kind = 'friend_request' | 'friend_accepted' | 'like' | 'comment' | 'spot';
+type Kind = 'friend_request' | 'friend_accepted' | 'like' | 'comment' | 'spot' | 'session_invite';
 
 function secretKey(): string {
   try {
@@ -38,6 +38,8 @@ function message(kind: Kind, name: string, ref: string | null, excerpt: string |
       return { title: 'Neuer Kommentar', body: excerpt ? `${name}: ${excerpt}` : `${name} hat deinen Beitrag kommentiert.`, path: `/profil/beitrag/${ref ?? ''}` };
     case 'spot':
       return { title: 'Neuer Spot', body: excerpt ? `${name} hat einen Spot mit dir geteilt: ${excerpt}` : `${name} hat einen Spot mit dir geteilt.`, path: '/profil/spots' };
+    case 'session_invite':
+      return { title: 'Einladung zum Angeln', body: excerpt ? `${name} lädt dich zur Session „${excerpt}“ ein.` : `${name} lädt dich zu einer gemeinsamen Session ein.`, path: '/fangbuch/sessions' };
   }
 }
 
