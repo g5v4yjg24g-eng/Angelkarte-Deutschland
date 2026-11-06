@@ -1,4 +1,5 @@
 // Feed (Etappe 3, Wunsch Nutzer 2026-11-03): geteilte Beiträge von Freunden und eigene, neueste zuerst.
+// Reiter „Entdecken“ (Paket 7c): Beiträge mit „Alle“ von anderen Konten, zuletzt geteilt zuerst.
 // Nur angemeldet – sonst kein Netz und ein Hinweis aufs Konto.
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
@@ -9,6 +10,7 @@ import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
 import { FeedIcon, RefreshIcon } from '../../design/icons';
 import { IconButton } from '../../design/components/Button';
+import { TabLinks } from '../../design/components/TabLinks';
 import { hasMore, initialOf, type FeedPost } from '../../domain/feed';
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
@@ -269,11 +271,27 @@ export function FeedList({
   );
 }
 
-export function FeedPage() {
+/** Reiter „Freunde | Entdecken“ (Paket 7c) */
+function FeedTabs() {
+  return (
+    <TabLinks
+      label={t.tabsLabel}
+      tabs={[
+        { to: '/feed', label: t.tabFriends },
+        { to: '/feed/entdecken', label: t.tabDiscover },
+      ]}
+    />
+  );
+}
+
+export function FeedPage({ mode = 'friends' }: { mode?: 'friends' | 'discover' }) {
   const { account } = useProviders();
   const signedIn = account.enabled && !!storedUserId();
   const [tick, setTick] = useState(0);
-  const load = useCallback((before?: string) => account.feed(before), [account]);
+  const load = useCallback(
+    (before?: string) => (mode === 'discover' ? account.discoverFeed(before) : account.feed(before)),
+    [account, mode],
+  );
 
   if (!signedIn)
     return (
@@ -288,22 +306,31 @@ export function FeedPage() {
       title={t.title}
       action={<IconButton label={t.refresh} icon={<RefreshIcon />} onClick={() => setTick((n) => n + 1)} />}
     >
+      <FeedTabs />
+      {mode === 'discover' && <p className="muted">{t.discoverIntro}</p>}
       <FeedList
+        key={mode}
         load={load}
-        cursorOf={(p) => p.createdAt}
+        cursorOf={(p) => (mode === 'discover' ? (p.sharedAt ?? p.createdAt) : p.createdAt)}
         reloadKey={tick}
         empty={
-          <EmptyState
-            icon={<FeedIcon size={32} />}
-            title={t.emptyTitle}
-            action={
-              <Link to="/profil/freunde" className={styles.linkButton}>
-                {t.addFriends}
-              </Link>
-            }
-          >
-            {t.emptyText}
-          </EmptyState>
+          mode === 'discover' ? (
+            <EmptyState icon={<FeedIcon size={32} />} title={t.discoverEmptyTitle}>
+              {t.discoverEmptyText}
+            </EmptyState>
+          ) : (
+            <EmptyState
+              icon={<FeedIcon size={32} />}
+              title={t.emptyTitle}
+              action={
+                <Link to="/profil/freunde" className={styles.linkButton}>
+                  {t.addFriends}
+                </Link>
+              }
+            >
+              {t.emptyText}
+            </EmptyState>
+          )
         }
       />
     </Page>

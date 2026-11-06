@@ -783,11 +783,15 @@ export const de = {
       'Ohne Konto bleibt der Beitrag nur auf diesem Gerät. Melde dich unter Mehr → Konto an, um ihn zu teilen.',
     visibilityHintShared:
       'Wird mit deinem Konto geteilt – „Freunde“: nur deine Freunde, „Alle“: alle mit Fangpunkt-Konto.',
+    visibilityHintPublic:
+      'Für alle mit Fangpunkt-Konto sichtbar – auch für Fremde unter Feed → Entdecken. Höchstens 20 neue Beiträge in 24 Stunden.',
     shareStatus: {
       local: 'Nur auf diesem Gerät',
       pending: 'Wird geteilt …',
       shared: 'Geteilt',
     },
+    shareLimited:
+      'Tagesgrenze erreicht (20 neue Beiträge in 24 Stunden). Der Beitrag wird später automatisch geteilt.',
     shareNow: 'Teilen',
     unshare: 'Nicht mehr teilen',
     visibleFor: (who: string) => `Sichtbar für: ${who}`,
@@ -2316,6 +2320,13 @@ export const de = {
   },
   feed: {
     title: 'Feed',
+    tabsLabel: 'Feed-Ansicht',
+    tabFriends: 'Freunde',
+    tabDiscover: 'Entdecken',
+    discoverIntro: 'Beiträge, die andere mit „Alle“ teilen – zuletzt geteilt zuerst.',
+    discoverEmptyTitle: 'Noch nichts zu entdecken',
+    discoverEmptyText:
+      'Hier erscheinen Beiträge, die andere für alle sichtbar teilen. Du kannst auch selbst beim Posten „Alle“ wählen.',
     save: 'Speichern',
     saved: 'Gespeichert',
     saveError: 'Speichern hat nicht geklappt. Bitte gleich noch einmal versuchen.',
@@ -2662,7 +2673,7 @@ export const de = {
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',
-        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto – sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte und Profilbilder löschen und Konten befristet oder dauerhaft sperren; Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt eine Mail an ihre Konto-Adresse. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person und bei Kommentaren dem Anfang des Textes). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Freundschaften, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
+        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto, auch für Fremde unter Feed → Entdecken –, Beiträge, die du speicherst (nur für dich sichtbar), sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte und Profilbilder löschen und Konten befristet oder dauerhaft sperren; Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt eine Mail an ihre Konto-Adresse. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person und bei Kommentaren dem Anfang des Textes). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Freundschaften, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, gespeicherte Beiträge, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
       },
       {
         name: 'GoatCounter (goatcounter.com)',

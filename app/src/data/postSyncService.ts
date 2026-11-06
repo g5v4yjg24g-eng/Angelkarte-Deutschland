@@ -8,7 +8,12 @@ import { getDb, type FangpunktDB } from './db';
 export interface PostSyncResult {
   done: number;
   failed: number;
+  /** Server-Grenze erreicht (Paket 7c: höchstens 20 neue Beiträge in 24 h) – Beiträge, die deshalb warten */
+  limited: string[];
 }
+
+/** Fehler der Server-Grenze für neue Beiträge (*_discover.sql) */
+export const isPostLimitError = (e: unknown) => e instanceof Error && e.message.includes('too_many_posts');
 
 /** Beiträge, die etwas mit dem Server zu tun haben (für den Auslöser im Hintergrund) */
 export async function pendingPostKey(db: FangpunktDB = getDb()): Promise<string> {
@@ -27,13 +32,14 @@ export async function syncPosts(
   db: FangpunktDB = getDb(),
 ): Promise<PostSyncResult> {
   const plan = planPostSync(await db.posts.toArray());
-  const result: PostSyncResult = { done: 0, failed: 0 };
-  const step = async (fn: () => Promise<void>) => {
+  const result: PostSyncResult = { done: 0, failed: 0, limited: [] };
+  const step = async (fn: () => Promise<void>, id?: string) => {
     try {
       await fn();
       result.done++;
-    } catch {
+    } catch (e) {
       result.failed++;
+      if (id && isPostLimitError(e)) result.limited.push(id);
     }
   };
   for (const p of plan.upload)
@@ -59,7 +65,7 @@ export async function syncPosts(
             cur.sharedRev = p.rev;
           }
         });
-    });
+    }, p.id);
   for (const p of plan.update)
     await step(async () => {
       await account.updateSharedPost(p.id, {

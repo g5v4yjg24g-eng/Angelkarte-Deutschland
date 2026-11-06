@@ -86,6 +86,8 @@ export interface AccountProvider {
   toggleSave(postId: string): Promise<boolean>;
   savedIds(postIds: string[]): Promise<Set<string>>;
   savedPosts(before?: string): Promise<FeedPost[]>;
+  /** Entdecken (Paket 7c): Beiträge mit „Alle“ von anderen Konten, zuletzt geteilt zuerst; `before` = sharedAt */
+  discoverFeed(before?: string): Promise<FeedPost[]>;
   /** Geteilte Spots: eigene Freigaben und die von Freunden (Server-Funktion my_shared_spots) */
   sharedSpots(): Promise<SharedSpot[]>;
   /** Ort teilen; derselbe Ort an denselben Empfänger erneut = Stand aktualisieren */

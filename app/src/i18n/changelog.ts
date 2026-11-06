@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-23',
+    title: 'Entdecken',
+    items: [
+      'Feed: Neuer Reiter „Entdecken“ mit Beiträgen, die andere für alle sichtbar teilen – zuletzt geteilt zuerst. Blockierte Personen erscheinen dort nicht.',
+      'Beiträge: Wählst du beim Posten „Alle“, kann den Beitrag jeder mit Fangpunkt-Konto sehen. Gegen Spam gehen höchstens 20 neue Beiträge in 24 Stunden.',
+    ],
+  },
+  {
     id: '2026-11-22',
     title: 'Beiträge speichern',
     items: [

@@ -15,13 +15,13 @@ const photo = (): NewPhoto => ({
 });
 
 /** Server im Speicher: nur die Teilen-Funktionen */
-function server(fail = false) {
+function server(fail: boolean | string = false) {
   const posts = new Map<string, Omit<SharedPostInput, 'photos'> & { photos: number }>();
   const calls: string[] = [];
   const account = {
     publishPost: (p: SharedPostInput) => {
       calls.push(`publish:${p.id}`);
-      if (fail) return Promise.reject(new Error('Failed to fetch'));
+      if (fail) return Promise.reject(new Error(typeof fail === 'string' ? fail : 'Failed to fetch'));
       posts.set(p.id, { ...p, photos: p.photos.length });
       return Promise.resolve();
     },
@@ -47,10 +47,10 @@ describe('Beiträge teilen (PST-2)', () => {
     const p = await createPost({ caption: 'Hecht!', share: 'pending', photos: [photo(), photo()] }, db);
     await createPost({ caption: 'nur lokal', photos: [photo()] }, db);
 
-    expect(await syncPosts(s.account, db)).toEqual({ done: 1, failed: 0 });
+    expect(await syncPosts(s.account, db)).toEqual({ done: 1, failed: 0, limited: [] });
     expect(s.posts.get(p.id)).toMatchObject({ caption: 'Hecht!', visibility: 'friends', photos: 2 });
     expect((await db.posts.get(p.id))?.share).toBe('shared');
-    expect(await syncPosts(s.account, db)).toEqual({ done: 0, failed: 0 }); // nichts mehr zu tun
+    expect(await syncPosts(s.account, db)).toEqual({ done: 0, failed: 0, limited: [] }); // nichts mehr zu tun
 
     await updatePost(p.id, { caption: 'Hecht, 92 cm', visibility: 'public' }, db);
     await syncPosts(s.account, db);
@@ -82,7 +82,18 @@ describe('Beiträge teilen (PST-2)', () => {
   it('ohne Verbindung bleibt der Beitrag zum Hochladen vorgemerkt', async () => {
     const db = freshDb();
     const p = await createPost({ share: 'pending', photos: [photo()] }, db);
-    expect(await syncPosts(server(true).account, db)).toEqual({ done: 0, failed: 1 });
+    expect(await syncPosts(server(true).account, db)).toEqual({ done: 0, failed: 1, limited: [] });
+    expect((await db.posts.get(p.id))?.share).toBe('pending');
+  });
+
+  it('Tagesgrenze des Servers: Beitrag wartet und wird gemeldet (DISC-2)', async () => {
+    const db = freshDb();
+    const p = await createPost({ share: 'pending', photos: [photo()] }, db);
+    expect(await syncPosts(server('too_many_posts').account, db)).toEqual({
+      done: 0,
+      failed: 1,
+      limited: [p.id],
+    });
     expect((await db.posts.get(p.id))?.share).toBe('pending');
   });
 });

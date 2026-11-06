@@ -19,6 +19,7 @@ import { useObjectUrl } from '../../lib/useObjectUrl';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useMyBadges } from '../badges/badgeStore';
 import { setShare } from '../../data/postSyncService';
+import { useLimitedPosts } from '../sharing/postLimitStore';
 import { shareStatus } from '../../domain/postSync';
 import { storedUserId } from '../badges/badgeStore';
 import { Avatar } from './Avatar';
@@ -98,9 +99,10 @@ function EditForm({ post, onDone }: { post: Post; onDone: () => void }) {
 /** Teilen-Stand (Etappe 2): nur auf dem Gerät, wird geteilt, geteilt – mit Knopf zum Teilen/Zurücknehmen */
 function ShareRow({ postId, status }: { postId: string; status: 'local' | 'pending' | 'shared' }) {
   const signedIn = !!storedUserId();
+  const limited = useLimitedPosts().has(postId) && status === 'pending';
   return (
     <p className={`muted ${styles.shareRow}`}>
-      <span role="status">{t.shareStatus[status]}</span>
+      <span role="status">{limited ? t.shareLimited : t.shareStatus[status]}</span>
       {signedIn && status === 'local' && (
         <Button variant="secondary" onClick={() => void setShare(postId, 'pending')}>
           {t.shareNow}

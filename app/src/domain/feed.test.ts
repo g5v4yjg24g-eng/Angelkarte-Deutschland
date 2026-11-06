@@ -30,6 +30,12 @@ describe('Feed (FEED-1)', () => {
     const list = parseFeedRows([row({}), row({ id: 'p2', photo_paths: [] }), { kaputt: 1 }]);
     expect(list).toHaveLength(1);
     expect(list[0]).toMatchObject({ id: 'p1', displayName: 'Anna', badges: ['founder'], caption: undefined });
+    expect(list[0]?.sharedAt).toBeUndefined();
+  });
+
+  it('Entdecken: Zeitpunkt des Teilens wird gelesen (DISC-1)', () => {
+    const [p] = parseFeedRows([row({ visibility: 'public', shared_at: '2026-11-07T08:00:00+00:00' })]);
+    expect(p).toMatchObject({ visibility: 'public', sharedAt: '2026-11-07T08:00:00+00:00' });
   });
 
   it('Seiten zusammenführen ohne Doppelte, neueste zuerst', () => {

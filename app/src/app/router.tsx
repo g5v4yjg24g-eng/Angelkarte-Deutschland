@@ -69,6 +69,7 @@ export const routes = [
           { path: 'profil/gespeichert', element: <SavedPostsPage /> },
           { path: 'profil/spots/teilen/:placeId', element: <ShareSpotPage /> },
           { path: 'feed', element: <FeedPage /> },
+          { path: 'feed/entdecken', element: <FeedPage mode="discover" /> },
           { path: 'mehr', element: <MorePage /> },
           { path: 'mehr/einstellungen', element: <SettingsPage /> },
           { path: 'mehr/koeder', element: <BaitPresetsPage /> },

@@ -5,6 +5,7 @@ import { useProviders } from '../../ports/providersContext';
 import { useOnline } from '../../lib/useOnline';
 import { pendingPostKey, syncPosts } from '../../data/postSyncService';
 import { storedUserId } from '../badges/badgeStore';
+import { setLimitedPosts } from './postLimitStore';
 
 export function PostSync() {
   const { account } = useProviders();
@@ -19,6 +20,7 @@ export function PostSync() {
     void syncPosts(account)
       .then((r) => {
         running.current = false;
+        setLimitedPosts(r.limited);
         // Änderungen während des Laufs: noch einmal
         if (r.done && !r.failed) setRound((n) => n + 1);
       })
