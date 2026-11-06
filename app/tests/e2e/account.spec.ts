@@ -58,6 +58,8 @@ async function fakeSupabase(
     created_at: string;
   }[] = [];
   const storage = new Map<string, number>();
+  // Profilbilder (Paket 2b): Nutzer-ID → Pfad im Speicher „avatars“
+  const avatars = new Map<string, string>();
   const posts = new Map<
     string,
     { id: string; caption: string | null; visibility: string; photo_paths: string[] }
@@ -91,7 +93,9 @@ async function fakeSupabase(
     if (url.pathname.startsWith('/storage/v1/object/')) {
       const rest = url.pathname.slice('/storage/v1/object/'.length);
       if (req.method() === 'POST' && rest.startsWith('list/')) {
-        const { prefix } = req.postDataJSON() as { prefix: string };
+        const { prefix: folder } = req.postDataJSON() as { prefix: string };
+        // Profilbilder liegen mit Speichernamen davor, Beitragsfotos ohne
+        const prefix = rest === 'list/avatars' ? `avatars/${folder}` : folder;
         const names = [...storage.keys()]
           .filter((k) => k.startsWith(`${prefix}/`))
           .map((k) => k.slice(prefix.length + 1).split('/')[0] as string);
@@ -106,7 +110,7 @@ async function fakeSupabase(
       }
       if (req.method() === 'DELETE') {
         const { prefixes } = req.postDataJSON() as { prefixes: string[] };
-        prefixes.forEach((k) => storage.delete(k));
+        prefixes.forEach((k) => storage.delete(rest === 'avatars' ? `avatars/${k}` : k));
         return json(route, []);
       }
     }
@@ -417,6 +421,30 @@ async function fakeSupabase(
         mod.log.push({ action: 'unban', who: b.who, detail: b.note });
         return route.fulfill({ status: 204 });
       }
+      case 'POST /rest/v1/rpc/avatar_paths': {
+        const { users } = req.postDataJSON() as { users: string[] };
+        return json(
+          route,
+          users.filter((u) => avatars.has(u)).map((u) => ({ user_id: u, avatar_path: avatars.get(u) })),
+        );
+      }
+      case 'POST /rest/v1/rpc/set_my_avatar': {
+        const { path } = req.postDataJSON() as { path: string | null };
+        if (!profile) return json(route, { code: 'P0001', message: 'no_profile' }, 400);
+        if (path && !storage.has(`avatars/${path}`))
+          return json(route, { code: 'P0001', message: 'invalid_path' }, 400);
+        const old = avatars.get(user.id) ?? null;
+        if (path) avatars.set(user.id, path);
+        else avatars.delete(user.id);
+        return json(route, old);
+      }
+      case 'POST /rest/v1/rpc/mod_clear_avatar': {
+        const b = req.postDataJSON() as { who: string; note: string | null };
+        const old = avatars.get(b.who) ?? null;
+        avatars.delete(b.who);
+        mod.log.push({ action: 'delete_avatar', who: b.who, detail: b.note });
+        return json(route, old);
+      }
       case 'POST /rest/v1/rpc/delete_my_account':
         profile = null;
         return route.fulfill({ status: 204 });
@@ -434,7 +462,9 @@ async function fakeSupabase(
     likes: { value: likes },
     comments: { value: comments },
     mod: { value: mod },
+    avatars: { value: avatars },
   }) as string[] & {
+    avatars: typeof avatars;
     mod: typeof mod;
     likes: typeof likes;
     comments: typeof comments;
@@ -511,7 +541,7 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/post-photos|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|is_moderator)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|is_moderator|avatar_paths)))/.test(
         c,
       ),
     ),
@@ -1393,4 +1423,147 @@ test('MODA-3: ohne Moderatoren-Recht kein Eintrag unter Mehr und kein Zugriff', 
   await expect(page.getByRole('link', { name: /^Moderation/ })).toHaveCount(0);
   await page.goto('/mehr/moderation');
   await expect(page.getByText('Diesen Bereich sehen nur Moderatoren.')).toBeVisible();
+});
+
+/** Kleines JPEG aus dem Browser */
+async function jpegFile(page: Page) {
+  const bytes = await page.evaluate(async () => {
+    const c = document.createElement('canvas');
+    c.width = 800;
+    c.height = 600;
+    const ctx = c.getContext('2d');
+    if (!ctx) throw new Error('kein Canvas');
+    ctx.fillStyle = '#1f7a8c';
+    ctx.fillRect(0, 0, 800, 600);
+    const blob = await new Promise<Blob | null>((r) => c.toBlob(r, 'image/jpeg', 0.9));
+    return Array.from(new Uint8Array(await (blob as Blob).arrayBuffer()));
+  });
+  return { name: 'ich.jpg', mimeType: 'image/jpeg', buffer: Buffer.from(bytes) };
+}
+
+const avatarKeys = (storage: Map<string, number>) =>
+  [...storage.keys()].filter((k) => k.startsWith('avatars/'));
+
+test('AVA-1: Profilbild geht auf den Server – neues ersetzt das alte, Entfernen löscht es; Freunde sehen ihr Bild im Feed', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [], [feedRow({})]);
+  calls.avatars.set('u-anna', 'u-anna/0123456789abcdef0123456789abcdef.jpg');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+
+  // Bild der Freundin im Feed (vom Server, zeitlich begrenzte Adresse)
+  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
+  const anna = page.getByRole('article', { name: /^Beitrag von Anna/ });
+  await expect(anna.locator('header img')).toHaveJSProperty('naturalWidth', 1);
+
+  // Eigenes Bild wählen → hochladen und eintragen
+  const choose = async () => {
+    await page.goto('/profil/bearbeiten');
+    await waitForApp(page);
+    await page.getByLabel('Name').fill('Kevin');
+    await page.getByLabel('Profilbild wählen').setInputFiles(await jpegFile(page));
+    await page
+      .getByRole('dialog', { name: 'Profilbild zuschneiden' })
+      .getByRole('button', { name: 'Übernehmen' })
+      .click();
+    await page.getByRole('button', { name: 'Speichern' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Profil' })).toBeVisible();
+  };
+  await choose();
+  await expect.poll(() => calls.avatars.get('u-1')).toMatch(/^u-1\/[0-9a-f]{32}\.jpg$/);
+  const first = calls.avatars.get('u-1');
+  expect(avatarKeys(calls.storage)).toEqual([`avatars/${first}`]);
+  expect(calls.storage.get(`avatars/${first}`)).toBeLessThan(1_048_576);
+
+  // Neues Bild: neuer Pfad, altes wird erst danach gelöscht
+  await choose();
+  await expect.poll(() => calls.avatars.get('u-1')).not.toBe(first);
+  await expect.poll(() => avatarKeys(calls.storage)).toEqual([`avatars/${calls.avatars.get('u-1')}`]);
+
+  // Entfernen: auch auf dem Server
+  await page.goto('/profil/bearbeiten');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Bild entfernen' }).click();
+  await page.getByRole('button', { name: 'Speichern' }).click();
+  await expect.poll(() => calls.avatars.has('u-1')).toBe(false);
+  expect(avatarKeys(calls.storage)).toEqual([]);
+  expect(calls.filter((c) => c.endsWith('/rpc/set_my_avatar'))).toHaveLength(3);
+  expect(errors).toEqual([]);
+});
+
+test('AVA-2: ohne Server-Profil bleibt das Profilbild auf dem Gerät – kein Fehler, kein Upload-Rest', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  await page.goto('/mehr/konto');
+  await waitForApp(page);
+  await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('max@example.de');
+  await page.getByRole('button', { name: 'Code senden' }).click();
+  await page
+    .getByRole('dialog', { name: 'Regeln der Community' })
+    .getByRole('button', { name: 'Akzeptieren' })
+    .click();
+  await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('123456');
+  await page.getByRole('button', { name: 'Anmelden' }).click();
+  await expect(page.getByRole('textbox', { name: 'Nutzername' })).toBeVisible();
+
+  await page.goto('/profil/bearbeiten');
+  await waitForApp(page);
+  await page.getByLabel('Name').fill('Kevin');
+  await page.getByLabel('Profilbild wählen').setInputFiles(await jpegFile(page));
+  await page
+    .getByRole('dialog', { name: 'Profilbild zuschneiden' })
+    .getByRole('button', { name: 'Übernehmen' })
+    .click();
+  await page.getByRole('button', { name: 'Speichern' }).click();
+  await expect(page.getByRole('main').getByRole('img', { name: 'Profilbild' })).toBeVisible();
+  await expect.poll(() => calls.filter((c) => c.endsWith('/rpc/set_my_avatar')).length).toBe(1);
+  // abgelehnt (kein Server-Profil): hochgeladene Datei wurde wieder entfernt
+  await expect.poll(() => avatarKeys(calls.storage)).toEqual([]);
+  expect(calls.avatars.size).toBe(0);
+  expect(errors.filter((e) => !e.includes('status of 400'))).toEqual([]);
+});
+
+test('MODA-4: Moderator entfernt ein unpassendes Profilbild – mit Bestätigung, Datei weg, im Protokoll', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  calls.mod.moderator = true;
+  calls.mod.users.set('u-anna', {
+    user_id: 'u-anna',
+    username: 'anna',
+    display_name: 'Anna',
+    banned: false,
+    ban_until: null,
+    ban_reason: null,
+    posts: 0,
+    comments: 0,
+    spots: 0,
+    reports_against: 1,
+    joined: '2026-11-01T08:00:00Z',
+  });
+  const path = 'u-anna/0123456789abcdef0123456789abcdef.jpg';
+  calls.avatars.set('u-anna', path);
+  calls.storage.set(`avatars/${path}`, 1000);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/mehr/moderation/nutzer/u-anna');
+  await waitForApp(page);
+  await expect(page.getByRole('main').getByRole('img', { name: 'Profilbild' })).toHaveJSProperty(
+    'naturalWidth',
+    1,
+  );
+  await page.getByRole('button', { name: 'Profilbild entfernen' }).click();
+  await expect(page.getByRole('dialog', { name: 'Profilbild entfernen?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(page.getByText('Profilbild entfernt.')).toBeVisible();
+  expect(calls.avatars.has('u-anna')).toBe(false);
+  expect(avatarKeys(calls.storage)).toEqual([]);
+  expect(calls.mod.log.at(-1)?.action).toBe('delete_avatar');
+  await expect(page.getByRole('button', { name: 'Profilbild entfernen' })).toHaveCount(0);
+  expect(errors).toEqual([]);
 });

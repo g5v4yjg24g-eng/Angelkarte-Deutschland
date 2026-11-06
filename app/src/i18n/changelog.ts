@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-15',
+    title: 'Profilbilder für Freunde',
+    items: [
+      'Profilbild: Bist du angemeldet, sehen deine Freunde dein Bild jetzt im Feed, bei Kommentaren und in der Freundesliste – und du ihres.',
+      'Ändern oder Entfernen wirkt auch dort; das alte Bild wird ersetzt bzw. gelöscht.',
+    ],
+  },
+  {
     id: '2026-11-14',
     title: 'Profilbild zuschneiden',
     items: [

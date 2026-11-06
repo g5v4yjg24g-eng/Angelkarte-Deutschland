@@ -13,6 +13,7 @@ const t = de.modAdmin;
 
 export type ModAction =
   | { kind: 'delete' }
+  | { kind: 'avatar' }
   | { kind: 'warn' }
   | { kind: 'resolve' }
   | { kind: 'ban'; name: string }
@@ -38,23 +39,27 @@ export function ModActionSheet({
     ? ''
     : action.kind === 'delete'
       ? t.deleteTitle
-      : action.kind === 'warn'
-        ? t.warnTitle
-        : action.kind === 'resolve'
-          ? t.resolveTitle
-          : action.kind === 'ban'
-            ? t.banTitle(action.name)
-            : t.unbanTitle(action.name);
+      : action.kind === 'avatar'
+        ? t.avatarTitle
+        : action.kind === 'warn'
+          ? t.warnTitle
+          : action.kind === 'resolve'
+            ? t.resolveTitle
+            : action.kind === 'ban'
+              ? t.banTitle(action.name)
+              : t.unbanTitle(action.name);
   const text =
     action?.kind === 'delete'
       ? t.deleteText
-      : action?.kind === 'warn'
-        ? t.warnText
-        : action?.kind === 'ban'
-          ? t.banText
-          : action?.kind === 'unban'
-            ? t.unbanText
-            : undefined;
+      : action?.kind === 'avatar'
+        ? t.avatarText
+        : action?.kind === 'warn'
+          ? t.warnText
+          : action?.kind === 'ban'
+            ? t.banText
+            : action?.kind === 'unban'
+              ? t.unbanText
+              : undefined;
   const ban = action?.kind === 'ban';
   const close = () => {
     setNote('');
@@ -95,7 +100,7 @@ export function ModActionSheet({
           </Button>
           <Button
             type="submit"
-            variant={action?.kind === 'delete' || ban ? 'danger' : 'primary'}
+            variant={action?.kind === 'delete' || action?.kind === 'avatar' || ban ? 'danger' : 'primary'}
             disabled={busy || (ban && !note.trim())}
           >
             {t.confirm}

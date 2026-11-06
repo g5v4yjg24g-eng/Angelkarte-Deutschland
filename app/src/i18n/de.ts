@@ -2264,6 +2264,10 @@ export const de = {
     ban: 'Sperren',
     unban: 'Sperre aufheben',
     resolve: 'Meldung erledigt',
+    removeAvatar: 'Profilbild entfernen',
+    avatarTitle: 'Profilbild entfernen?',
+    avatarText:
+      'Das Profilbild wird für alle entfernt (Eintrag und Datei). Die Person kann später ein neues wählen.',
     deleteTitle: 'Inhalt löschen?',
     deleteText:
       'Der Inhalt wird für alle endgültig gelöscht (bei Beiträgen samt Fotos). Das lässt sich nicht rückgängig machen.',
@@ -2284,6 +2288,7 @@ export const de = {
     cancel: 'Abbrechen',
     done_: {
       delete: 'Inhalt gelöscht.',
+      avatar: 'Profilbild entfernt.',
       warn: 'Verwarnung vermerkt.',
       ban: 'Gesperrt. Die Person bekommt eine Mail.',
       unban: 'Sperre aufgehoben. Die Person bekommt eine Mail.',
@@ -2305,6 +2310,7 @@ export const de = {
       delete_post: 'Beitrag gelöscht',
       delete_comment: 'Kommentar gelöscht',
       delete_spot: 'Spot gelöscht',
+      delete_avatar: 'Profilbild entfernt',
       warn: 'Verwarnt',
       ban: 'Gesperrt',
       unban: 'Sperre aufgehoben',
@@ -2541,7 +2547,7 @@ export const de = {
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',
-        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto – sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte löschen und Konten befristet oder dauerhaft sperren; Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt eine Mail an ihre Konto-Adresse. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person und bei Kommentaren dem Anfang des Textes). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Freundschaften, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, geteilte Spots und geteilte Beiträge samt Fotos endgültig.',
+        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto – sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte und Profilbilder löschen und Konten befristet oder dauerhaft sperren; Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt eine Mail an ihre Konto-Adresse. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person und bei Kommentaren dem Anfang des Textes). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Freundschaften, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
       },
       {
         name: 'GoatCounter (goatcounter.com)',

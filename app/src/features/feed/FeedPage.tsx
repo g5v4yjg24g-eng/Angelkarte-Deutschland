@@ -21,6 +21,7 @@ import { ReactionBar } from '../reactions/ReactionBar';
 import { ServerCommentsSheet } from '../reactions/ServerCommentsSheet';
 import { useServerReactions } from '../reactions/useServerReactions';
 import { useHidden } from '../moderation/hiddenStore';
+import { useAvatarUrls } from '../profile/avatarUrls';
 import styles from './Feed.module.css';
 
 const t = de.feed;
@@ -38,12 +39,14 @@ function FeedCard({
   reactions,
   onLike,
   onCommentCount,
+  avatarUrl,
 }: {
   post: FeedPost;
   onDone: (message: string) => void;
   reactions: ServerReactions;
   onLike: () => void;
   onCommentCount: (delta: number) => void;
+  avatarUrl?: string | undefined;
 }) {
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [index, setIndex] = useState(0);
@@ -52,7 +55,7 @@ function FeedCard({
     <article className={styles.card} aria-label={t.postLabel(post.displayName, dateOf(post.createdAt))}>
       <header className={styles.head}>
         <span className={styles.avatar} aria-hidden="true">
-          {initialOf(post.displayName)}
+          {avatarUrl ? <img src={avatarUrl} alt="" /> : initialOf(post.displayName)}
         </span>
         <span className={styles.who}>
           <strong>
@@ -141,6 +144,7 @@ export function FeedPage() {
   const [toast, setToast] = useState<string>();
   const ids = state.kind === 'ready' ? state.posts.map((p) => p.id) : [];
   const reactions = useServerReactions(ids, signedIn);
+  const avatars = useAvatarUrls(state.kind === 'ready' ? state.posts.map((p) => p.authorId) : []);
 
   useEffect(() => {
     if (!signedIn) return;
@@ -215,6 +219,7 @@ export function FeedPage() {
                 reactions={reactions.get(p.id)}
                 onLike={() => reactions.toggle(p.id)}
                 onCommentCount={(d) => reactions.addComments(p.id, d)}
+                avatarUrl={avatars.get(p.authorId)}
               />
             ))}
             {state.more ? (

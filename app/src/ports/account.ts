@@ -119,6 +119,15 @@ export interface AccountProvider {
   modResolve(reportId: string, note?: string): Promise<void>;
   modBan(userId: string, days: BanDuration, reason: string, reportId?: string): Promise<void>;
   modUnban(userId: string, note?: string): Promise<void>;
+  /**
+   * Eigenes Profilbild auf dem Server setzen (JPEG, quadratisch) oder mit null entfernen. Das alte Bild bleibt, bis
+   * das neue eingetragen ist; danach wird es gelöscht. Fehler 'no_profile', wenn es noch kein Server-Profil gibt.
+   */
+  publishAvatar(photo: Blob | null): Promise<void>;
+  /** Adressen der Profilbilder (1 h gültig); fehlt ein Konto, hat es keins oder ist nicht sichtbar */
+  avatarUrls(userIds: string[]): Promise<Map<string, string>>;
+  /** Moderation: Profilbild eines Kontos entfernen (Eintrag und Datei) */
+  modClearAvatar(userId: string, reportId?: string, note?: string): Promise<void>;
   /** Konto und Profil endgültig löschen, danach abgemeldet */
   deleteAccount(): Promise<void>;
 }
