@@ -52,6 +52,10 @@ test('PRF-4: Profil einrichten, Beitrag mit zwei Fotos posten, ansehen, Text än
 
   await page.getByRole('button', { name: 'Bearbeiten' }).click();
   await page.getByLabel('Profilbild wählen').setInputFiles(await jpeg(page, '#1f7a8c'));
+  await page
+    .getByRole('dialog', { name: 'Profilbild zuschneiden' })
+    .getByRole('button', { name: 'Übernehmen' })
+    .click();
   await expect(page.getByRole('img', { name: 'Profilbild' })).toBeVisible();
   await page.getByRole('button', { name: 'Speichern' }).click();
   await expect(page.getByText('Bitte einen Namen eingeben.')).toBeVisible();
@@ -236,4 +240,94 @@ test('PRF-7: Kommentar-Fenster schließt beim Herunterziehen, kurzes Ziehen fede
   await expect(sheet).toBeVisible();
   await drag(360, 20);
   await expect(sheet).toBeHidden();
+});
+
+/** JPEG mit zwei Hälften: links `left`, rechts `right` */
+async function twoTone(page: Page, left: string, right: string) {
+  const bytes = await page.evaluate(
+    async ([left, right]) => {
+      const c = document.createElement('canvas');
+      c.width = 1200;
+      c.height = 900;
+      const ctx = c.getContext('2d');
+      if (!ctx) throw new Error('kein Canvas');
+      ctx.fillStyle = left;
+      ctx.fillRect(0, 0, 600, 900);
+      ctx.fillStyle = right;
+      ctx.fillRect(600, 0, 600, 900);
+      const blob = await new Promise<Blob | null>((r) => c.toBlob(r, 'image/jpeg', 0.95));
+      return Array.from(new Uint8Array(await (blob as Blob).arrayBuffer()));
+    },
+    [left, right] as const,
+  );
+  return { name: 'zwei.jpg', mimeType: 'image/jpeg', buffer: Buffer.from(bytes) };
+}
+
+/** Größe und Farbe in der Mitte des Profilbilds auf der Profilseite */
+const avatarPixel = (page: Page) =>
+  page
+    .getByRole('main')
+    .getByRole('img', { name: 'Profilbild' })
+    .first()
+    .evaluate(async (el) => {
+      const img = el as HTMLImageElement;
+      await img.decode();
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth;
+      c.height = img.naturalHeight;
+      const ctx = c.getContext('2d');
+      if (!ctx) throw new Error('kein Canvas');
+      ctx.drawImage(img, 0, 0);
+      const [r, g, b] = ctx.getImageData(c.width / 2, c.height / 2, 1, 1).data;
+      return { w: img.naturalWidth, h: img.naturalHeight, r: r ?? 0, g: g ?? 0, b: b ?? 0 };
+    });
+
+test('PRF-8: Profilbild zuschneiden – verschieben, zoomen, zurücksetzen, abbrechen behält das alte Bild', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/profil/bearbeiten');
+  await waitForApp(page);
+  await page.getByLabel('Name').fill('Kevin');
+
+  // Abbrechen: kein Bild übernommen
+  await page.getByLabel('Profilbild wählen').setInputFiles(await twoTone(page, '#c0392b', '#1f7a8c'));
+  const dialog = page.getByRole('dialog', { name: 'Profilbild zuschneiden' });
+  await expect(dialog.getByRole('group', { name: /Bildausschnitt/ }).locator('img')).toBeVisible();
+  expect(await axe(page)).toEqual([]);
+  expect(await noOverflow(page)).toBe(true);
+  await dialog.getByRole('button', { name: 'Abbrechen' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole('button', { name: 'Bild entfernen' })).toHaveCount(0);
+
+  // Wählen, nach rechts ziehen → linke (rote) Hälfte im Kreis
+  await page.getByLabel('Profilbild wählen').setInputFiles(await twoTone(page, '#c0392b', '#1f7a8c'));
+  const frame = dialog.getByRole('group', { name: /Bildausschnitt/ });
+  await expect(frame.locator('img')).toBeVisible();
+  const box = await frame.boundingBox();
+  if (!box) throw new Error('kein Rahmen');
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 1.4, box.y + box.height / 2, { steps: 8 });
+  await page.mouse.up();
+  // Zoomen per Regler und Tastatur, Zurücksetzen stellt den Start wieder her
+  const zoom = dialog.getByRole('slider', { name: 'Zoom' });
+  await zoom.fill('2');
+  await expect(zoom).toHaveValue('2');
+  await dialog.getByRole('button', { name: 'Zurücksetzen' }).click();
+  await expect(zoom).toHaveValue('1');
+  await frame.focus();
+  for (let i = 0; i < 30; i++) await page.keyboard.press('ArrowLeft');
+  await dialog.getByRole('button', { name: 'Übernehmen' }).click();
+  await expect(dialog).toBeHidden();
+
+  await page.getByRole('button', { name: 'Speichern' }).click();
+  await expect(page.getByText('Kevin', { exact: true })).toBeVisible();
+  const px = await avatarPixel(page);
+  // quadratisch gespeichert (rund nur in der Anzeige), Mitte rot = linke Bildhälfte
+  expect(px.w).toBe(px.h);
+  expect(px.r).toBeGreaterThan(150);
+  expect(px.b).toBeLessThan(100);
+  expect(errors).toEqual([]);
 });

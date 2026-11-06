@@ -9,7 +9,8 @@ import { TextArea, TextField } from '../../design/components/Field';
 import { saveProfile } from '../../data/profileService';
 import { profileNameValid, PROFILE_BIO_MAX, PROFILE_NAME_MAX } from '../../domain/profile';
 import type { Profile } from '../../domain/schemas';
-import { processPhoto, type ProcessedPhoto } from '../../lib/processPhoto';
+import type { ProcessedPhoto } from '../../lib/processPhoto';
+import { AvatarEditor } from './AvatarEditor';
 import { Avatar } from './Avatar';
 import { useProfile } from './usePhoto';
 import photoStyles from '../catches/CatchPhotos.module.css';
@@ -28,16 +29,11 @@ function Form({ initial }: { initial: Profile | null }) {
   const [busy, setBusy] = useState(false);
   const hasAvatar = avatar ? true : avatar === null ? false : !!initial?.avatarPhotoId;
 
-  const pick = async (file: File) => {
+  // Gewähltes Bild erst zuschneiden; das bisherige Profilbild bleibt, bis „Speichern“ erfolgreich war
+  const [editing, setEditing] = useState<File>();
+  const pick = (file: File) => {
     setError(undefined);
-    setBusy(true);
-    try {
-      setAvatar(await processPhoto(file));
-    } catch {
-      setError(t.photoError);
-    } finally {
-      setBusy(false);
-    }
+    setEditing(file);
   };
 
   const submit = async (e: FormEvent) => {
@@ -72,7 +68,7 @@ function Form({ initial }: { initial: Profile | null }) {
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 e.target.value = '';
-                if (f) void pick(f);
+                if (f) pick(f);
               }}
             />
           </label>
@@ -100,6 +96,16 @@ function Form({ initial }: { initial: Profile | null }) {
         onChange={(e) => setBio(e.target.value)}
       />
       {error && <Notice tone="error">{error}</Notice>}
+      {editing && (
+        <AvatarEditor
+          file={editing}
+          onCancel={() => setEditing(undefined)}
+          onDone={(photo) => {
+            setAvatar(photo);
+            setEditing(undefined);
+          }}
+        />
+      )}
       <div className={styles.formActions}>
         <Button type="submit" disabled={busy}>
           {t.save}
