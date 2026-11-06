@@ -1,6 +1,6 @@
 // Gemeinsame Session in der Session-Ansicht (Paket 8a): einladen, Teilnehmer sehen, verlassen.
 // Nur angemeldet; ohne Verknüpfung und nach dem Ende ohne Einladen.
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { de } from '../../../i18n/de';
 import { Section } from '../../../design/components/Page';
@@ -14,6 +14,8 @@ import { useProviders } from '../../../ports/providersContext';
 import { linkGroup } from '../../../data/groupSessionService';
 import { storedUserId } from '../../badges/badgeStore';
 import { groupErrorText } from './groupText';
+import { FeedList } from '../../feed/FeedPage';
+import { formatDateTime } from '../../../lib/storage';
 import styles from './Group.module.css';
 import sessionStyles from '../Sessions.module.css';
 
@@ -42,10 +44,17 @@ export function GroupSection({ session }: { session: Session }) {
     };
   }, [account, signedIn, groupId]);
 
+  const loadHighlights = useCallback(
+    (before?: string) => (groupId ? account.groupHighlights(groupId, before) : Promise.resolve([])),
+    [account, groupId],
+  );
+
   if (!signedIn || (!groupId && !running)) return null;
 
   const mine = members?.find((m) => m.userId === me);
   const isHost = !groupId || !!mine?.isHost;
+  const participant = !!mine && (mine.status === 'joined' || mine.status === 'left' || mine.isHost);
+  const people = members?.filter((m) => m.status === 'joined' || m.status === 'left').length ?? 0;
 
   async function leave() {
     if (!groupId) return;
@@ -64,6 +73,9 @@ export function GroupSection({ session }: { session: Session }) {
       <div className={sessionStyles.stack}>
         {!groupId && <p className="muted">{t.intro}</p>}
         {groupId && !members && !error && <p className="muted">{t.loading}</p>}
+        {members && participant && (
+          <p className="muted">{t.summary(people, formatDateTime(session.startAt))}</p>
+        )}
         {members && (
           <ul className={styles.members} aria-label={t.members}>
             {members.map((m) => (
@@ -100,6 +112,16 @@ export function GroupSection({ session }: { session: Session }) {
         )}
         {message && <Notice tone="success">{message}</Notice>}
         {error && <Notice tone="error">{error}</Notice>}
+        {groupId && participant && (
+          <section aria-labelledby="group-highlights" className={sessionStyles.stack}>
+            <h3 id="group-highlights">{t.highlights}</h3>
+            <FeedList
+              load={loadHighlights}
+              cursorOf={(p) => p.createdAt}
+              empty={<p className="muted">{t.noHighlights}</p>}
+            />
+          </section>
+        )}
       </div>
     </Section>
   );

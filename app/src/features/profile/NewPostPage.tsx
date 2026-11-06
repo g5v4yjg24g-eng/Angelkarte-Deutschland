@@ -47,6 +47,8 @@ export function NewPostPage() {
   // Fischart/Länge: folgen dem gewählten Fang, bis sie selbst geändert werden
   const [info, setInfo] = useState<{ species: string; length: string }>();
   const [lengthError, setLengthError] = useState<string>();
+  /** Highlight einer gemeinsamen Session (Paket 8b) – nur bewusst, Standard aus */
+  const [asHighlight, setAsHighlight] = useState(false);
 
   const catches = useLiveQuery(
     async () => (await getDb().catches.orderBy('at').reverse().toArray()).filter((c) => !c.deletedAt),
@@ -54,6 +56,11 @@ export function NewPostPage() {
   );
   const chosen = catches?.find((c) => c.id === catchId);
   const catchPhotos = usePhotos(chosen?.photoIds);
+  const groupId = useLiveQuery(
+    async () => (chosen?.sessionId ? (await getDb().sessions.get(chosen.sessionId))?.groupId : undefined),
+    [chosen?.sessionId],
+  );
+  const highlight = asHighlight && !!groupId && !!storedUserId();
   const takenFromCatch = (catchPhotos ?? []).filter((p) => !skipped.includes(p.id));
   const species = info?.species ?? chosen?.speciesId ?? '';
   const length = info?.length ?? lengthText(chosen?.lengthCm);
@@ -93,9 +100,10 @@ export function NewPostPage() {
       await createPost({
         caption: caption.trim(),
         catchId: chosen?.id,
-        visibility,
+        visibility: highlight ? 'friends' : visibility,
         speciesId: species || undefined,
         lengthCm,
+        groupId: highlight ? groupId : undefined,
         // angemeldet: mit dem Konto teilen (Etappe 2); sonst bleibt der Beitrag auf dem Gerät
         ...(storedUserId() ? { share: 'pending' as const } : {}),
         photos: pending.map((p) => p.photo),
@@ -204,7 +212,16 @@ export function NewPostPage() {
           onSpecies={(v) => setInfo({ species: v, length })}
           onLength={(v) => setInfo({ species, length: v })}
         />
-        <VisibilityField value={visibility} onChange={setVisibility} />
+        {groupId && storedUserId() && (
+          <label className={styles.highlightPick}>
+            <input type="checkbox" checked={asHighlight} onChange={(e) => setAsHighlight(e.target.checked)} />
+            <span>
+              {t.asHighlight}
+              <small className="muted">{t.asHighlightHint}</small>
+            </span>
+          </label>
+        )}
+        {!highlight && <VisibilityField value={visibility} onChange={setVisibility} />}
         {error && <Notice tone="error">{error}</Notice>}
         <div className={styles.formActions}>
           <Button type="submit" disabled={busy}>

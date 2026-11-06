@@ -54,6 +54,7 @@ export async function syncPosts(
         photos,
         speciesId: p.speciesId,
         lengthCm: p.lengthCm,
+        groupId: p.groupId,
       });
       // hochgeladen ist der Stand `p.rev`; spätere Änderungen zieht der nächste Lauf nach
       await db.posts

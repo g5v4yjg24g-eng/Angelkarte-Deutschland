@@ -85,7 +85,11 @@ function EditForm({ post, onDone }: { post: Post; onDone: () => void }) {
         onSpecies={setSpecies}
         onLength={setLength}
       />
-      <VisibilityField value={visibility} onChange={setVisibility} />
+      {post.groupId ? (
+        <p className="muted">{t.visibleForGroup}</p>
+      ) : (
+        <VisibilityField value={visibility} onChange={setVisibility} />
+      )}
       <div className={styles.formActions}>
         <Button type="submit">{t.save}</Button>
         <Button variant="secondary" onClick={onDone}>
@@ -246,7 +250,8 @@ export function PostPage() {
             </p>
           )}
           <p className={`muted ${styles.note}`}>
-            {t.postedOn(dateOf(post.createdAt))} · {t.visibleFor(t.visibility[post.visibility ?? 'friends'])}
+            {t.postedOn(dateOf(post.createdAt))} ·{' '}
+            {post.groupId ? t.visibleForGroup : t.visibleFor(t.visibility[post.visibility ?? 'friends'])}
           </p>
           <ShareRow postId={post.id} status={shareStatus(post)} />
           {linked && !linked.deletedAt && (
