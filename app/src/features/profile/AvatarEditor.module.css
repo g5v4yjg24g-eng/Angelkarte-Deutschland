@@ -1,0 +1,109 @@
+/* Profilbild zuschneiden: fester Kreis, Bild darunter verschiebbar */
+.dialog {
+  --nav-clearance: 0px;
+  width: min(100% - 2 * var(--space-4), 26rem);
+  max-height: calc(100dvh - 2 * var(--space-4));
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-2);
+  overflow: auto;
+}
+.dialog[open] {
+  display: grid;
+  gap: var(--space-3);
+}
+.dialog::backdrop {
+  background: var(--color-scrim);
+}
+.title {
+  font-size: var(--text-lg);
+}
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.frame {
+  position: relative;
+  width: min(100%, 20rem);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.frame:active {
+  cursor: grabbing;
+}
+.frame:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+/* Abdunkeln außerhalb des Kreises; der Kreis zeigt, wie das Bild später erscheint */
+.frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 100vmax rgb(0 0 0 / 0.55);
+  outline: 2px solid rgb(255 255 255 / 0.85);
+  outline-offset: -1px;
+  pointer-events: none;
+}
+.image,
+.preview {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.image img,
+.preview img {
+  position: absolute;
+  max-width: none;
+  pointer-events: none;
+}
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.preview {
+  position: relative;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+}
+.zoom {
+  flex: 1 1 auto;
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.zoom input {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--color-primary);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

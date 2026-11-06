@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-14',
+    title: 'Profilbild zuschneiden',
+    items: [
+      'Profilbild: Nach der Auswahl schiebst und zoomst du dein Bild im Kreis zurecht – mit dem Finger, zwei Fingern oder dem Regler. Gespeichert wird genau dieser Ausschnitt, ohne Standortdaten.',
+    ],
+  },
+  {
     id: '2026-11-13',
     title: 'iPhone-App fühlt sich nativer an',
     items: [
