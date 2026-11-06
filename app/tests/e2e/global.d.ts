@@ -6,6 +6,8 @@ declare global {
     __fangpunktMap?: MlMap;
     /** Testzugriff auf die Karte im Session-Rückblick (src/features/sessions/review/ReviewMap.tsx). */
     __fangpunktReviewMap?: MlMap;
+    /** alle Seiten im Hintergrund nachgeladen (src/app/router.tsx, prefetchPages) */
+    __fangpunktPagesLoaded?: boolean;
   }
 }
 export {};

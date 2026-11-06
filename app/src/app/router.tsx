@@ -1,46 +1,29 @@
-import { InvitePage } from '../features/sessions/group/InvitePage';
+// Seiten werden erst geladen, wenn man sie öffnet (Phase 5, Freigabe Nutzer 2026-11-06): kleinerer Start.
+// Der Router wartet auf den Code, bevor er wechselt – kein leerer Zwischenzustand. Die Karte (Startseite) ist sofort da.
+import type { ComponentType } from 'react';
 import { createBrowserRouter } from 'react-router';
 import { AppShell } from './AppShell';
 import { RouteError } from './RouteError';
 import { NotFound } from './NotFound';
 import { MapPage } from '../features/map/MapPage';
-import { CatchesPage } from '../features/catches/CatchesPage';
-import { CatchDetailPage } from '../features/catches/CatchDetailPage';
-import { SessionsPage } from '../features/sessions/SessionsPage';
-import { SessionDetailPage } from '../features/sessions/SessionDetailPage';
-import { SessionReviewPage } from '../features/sessions/review/SessionReviewPage';
-import { StatsPage } from '../features/stats/StatsPage';
-import { MorePage } from '../features/more/MorePage';
-import { SettingsPage } from '../features/settings/SettingsPage';
-import { WeatherPage } from '../features/weather/WeatherPage';
-import { CalendarPage } from '../features/calendar/CalendarPage';
-import { PrivacyPage } from '../features/about/PrivacyPage';
-import { BaitPresetsPage } from '../features/baits/BaitPresetsPage';
-import { KnotsPage } from '../features/knots/KnotsPage';
-import { KnotDetailPage } from '../features/knots/KnotDetailPage';
-import { RigsPage } from '../features/knots/RigsPage';
-import { ProfilePage } from '../features/profile/ProfilePage';
-import { EditProfilePage } from '../features/profile/EditProfilePage';
-import { NewPostPage } from '../features/profile/NewPostPage';
-import { PostPage } from '../features/profile/PostPage';
-import { SharedSpotsPage } from '../features/spots/SharedSpotsPage';
-import { ShareSpotPage } from '../features/spots/ShareSpotPage';
-import { SavedPostsPage } from '../features/feed/SavedPostsPage';
-import { AchievementsPage } from '../features/achievements/AchievementsPage';
-import { RulesPage } from '../features/moderation/Rules';
-import { ModerationPage } from '../features/moderation/admin/ModerationPage';
-import { ModReportPage } from '../features/moderation/admin/ModReportPage';
-import { ModUserPage } from '../features/moderation/admin/ModUserPage';
-import { FriendsPage } from '../features/friends/FriendsPage';
-import { FeedPage } from '../features/feed/FeedPage';
-import { RigDetailPage } from '../features/knots/RigDetailPage';
-import { RetrievesPage } from '../features/knots/RetrievesPage';
-import { RetrieveDetailPage } from '../features/knots/RetrieveDetailPage';
-import { AboutPage } from '../features/about/AboutPage';
-import { LazyBackupPage } from '../features/backup/LazyBackupPage';
-import { LazyAccountPage } from '../features/account/LazyAccountPage';
-import { LawPage } from '../features/law/LawPage';
-import { StateLawPage } from '../features/law/StateLawPage';
+
+const loaders: (() => Promise<unknown>)[] = [];
+
+/** Seite bei Bedarf laden: Modul und Name der exportierten Komponente */
+const page = <M,>(load: () => Promise<M>, pick: (m: M) => ComponentType) => {
+  loaders.push(load);
+  return async () => ({ Component: pick(await load()) });
+};
+
+/**
+ * Alle Seiten im Hintergrund nachladen, sobald das Gerät nach dem Start Luft hat – damit jede Seite auch ohne Netz
+ * aufgeht, selbst wenn der Service Worker (noch) nichts vorhält. Fehler (z. B. schon offline) sind egal.
+ */
+export function prefetchPages(): Promise<void> {
+  return Promise.allSettled(loaders.map((load) => load())).then(() => {
+    window.__fangpunktPagesLoaded = true;
+  });
+}
 
 export const routes = [
   {
@@ -52,45 +35,279 @@ export const routes = [
         errorElement: <RouteError />,
         children: [
           { index: true, element: <MapPage /> },
-          { path: 'fangbuch', element: <CatchesPage /> },
-          { path: 'fangbuch/sessions', element: <SessionsPage /> },
-          { path: 'fangbuch/sessions/:id', element: <SessionDetailPage /> },
-          { path: 'fangbuch/sessions/:id/rueckblick', element: <SessionReviewPage /> },
-          { path: 'fangbuch/sessions/:id/einladen', element: <InvitePage /> },
-          { path: 'fangbuch/:id', element: <CatchDetailPage /> },
-          { path: 'wetter', element: <WeatherPage /> },
-          { path: 'wetter/kalender', element: <CalendarPage /> },
-          { path: 'statistik', element: <StatsPage /> },
-          { path: 'profil', element: <ProfilePage /> },
-          { path: 'profil/bearbeiten', element: <EditProfilePage /> },
-          { path: 'profil/neu', element: <NewPostPage /> },
-          { path: 'profil/beitrag/:id', element: <PostPage /> },
-          { path: 'profil/freunde', element: <FriendsPage /> },
-          { path: 'profil/spots', element: <SharedSpotsPage /> },
-          { path: 'profil/erfolge', element: <AchievementsPage /> },
-          { path: 'profil/gespeichert', element: <SavedPostsPage /> },
-          { path: 'profil/spots/teilen/:placeId', element: <ShareSpotPage /> },
-          { path: 'feed', element: <FeedPage /> },
-          { path: 'feed/entdecken', element: <FeedPage mode="discover" /> },
-          { path: 'mehr', element: <MorePage /> },
-          { path: 'mehr/einstellungen', element: <SettingsPage /> },
-          { path: 'mehr/koeder', element: <BaitPresetsPage /> },
-          { path: 'mehr/knoten', element: <KnotsPage /> },
-          { path: 'mehr/knoten/:knot', element: <KnotDetailPage /> },
-          { path: 'mehr/montagen', element: <RigsPage /> },
-          { path: 'mehr/montagen/:rig', element: <RigDetailPage /> },
-          { path: 'mehr/koederfuehrung', element: <RetrievesPage /> },
-          { path: 'mehr/koederfuehrung/:retrieve', element: <RetrieveDetailPage /> },
-          { path: 'mehr/info', element: <AboutPage /> },
-          { path: 'mehr/datenschutz', element: <PrivacyPage /> },
-          { path: 'mehr/regeln', element: <RulesPage /> },
-          { path: 'mehr/moderation', element: <ModerationPage /> },
-          { path: 'mehr/moderation/nutzer/:uid', element: <ModUserPage /> },
-          { path: 'mehr/moderation/:id', element: <ModReportPage /> },
-          { path: 'mehr/daten', element: <LazyBackupPage /> },
-          { path: 'mehr/konto', element: <LazyAccountPage /> },
-          { path: 'mehr/recht', element: <LawPage /> },
-          { path: 'mehr/recht/:state', element: <StateLawPage /> },
+          {
+            path: 'fangbuch',
+            lazy: page(
+              () => import('../features/catches/CatchesPage'),
+              (m) => m.CatchesPage,
+            ),
+          },
+          {
+            path: 'fangbuch/sessions',
+            lazy: page(
+              () => import('../features/sessions/SessionsPage'),
+              (m) => m.SessionsPage,
+            ),
+          },
+          {
+            path: 'fangbuch/sessions/:id',
+            lazy: page(
+              () => import('../features/sessions/SessionDetailPage'),
+              (m) => m.SessionDetailPage,
+            ),
+          },
+          {
+            path: 'fangbuch/sessions/:id/rueckblick',
+            lazy: page(
+              () => import('../features/sessions/review/SessionReviewPage'),
+              (m) => m.SessionReviewPage,
+            ),
+          },
+          {
+            path: 'fangbuch/sessions/:id/einladen',
+            lazy: page(
+              () => import('../features/sessions/group/InvitePage'),
+              (m) => m.InvitePage,
+            ),
+          },
+          {
+            path: 'fangbuch/:id',
+            lazy: page(
+              () => import('../features/catches/CatchDetailPage'),
+              (m) => m.CatchDetailPage,
+            ),
+          },
+          {
+            path: 'wetter',
+            lazy: page(
+              () => import('../features/weather/WeatherPage'),
+              (m) => m.WeatherPage,
+            ),
+          },
+          {
+            path: 'wetter/kalender',
+            lazy: page(
+              () => import('../features/calendar/CalendarPage'),
+              (m) => m.CalendarPage,
+            ),
+          },
+          {
+            path: 'statistik',
+            lazy: page(
+              () => import('../features/stats/StatsPage'),
+              (m) => m.StatsPage,
+            ),
+          },
+          {
+            path: 'profil',
+            lazy: page(
+              () => import('../features/profile/ProfilePage'),
+              (m) => m.ProfilePage,
+            ),
+          },
+          {
+            path: 'profil/bearbeiten',
+            lazy: page(
+              () => import('../features/profile/EditProfilePage'),
+              (m) => m.EditProfilePage,
+            ),
+          },
+          {
+            path: 'profil/neu',
+            lazy: page(
+              () => import('../features/profile/NewPostPage'),
+              (m) => m.NewPostPage,
+            ),
+          },
+          {
+            path: 'profil/beitrag/:id',
+            lazy: page(
+              () => import('../features/profile/PostPage'),
+              (m) => m.PostPage,
+            ),
+          },
+          {
+            path: 'profil/freunde',
+            lazy: page(
+              () => import('../features/friends/FriendsPage'),
+              (m) => m.FriendsPage,
+            ),
+          },
+          {
+            path: 'profil/spots',
+            lazy: page(
+              () => import('../features/spots/SharedSpotsPage'),
+              (m) => m.SharedSpotsPage,
+            ),
+          },
+          {
+            path: 'profil/erfolge',
+            lazy: page(
+              () => import('../features/achievements/AchievementsPage'),
+              (m) => m.AchievementsPage,
+            ),
+          },
+          {
+            path: 'profil/gespeichert',
+            lazy: page(
+              () => import('../features/feed/SavedPostsPage'),
+              (m) => m.SavedPostsPage,
+            ),
+          },
+          {
+            path: 'profil/spots/teilen/:placeId',
+            lazy: page(
+              () => import('../features/spots/ShareSpotPage'),
+              (m) => m.ShareSpotPage,
+            ),
+          },
+          {
+            path: 'feed',
+            lazy: page(
+              () => import('../features/feed/FeedPage'),
+              (m) => m.FeedPage,
+            ),
+          },
+          {
+            path: 'feed/entdecken',
+            lazy: async () => {
+              const { FeedPage } = await import('../features/feed/FeedPage');
+              return { Component: () => <FeedPage mode="discover" /> };
+            },
+          },
+          {
+            path: 'mehr',
+            lazy: page(
+              () => import('../features/more/MorePage'),
+              (m) => m.MorePage,
+            ),
+          },
+          {
+            path: 'mehr/einstellungen',
+            lazy: page(
+              () => import('../features/settings/SettingsPage'),
+              (m) => m.SettingsPage,
+            ),
+          },
+          {
+            path: 'mehr/koeder',
+            lazy: page(
+              () => import('../features/baits/BaitPresetsPage'),
+              (m) => m.BaitPresetsPage,
+            ),
+          },
+          {
+            path: 'mehr/knoten',
+            lazy: page(
+              () => import('../features/knots/KnotsPage'),
+              (m) => m.KnotsPage,
+            ),
+          },
+          {
+            path: 'mehr/knoten/:knot',
+            lazy: page(
+              () => import('../features/knots/KnotDetailPage'),
+              (m) => m.KnotDetailPage,
+            ),
+          },
+          {
+            path: 'mehr/montagen',
+            lazy: page(
+              () => import('../features/knots/RigsPage'),
+              (m) => m.RigsPage,
+            ),
+          },
+          {
+            path: 'mehr/montagen/:rig',
+            lazy: page(
+              () => import('../features/knots/RigDetailPage'),
+              (m) => m.RigDetailPage,
+            ),
+          },
+          {
+            path: 'mehr/koederfuehrung',
+            lazy: page(
+              () => import('../features/knots/RetrievesPage'),
+              (m) => m.RetrievesPage,
+            ),
+          },
+          {
+            path: 'mehr/koederfuehrung/:retrieve',
+            lazy: page(
+              () => import('../features/knots/RetrieveDetailPage'),
+              (m) => m.RetrieveDetailPage,
+            ),
+          },
+          {
+            path: 'mehr/info',
+            lazy: page(
+              () => import('../features/about/AboutPage'),
+              (m) => m.AboutPage,
+            ),
+          },
+          {
+            path: 'mehr/datenschutz',
+            lazy: page(
+              () => import('../features/about/PrivacyPage'),
+              (m) => m.PrivacyPage,
+            ),
+          },
+          {
+            path: 'mehr/regeln',
+            lazy: page(
+              () => import('../features/moderation/Rules'),
+              (m) => m.RulesPage,
+            ),
+          },
+          {
+            path: 'mehr/moderation',
+            lazy: page(
+              () => import('../features/moderation/admin/ModerationPage'),
+              (m) => m.ModerationPage,
+            ),
+          },
+          {
+            path: 'mehr/moderation/nutzer/:uid',
+            lazy: page(
+              () => import('../features/moderation/admin/ModUserPage'),
+              (m) => m.ModUserPage,
+            ),
+          },
+          {
+            path: 'mehr/moderation/:id',
+            lazy: page(
+              () => import('../features/moderation/admin/ModReportPage'),
+              (m) => m.ModReportPage,
+            ),
+          },
+          {
+            path: 'mehr/daten',
+            lazy: page(
+              () => import('../features/backup/BackupPage'),
+              (m) => m.BackupPage,
+            ),
+          },
+          {
+            path: 'mehr/konto',
+            lazy: page(
+              () => import('../features/account/AccountPage'),
+              (m) => m.AccountPage,
+            ),
+          },
+          {
+            path: 'mehr/recht',
+            lazy: page(
+              () => import('../features/law/LawPage'),
+              (m) => m.LawPage,
+            ),
+          },
+          {
+            path: 'mehr/recht/:state',
+            lazy: page(
+              () => import('../features/law/StateLawPage'),
+              (m) => m.StateLawPage,
+            ),
+          },
           { path: '*', element: <NotFound /> },
         ],
       },

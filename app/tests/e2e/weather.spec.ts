@@ -1,6 +1,6 @@
 import { expect, test, type Page } from './fixtures';
 import type { Catch } from '../../src/domain/schemas';
-import { collectErrors, startCatchAt, useLocalExternals, waitForApp } from './helpers';
+import { collectErrors, startCatchAt, useLocalExternals, waitForApp, pagesLoaded } from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -84,6 +84,7 @@ test('WX-1: Wetter ist standardmäßig an; offline erfasst, online nachgeladen, 
   await waitForApp(page);
 
   // Offline erfasst → noch kein Abruf, Hinweis „wird geladen"
+  await pagesLoaded(page);
   await context.setOffline(true);
   await put(page, [withPos, noPos]);
   // Ohne Netz kein page.goto: im Client navigieren

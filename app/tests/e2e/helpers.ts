@@ -125,3 +125,8 @@ export async function animationsDone(locator: import('@playwright/test').Locator
     Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished.catch(() => undefined))),
   );
 }
+
+/** Warten, bis die App alle Seiten im Hintergrund nachgeladen hat (vor Offline-Schritten nötig) */
+export async function pagesLoaded(page: Page) {
+  await page.waitForFunction(() => window.__fangpunktPagesLoaded === true);
+}

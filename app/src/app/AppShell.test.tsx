@@ -26,8 +26,10 @@ function renderAt(path: string, basename?: string) {
 }
 
 describe('AppShell', () => {
-  it('hat fünf Hauptbereiche in der Navigation und markiert den aktiven', () => {
+  it('hat fünf Hauptbereiche in der Navigation und markiert den aktiven', async () => {
     renderAt('/fangbuch');
+    // Seiten werden bei Bedarf geladen
+    expect(await screen.findByRole('heading', { level: 1, name: 'Fangbuch' })).toBeInTheDocument();
     const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' });
     const links = ['Karte', 'Fangbuch', 'Feed', 'Profil', 'Wetter', 'Mehr'].map((n) =>
       screen.getByRole('link', { name: n }),
@@ -37,9 +39,9 @@ describe('AppShell', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Fangbuch' })).toBeInTheDocument();
   });
 
-  it('Statistik ist ein Reiter im Fangbuch; die Leiste zeigt dabei das Fangbuch als aktiv', () => {
+  it('Statistik ist ein Reiter im Fangbuch; die Leiste zeigt dabei das Fangbuch als aktiv', async () => {
     renderAt('/statistik');
-    expect(screen.getByRole('heading', { level: 1, name: 'Statistik' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Statistik' })).toBeInTheDocument();
     const tabs = screen.getByRole('navigation', { name: 'Fangbuch' });
     expect(tabs).toContainElement(screen.getByRole('link', { name: 'Statistik' }));
     expect(screen.getByRole('link', { name: 'Statistik' })).toHaveAttribute('aria-current', 'page');
@@ -75,7 +77,7 @@ describe('AppShell', () => {
     // jsdom kennt matchMedia nicht: schmaler Bildschirm (mobile Leiste)
     window.matchMedia = () => ({ matches: false }) as MediaQueryList;
     renderAt('/basis/fangbuch', '/basis');
-    const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' });
+    const nav = await screen.findByRole('navigation', { name: 'Hauptnavigation' });
     const links = ['Karte', 'Fangbuch', 'Feed', 'Profil', 'Wetter', 'Mehr'].map((n) =>
       screen.getByRole('link', { name: n }),
     );
