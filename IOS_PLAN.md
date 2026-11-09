@@ -87,6 +87,8 @@ Moderation, nur für Moderatoren) – Meldungen ansehen, Inhalte löschen, Nutze
 
 ## 5. Store-Material (Etappe 3)
 
+> **Stand 2026-11-06:** Die Datenschutzangaben und die Altersfreigabe unten sind veraltet (seit Konto, Feed und Freunden gibt es Inhalte zwischen Nutzern). Aktuell gilt `RELEASE_CHECKLIST.md` (Abschnitte C und E).
+
 - **Datenschutzerklärung als eigene, öffentlich erreichbare Seite** (statische HTML-Datei auf GitHub Pages, nicht die SPA-Route), Inhalt aus `PrivacyPage`, um „iPhone-App“ ergänzt.
 - **Support-Adresse**: einfache Seite oder GitHub-Issues [O – Nutzer entscheidet, welche E-Mail sichtbar sein soll].
 - **App-Datenschutzangaben** (Entwurf, vor Abgabe prüfen):
