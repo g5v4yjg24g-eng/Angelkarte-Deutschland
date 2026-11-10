@@ -8,13 +8,14 @@ import { PushSettings } from './PushSettings';
 
 function setup(
   available: boolean,
-  permission: 'granted' | 'denied' | 'prompt',
+  permission: 'granted' | 'denied' | 'prompt' | Error,
   saved: PushPrefs[] = [],
   status: object[] = [],
 ) {
   const push: PushProvider = {
     available,
-    permission: () => Promise.resolve(permission),
+    permission: () =>
+      permission instanceof Error ? Promise.reject(permission) : Promise.resolve(permission),
     requestPermission: () => Promise.resolve('granted'),
     register: () => Promise.resolve('cd'.repeat(32)),
     onTap: () => () => undefined,
@@ -99,5 +100,13 @@ describe('Einstellungen → Mitteilungen (PUSH-3)', () => {
   it('neue Art „Neue Beiträge von Freunden“ ist dabei', async () => {
     setup(true, 'granted');
     expect(await screen.findByRole('checkbox', { name: 'Neue Beiträge von Freunden' })).toBeChecked();
+  });
+
+  it('Fehler bei der Frage nach der Erlaubnis: Meldung sichtbar, Einstellungen und Test trotzdem bedienbar', async () => {
+    setup(true, new Error('PushNotifications plugin is not implemented on ios'));
+    expect(await screen.findByText(/plugin is not implemented on ios/)).toBeInTheDocument();
+    expect(await screen.findByRole('checkbox', { name: 'Neue Beiträge von Freunden' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Mitteilungen erlauben' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Test-Mitteilung senden' })).toBeInTheDocument();
   });
 });
