@@ -13,7 +13,18 @@ import { createClient } from 'npm:@supabase/supabase-js@2.49.1';
 
 const TOPIC = 'com.fangpunkt.app';
 
-type Kind = 'friend_request' | 'friend_accepted' | 'like' | 'comment' | 'spot' | 'session_invite';
+type Kind =
+  | 'friend_request'
+  | 'friend_accepted'
+  | 'like'
+  | 'comment'
+  | 'spot'
+  | 'session_invite'
+  | 'new_post'
+  | 'comment_reply'
+  | 'session_joined'
+  | 'session_highlight'
+  | 'test';
 
 function secretKey(): string {
   try {
@@ -40,6 +51,16 @@ function message(kind: Kind, name: string, ref: string | null, excerpt: string |
       return { title: 'Neuer Spot', body: excerpt ? `${name} hat einen Spot mit dir geteilt: ${excerpt}` : `${name} hat einen Spot mit dir geteilt.`, path: '/profil/spots' };
     case 'session_invite':
       return { title: 'Einladung zum Angeln', body: excerpt ? `${name} lädt dich zur Session „${excerpt}“ ein.` : `${name} lädt dich zu einer gemeinsamen Session ein.`, path: '/fangbuch/sessions' };
+    case 'new_post':
+      return { title: 'Neuer Beitrag', body: excerpt ? `${name}: ${excerpt}` : `${name} hat einen neuen Beitrag geteilt.`, path: '/feed' };
+    case 'comment_reply':
+      return { title: 'Neuer Kommentar', body: excerpt ? `${name} hat auch kommentiert: ${excerpt}` : `${name} hat einen Beitrag kommentiert, den du auch kommentiert hast.`, path: '/feed' };
+    case 'session_joined':
+      return { title: 'Zusage zur Session', body: excerpt ? `${name} ist bei „${excerpt}“ dabei.` : `${name} ist bei deiner gemeinsamen Session dabei.`, path: '/fangbuch/sessions' };
+    case 'session_highlight':
+      return { title: 'Neues Highlight', body: excerpt ? `${name} hat ein Highlight aus „${excerpt}“ geteilt.` : `${name} hat ein Highlight aus eurer Session geteilt.`, path: '/fangbuch/sessions' };
+    case 'test':
+      return { title: 'Fangpunkt', body: 'Test-Mitteilung: Mitteilungen kommen auf diesem iPhone an. 🎣', path: '/feed' };
   }
 }
 

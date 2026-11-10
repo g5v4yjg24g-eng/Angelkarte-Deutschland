@@ -70,8 +70,17 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
     registerPushDevice: () => Promise.resolve(),
     unregisterPushDevice: () => Promise.resolve(),
     pushPrefs: () =>
-      Promise.resolve({ friends: true, likes: true, comments: true, spots: true, sessions: true }),
+      Promise.resolve({
+        friends: true,
+        likes: true,
+        comments: true,
+        spots: true,
+        sessions: true,
+        posts: true,
+      }),
     setPushPrefs: () => Promise.resolve(),
+    sendTestPush: () => Promise.resolve(1),
+    pushStatus: () => Promise.resolve({ devices: 1 }),
     isModerator: () => Promise.resolve(false),
     modReports: () => Promise.resolve([]),
     modContent: () => Promise.resolve(undefined),
