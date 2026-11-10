@@ -430,13 +430,6 @@
 }
 
 /* Hinweis „nur auf diesem Gerät“ mit „Alle teilen“ */
-.localPosts {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-}
 
 /* Fischart · Länge unter dem Namen (Kopf eines Beitrags) */
 .catchLine {

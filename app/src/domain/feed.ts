@@ -1,6 +1,7 @@
 // Feed (Etappe 3): Beiträge von Freunden und eigene, neueste zuerst; Entdecken (Paket 7c). Rein, ohne Netz.
 import { z } from 'zod';
 import { parseBadges, type Badge } from './badges';
+import { PostVisibilitySchema, type PostVisibility } from './schemas';
 
 export interface FeedPost {
   id: string;
@@ -9,7 +10,7 @@ export interface FeedPost {
   displayName: string;
   badges: Badge[];
   caption?: string | undefined;
-  visibility: 'friends' | 'public';
+  visibility: PostVisibility;
   photoPaths: string[];
   createdAt: string;
   /** Fischart und Länge (Paket 7a, freiwillig) */
@@ -35,7 +36,7 @@ const RowSchema = z.object({
   display_name: z.string(),
   badges: z.array(z.unknown()).nullable().optional(),
   caption: z.string().nullable().optional(),
-  visibility: z.enum(['friends', 'public']),
+  visibility: PostVisibilitySchema,
   photo_paths: z.array(z.string()).min(1),
   created_at: z.string(),
   species_id: z.string().nullable().optional(),

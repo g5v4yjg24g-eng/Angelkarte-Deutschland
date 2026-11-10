@@ -104,7 +104,14 @@ async function fakeSupabase(
     // Feed (Etappe 3): zeitlich begrenzte Foto-Adressen und die Fotos selbst
     if (url.pathname.startsWith('/storage/v1/object/sign/')) {
       if (req.method() === 'POST') {
-        const { paths } = req.postDataJSON() as { paths: string[] };
+        const { paths } = req.postDataJSON() as { paths?: string[] };
+        // eine Adresse (Gegenprobe nach dem Veröffentlichen): nur, wenn die Datei da ist
+        if (!paths) {
+          const path = url.pathname.slice('/storage/v1/object/sign/post-photos/'.length);
+          return storage.has(path)
+            ? json(route, { signedURL: `/object/sign/post-photos/${path}?token=t` })
+            : json(route, { statusCode: '404', error: 'not_found', message: 'Object not found' }, 400);
+        }
         return json(
           route,
           paths.map((path) => ({ path, signedURL: `/object/sign/post-photos/${path}?token=t`, error: null })),
@@ -119,7 +126,8 @@ async function fakeSupabase(
         const { prefix: folder } = req.postDataJSON() as { prefix: string };
         // Profilbilder liegen mit Speichernamen davor, Beitragsfotos ohne
         const prefix = rest === 'list/avatars' ? `avatars/${folder}` : folder;
-        const names = [...storage.keys()]
+        const seededPaths = feed.flatMap((r) => (r as { photo_paths?: string[] }).photo_paths ?? []);
+        const names = [...storage.keys(), ...seededPaths]
           .filter((k) => k.startsWith(`${prefix}/`))
           .map((k) => k.slice(prefix.length + 1).split('/')[0] as string);
         return json(
@@ -131,6 +139,14 @@ async function fakeSupabase(
         storage.set(rest.replace(/^post-photos\//, ''), (req.postDataBuffer() ?? Buffer.alloc(0)).length);
         return json(route, { Key: rest });
       }
+      if (req.method() === 'GET' && rest.startsWith('post-photos/')) {
+        const path = rest.slice('post-photos/'.length);
+        // auch Fotos der vorgegebenen Server-Beiträge (feed) liegen „im Speicher“
+        const seeded = feed.some((r) => ((r as { photo_paths?: string[] }).photo_paths ?? []).includes(path));
+        return storage.has(path) || seeded
+          ? route.fulfill({ status: 200, contentType: 'image/png', body: PNG })
+          : json(route, { statusCode: '404', error: 'not_found', message: 'Object not found' }, 400);
+      }
       if (req.method() === 'DELETE') {
         const { prefixes } = req.postDataJSON() as { prefixes: string[] };
         prefixes.forEach((k) => storage.delete(rest === 'avatars' ? `avatars/${k}` : k));
@@ -139,16 +155,10 @@ async function fakeSupabase(
     }
     if (url.pathname === '/rest/v1/posts') {
       const id = url.searchParams.get('id')?.replace('eq.', '');
-      if (req.method() === 'POST') {
-        const b = req.postDataJSON() as {
-          id: string;
-          caption: string | null;
-          visibility: string;
-          photo_paths: string[];
-        };
-        posts.set(b.id, b);
-        return route.fulfill({ status: 201 });
-      }
+      // Wie der echte Server: Anlegen/Upsert direkt auf der Tabelle braucht Spaltenrechte, die es nicht gibt
+      // (der Fehler, der Beiträge nie ankommen ließ) – nur publish_post legt an
+      if (req.method() === 'POST')
+        return json(route, { code: '42501', message: 'permission denied for table posts' }, 403);
       if (req.method() === 'PATCH' && id) {
         const b = req.postDataJSON() as { caption: string | null; visibility: string };
         const cur = posts.get(id);
@@ -568,6 +578,32 @@ async function fakeSupabase(
       case 'POST /rest/v1/rpc/set_my_profile_extras':
         people.extras.push(req.postDataJSON() as Record<string, unknown>);
         return route.fulfill({ status: 204 });
+      case 'POST /rest/v1/rpc/publish_post': {
+        const b = req.postDataJSON() as {
+          post_id: string;
+          caption: string | null;
+          vis: string;
+          paths: string[];
+          species: string | null;
+          length: number | null;
+          grp: string | null;
+        };
+        if (!['private', 'friends', 'public'].includes(b.vis))
+          return json(route, { code: 'P0001', message: 'bad_visibility' }, 400);
+        if (b.paths.some((path) => !path.startsWith(`${user.id}/${b.post_id}/`) || !storage.has(path)))
+          return json(route, { code: 'P0001', message: 'photo_missing' }, 400);
+        const created = !posts.has(b.post_id);
+        posts.set(b.post_id, {
+          id: b.post_id,
+          caption: b.caption,
+          visibility: b.vis,
+          photo_paths: b.paths,
+          species_id: b.species,
+          length_cm: b.length,
+          ...(b.grp ? { group_session_id: b.grp } : {}),
+        } as { id: string; caption: string | null; visibility: string; photo_paths: string[] });
+        return json(route, created ? 'created' : 'updated');
+      }
       case 'POST /rest/v1/rpc/user_profile': {
         const { name } = req.postDataJSON() as { name: string };
         const p = people.profiles.get(name);
@@ -701,7 +737,7 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|is_moderator|avatar_paths)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|is_moderator|avatar_paths|user_posts)))/.test(
         c,
       ),
     ),
@@ -937,7 +973,7 @@ test('FRD-3: Freunde ohne Anmeldung – Hinweis aufs Konto, keine Anfrage an Sup
   expect(calls).toEqual([]);
 });
 
-test('PST-3: Beitrag teilen – angemeldet wird er mit Fotos hochgeladen, Änderungen folgen, „Nicht mehr teilen“ entfernt ihn', async ({
+test('PST-3: Beitrag sichern – angemeldet geht er mit Foto und Vorschaubild auf den Server, Änderungen folgen, „Nur ich“ bleibt auf dem Server', async ({
   page,
 }) => {
   const server = await fakeSupabase(page);
@@ -946,18 +982,25 @@ test('PST-3: Beitrag teilen – angemeldet wird er mit Fotos hochgeladen, Änder
 
   await page.goto('/profil/neu');
   await waitForApp(page);
-  await expect(page.getByText(/Wird mit deinem Konto geteilt/)).toBeVisible();
+  await expect(page.getByText(/Wird mit deinem Konto gesichert/)).toBeVisible();
+  await expect(page.getByRole('radio', { name: 'Nur ich' })).toBeVisible();
   await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
   await page.getByLabel('Text').fill('Hecht vom Steg');
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
-  await openPostMenu(page);
-  await expect(page.getByRole('status').filter({ hasText: 'Geteilt' })).toBeVisible();
   // der Abgleich läuft im Hintergrund (PostSync): auf den Server-Stand warten statt sofort zu prüfen
   await expect
     .poll(() => [...server.posts.values()])
     .toEqual([expect.objectContaining({ caption: 'Hecht vom Steg', visibility: 'friends' })]);
-  expect([...server.storage.keys()]).toEqual([expect.stringMatching(/^u-1\/[0-9a-f-]+\/1\.jpg$/)]);
+  expect([...server.storage.keys()].sort()).toEqual([
+    expect.stringMatching(/^u-1\/[0-9a-f-]+\/1\.jpg$/),
+    expect.stringMatching(/^u-1\/[0-9a-f-]+\/1\.thumb\.jpg$/),
+  ]);
+  // nie über die Tabelle (Upsert ohne Spaltenrechte), immer über publish_post
+  expect([...server]).not.toContain('POST /rest/v1/posts');
+  await openPostMenu(page);
+  await expect(page.getByRole('status').filter({ hasText: 'Auf dem Server gesichert' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Nicht mehr teilen' })).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Bearbeiten' }).click();
   await page.getByLabel('Text').fill('Hecht vom Steg, 92 cm');
@@ -970,13 +1013,13 @@ test('PST-3: Beitrag teilen – angemeldet wird er mit Fotos hochgeladen, Änder
   expect([...server.posts.values()][0]?.visibility).toBe('public');
 
   await openPostMenu(page);
-  await page.getByRole('button', { name: 'Nicht mehr teilen' }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'Nur auf diesem Gerät' })).toBeVisible();
-  await expect.poll(() => server.posts.size).toBe(0);
-  expect(server.storage.size).toBe(0);
-  await page.getByRole('button', { name: 'Teilen' }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'Geteilt' })).toBeVisible();
-  await expect.poll(() => server.posts.size).toBe(1);
+  await page.getByRole('button', { name: 'Bearbeiten' }).click();
+  await page.getByRole('radio', { name: 'Nur ich' }).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await page.getByRole('radio', { name: 'Nur ich' }).check({ force: true });
+  await page.getByRole('button', { name: 'Speichern' }).click();
+  await expect.poll(() => [...server.posts.values()][0]?.visibility).toBe('private');
+  expect(server.posts.size).toBe(1);
+  expect(server.storage.size).toBe(2);
 });
 
 test('PST-4: ohne Anmeldung bleibt ein neuer Beitrag auf dem Gerät', async ({ page }) => {
@@ -989,11 +1032,10 @@ test('PST-4: ohne Anmeldung bleibt ein neuer Beitrag auf dem Gerät', async ({ p
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
   await openPostMenu(page);
   await expect(page.getByRole('status').filter({ hasText: 'Nur auf diesem Gerät' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Teilen' })).toHaveCount(0);
   expect(server).toEqual([]);
 });
 
-test('PST-5: vor der Anmeldung gepostete Beiträge – Hinweis im Profil und „Alle teilen“ lädt sie hoch', async ({
+test('PST-5: vor der Anmeldung gepostete Beiträge werden nach der Anmeldung automatisch gesichert, Stand unter Einstellungen', async ({
   page,
 }) => {
   const server = await fakeSupabase(page);
@@ -1002,24 +1044,55 @@ test('PST-5: vor der Anmeldung gepostete Beiträge – Hinweis im Profil und „
   await waitForApp(page);
   await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
   await page.getByLabel('Text').fill('Barsch am Morgen');
+  await page.getByRole('radio', { name: 'Alle' }).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await page.getByRole('radio', { name: 'Alle' }).check({ force: true });
   await page.getByRole('button', { name: 'Posten' }).click();
   await expect(page.getByRole('list', { name: 'Beiträge' }).getByRole('link')).toHaveCount(1);
-  // ohne Konto kein Hinweis
-  await expect(
-    page.getByText('nur auf diesem Gerät – Freunde sehen ihn nicht', { exact: false }),
-  ).toHaveCount(0);
+  expect(server.posts.size).toBe(0);
 
+  await signInWithProfile(page, 'kevin');
+  // ohne Zutun hochgeladen, Sichtbarkeit bleibt
+  await expect
+    .poll(() => [...server.posts.values()])
+    .toEqual([expect.objectContaining({ caption: 'Barsch am Morgen', visibility: 'public' })]);
+  await page.goto('/mehr/einstellungen');
+  await waitForApp(page);
+  await expect(page.getByText('1 Beitrag gesichert.')).toBeVisible();
+  await page.goto('/profil');
+  await waitForApp(page);
+  await expect(page.getByText(/von \d+ Beiträgen gesichert/)).toHaveCount(0);
+});
+
+test('PST-6: weiteres Gerät – eigene Beiträge vom Server erscheinen im Profil, ohne Doppelte', async ({
+  page,
+}) => {
+  const own = (n: number, vis: string) =>
+    feedRow({
+      id: `3333333${n}-3333-4333-8333-333333333333`,
+      author_id: 'u-1',
+      username: 'kevin',
+      display_name: 'Kevin',
+      caption: `Vom Handy ${n}`,
+      visibility: vis,
+      photo_paths: [`u-1/3333333${n}-3333-4333-8333-333333333333/1.jpg`],
+      created_at: `2026-11-0${n}T08:00:00+00:00`,
+    });
+  const server = await fakeSupabase(page, [], [], [own(1, 'private'), own(2, 'friends')]);
+  await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
   await page.goto('/profil');
   await waitForApp(page);
-  await expect(page.getByText('1 Beitrag ist nur auf diesem Gerät – Freunde sehen ihn nicht.')).toBeVisible();
-  expect(server.posts.size).toBe(0);
-  await page.getByRole('button', { name: 'Alle teilen' }).click();
-  await expect(page.getByText('1 Beitrag wird geteilt.')).toBeVisible();
-  await expect
-    .poll(() => [...server.posts.values()])
-    .toEqual([expect.objectContaining({ caption: 'Barsch am Morgen', visibility: 'friends' })]);
-  await expect(page.getByRole('button', { name: 'Alle teilen' })).toHaveCount(0);
+  await expect(page.getByRole('list', { name: 'Beiträge' }).getByRole('link')).toHaveCount(2);
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await expect(page.getByText('Vom Handy 2').first()).toBeVisible();
+  await openPostMenu(page);
+  await expect(page.getByRole('status').filter({ hasText: 'Auf dem Server gesichert' })).toBeVisible();
+  // nichts wird zurückgeschickt
+  expect(server.filter((c) => c.includes('publish_post'))).toEqual([]);
+  await page.reload();
+  await waitForApp(page);
+  await page.goto('/profil');
+  await expect(page.getByRole('list', { name: 'Beiträge' }).getByRole('link')).toHaveCount(2);
 });
 
 /** Optionen eines eigenen Beitrags (Detailansicht, „⋯“ rechts neben dem Namen) */
@@ -1497,7 +1570,7 @@ test('REACT-3: eigener geteilter Beitrag – Gefällt mir und Kommentare kommen 
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
   await openPostMenu(page);
-  await expect(page.getByRole('status').filter({ hasText: 'Geteilt' })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: 'Auf dem Server gesichert' })).toBeVisible();
   await expect(page.getByText(/sehen alle, die diesen Beitrag sehen dürfen/)).toBeVisible();
   await closePostMenu(page);
   const postId = [...calls.posts.keys()][0] ?? '';

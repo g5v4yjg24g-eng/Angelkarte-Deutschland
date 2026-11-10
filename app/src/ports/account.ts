@@ -9,6 +9,7 @@ import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
 import type { BlockedUser, ReportInput } from '../domain/moderation';
 import type { ServerComment, ServerReactions } from '../domain/reactions';
 import type { PushPrefs, PushStatus } from '../domain/push';
+import type { PostVisibility } from '../domain/schemas';
 import type {
   BanDuration,
   ModContent,
@@ -27,9 +28,10 @@ export interface AccountUser {
 export interface SharedPostInput {
   id: string;
   caption?: string | undefined;
-  visibility: 'friends' | 'public';
+  visibility: PostVisibility;
   createdAt: string;
-  photos: { blob: Blob; mime: string }[];
+  /** Fotos samt Vorschaubild (320 px); schon im Speicher vorhandene werden nicht erneut hochgeladen */
+  photos: { blob: Blob; mime: string; thumb?: Blob | undefined }[];
   speciesId?: string | undefined;
   lengthCm?: number | undefined;
   /** Highlight einer gemeinsamen Session (Paket 8b) */
@@ -71,13 +73,21 @@ export interface AccountProvider {
   respondFriendRequest(requestId: string, accept: boolean): Promise<void>;
   /** Freundschaft beenden oder eigene Anfrage zurückziehen */
   removeFriend(userId: string): Promise<void>;
-  /** Beitrag mit Fotos hochladen (ersetzt einen früheren Stand derselben ID) */
+  /**
+   * Beitrag mit Fotos veröffentlichen (Server-Funktion publish_post): legt höchstens einmal an, erneut aufgerufen
+   * wird nur der Stand nachgezogen. Danach wird geprüft, dass das erste Foto abrufbar ist.
+   */
   publishPost(post: SharedPostInput): Promise<void>;
+  /**
+   * Eigene Fotos eines Beitrags aus dem Speicher holen (Profil auf einem weiteren Gerät), mit Vorschaubild, falls
+   * vorhanden. Fehlt ein Foto, `undefined`.
+   */
+  downloadPostPhotos(paths: string[]): Promise<{ blob: Blob; thumb?: Blob | undefined }[] | undefined>;
   updateSharedPost(
     id: string,
     changes: {
       caption?: string | undefined;
-      visibility: 'friends' | 'public';
+      visibility: PostVisibility;
       speciesId?: string | undefined;
       lengthCm?: number | undefined;
     },

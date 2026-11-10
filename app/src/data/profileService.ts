@@ -106,8 +106,9 @@ export async function createPost(
     lengthCm?: number | undefined;
     /** Highlight einer gemeinsamen Session (Paket 8b) */
     groupId?: string | undefined;
-    /** `pending`: mit dem Konto teilen (Etappe 2) */
+    /** `pending`: mit dem Konto sichern (Etappe 2); `accountId` = angemeldetes Konto */
     share?: 'pending';
+    accountId?: string | undefined;
     photos: NewPhoto[];
     catchPhotoIds?: string[];
   },
@@ -143,6 +144,7 @@ export async function createPost(
       ...(args.lengthCm !== undefined ? { lengthCm: args.lengthCm } : {}),
       ...(args.groupId ? { groupId: args.groupId } : {}),
       ...(args.share ? { share: args.share } : {}),
+      ...(args.accountId ? { accountId: args.accountId } : {}),
     });
   });
 }
@@ -160,6 +162,8 @@ export const updatePost = (
   repo('posts', db).update(id, {
     caption: changes.caption || undefined,
     visibility: changes.visibility,
+    // selbst gewählt: kein „bitte prüfen“ mehr
+    visibilityAssumed: undefined,
     speciesId: changes.speciesId || undefined,
     lengthCm: changes.lengthCm,
   });

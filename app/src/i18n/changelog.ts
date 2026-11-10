@@ -4,6 +4,16 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-04',
+    title: 'Beiträge sicher auf dem Server',
+    items: [
+      'Beiträge: Mit Konto werden alle deine Beiträge jetzt automatisch auf dem Server gesichert – auch ältere. Freunde sehen sie im Feed, „Alle“ erscheinen unter Entdecken.',
+      'Sichtbarkeit: Neu ist „Nur ich“ – der Beitrag ist gesichert, aber nur für dich sichtbar.',
+      'Mehrere Geräte: Dein Profil zeigt auf jedem Gerät deine Beiträge.',
+      'Stand: Am Beitrag und unter Einstellungen siehst du, ob alles gesichert ist. Klappt es nicht, versucht Fangpunkt es automatisch erneut.',
+    ],
+  },
+  {
     id: '2026-12-03',
     title: 'Mehr Mitteilungen',
     items: [

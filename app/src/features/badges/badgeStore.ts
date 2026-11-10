@@ -87,3 +87,19 @@ export function useMyBadges(userId?: string): Badge[] {
   }, [account, userId]);
   return badges;
 }
+
+/**
+ * Nutzer-ID der gespeicherten Anmeldung als Hook: bemerkt An- und Abmelden auch ohne Seitenwechsel (Prüfung alle
+ * 3 s und bei Änderungen aus anderen Tabs) – ohne den Konto-Anbieter zu laden.
+ */
+export function useStoredUserId(): string | undefined {
+  return useSyncExternalStore(subscribeStoredUser, storedUserId, () => undefined);
+}
+function subscribeStoredUser(onChange: () => void) {
+  const timer = setInterval(onChange, 3000);
+  window.addEventListener('storage', onChange);
+  return () => {
+    clearInterval(timer);
+    window.removeEventListener('storage', onChange);
+  };
+}

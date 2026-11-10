@@ -10,7 +10,7 @@ import { Notice } from '../../design/components/Notice';
 import { Toast } from '../../design/components/Toast';
 import { ImagesIcon, MapIcon, PlusIcon, UserPlusIcon, BookmarkIcon } from '../../design/icons';
 import { restorePost } from '../../data/profileService';
-import { shareAllLocal } from '../../data/postSyncService';
+import { SyncStatusNotice } from '../sharing/SyncStatus';
 import type { Post, Profile } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
 import { FounderBadge } from '../badges/FounderBadge';
@@ -155,7 +155,6 @@ export function ProfilePage() {
   const location = useLocation();
   const [notice, setNotice] = useState<string>();
   const { account } = useProviders();
-  const localCount = (posts ?? []).filter((p) => !p.deletedAt && !p.share).length;
   const [undoId, setUndoId] = useState(() => (location.state as ProfileState | null)?.deletedPostId);
   const [restored, setRestored] = useState(false);
 
@@ -223,19 +222,7 @@ export function ProfilePage() {
         </div>
       </div>
 
-      {localCount > 0 && storedUserId() && (
-        <Notice>
-          <span className={styles.localPosts}>
-            {t.localPosts(localCount)}
-            <Button
-              variant="secondary"
-              onClick={() => void shareAllLocal().then((n) => setNotice(t.sharedAll(n)))}
-            >
-              {t.shareAll}
-            </Button>
-          </span>
-        </Notice>
-      )}
+      <SyncStatusNotice />
       <ProfileAchievements />
       <Highlights posts={highlightedPosts(profile?.highlightPostIds, posts)} all={posts} />
 

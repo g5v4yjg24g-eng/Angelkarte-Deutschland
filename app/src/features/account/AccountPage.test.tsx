@@ -54,6 +54,7 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
     publishPost: () => Promise.resolve(),
     updateSharedPost: () => Promise.resolve(),
     deleteSharedPost: () => Promise.resolve(),
+    downloadPostPhotos: () => Promise.resolve(undefined),
     feed: () => Promise.resolve([]),
     sharedSpots: () => Promise.resolve([]),
     shareSpot: () => Promise.resolve(),
