@@ -320,6 +320,9 @@ export function SessionDetailPage() {
         {!running && (
           <div className={styles.actions}>
             <Button onClick={() => navigate(`/fangbuch/sessions/${s.id}/rueckblick`)}>{t.reviewOpen}</Button>
+            <Button variant="secondary" onClick={() => navigate(`/profil/neu?session=${s.id}`)}>
+              {de.sessionShare.button}
+            </Button>
           </div>
         )}
         {message && <Notice tone="success">{message}</Notice>}

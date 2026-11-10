@@ -37,6 +37,7 @@ export function ModUserPage() {
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState<string>();
   const [toast, setToast] = useState<string>();
+  const [profileText, setProfileText] = useState<{ bio?: string | undefined; facts: string[] }>();
   const avatarUrl = useAvatarUrl(moderator ? uid : undefined);
 
   const load = useCallback(async () => {
@@ -49,6 +50,8 @@ export function ModUserPage() {
       setUser(u ?? null);
       setItems(i);
       setLog(l);
+      // Profiltext (Paket 12): fehlt die Server-Funktion noch, bleibt der Abschnitt leer
+      setProfileText(await account.modProfileText(uid).catch(() => undefined));
     } catch (e) {
       setError(modErrorText(e));
     }
@@ -92,6 +95,7 @@ export function ModUserPage() {
         await account.modClearAvatar(user.userId, undefined, note);
         invalidateAvatar(user.userId);
       }
+      if (action.kind === 'profile') await account.modClearProfile(user.userId, note);
       if (action.kind === 'warn') await account.modWarn(user.userId, note);
       if (action.kind === 'ban') await account.modBan(user.userId, days ?? null, note);
       if (action.kind === 'unban') await account.modUnban(user.userId, note);
@@ -121,6 +125,16 @@ export function ModUserPage() {
           <strong>{user.displayName}</strong> <span className="muted">{t.handle(user.username)}</span>
         </p>
         <p className="muted">{t.joined(modDate(user.joined))}</p>
+        {profileText && (profileText.bio || profileText.facts.length > 0) && (
+          <div>
+            <p className="muted">{t.profileTextLabel}</p>
+            {profileText.bio && <p>{profileText.bio}</p>}
+            {profileText.facts.length > 0 && <p className="muted">{profileText.facts.join(' · ')}</p>}
+            <Button variant="danger" onClick={() => setAction({ kind: 'profile' })}>
+              {t.removeProfileText}
+            </Button>
+          </div>
+        )}
         <p>{t.counts(user.posts, user.comments, user.spots)}</p>
         <p>{t.reportsAgainst(user.reportsAgainst)}</p>
         {user.banned && (

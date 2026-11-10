@@ -121,3 +121,13 @@
   font-size: var(--text-sm);
   font-weight: 600;
 }
+
+/* Name führt zum Profil (Paket 12) */
+.authorLink {
+  color: inherit;
+  text-decoration: none;
+}
+.authorLink:hover,
+.authorLink:focus-visible {
+  text-decoration: underline;
+}

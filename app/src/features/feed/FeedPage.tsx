@@ -86,7 +86,9 @@ function FeedCard({
         </span>
         <span className={styles.who}>
           <strong>
-            {post.displayName}
+            <Link to={`/profil/nutzer/${post.username}`} className={styles.authorLink}>
+              {post.displayName}
+            </Link>
             {post.badges.includes('founder') && <FounderBadge />}
           </strong>
           <span className="muted">
