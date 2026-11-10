@@ -1152,7 +1152,8 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
   await expect(rules.getByText('Kein Spam und keine Werbung.')).toBeVisible();
   await rules.getByRole('button', { name: 'Ablehnen' }).click();
   await expect(page.getByText(/Es wurde keine E-Mail verschickt/)).toBeVisible();
-  expect(calls).toEqual([]);
+  // gelesen wird nur die aktuelle Fassung der Regeln (Versionen seit 2026-11-10) – verschickt wird nichts
+  expect(calls).toEqual(['POST /rest/v1/rpc/current_rules']);
   await page.getByRole('button', { name: 'Konto erstellen' }).click();
   await rules.getByRole('button', { name: 'Akzeptieren' }).click();
   await expect(page.getByText(/E-Mail an max@example\.de geschickt/)).toBeVisible();
@@ -1215,7 +1216,7 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|is_moderator|avatar_paths|user_posts)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules)))/.test(
         c,
       ),
     ),
