@@ -306,3 +306,10 @@
   display: grid;
   gap: var(--space-1);
 }
+/* QS 390 px: Hinweis unter dem Knopf, Text-Kennzahlen kleiner */
+.block {
+  display: block;
+}
+.kpi b.kpiText {
+  font-size: var(--text-lg);
+}

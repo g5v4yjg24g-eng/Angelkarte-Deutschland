@@ -212,7 +212,7 @@ export function ModReportPage() {
               >
                 {r.showReporter}
               </Button>
-              <span className={`muted ${styles.small}`}>{r.reporterHint}</span>
+              <span className={`muted ${styles.small} ${styles.block}`}>{r.reporterHint}</span>
             </>
           ) : (
             <>
