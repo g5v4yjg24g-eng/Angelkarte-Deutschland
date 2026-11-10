@@ -1,0 +1,45 @@
+Carl folgt Bert (öffentlich)|following
+Nochmal|already
+Carl folgt Anna (privat)|requested
+Sich selbst|FEHLER: self
+Unbekannt|FEHLER: not_found
+Direkt schreiben|FEHLER: permission denied for table follows
+Carl sieht Annas Beitrag (angefragt)|0
+Profil Anna (angefragt)|requested f t 0 0 -
+Anna: Anfragen|carl:follower:pending
+Anna: Zahlen|0 0 1
+Anna: Mitteilungen|friend_request
+Anna bestätigt Carl|
+Bestätigen erneut|FEHLER: not_found
+Carl: Mitteilungen|friend_accepted
+Carl sieht Annas Beiträge|Follower
+Carl Feed|Follower
+Freunde Carl/Anna (einseitig)|false
+Carl teilt Spot mit Anna|FEHLER: not_friends
+Anna folgt zurück|requested
+Carl: Anna folgt (Carl privat)|following f
+Carl bestätigt Anna|
+Jetzt Freunde|true
+Alte Form: my_friends|anna:accepted:outgoing,bert:pending:outgoing
+Alte Form: user_profile|friend 1
+Alte Form: Suche|anna:friend
+Dora fragt Carl an|requested
+Carl: privat?|true
+Carl öffentlich|
+Dora jetzt Follower|true
+Carl Zahlen|2 2 0
+Follower entfernen|
+Dora noch Follower|false
+Carl entfolgt Bert|
+Carl folgt Bert noch|false
+Anna blockiert Carl|
+Folgen übrig|0
+Blockiert: folgen|FEHLER: not_found
+Blockiert: Profil|0
+Eva folgt Bert|following
+Eva sieht Berts Erfolge|true
+Dora (kein Follower) sieht Berts Erfolge|false
+Gesperrt folgt|FEHLER: banned
+Viele folgen|200
+Grenze|FEHLER: too_many_follows
+Anon folgt|FEHLER: permission denied for function follow_user

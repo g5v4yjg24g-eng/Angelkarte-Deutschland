@@ -8,8 +8,8 @@ insert into public.profiles(id, username, display_name) values
   ('00000000-0000-0000-0000-0000000000c1','carl','Carl'),
   ('00000000-0000-0000-0000-0000000000d1','dora','Dora');
 -- Anna und Bert sind Freunde, Carl ist fremd, Dora hat Anna blockiert
-insert into public.friendships(requester, addressee, status, accepted_at) values
-  ('00000000-0000-0000-0000-0000000000a1','00000000-0000-0000-0000-0000000000b1','accepted', now());
+-- befreundet = folgen sich gegenseitig (seit *_follows.sql)
+insert into public.follows(follower, followee, status, accepted_at) values ('00000000-0000-0000-0000-0000000000a1','00000000-0000-0000-0000-0000000000b1','accepted',now()),('00000000-0000-0000-0000-0000000000b1','00000000-0000-0000-0000-0000000000a1','accepted',now());
 insert into public.blocks(blocker, blocked) values ('00000000-0000-0000-0000-0000000000d1','00000000-0000-0000-0000-0000000000a1');
 create function public.t(q text) returns text language plpgsql as $$ declare r text; begin execute q into r; return coalesce(r,'∅'); exception when others then return 'FEHLER: '||sqlerrm; end $$;
 grant execute on function public.t(text) to authenticated, anon;
