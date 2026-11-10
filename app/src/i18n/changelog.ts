@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-02',
+    title: 'Profil teilen',
+    items: [
+      'Profil: „Profil teilen“ schickt einen Link zu deinem Profil, z. B. per WhatsApp. Im Link steht nur dein Nutzername.',
+      'iPhone-App: Tippt jemand mit Fangpunkt auf den Link, öffnet sich dein Profil direkt in der App – mit „Freund hinzufügen“.',
+    ],
+  },
+  {
     id: '2026-12-01',
     title: 'Freunde finden und Profile ansehen',
     items: [

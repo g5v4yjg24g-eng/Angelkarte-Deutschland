@@ -10,6 +10,7 @@ import type { AccountProvider } from './account';
 import type { PushProvider } from './push';
 import type { HapticsProvider } from './haptics';
 import type { BackgroundRoute } from './backgroundRoute';
+import type { AppLinks } from './appLinks';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
@@ -26,6 +27,8 @@ export interface Providers {
   haptics: HapticsProvider;
   /** Hintergrund-Route – nur in der iPhone-App, sonst fehlt der Anbieter */
   route?: BackgroundRoute | undefined;
+  /** Universal Links (geteilte Profile) – nur in der iPhone-App */
+  links?: AppLinks | undefined;
 }
 
 export const ProvidersContext = createContext<Providers | null>(null);

@@ -26,6 +26,7 @@ Eingereicht wird nur durch den Nutzer; TestFlight-Bauten nur auf ausdrücklichen
 | **Dateien speichern in der App** (Sicherung, CSV, Kalenderdatei) über das Teilen-Menü (Web Share, ohne neue Abhängigkeit, Paket 10) | Claude, Nutzer prüft am iPhone | ✅ gebaut, 🔲 am iPhone prüfen; falls es dort nicht klappt: `@capacitor/share` + `filesystem` |
 | Erinnerungen vor Angelterminen (`@capacitor/local-notifications`) | Claude | 🔲 gewünscht (Nutzer 2026-11-02), hilft gegen Ablehnung nach Regel 4.2 |
 | Hintergrund-Route bei Sessions (Wunsch Nutzer 2026-11-03, Weg B 2026-11-10) | Claude, Nutzer prüft am iPhone | ✅ gebaut (eigenes Swift-Modul, nur „Beim Verwenden“), ✅ übersetzt im TestFlight-Bau 2026-11-10 [V]; 🔲 am iPhone prüfen (Sperrbildschirm, blaue Anzeige, Akku); Zweck im Prüfhinweis an Apple nennen |
+| **Universal Links** (geteilte Profile öffnen die App): „Associated Domains“ für `com.fangpunkt.app` im Apple-Entwicklerkonto einschalten, Team-ID in `apple-app-site-association` der Website | Nutzer (Apple-Konto), Claude | 🔲 vor dem nächsten TestFlight-Bau – sonst schlägt die Signierung fehl |
 | Kamera/Fotoauswahl nativ (`@capacitor/camera`) | Claude | 🔲 optional – `<input type=file>` öffnet Kamera/Fotos schon |
 | Datenschutz-Manifest (`PrivacyInfo.xcprivacy`): Capacitor bringt eigene mit; ob die App selbst eines braucht, zeigt Apples Rückmeldung beim Upload | Claude | 🔲 [A] Upload-Mail prüfen |
 | Versionsnummer je Einreichung erhöhen | Claude | 🔲 vor dem Einreichen |

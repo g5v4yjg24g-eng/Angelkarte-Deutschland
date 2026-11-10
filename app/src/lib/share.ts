@@ -40,10 +40,20 @@ export async function saveFile(
 export const canShare = () => typeof navigator.share === 'function';
 
 /** Text und – wenn möglich – Fotos über das Teilen-Menü weitergeben. Liefert false bei Abbruch. */
-export async function shareContent(input: { title: string; text: string; files?: File[] }): Promise<boolean> {
+export async function shareContent(input: {
+  title: string;
+  text: string;
+  url?: string;
+  files?: File[];
+}): Promise<boolean> {
   const withFiles = input.files?.length && canShareFiles(input.files) ? { files: input.files } : {};
   try {
-    await navigator.share({ title: input.title, text: input.text, ...withFiles });
+    await navigator.share({
+      title: input.title,
+      text: input.text,
+      ...(input.url ? { url: input.url } : {}),
+      ...withFiles,
+    });
     return true;
   } catch (e) {
     if (isAbort(e)) return false;
