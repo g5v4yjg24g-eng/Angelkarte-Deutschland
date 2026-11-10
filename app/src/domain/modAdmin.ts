@@ -247,12 +247,16 @@ export function modErrorKind(
   | 'notFound'
   | 'noReason'
   | 'tooMany'
+  | 'reauth'
+  | 'emailNotAllowed'
   | 'notSignedIn'
   | 'offline'
   | 'unknown' {
   const m = (e?.message ?? '').toLowerCase();
   if (m.includes('not_moderator')) return 'notModerator';
   if (m.includes('too_many_actions')) return 'tooMany';
+  if (m.includes('reauth_required')) return 'reauth';
+  if (m.includes('email_not_allowed')) return 'emailNotAllowed';
   if (m.includes('self')) return 'self';
   if (m.includes('not_found') || m.includes('not_banned')) return 'notFound';
   if (m.includes('no_reason')) return 'noReason';
@@ -382,4 +386,117 @@ export function parseModReporter(rows: readonly unknown[] | null | undefined): M
   const p = ReporterRow.safeParse(rows?.[0]);
   if (!p.success) return undefined;
   return { displayName: u(p.data.display_name), username: u(p.data.username) };
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Nutzerverwaltung (Wunsch Nutzer 2026-11-10): Kontenliste, Suche, Verwarnungen.
+
+export type ModUserFilter = 'all' | 'reported' | 'warned' | 'banned';
+export const USER_FILTERS: readonly ModUserFilter[] = ['all', 'reported', 'warned', 'banned'];
+/** Seitengröße von mod_users (Server liefert höchstens so viele) */
+export const USER_PAGE = 50;
+
+export interface ModUserRow {
+  userId: string;
+  username: string;
+  displayName: string;
+  joined: string;
+  banned: boolean;
+  banUntil?: string | undefined;
+  reportsAgainst: number;
+  openReports: number;
+  activeWarnings: number;
+}
+
+const UserListRow = z.object({
+  user_id: z.string(),
+  username: z.string(),
+  display_name: z.string(),
+  joined: z.string(),
+  banned: z.boolean().nullable().optional(),
+  ban_until: opt,
+  reports_against: z.number().int().min(0).nullable().optional(),
+  open_reports: z.number().int().min(0).nullable().optional(),
+  active_warnings: z.number().int().min(0).nullable().optional(),
+});
+
+export function parseModUserRows(rows: readonly unknown[] | null | undefined): ModUserRow[] {
+  const out: ModUserRow[] = [];
+  for (const r of rows ?? []) {
+    const p = UserListRow.safeParse(r);
+    if (!p.success) continue;
+    const d = p.data;
+    out.push({
+      userId: d.user_id,
+      username: d.username,
+      displayName: d.display_name,
+      joined: d.joined,
+      banned: d.banned ?? false,
+      banUntil: u(d.ban_until),
+      reportsAgainst: d.reports_against ?? 0,
+      openReports: d.open_reports ?? 0,
+      activeWarnings: d.active_warnings ?? 0,
+    });
+  }
+  return out;
+}
+
+export type UserQueryKind = 'empty' | 'id' | 'email' | 'name';
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const EMAIL = /^[^@\s]+@[^@\s]+$/;
+/** Wie der Server die Eingabe versteht (gleiche Regeln wie mod_users): Nutzer-ID, E-Mail (exakt) oder Namensteil */
+export function userQueryKind(q: string): UserQueryKind {
+  const t = q.trim();
+  if (!t) return 'empty';
+  if (UUID.test(t)) return 'id';
+  if (EMAIL.test(t)) return 'email';
+  return 'name';
+}
+
+export interface ModWarning {
+  id: string;
+  reason: string;
+  createdAt: string;
+  expiresAt: string;
+  revokedAt?: string | undefined;
+  revokeNote?: string | undefined;
+  reportId?: string | undefined;
+  postId?: string | undefined;
+  moderatorName?: string | undefined;
+  active: boolean;
+}
+
+const WarningRow = z.object({
+  id: z.string(),
+  reason: z.string(),
+  created_at: z.string(),
+  expires_at: z.string(),
+  revoked_at: opt,
+  revoke_note: opt,
+  report_id: opt,
+  post_id: opt,
+  moderator_name: opt,
+  active: z.boolean(),
+});
+
+export function parseModWarnings(rows: readonly unknown[] | null | undefined): ModWarning[] {
+  const out: ModWarning[] = [];
+  for (const r of rows ?? []) {
+    const p = WarningRow.safeParse(r);
+    if (!p.success) continue;
+    const d = p.data;
+    out.push({
+      id: d.id,
+      reason: d.reason,
+      createdAt: d.created_at,
+      expiresAt: d.expires_at,
+      revokedAt: u(d.revoked_at),
+      revokeNote: u(d.revoke_note),
+      reportId: u(d.report_id),
+      postId: u(d.post_id),
+      moderatorName: u(d.moderator_name),
+      active: d.active,
+    });
+  }
+  return out;
 }

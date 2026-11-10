@@ -15,6 +15,9 @@ import {
   parseModReports,
   parseModUser,
   parseModUserItems,
+  parseModUserRows,
+  parseModWarnings,
+  userQueryKind,
 } from './modAdmin';
 
 describe('Moderationsbereich (MODA-1)', () => {
@@ -247,5 +250,61 @@ describe('Meldungsverwaltung (ADM-2)', () => {
     });
     expect(parseModOverview([{ open_reports: 2, in_progress: 1 }])?.inProgress).toBe(1);
     expect(modErrorKind(new Error('too_many_actions'))).toBe('tooMany');
+  });
+
+  it('Nutzerverwaltung: Suchart wie auf dem Server, Kontenliste, Verwarnungen, Fehler (ADM-3)', () => {
+    expect(userQueryKind('  ')).toBe('empty');
+    expect(userQueryKind('00000000-0000-0000-0000-0000000000C1')).toBe('id');
+    expect(userQueryKind('carl@example.org')).toBe('email');
+    expect(userQueryKind('@carl')).toBe('name');
+    expect(userQueryKind('Carl Hecht')).toBe('name');
+    expect(userQueryKind('a@b c')).toBe('name');
+    expect(
+      parseModUserRows([
+        {
+          user_id: 'u1',
+          username: 'carl',
+          display_name: 'Carl',
+          joined: '2026-11-01T10:00:00Z',
+          banned: true,
+          ban_until: null,
+          reports_against: 2,
+          open_reports: 1,
+          active_warnings: 1,
+        },
+        { user_id: 'kaputt' },
+      ]),
+    ).toEqual([
+      {
+        userId: 'u1',
+        username: 'carl',
+        displayName: 'Carl',
+        joined: '2026-11-01T10:00:00Z',
+        banned: true,
+        banUntil: undefined,
+        reportsAgainst: 2,
+        openReports: 1,
+        activeWarnings: 1,
+      },
+    ]);
+    const w = parseModWarnings([
+      {
+        id: 'w1',
+        reason: 'Beleidigung',
+        created_at: '2026-11-10T10:00:00Z',
+        expires_at: '2027-02-08T10:00:00Z',
+        revoked_at: null,
+        revoke_note: null,
+        report_id: 'r1',
+        post_id: null,
+        moderator_name: 'Kevin',
+        active: true,
+      },
+      { id: 'w2', reason: 'x' },
+    ]);
+    expect(w).toHaveLength(1);
+    expect(w[0]).toMatchObject({ id: 'w1', active: true, reportId: 'r1', moderatorName: 'Kevin' });
+    expect(modErrorKind(new Error('reauth_required'))).toBe('reauth');
+    expect(modErrorKind(new Error('email_not_allowed'))).toBe('emailNotAllowed');
   });
 });

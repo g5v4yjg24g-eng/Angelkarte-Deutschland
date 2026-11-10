@@ -1,7 +1,7 @@
-// Ein Konto im Moderationsbereich: Sperrstatus, alle geteilten Inhalte (einzeln löschbar), Protokoll,
-// Sperren / Sperre aufheben.
+// Ein Konto im Moderationsbereich: Sperrstatus, Verwarnungen (mit Mail, zurücknehmbar), alle geteilten Inhalte
+// (einzeln löschbar), Protokoll, Sperren (dauerhaft nur mit Passwort) / Sperre aufheben.
 import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { de } from '../../../i18n/de';
 import { Page, Section } from '../../../design/components/Page';
 import { Button } from '../../../design/components/Button';
@@ -13,14 +13,15 @@ import {
   type ModLogEntry,
   type ModUser,
   type ModUserItem,
+  type ModWarning,
 } from '../../../domain/modAdmin';
 import { useProviders } from '../../../ports/providersContext';
 import { ModActionSheet, type ModAction } from './ModActions';
-import { modDate, modErrorText } from './modErrors';
+import { banUser, modActionErrorText, modDate, modErrorText } from './modErrors';
 import { useIsModerator } from './useIsModerator';
 import { Avatar } from '../../profile/Avatar';
 import { invalidateAvatar, useAvatarUrl } from '../../profile/avatarUrls';
-import { ADMIN_BASE } from './adminPaths';
+import { ADMIN_BASE, adminReport } from './adminPaths';
 import styles from './ModAdmin.module.css';
 
 const t = de.modAdmin;
@@ -32,6 +33,8 @@ export function ModUserPage() {
   const [user, setUser] = useState<ModUser | null>();
   const [items, setItems] = useState<ModUserItem[]>([]);
   const [log, setLog] = useState<ModLogEntry[]>([]);
+  const [warnings, setWarnings] = useState<ModWarning[]>();
+  const [warning, setWarning] = useState<ModWarning>();
   const [error, setError] = useState<string>();
   const [action, setAction] = useState<ModAction>();
   const [target, setTarget] = useState<ModUserItem>();
@@ -51,6 +54,8 @@ export function ModUserPage() {
       setUser(u ?? null);
       setItems(i);
       setLog(l);
+      // Verwarnungen (Nutzerverwaltung): fehlt die Server-Funktion noch, bleibt der Abschnitt leer
+      setWarnings(await account.modUserWarnings(uid).catch(() => []));
       // Profiltext (Paket 12): fehlt die Server-Funktion noch, bleibt der Abschnitt leer
       setProfileText(await account.modProfileText(uid).catch(() => undefined));
     } catch (e) {
@@ -85,7 +90,8 @@ export function ModUserPage() {
     );
 
   const left = banRemaining(user.banUntil);
-  const run = async (note: string, days?: BanDuration) => {
+  const activeWarnings = warnings?.filter((w) => w.active).length ?? 0;
+  const run = async (note: string, days?: BanDuration, password?: string) => {
     if (!action) return;
     setBusy(true);
     setActionError(undefined);
@@ -97,15 +103,17 @@ export function ModUserPage() {
         invalidateAvatar(user.userId);
       }
       if (action.kind === 'profile') await account.modClearProfile(user.userId, note);
-      if (action.kind === 'warn') await account.modWarn(user.userId, note);
-      if (action.kind === 'ban') await account.modBan(user.userId, days ?? null, note);
+      if (action.kind === 'warn') await account.modAddWarning(user.userId, note);
+      if (action.kind === 'revokeWarning' && warning) await account.modRevokeWarning(warning.id, note);
+      if (action.kind === 'ban') await banUser(account, user.userId, days ?? null, note, password);
       if (action.kind === 'unban') await account.modUnban(user.userId, note);
       setToast(t.done_[action.kind as keyof typeof t.done_]);
       setAction(undefined);
       setTarget(undefined);
+      setWarning(undefined);
       await load();
     } catch (e) {
-      setActionError(modErrorText(e));
+      setActionError(modActionErrorText(e));
     } finally {
       setBusy(false);
     }
@@ -138,6 +146,11 @@ export function ModUserPage() {
         )}
         <p>{t.counts(user.posts, user.comments, user.spots)}</p>
         <p>{t.reportsAgainst(user.reportsAgainst)}</p>
+        {activeWarnings > 0 && (
+          <p>
+            <span className={styles.tagWork}>{t.users.warnings(activeWarnings)}</span>
+          </p>
+        )}
         {user.banned && (
           <p>
             <span className={styles.tagDanger}>
@@ -160,6 +173,50 @@ export function ModUserPage() {
           </Button>
         )}
       </div>
+
+      <Section title={t.warnings.title}>
+        <p className={`muted ${styles.small}`}>{t.warnings.hint}</p>
+        {warnings === undefined && <p className="muted">{t.loading}</p>}
+        {warnings?.length === 0 && <p className="muted">{t.warnings.none}</p>}
+        {warnings && warnings.length > 0 && (
+          <ul className={styles.list}>
+            {warnings.map((w) => (
+              <li key={w.id} className={`${styles.item} ${w.active ? '' : styles.warningInactive}`}>
+                <span className={styles.row}>
+                  <strong>{w.reason}</strong>
+                  <span className={w.active ? styles.tagWork : styles.tag}>
+                    {w.revokedAt ? t.warnings.revoked : w.active ? t.warnings.active : t.warnings.expired}
+                  </span>
+                </span>
+                <span className="muted">
+                  {modDate(w.createdAt)}
+                  {w.moderatorName && ` · ${t.byModerator(w.moderatorName)}`}
+                  {w.active && ` · ${t.warnings.until(modDate(w.expiresAt))}`}
+                </span>
+                {w.revokeNote && <span className="muted">{t.warnings.revokedNote(w.revokeNote)}</span>}
+                {w.reportId && (
+                  <Link to={adminReport(w.reportId)} className={styles.small}>
+                    {t.warnings.openReport}
+                  </Link>
+                )}
+                {!w.revokedAt && (
+                  <div className={styles.buttons}>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setWarning(w);
+                        setAction({ kind: 'revokeWarning' });
+                      }}
+                    >
+                      {t.warnings.revoke}
+                    </Button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </Section>
 
       <Section title={t.itemsTitle}>
         {items.length === 0 ? (
@@ -217,9 +274,10 @@ export function ModUserPage() {
         onCancel={() => {
           setAction(undefined);
           setTarget(undefined);
+          setWarning(undefined);
           setActionError(undefined);
         }}
-        onConfirm={(note, days) => void run(note, days)}
+        onConfirm={(note, days, password) => void run(note, days, password)}
       />
       {toast && <Toast onDismiss={() => setToast(undefined)}>{toast}</Toast>}
     </Page>

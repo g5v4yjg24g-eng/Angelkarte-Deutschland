@@ -7,6 +7,7 @@ import { TextArea } from '../../../design/components/Field';
 import { Notice } from '../../../design/components/Notice';
 import { Sheet } from '../../../design/components/Sheet';
 import { BAN_DURATIONS, type BanDuration } from '../../../domain/modAdmin';
+import { PasswordField } from '../../account/PasswordField';
 import styles from './ModAdmin.module.css';
 
 const t = de.modAdmin;
@@ -19,6 +20,7 @@ export type ModAction =
   | { kind: 'avatar' }
   | { kind: 'profile' }
   | { kind: 'warn' }
+  | { kind: 'revokeWarning' }
   | { kind: 'resolve' }
   | { kind: 'ban'; name: string }
   | { kind: 'unban'; name: string };
@@ -34,11 +36,12 @@ export function ModActionSheet({
   busy: boolean;
   error?: string | undefined;
   onCancel: () => void;
-  /** note = Notiz bzw. Grund; days nur beim Sperren */
-  onConfirm: (note: string, days?: BanDuration) => void;
+  /** note = Notiz bzw. Grund; days nur beim Sperren; password nur bei dauerhafter Sperre (frische Anmeldung) */
+  onConfirm: (note: string, days?: BanDuration, password?: string) => void;
 }) {
   const [note, setNote] = useState('');
   const [days, setDays] = useState<BanDuration>(7);
+  const [password, setPassword] = useState('');
   const r = t.reports;
   const title = !action
     ? ''
@@ -56,11 +59,13 @@ export function ModActionSheet({
                 ? t.profileTitle
                 : action.kind === 'warn'
                   ? t.warnTitle
-                  : action.kind === 'resolve'
-                    ? t.resolveTitle
-                    : action.kind === 'ban'
-                      ? t.banTitle(action.name)
-                      : t.unbanTitle(action.name);
+                  : action.kind === 'revokeWarning'
+                    ? t.warnings.revokeTitle
+                    : action.kind === 'resolve'
+                      ? t.resolveTitle
+                      : action.kind === 'ban'
+                        ? t.banTitle(action.name)
+                        : t.unbanTitle(action.name);
   const text =
     action?.kind === 'hide'
       ? r.hideText
@@ -76,21 +81,27 @@ export function ModActionSheet({
                 ? t.profileText
                 : action?.kind === 'warn'
                   ? t.warnText
-                  : action?.kind === 'ban'
-                    ? t.banText
-                    : action?.kind === 'unban'
-                      ? t.unbanText
-                      : undefined;
+                  : action?.kind === 'revokeWarning'
+                    ? t.warnings.revokeText
+                    : action?.kind === 'ban'
+                      ? t.banText
+                      : action?.kind === 'unban'
+                        ? t.unbanText
+                        : undefined;
   const ban = action?.kind === 'ban';
   // Begründung Pflicht bei Eingriffen (Wunsch Nutzer 2026-11-10); der Server prüft dasselbe
-  const reasonRequired = ban || action?.kind === 'delete' || action?.kind === 'hide';
+  const warn = action?.kind === 'warn';
+  const reasonRequired = ban || warn || action?.kind === 'delete' || action?.kind === 'hide';
+  // dauerhafte Sperre nur mit Passwort (der Server verlangt eine frische Anmeldung, Wunsch Nutzer 2026-11-10)
+  const needsPassword = ban && days === null;
   const close = () => {
     setNote('');
+    setPassword('');
     onCancel();
   };
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    onConfirm(note.trim(), ban ? days : undefined);
+    onConfirm(note.trim(), ban ? days : undefined, needsPassword ? password : undefined);
   };
 
   return (
@@ -109,13 +120,23 @@ export function ModActionSheet({
           </fieldset>
         )}
         <TextArea
-          label={ban ? t.banReason : reasonRequired ? r.reasonRequired : t.note}
+          label={ban ? t.banReason : warn ? t.warnReason : reasonRequired ? r.reasonRequired : t.note}
           value={note}
           maxLength={500}
           rows={3}
           required={reasonRequired}
           onChange={(e) => setNote(e.target.value)}
         />
+        {needsPassword && (
+          <PasswordField
+            label={t.reauth.label}
+            hint={t.reauth.hint}
+            value={password}
+            onValue={setPassword}
+            autoComplete="current-password"
+            required
+          />
+        )}
         {error && <Notice tone="error">{error}</Notice>}
         <div className={styles.actions}>
           <Button variant="secondary" onClick={close}>
@@ -128,7 +149,7 @@ export function ModActionSheet({
                 ? 'danger'
                 : 'primary'
             }
-            disabled={busy || (reasonRequired && !note.trim())}
+            disabled={busy || (reasonRequired && !note.trim()) || (needsPassword && !password)}
           >
             {t.confirm}
           </Button>

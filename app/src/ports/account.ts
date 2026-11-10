@@ -20,7 +20,10 @@ import type {
   ModReporter,
   ModReportStatus,
   ModUser,
+  ModUserFilter,
   ModUserItem,
+  ModUserRow,
+  ModWarning,
 } from '../domain/modAdmin';
 
 export interface AccountUser {
@@ -205,13 +208,25 @@ export interface AccountProvider {
     reportId?: string,
     note?: string,
   ): Promise<void>;
-  modWarn(userId: string, note: string, reportId?: string): Promise<void>;
+  /** Verwarnen (Grund Pflicht, Mail an die Person); optional mit Bezug zu Meldung oder Beitrag */
+  modAddWarning(userId: string, reason: string, reportId?: string, postId?: string): Promise<void>;
+  /** Verwarnung zurücknehmen (bleibt im Verlauf, keine Mail) */
+  modRevokeWarning(warningId: string, note?: string): Promise<void>;
+  modUserWarnings(userId: string): Promise<ModWarning[]>;
+  /**
+   * Konten suchen bzw. auflisten (mod_users): leer = alle, Nutzer-ID, Namensteil oder – nur Founder – E-Mail exakt.
+   * 50 je Seite, neueste zuerst; `before` = Registrierungsdatum des letzten Eintrags der vorigen Seite.
+   */
+  modUsers(query: string, filter: ModUserFilter, before?: string): Promise<ModUserRow[]>;
+  /** Darf dieses Konto per E-Mail suchen? (nur Anzeige; der Server prüft selbst) */
+  modCanSearchEmail(): Promise<boolean>;
   modResolve(reportId: string, note?: string): Promise<void>;
   /**
    * Einmalige Hinweis-Mail „Anmeldung jetzt mit Passwort“ an Konten ohne Passwort (Edge Function password-notice,
    * nur Moderatoren). `send: false` zählt nur.
    */
   modPasswordNotice(send: boolean): Promise<{ pending: number; sent: number; failed: number }>;
+  /** Sperren; dauerhaft nur nach frischer Passwort-Anmeldung (vorher verifyPassword, sonst Fehler reauth_required) */
   modBan(userId: string, days: BanDuration, reason: string, reportId?: string): Promise<void>;
   modUnban(userId: string, note?: string): Promise<void>;
   /**

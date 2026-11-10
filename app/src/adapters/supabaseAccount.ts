@@ -21,6 +21,8 @@ import {
   parseModOverview,
   parseModPostState,
   parseModReporter,
+  parseModUserRows,
+  parseModWarnings,
   parseModLog,
   parseModReports,
   parseModUser,
@@ -672,9 +674,40 @@ export function supabaseAccount(
       });
       if (error) fail(error);
     },
-    async modWarn(userId, note, reportId) {
-      const { error } = await (await get()).rpc('mod_warn', { who: userId, report: reportId ?? null, note });
+    async modAddWarning(userId, reason, reportId, postId) {
+      const { error } = await (
+        await get()
+      ).rpc('mod_add_warning', {
+        who: userId,
+        reason,
+        report: reportId ?? null,
+        post: postId ?? null,
+      });
       if (error) fail(error);
+    },
+    async modRevokeWarning(warningId, note) {
+      const { error } = await (
+        await get()
+      ).rpc('mod_revoke_warning', { warning: warningId, note: note ?? null });
+      if (error) fail(error);
+    },
+    async modUserWarnings(userId) {
+      const { data, error } = await (await get()).rpc('mod_user_warnings', { who: userId });
+      if (error) fail(error);
+      return parseModWarnings(data as unknown[] | null);
+    },
+    async modUsers(query, filter, before) {
+      const { data, error } = await (
+        await get()
+      ).rpc('mod_users', { q: query, filter, before: before ?? null });
+      if (error) fail(error);
+      return parseModUserRows(data as unknown[] | null);
+    },
+    async modCanSearchEmail() {
+      const { data, error } = await (await get()).rpc('mod_can_search_email');
+      // fehlt die Funktion noch: keine E-Mail-Suche anbieten
+      if (error) return false;
+      return data === true;
     },
     async modPasswordNotice(send) {
       const { data, error } = await (await get()).functions.invoke('password-notice', { body: { send } });

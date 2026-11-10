@@ -6,6 +6,8 @@
 //
 // Außerdem (Moderationsbereich, Entscheidung Nutzer 2026-11-04): Aufruf mit `{ ban_event: <id> }` aus mod_ban /
 // mod_unban → Mail an die gesperrte Person bei Sperre und bei Aufhebung (Zeile in ban_events, `notified_at`).
+// Und (Nutzerverwaltung, 2026-11-10): Aufruf mit `{ warning: <id> }` aus mod_add_warning → Mail an die verwarnte
+// Person (Zeile in warnings, `notified_at`).
 //
 // Geheimnisse (Supabase → Edge Functions → Secrets), dieselben Werte wie unter Authentication → SMTP Settings:
 //   SMTP_HOST, SMTP_PORT (z. B. 465), SMTP_USER (noreply@fangpunkt.com), SMTP_PASSWORD
@@ -100,19 +102,65 @@ async function banMail(db: Db, eventId: string): Promise<Response> {
   return new Response('ok', { status: 200 });
 }
 
+/** Mail an die verwarnte Person – höchstens einmal je Verwarnung */
+async function warningMail(db: Db, warningId: string): Promise<Response> {
+  const { data: w, error } = await db
+    .from('warnings')
+    .update({ notified_at: new Date().toISOString() })
+    .eq('id', warningId)
+    .is('notified_at', null)
+    .select('id, user_id, reason')
+    .maybeSingle();
+  if (error) return new Response('Datenbankfehler', { status: 500 });
+  if (!w) return new Response('schon verschickt oder unbekannt', { status: 200 });
+  const { data: u } = await db.auth.admin.getUserById(w.user_id as string);
+  const email = u?.user?.email;
+  if (!email) return new Response('keine Adresse', { status: 200 });
+  const text = [
+    'Hallo,',
+    '',
+    'du hast eine Verwarnung für dein Fangpunkt-Konto erhalten.',
+    `Grund: ${w.reason ?? '–'}`,
+    '',
+    'Bitte halte dich an die Regeln der Community. Eine Verwarnung schränkt dein Konto nicht ein; bei weiteren Verstößen kann das Konto aber gesperrt werden.',
+    '',
+    'Wenn du glaubst, dass das ein Irrtum ist, antworte nicht auf diese Mail, sondern schreib an moderation@fangpunkt.com.',
+    '',
+    'Die Regeln der Community: https://fangpunkt.com/datenschutz/#regeln',
+    '',
+    'Fangpunkt',
+  ].join('\n');
+  try {
+    await transport().sendMail({
+      from: `Fangpunkt <${Deno.env.get('SMTP_USER')}>`,
+      to: email,
+      subject: 'Verwarnung für dein Fangpunkt-Konto',
+      text,
+    });
+  } catch (e) {
+    await db.from('warnings').update({ notified_at: null }).eq('id', w.id);
+    console.error('Mailversand fehlgeschlagen', e instanceof Error ? e.message : e);
+    return new Response('Mailversand fehlgeschlagen', { status: 502 });
+  }
+  return new Response('ok', { status: 200 });
+}
+
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return new Response('nur POST', { status: 405 });
   let id: unknown;
   let banEvent: unknown;
+  let warning: unknown;
   try {
-    const payload = (await req.json()) as { record?: { id?: unknown }; ban_event?: unknown };
+    const payload = (await req.json()) as { record?: { id?: unknown }; ban_event?: unknown; warning?: unknown };
     id = payload.record?.id;
     banEvent = payload.ban_event;
+    warning = payload.warning;
   } catch {
     return new Response('ungültig', { status: 400 });
   }
   const db = createClient(Deno.env.get('SUPABASE_URL') ?? '', secretKey(), { auth: { persistSession: false } });
   if (typeof banEvent === 'string') return banMail(db, banEvent);
+  if (typeof warning === 'string') return warningMail(db, warning);
   if (typeof id !== 'string') return new Response('ungültig', { status: 400 });
   // Meldung „beanspruchen“: nur ein Aufruf verschickt die Mail
   const { data: report, error } = await db
@@ -155,8 +203,8 @@ Deno.serve(async (req) => {
     content ? `\n${content}` : '',
     '',
     `Meldungs-ID: ${report.id}`,
-    'Bitte innerhalb von 24 Stunden prüfen – in der App unter Mehr → Moderation:',
-    `${APP_URL}/mehr/moderation/${report.id}`,
+    'Bitte innerhalb von 24 Stunden prüfen – im Admin-Bereich unter Meldungen:',
+    `${APP_URL}/moderation/meldungen/${report.id}`,
   ].join('\n');
 
   try {

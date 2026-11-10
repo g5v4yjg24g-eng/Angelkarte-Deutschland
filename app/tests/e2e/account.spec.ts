@@ -1,7 +1,14 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page, type Route } from './fixtures';
 import type { Locator } from '@playwright/test';
-import { collectErrors, screenPoint, serveWaterFixture, tapRendered, waitForApp } from './helpers';
+import {
+  animationsDone,
+  collectErrors,
+  screenPoint,
+  serveWaterFixture,
+  tapRendered,
+  waitForApp,
+} from './helpers';
 
 test.use({ serviceWorkers: 'block' });
 
@@ -48,6 +55,11 @@ async function fakeSupabase(
     log: [] as { action: string; who: unknown; detail: unknown; report?: unknown }[],
     /** ausgeblendete Beiträge → Grund */
     hidden: new Map<string, string>(),
+    /** Nutzerverwaltung: Verwarnungen, Founder (E-Mail-Suche), Konten mit E-Mail, letzte Passwort-Anmeldung */
+    warnings: [] as Record<string, unknown>[],
+    founder: false,
+    emails: new Map<string, string>(),
+    passwordAt: 0,
   };
   const comments: {
     id: string;
@@ -211,6 +223,8 @@ async function fakeSupabase(
             400,
           );
         user.email = b.email ?? user.email;
+        // Zeitpunkt der Passwort-Anmeldung (wie amr im Token; dauerhafte Sperre verlangt ihn frisch)
+        mod.passwordAt = Date.now();
         return json(route, session());
       }
       case 'POST /auth/v1/resend':
@@ -574,10 +588,81 @@ async function fakeSupabase(
         mod.log.push({ action: `delete_${b.kind}`, who: c?.author, detail: b.note, report: b.report });
         return route.fulfill({ status: 204 });
       }
-      case 'POST /rest/v1/rpc/mod_warn': {
-        const b = req.postDataJSON() as { who: string; note: string };
-        mod.log.push({ action: 'warn', who: b.who, detail: b.note });
+      // Nutzerverwaltung: Liste/Suche wie mod_users, Verwarnungen
+      case 'POST /rest/v1/rpc/mod_users': {
+        if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
+        const b = req.postDataJSON() as { q: string; filter: string; before: string | null };
+        const q = b.q.trim();
+        const active = (id: unknown) => mod.warnings.filter((w) => w.user_id === id && w.active).length;
+        let list = [...mod.users.values()];
+        if (/^[^@\s]+@[^@\s]+$/.test(q)) {
+          if (!mod.founder) return json(route, { code: 'P0001', message: 'email_not_allowed' }, 400);
+          const id = mod.emails.get(q.toLowerCase());
+          mod.log.push({ action: 'search_email', who: id, detail: id ? null : 'kein Treffer' });
+          list = list.filter((u) => u.user_id === id);
+        } else if (q) {
+          const t = q.replace(/^@/, '').toLowerCase();
+          list = list.filter(
+            (u) =>
+              u.user_id === q ||
+              String(u.username).toLowerCase().includes(t) ||
+              String(u.display_name).toLowerCase().includes(t),
+          );
+        }
+        if (b.filter === 'banned') list = list.filter((u) => u.banned);
+        if (b.filter === 'reported') list = list.filter((u) => Number(u.reports_against) > 0);
+        if (b.filter === 'warned') list = list.filter((u) => active(u.user_id) > 0);
+        return json(
+          route,
+          list.map((u) => ({
+            user_id: u.user_id,
+            username: u.username,
+            display_name: u.display_name,
+            joined: u.joined,
+            banned: u.banned,
+            ban_until: u.ban_until,
+            reports_against: u.reports_against,
+            open_reports: mod.reports.filter((r) => r.target_user === u.user_id && r.status !== 'done')
+              .length,
+            active_warnings: active(u.user_id),
+          })),
+        );
+      }
+      case 'POST /rest/v1/rpc/mod_can_search_email':
+        return json(route, mod.moderator && mod.founder);
+      case 'POST /rest/v1/rpc/mod_add_warning': {
+        const b = req.postDataJSON() as { who: string; reason: string; report: string | null };
+        if (!b.reason.trim()) return json(route, { code: 'P0001', message: 'no_reason' }, 400);
+        mod.warnings.unshift({
+          id: `w-${mod.warnings.length + 1}`,
+          user_id: b.who,
+          reason: b.reason,
+          created_at: '2026-11-10T12:00:00Z',
+          expires_at: '2027-02-08T12:00:00Z',
+          revoked_at: null,
+          revoke_note: null,
+          report_id: b.report,
+          post_id: null,
+          moderator_name: 'Kevin',
+          active: true,
+        });
+        mod.log.push({ action: 'warn', who: b.who, detail: b.reason, report: b.report });
+        return json(route, `w-${mod.warnings.length}`);
+      }
+      case 'POST /rest/v1/rpc/mod_revoke_warning': {
+        const b = req.postDataJSON() as { warning: string; note: string | null };
+        const w = mod.warnings.find((x) => x.id === b.warning);
+        if (!w || w.revoked_at) return json(route, { code: 'P0001', message: 'not_found' }, 400);
+        Object.assign(w, { revoked_at: '2026-11-10T13:00:00Z', revoke_note: b.note, active: false });
+        mod.log.push({ action: 'revoke_warning', who: w.user_id, detail: b.note });
         return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/mod_user_warnings': {
+        const { who } = req.postDataJSON() as { who: string };
+        return json(
+          route,
+          mod.warnings.filter((w) => w.user_id === who),
+        );
       }
       case 'POST /rest/v1/rpc/mod_resolve': {
         const b = req.postDataJSON() as { report: string; note: string | null };
@@ -593,6 +678,9 @@ async function fakeSupabase(
           reason: string;
           report: string | null;
         };
+        // dauerhaft nur mit frischer Passwort-Anmeldung (wie recent_password_auth(300) auf dem Server)
+        if (b.days === null && Date.now() - mod.passwordAt > 300_000)
+          return json(route, { code: 'P0001', message: 'reauth_required' }, 400);
         const u = mod.users.get(b.who);
         if (u) {
           u.banned = true;
@@ -2174,6 +2262,135 @@ test('AVA-2: ohne Server-Profil bleibt das Profilbild auf dem Gerät – kein Fe
   await expect.poll(() => avatarKeys(calls.storage)).toEqual([]);
   expect(calls.avatars.size).toBe(0);
   expect(errors.filter((e) => !e.includes('status of 400'))).toEqual([]);
+});
+
+test('MODA-5: Nutzerverwaltung – Konten suchen (Name, E-Mail nur Founder), verwarnen, zurücknehmen, dauerhaft sperren nur mit Passwort', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  calls.mod.moderator = true;
+  calls.mod.founder = true;
+  const row = (id: string, username: string, name: string, joined: string, reports = 0) => ({
+    user_id: id,
+    username,
+    display_name: name,
+    banned: false,
+    ban_until: null,
+    ban_reason: null,
+    posts: 0,
+    comments: 0,
+    spots: 0,
+    reports_against: reports,
+    joined,
+  });
+  calls.mod.users.set('u-anna', row('u-anna', 'anna', 'Anna', '2026-11-08T08:00:00Z', 2));
+  calls.mod.users.set('u-otto', row('u-otto', 'otto', 'Otto Barsch', '2026-11-02T08:00:00Z'));
+  calls.mod.users.set('u-lena', row('u-lena', 'lena', 'Lena', '2026-10-30T08:00:00Z'));
+  calls.mod.emails.set('anna@example.de', 'u-anna');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/moderation');
+  await waitForApp(page);
+  // Schnellzugriff „Gemeldete Konten“ öffnet die Liste mit dieser Auswahl
+  await page.getByRole('link', { name: 'Gemeldete Konten' }).click();
+  await expect(page).toHaveURL(/\/moderation\/nutzer\?auswahl=reported$/);
+  await expect(page.getByRole('radio', { name: 'Gemeldet' })).toBeChecked();
+  await expect(page.getByRole('link', { name: /Anna/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Otto/ })).toHaveCount(0);
+  await page.getByRole('radio', { name: 'Alle' }).click();
+  await expect(page.getByRole('radio', { name: 'Alle' })).toBeChecked();
+  await expect(page.getByRole('list').getByRole('link')).toHaveCount(3);
+  await expect(page.getByRole('link', { name: /Anna/ })).toContainText('2 Meldungen');
+  // Suche: Teil des Namens (mit @), dann E-Mail exakt (Founder) – die E-Mail-Suche wird protokolliert
+  const search = page.getByRole('searchbox', { name: 'Konto suchen' });
+  await search.fill('@barsch');
+  await page.getByRole('button', { name: 'Suchen' }).click();
+  await expect(page.getByRole('list').getByRole('link')).toHaveText([/Otto Barsch/]);
+  await search.fill('anna@example.de');
+  await page.getByRole('button', { name: 'Suchen' }).click();
+  await expect(page.getByRole('list').getByRole('link')).toHaveText([/Anna/]);
+  expect(calls.mod.log.map((l) => l.action)).toEqual(['search_email']);
+  await search.fill('niemand@example.de');
+  await page.getByRole('button', { name: 'Suchen' }).click();
+  await expect(page.getByText('Kein Konto gefunden.')).toBeVisible();
+  await page.getByRole('button', { name: 'Zurücksetzen' }).click();
+  await expect(page.getByRole('list').getByRole('link')).toHaveCount(3);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  // Konto öffnen und verwarnen: Grund ist Pflicht, die Person bekommt eine Mail
+  await page.getByRole('link', { name: /Anna/ }).click();
+  await expect(page).toHaveURL(/\/moderation\/nutzer\/u-anna$/);
+  const warnings = page.getByRole('region', { name: 'Verwarnungen' });
+  await expect(warnings.getByText('Keine Verwarnungen.')).toBeVisible();
+  await page.getByRole('button', { name: 'Verwarnen' }).click();
+  const warn = page.getByRole('dialog', { name: 'Verwarnen' });
+  await expect(warn.getByRole('button', { name: 'Bestätigen' })).toBeDisabled();
+  await warn.getByRole('textbox', { name: /Grund/ }).fill('Beleidigender Kommentar');
+  await warn.getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(page.getByText('Verwarnt. Die Person bekommt eine Mail.')).toBeVisible();
+  await expect(warnings.getByText('Beleidigender Kommentar')).toBeVisible();
+  await expect(warnings.getByText('aktiv', { exact: true })).toBeVisible();
+  await expect(page.getByText('1 aktive Verwarnung')).toBeVisible();
+  // zurücknehmen: bleibt im Verlauf sichtbar
+  await warnings.getByRole('button', { name: 'Zurücknehmen' }).click();
+  const revoke = page.getByRole('dialog', { name: 'Verwarnung zurücknehmen?' });
+  await revoke.getByRole('textbox', { name: /Notiz/ }).fill('Irrtum');
+  await revoke.getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(page.getByText('Verwarnung zurückgenommen.')).toBeVisible();
+  await expect(warnings.getByText('zurückgenommen', { exact: true })).toBeVisible();
+  await expect(warnings.getByText('Zurückgenommen: Irrtum')).toBeVisible();
+  await expect(page.getByText('1 aktive Verwarnung')).toHaveCount(0);
+
+  // Dauerhaft sperren: nur mit dem eigenen Passwort (frische Anmeldung, der Server prüft das)
+  await page.getByRole('button', { name: 'Sperren' }).click();
+  const ban = page.getByRole('dialog', { name: 'Anna sperren' });
+  await ban.getByRole('textbox', { name: /Grund/ }).fill('Wiederholte Beleidigungen');
+  await expect(ban.getByLabel('Dein Passwort')).toHaveCount(0);
+  await ban.getByRole('radio', { name: 'Dauerhaft' }).check({ force: true });
+  await expect(ban.getByRole('button', { name: 'Bestätigen' })).toBeDisabled();
+  await ban.getByLabel('Dein Passwort').fill('falsches Passwort 1');
+  await ban.getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(ban.getByText('Das Passwort stimmt nicht.')).toBeVisible();
+  expect(calls.mod.users.get('u-anna')?.banned).toBe(false);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await animationsDone(ban);
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await ban.getByLabel('Dein Passwort').fill(PASSWORD);
+  await ban.getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(page.getByText('Gesperrt. Die Person bekommt eine Mail.')).toBeVisible();
+  await expect(page.getByText('Dauerhaft gesperrt')).toBeVisible();
+  expect(calls.mod.users.get('u-anna')).toMatchObject({ banned: true, ban_until: null });
+  // in der Liste unter „Gesperrt“
+  await page
+    .getByRole('navigation', { name: 'Admin-Navigation' })
+    .getByRole('link', { name: 'Nutzer' })
+    .click();
+  await expect(page.getByRole('list').getByRole('link')).toHaveCount(3);
+  await page.getByRole('radio', { name: 'Gesperrt' }).click();
+  await expect(page.getByRole('radio', { name: 'Gesperrt' })).toBeChecked();
+  await expect(page.getByRole('list').getByRole('link')).toHaveText([/Anna.*dauerhaft gesperrt/]);
+  expect(calls.mod.log.map((l) => l.action)).toEqual([
+    'search_email',
+    'search_email',
+    'warn',
+    'revoke_warning',
+    'ban',
+  ]);
+  // erwartet: 400 auf das falsche Passwort
+  expect(errors.filter((e) => !/status of 400/.test(e))).toEqual([]);
 });
 
 test('MODA-4: Moderator entfernt ein unpassendes Profilbild – mit Bestätigung, Datei weg, im Protokoll', async ({
