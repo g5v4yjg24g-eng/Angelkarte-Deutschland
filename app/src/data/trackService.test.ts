@@ -39,3 +39,48 @@ describe('Route speichern (TRK-3)', () => {
     expect(await getTrack(s.id, db)).toBeUndefined();
   });
 });
+
+describe('Hintergrund-Route der iPhone-App (TRK-6)', () => {
+  it('Punkte aus dem Puffer zählen nach ihrem Zeitpunkt: vor Pause/Ende ja, in der Pause und danach nein', async () => {
+    const db = freshDb();
+    const s = await startSession(db);
+    const t0 = Date.parse(s.startAt) + 1000;
+    const at = (sec: number, m: number) => ({ t: t0 + sec * 1000, lat: 51 + north(m), lng: 7, acc: 5 });
+    await pauseSession(s.id, t0 + 40_000, db);
+    // erst nach der Pause abgeholt, aber vorher aufgenommen
+    expect((await recordFix(s.id, at(0, 0), true, db)).kind).toBe('newSegment');
+    expect((await recordFix(s.id, at(30, 40), false, db)).kind).toBe('append');
+    expect((await recordFix(s.id, at(45, 80), false, db)).kind).toBe('skip');
+    await resumeSession(s.id, t0 + 60_000, db);
+    expect((await recordFix(s.id, at(50, 90), true, db)).kind).toBe('skip');
+    expect((await recordFix(s.id, at(70, 140), true, db)).kind).toBe('newSegment');
+    await endSession(s.id, t0 + 100_000, db);
+    expect((await recordFix(s.id, at(90, 200), false, db)).kind).toBe('append');
+    expect((await recordFix(s.id, at(110, 260), false, db)).kind).toBe('skip');
+    expect((await getTrack(s.id, db))?.segments.map((x) => x.length)).toEqual([2, 2]);
+  });
+
+  it('drainInto: gepufferte Punkte nacheinander speichern, nur der erste beginnt einen Abschnitt', async () => {
+    const { drainInto } = await import('../features/sessions/tracking/nativeRoute');
+    const db = freshDb();
+    const s = await startSession(db);
+    const t0 = Date.parse(s.startAt) + 1000;
+    const at = (sec: number, m: number) => ({ t: t0 + sec * 1000, lat: 51 + north(m), lng: 7, acc: 5 });
+    let buffer = [at(0, 0), at(20, 30), at(40, 60)];
+    const route = {
+      start: () => Promise.resolve('granted' as const),
+      stop: () => Promise.resolve(),
+      drain: () => {
+        const out = buffer;
+        buffer = [];
+        return Promise.resolve(out);
+      },
+    };
+    expect(await drainInto(route, s.id, true, false, db)).toBe(false);
+    buffer = [at(60, 90)];
+    expect(await drainInto(route, s.id, false, false, db)).toBe(false);
+    // leerer Puffer ändert nichts
+    expect(await drainInto(route, s.id, true, false, db)).toBe(true);
+    expect((await getTrack(s.id, db))?.segments.map((x) => x.length)).toEqual([4]);
+  });
+});

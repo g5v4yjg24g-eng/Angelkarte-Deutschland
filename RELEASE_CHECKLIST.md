@@ -25,7 +25,7 @@ Eingereicht wird nur durch den Nutzer; TestFlight-Bauten nur auf ausdrücklichen
 | Haptik, Tastatur, „wie eine echte App“ | Nutzer prüft am iPhone | 🔲 auf dem Gerät ungeprüft [O] |
 | **Dateien speichern in der App** (Sicherung, CSV, Kalenderdatei) über das Teilen-Menü (Web Share, ohne neue Abhängigkeit, Paket 10) | Claude, Nutzer prüft am iPhone | ✅ gebaut, 🔲 am iPhone prüfen; falls es dort nicht klappt: `@capacitor/share` + `filesystem` |
 | Erinnerungen vor Angelterminen (`@capacitor/local-notifications`) | Claude | 🔲 gewünscht (Nutzer 2026-11-02), hilft gegen Ablehnung nach Regel 4.2 |
-| Hintergrund-Route bei Sessions (Wunsch Nutzer 2026-11-03, „vor dem Einreichen“) | Claude, Plugin vorher freigeben | 🔲 Plugin-Auswahl offen; Apple prüft Hintergrund-Standort streng |
+| Hintergrund-Route bei Sessions (Wunsch Nutzer 2026-11-03, Weg B 2026-11-10) | Claude, Nutzer prüft am iPhone | ✅ gebaut (eigenes Swift-Modul, nur „Beim Verwenden“), 🔲 TestFlight-Bau übersetzt es erst; am iPhone prüfen (Sperrbildschirm, blaue Anzeige, Akku); Zweck im Prüfhinweis an Apple nennen |
 | Kamera/Fotoauswahl nativ (`@capacitor/camera`) | Claude | 🔲 optional – `<input type=file>` öffnet Kamera/Fotos schon |
 | Datenschutz-Manifest (`PrivacyInfo.xcprivacy`): Capacitor bringt eigene mit; ob die App selbst eines braucht, zeigt Apples Rückmeldung beim Upload | Claude | 🔲 [A] Upload-Mail prüfen |
 | Versionsnummer je Einreichung erhöhen | Claude | 🔲 vor dem Einreichen |
@@ -69,4 +69,4 @@ Kein Tracking (keine Weitergabe an Werbenetzwerke, keine Verknüpfung mit fremde
 | Nutzungsdaten – Interaktion (GoatCounter, nur Bereichspfade) | Analyse | nein | abschaltbar |
 | Sonstige – Meldungen an die Moderation | App-Funktion (Sicherheit) | ja | nur beim Melden |
 
-Fangbuch, Routen, nicht geteilte Orte und Fotos bleiben auf dem Gerät → „nicht erfasst“.
+Fangbuch, Routen (auch die Hintergrund-Aufzeichnung der iPhone-App), nicht geteilte Orte und Fotos bleiben auf dem Gerät → „nicht erfasst“.

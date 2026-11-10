@@ -8,6 +8,7 @@ import { goatCounter } from '../adapters/goatCounter';
 import { supabaseAccount } from '../adapters/supabaseAccount';
 import { capacitorPush } from '../adapters/capacitorPush';
 import { capacitorHaptics } from '../adapters/capacitorHaptics';
+import { capacitorRoute } from '../adapters/capacitorRoute';
 import type { Providers } from '../ports/providersContext';
 
 /** Zusammenstecken der Anbieter (einzige Stelle, die Adapter kennt). */
@@ -32,5 +33,7 @@ export const providers: Providers = {
   push: capacitorPush(),
   // Vibration nur in der iPhone-App (Weg 1, Freigabe Nutzer 2026-11-06)
   haptics: capacitorHaptics(),
+  // Route auch bei gesperrtem Bildschirm (Weg B, eigenes Swift-Modul) – nur in der iPhone-App
+  route: capacitorRoute(),
   water: staticWaterData(import.meta.env.VITE_WATER_BASE_URL ?? `${import.meta.env.BASE_URL}data/water/`),
 };

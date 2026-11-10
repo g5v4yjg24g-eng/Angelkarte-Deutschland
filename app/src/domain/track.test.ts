@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { TrackPoint } from './schemas';
 import {
+  parseRouteFixes,
   applyFix,
   decideFix,
   displaySegments,
@@ -128,5 +129,25 @@ describe('Wiedergabe (TRK-2)', () => {
     const offs = spreadOffsets([p, { lat: 51 + north(1), lng: 7 }, { lat: 51 + north(100), lng: 7 }]);
     expect(offs[2]).toEqual([0, 0]);
     expect(offs[0]).not.toEqual(offs[1]);
+  });
+});
+
+describe('Puffer der iPhone-App prüfen (TRK-6)', () => {
+  it('nur gültige Punkte, zeitlich sortiert, doppelte Zeitpunkte einmal', () => {
+    const raw = [
+      { lat: 51.1, lng: 7, acc: 5, t: 3000 },
+      { lat: 51, lng: 7, acc: 5, t: 1000 },
+      { lat: 51, lng: 7, acc: 5, t: 1000 },
+      { lat: 91, lng: 7, acc: 5, t: 2000 },
+      { lat: 51, lng: 7, acc: -1, t: 2000 },
+      { lat: '51', lng: 7, acc: 5, t: 2000 },
+      { lat: 51, lng: 7, acc: 5, t: Number.NaN },
+      null,
+      'x',
+    ];
+    expect(parseRouteFixes(raw)).toEqual([
+      { lat: 51, lng: 7, acc: 5, t: 1000 },
+      { lat: 51.1, lng: 7, acc: 5, t: 3000 },
+    ]);
   });
 });
