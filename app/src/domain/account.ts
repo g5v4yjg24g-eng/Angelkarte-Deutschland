@@ -100,7 +100,8 @@ export function accountErrorKind(
 ): AccountErrorKind {
   const msg = (e?.message ?? '').toLowerCase();
   const code = e?.code ?? '';
-  if (code === '23505' || msg.includes('duplicate key')) return 'usernameTaken';
+  // vergeben oder gesperrt (gesperrte Nutzernamen, Admin-Bereich) – gleiche Rückmeldung
+  if (code === '23505' || msg.includes('duplicate key') || msg.includes('username_blocked')) return 'usernameTaken';
   if (code === 'invalid_credentials' || msg.includes('invalid login credentials')) return 'wrongPassword';
   if (code === 'email_not_confirmed' || msg.includes('email not confirmed')) return 'notConfirmed';
   if (code === 'same_password' || msg.includes('should be different')) return 'samePassword';

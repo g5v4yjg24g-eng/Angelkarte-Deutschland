@@ -158,6 +158,13 @@ function fakeAccount(badges: Badge[] = []): FakeAccount {
     modUserWarnings: () => Promise.resolve([]),
     modUsers: () => Promise.resolve([]),
     modCanSearchEmail: () => Promise.resolve(false),
+    modMyRole: () => Promise.resolve(undefined),
+    modRoles: () => Promise.resolve([]),
+    modBlockedNames: () => Promise.resolve([]),
+    modAddBlockedName: () => Promise.resolve(),
+    modRemoveBlockedName: () => Promise.resolve(),
+    modLogList: () => Promise.resolve([]),
+    modStats: () => Promise.resolve(undefined),
     modResolve: () => Promise.resolve(),
     modPasswordNotice: () => Promise.resolve({ pending: 0, sent: 0, failed: 0 }),
     modBan: () => Promise.resolve(),
@@ -258,7 +265,7 @@ describe('Mehr → Konto (ACC-2)', () => {
     expect(await screen.findByRole('heading', { name: 'Profil anlegen' })).toBeInTheDocument();
     const name = screen.getByRole('textbox', { name: 'Nutzername' });
     fireEvent.change(name, { target: { value: 'hecht' } });
-    expect(await screen.findByText('Dieser Nutzername ist schon vergeben.')).toBeInTheDocument();
+    expect(await screen.findByText('Dieser Nutzername ist vergeben oder nicht erlaubt.')).toBeInTheDocument();
     fireEvent.change(name, { target: { value: 'Zander.Max' } });
     expect(await screen.findByText('Frei.')).toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox', { name: 'Anzeigename' }), { target: { value: ' Max ' } });

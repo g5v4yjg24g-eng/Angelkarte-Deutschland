@@ -1,0 +1,38 @@
+Eigene Rolle|founder
+Rollen|anna:founder,dora:moderator
+Founder darf E-Mail|true
+Sperren (contains, mit Punkten)|
+Sperren (exact)|
+Doppelt|FEHLER: exists
+Ungültig|FEHLER: bad_pattern
+Liste mit Treffern|hass:contains:1:Anna,kevin:exact:0:Anna
+Frei? hassangler2|false
+Frei? kevin|false
+Frei? kevin2|true
+E legt h_a.s.s an|FEHLER: username_blocked
+E legt kevin an|FEHLER: username_blocked
+E legt kevin2 an|ok
+Bestehendes Konto ändert Anzeigename|ok
+Entsperren|
+Entsperren unbekannt|FEHLER: not_found
+Protokoll|block_name:hass (contains):Anna > block_name:kevin (exact):Anna > unblock_name:kevin:Anna
+Protokoll gefiltert|1
+Protokoll ältere|0
+Statistik 30|3 2 2 1 1 3.0 4 2 t
+Statistik 90|4
+Statistik falsch|FEHLER: bad_days
+D: Rolle|moderator
+D: E-Mail|false
+D: E-Mail-Suche|FEHLER: email_not_allowed
+D: Namen sperren|
+B: Rolle|∅
+B: Rollen|FEHLER: not_moderator
+B: Founder?|false
+B: macht sich zum Founder|FEHLER: permission denied for table moderators
+B: Namensliste|FEHLER: not_moderator
+B: Tabelle|FEHLER: permission denied for table blocked_usernames
+B: Namen sperren|FEHLER: not_moderator
+B: Protokoll|FEHLER: not_moderator
+B: Statistik|FEHLER: not_moderator
+B: Prüffunktion|FEHLER: permission denied for function username_blocked
+Zweiter Founder|FEHLER: duplicate key value violates unique constraint "moderators_one_founder"

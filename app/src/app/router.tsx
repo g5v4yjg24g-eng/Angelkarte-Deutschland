@@ -91,6 +91,34 @@ export const routes = [
               (m) => m.SystemMessagesPage,
             ),
           },
+          {
+            path: 'verwaltung/namen',
+            lazy: page(
+              () => import('../features/moderation/admin/BlockedNamesPage'),
+              (m) => m.BlockedNamesPage,
+            ),
+          },
+          {
+            path: 'verwaltung/protokoll',
+            lazy: page(
+              () => import('../features/moderation/admin/AdminLogPage'),
+              (m) => m.AdminLogPage,
+            ),
+          },
+          {
+            path: 'verwaltung/statistik',
+            lazy: page(
+              () => import('../features/moderation/admin/AdminStatsPage'),
+              (m) => m.AdminStatsPage,
+            ),
+          },
+          {
+            path: 'verwaltung/rollen',
+            lazy: page(
+              () => import('../features/moderation/admin/RolesPage'),
+              (m) => m.RolesPage,
+            ),
+          },
           { path: '*', element: <Navigate to={ADMIN_BASE} replace /> },
         ],
       },

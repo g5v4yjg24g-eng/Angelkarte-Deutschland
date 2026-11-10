@@ -60,6 +60,9 @@ async function fakeSupabase(
     founder: false,
     emails: new Map<string, string>(),
     passwordAt: 0,
+    /** Verwaltung: gesperrte Nutzernamen, Statistik-Antworten je Zeitraum */
+    names: [] as { pattern: string; kind: string; note: string | null }[],
+    statsCalls: [] as number[],
   };
   const comments: {
     id: string;
@@ -628,6 +631,86 @@ async function fakeSupabase(
           })),
         );
       }
+      // Verwaltung: Rollen, gesperrte Nutzernamen, Protokoll, Statistik
+      case 'POST /rest/v1/rpc/mod_my_role':
+        return json(route, mod.moderator ? (mod.founder ? 'founder' : 'moderator') : null);
+      case 'POST /rest/v1/rpc/mod_roles':
+        if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
+        return json(route, [
+          { user_id: 'u-1', username: 'kevin', display_name: 'Kevin', role: mod.founder ? 'founder' : 'moderator', since: '2026-11-04T10:00:00Z' },
+          { user_id: 'u-mod2', username: 'lena', display_name: 'Lena', role: 'moderator', since: '2026-11-08T10:00:00Z' },
+        ]);
+      case 'POST /rest/v1/rpc/mod_blocked_usernames':
+        if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
+        return json(
+          route,
+          mod.names.map((n) => ({
+            ...n,
+            created_at: '2026-11-10T12:00:00Z',
+            moderator_name: 'Kevin',
+            matches: [...mod.users.values()].filter((u) => {
+              const k = String(u.username).replace(/[._]/g, '');
+              return n.kind === 'exact' ? k === n.pattern : k.includes(n.pattern);
+            }).length,
+          })),
+        );
+      case 'POST /rest/v1/rpc/mod_add_blocked_username': {
+        const b = req.postDataJSON() as { pattern: string; kind: string; note: string | null };
+        if (mod.names.some((n) => n.pattern === b.pattern))
+          return json(route, { code: 'P0001', message: 'exists' }, 400);
+        mod.names.push(b);
+        mod.log.push({ action: 'block_name', who: null, detail: `${b.pattern} (${b.kind})` });
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/mod_remove_blocked_username': {
+        const b = req.postDataJSON() as { pattern: string };
+        mod.names = mod.names.filter((n) => n.pattern !== b.pattern);
+        mod.log.push({ action: 'unblock_name', who: null, detail: b.pattern });
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/mod_log_list': {
+        if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
+        const b = req.postDataJSON() as { what: string | null; before: string | null };
+        return json(
+          route,
+          mod.log
+            .map((l, i) => ({
+              id: `log-${i}`,
+              action: l.action,
+              detail: l.detail ?? null,
+              created_at: new Date(Date.UTC(2026, 10, 10, 12, i)).toISOString(),
+              moderator_name: 'Kevin',
+              target_user: (l.who as string | null | undefined) ?? null,
+              target_name: l.who ? String(mod.users.get(l.who as string)?.display_name ?? '') || null : null,
+              target_username: l.who ? ((mod.users.get(l.who as string)?.username as string | undefined) ?? null) : null,
+              report_id: (l.report as string | null | undefined) ?? null,
+            }))
+            .filter((l) => !b.what || l.action === b.what)
+            .reverse(),
+        );
+      }
+      case 'POST /rest/v1/rpc/mod_stats': {
+        if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
+        const { days } = req.postDataJSON() as { days: number };
+        mod.statsCalls.push(days);
+        return json(route, {
+          days,
+          reports: days === 7 ? 2 : 5,
+          reports_done: days === 7 ? 1 : 3,
+          by_reason: { abuse: 3, spam: 2 },
+          by_kind: { post: 4, user: 1 },
+          median_hours: days === 7 ? 30 : 5.5,
+          actions: { ban: 1, warn: 2, resolve: 3 },
+          new_users: 7,
+          banned_now: 1,
+          warned_now: 2,
+          weeks: [
+            { week: '2026-10-26', reports: 2, new_users: 3 },
+            { week: '2026-11-02', reports: 2, new_users: 3 },
+            { week: '2026-11-09', reports: 1, new_users: 1 },
+          ],
+        });
+      }
       case 'POST /rest/v1/rpc/mod_can_search_email':
         return json(route, mod.moderator && mod.founder);
       case 'POST /rest/v1/rpc/mod_add_warning': {
@@ -959,7 +1042,7 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
 
   await expect(page.getByRole('heading', { name: 'Profil anlegen' })).toBeVisible();
   await page.getByRole('textbox', { name: 'Nutzername' }).fill('hecht');
-  await expect(page.getByText('Dieser Nutzername ist schon vergeben.')).toBeVisible();
+  await expect(page.getByText('Dieser Nutzername ist vergeben oder nicht erlaubt.')).toBeVisible();
   await page.getByRole('textbox', { name: 'Nutzername' }).fill('zander.max');
   await expect(page.getByText('Frei.')).toBeVisible();
   await page.getByRole('textbox', { name: 'Anzeigename' }).fill('Max');
@@ -2391,6 +2474,93 @@ test('MODA-5: Nutzerverwaltung – Konten suchen (Name, E-Mail nur Founder), ver
   ]);
   // erwartet: 400 auf das falsche Passwort
   expect(errors.filter((e) => !/status of 400/.test(e))).toEqual([]);
+});
+
+test('MODA-6: Verwaltung – Nutzernamen sperren und freigeben, Protokoll, Statistik, Rollen', async ({ page }) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  calls.mod.moderator = true;
+  calls.mod.founder = true;
+  calls.mod.users.set('u-hass', {
+    user_id: 'u-hass',
+    username: 'hass.angler',
+    display_name: 'Hans',
+    banned: false,
+    ban_until: null,
+    ban_reason: null,
+    posts: 0,
+    comments: 0,
+    spots: 0,
+    reports_against: 0,
+    joined: '2026-11-08T08:00:00Z',
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/moderation/verwaltung');
+  await waitForApp(page);
+  // gesperrte Nutzernamen: Punkte/Unterstriche zählen nicht, bestehende Konten werden gezählt, nicht geändert
+  await page.getByRole('link', { name: /Gesperrte Nutzernamen/ }).click();
+  await expect(page.getByText('Noch keine gesperrten Wörter.')).toBeVisible();
+  const word = page.getByRole('textbox', { name: 'Wort' });
+  await word.fill('ä');
+  await expect(page.getByText('Mindestens 2 Zeichen.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sperren' })).toBeDisabled();
+  await word.fill('H.a_ss');
+  await page.getByRole('textbox', { name: /Notiz/ }).fill('Hassrede');
+  await page.getByRole('button', { name: 'Sperren' }).click();
+  await expect(page.getByText('Gesperrt.')).toBeVisible();
+  const item = page.getByRole('listitem').filter({ hasText: 'Hassrede' });
+  await expect(item).toContainText('hass');
+  await expect(item).toContainText('enthält');
+  await expect(item).toContainText('1 bestehendes Konto');
+  await word.fill('hass');
+  await expect(page.getByText('Dieses Wort ist schon gesperrt.')).toBeVisible();
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+  }
+  await item.getByRole('button', { name: 'Freigeben' }).click();
+  await page.getByRole('dialog', { name: '„hass“ wieder erlauben?' }).getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(page.getByText('Wieder erlaubt.')).toBeVisible();
+  await expect(page.getByText('Noch keine gesperrten Wörter.')).toBeVisible();
+
+  // Protokoll: neueste zuerst, nach Aktion filterbar
+  await page.goto('/moderation/verwaltung');
+  await page.getByRole('link', { name: /Moderationsprotokoll/ }).click();
+  const log = page.getByRole('list', { name: 'Moderationsprotokoll' });
+  await expect(log.getByRole('listitem')).toHaveCount(2);
+  await expect(log.getByRole('listitem').first()).toContainText('Nutzername freigegeben');
+  await page.getByRole('combobox', { name: 'Aktion' }).selectOption('block_name');
+  await expect(page).toHaveURL(/aktion=block_name/);
+  await expect(log.getByRole('listitem')).toHaveCount(1);
+  await expect(log.getByRole('listitem')).toContainText('hass (contains)');
+
+  // Statistik: echte Zahlen, Zeitraum umschaltbar, nur Zahlen
+  await page.goto('/moderation/verwaltung');
+  await page.getByRole('link', { name: /Statistiken/ }).click();
+  const kpis = page.getByRole('group', { name: 'Kennzahlen im Zeitraum' });
+  await expect(kpis.getByText('5,5 Std.')).toBeVisible();
+  await expect(kpis.getByText('Eingriffe')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Meldungen nach Grund' })).toContainText('Beleidigung');
+  await expect(page.getByRole('table')).toContainText('09.11.');
+  await page.getByRole('radio', { name: '7 Tage' }).click({ force: true });
+  await expect(kpis.getByText('1,3 Tage')).toBeVisible();
+  expect(calls.mod.statsCalls).toEqual([30, 7]);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  // Rollen: eigene Rolle, alle Moderatoren, Vergabe nur im SQL-Editor
+  await page.goto('/moderation/verwaltung');
+  await page.getByRole('link', { name: /Rollen & Rechte/ }).click();
+  await expect(page.getByText('Deine Rolle: Founder')).toBeVisible();
+  await expect(page.getByRole('listitem').filter({ hasText: 'Lena' })).toContainText('Moderator');
+  await expect(page.getByText(/nur im SQL-Editor/)).toBeVisible();
+  expect(errors).toEqual([]);
 });
 
 test('MODA-4: Moderator entfernt ein unpassendes Profilbild – mit Bestätigung, Datei weg, im Protokoll', async ({
