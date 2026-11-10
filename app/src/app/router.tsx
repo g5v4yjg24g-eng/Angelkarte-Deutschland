@@ -263,6 +263,13 @@ export const routes = [
                 ),
               },
               {
+                path: 'profil/nutzer/:username/beitraege',
+                lazy: page(
+                  () => import('../features/profile/UserPostsPage'),
+                  (m) => m.UserPostsPage,
+                ),
+              },
+              {
                 path: 'profil/gespeichert',
                 lazy: page(
                   () => import('../features/feed/SavedPostsPage'),

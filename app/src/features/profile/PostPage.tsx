@@ -35,6 +35,7 @@ import {
 import { Toast } from '../../design/components/Toast';
 import { LOCAL_AUTHOR, type Photo, type Post, type PostVisibility } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
+import { mergeHandlers, useSwipeCarousel } from '../../lib/useSwipeCarousel';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useMyBadges } from '../badges/badgeStore';
 import { retryPost } from '../../data/postSyncService';
@@ -221,6 +222,7 @@ function PostCard({ post }: { post: Post }) {
   const [index, setIndex] = useState(0);
   const [pulse, setPulse] = useState(0);
   const frameRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const likeIconRef = useRef<HTMLSpanElement>(null);
   const [commentsOpen, setCommentsOpen] = useState(false);
@@ -248,6 +250,7 @@ function PostCard({ post }: { post: Post }) {
   });
 
   const total = photos?.length ?? post.photoIds.length;
+  const swipe = useSwipeCarousel(listRef, total);
   const name = profile?.name || t.placeholderName;
   // Teilen (Paket 10): nur eigene Beiträge, Fotos und Text – nie Fangort oder Koordinaten
   const share = canShare()
@@ -282,7 +285,8 @@ function PostCard({ post }: { post: Post }) {
       <div className={styles.carouselWrap}>
         <div className={styles.carouselBox} ref={frameRef}>
           <ul
-            {...pike.handlers}
+            ref={listRef}
+            {...mergeHandlers(pike.handlers, swipe)}
             className={styles.carousel}
             aria-label={t.postPhotos}
             // mit der Tastatur wischbar (Pfeiltasten)

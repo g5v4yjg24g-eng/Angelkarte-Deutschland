@@ -4,25 +4,33 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { de } from '../../i18n/de';
-import { Page, Section } from '../../design/components/Page';
+import { Page } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
 import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
-import { FeedIcon } from '../../design/icons';
+import { FeedIcon, ImagesIcon } from '../../design/icons';
 import { friendErrorKind } from '../../domain/friends';
 import type { PublicProfile } from '../../domain/userProfile';
+import { FEED_PAGE, type FeedPost } from '../../domain/feed';
 import { AccountError } from '../../ports/account';
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
 import { storedUserId } from '../badges/badgeStore';
-import { FeedList } from '../feed/FeedPage';
 import { SafetyMenu } from '../moderation/SafetyMenu';
 import { Avatar } from './Avatar';
 import { useAvatarUrl } from './avatarUrls';
+import { userPostsLink } from './userPostsLink';
 import { ProfileFacts } from './ProfilePage';
 import styles from './Profile.module.css';
 
 const t = de.userProfile;
+
+interface PostState {
+  list: FeedPost[];
+  more: boolean;
+  loading: boolean;
+  error?: boolean;
+}
 
 type State =
   { kind: 'loading' } | { kind: 'notFound' } | { kind: 'error' } | { kind: 'ready'; profile: PublicProfile };
@@ -51,22 +59,46 @@ export function UserProfilePage() {
   }, [account, username, signedIn, tick]);
 
   const userId = state.kind === 'ready' ? state.profile.userId : undefined;
-  const loadPosts = useCallback(
-    (before?: string) => (userId ? account.userPosts(userId, before) : Promise.resolve([])),
-    [account, userId],
-  );
-  const highlightIds = state.kind === 'ready' ? state.profile.highlightPostIds : [];
-  const highlightKey = highlightIds.join(',');
-  const loadHighlights = useCallback(
-    (before?: string) =>
-      userId && highlightKey && !before
-        ? account.userPosts(userId, undefined, highlightKey.split(',')).then((posts) => {
-            const order = highlightKey.split(',');
-            return [...posts].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
-          })
-        : Promise.resolve([]),
-    [account, userId, highlightKey],
-  );
+  // Beiträge als Kacheln (wie das eigene Profil, Wunsch Nutzer 2026-11-10); weitere Seiten auf Knopfdruck
+  const [posts, setPosts] = useState<PostState>();
+  useEffect(() => {
+    if (!userId) return;
+    let live = true;
+    account
+      .userPosts(userId)
+      .then((list) => live && setPosts({ list, more: list.length >= FEED_PAGE, loading: false }))
+      .catch(() => live && setPosts({ list: [], more: false, loading: false, error: true }));
+    return () => {
+      live = false;
+    };
+  }, [account, userId, tick]);
+  const loadMore = useCallback(async () => {
+    const last = posts?.list.at(-1);
+    if (!userId || !posts || !last) return;
+    setPosts({ ...posts, loading: true });
+    try {
+      const next = await account.userPosts(userId, last.createdAt);
+      setPosts({ list: [...posts.list, ...next], more: next.length >= FEED_PAGE, loading: false });
+    } catch {
+      setPosts({ ...posts, loading: false, error: true });
+    }
+  }, [account, userId, posts]);
+  const highlightKey = state.kind === 'ready' ? state.profile.highlightPostIds.join(',') : '';
+  const [highlights, setHighlights] = useState<FeedPost[]>([]);
+  useEffect(() => {
+    if (!userId || !highlightKey) return;
+    let live = true;
+    const order = highlightKey.split(',');
+    account
+      .userPosts(userId, undefined, order)
+      .then(
+        (list) => live && setHighlights([...list].sort((x, y) => order.indexOf(x.id) - order.indexOf(y.id))),
+      )
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [account, userId, highlightKey]);
 
   if (!signedIn)
     return (
@@ -123,6 +155,12 @@ export function UserProfilePage() {
               </p>
             )}
             <div className={styles.counts}>
+              <span className={styles.count}>
+                <strong>
+                  {posts ? `${posts.list.length.toLocaleString('de-DE')}${posts.more ? '+' : ''}` : t.noCount}
+                </strong>
+                <span>{t.postsTitle}</span>
+              </span>
               <span className={styles.count}>
                 <strong>{p.friendCount.toLocaleString('de-DE')}</strong>
                 <span>{t.friends}</span>
@@ -186,22 +224,72 @@ export function UserProfilePage() {
         {!isFriend && <p className="muted">{t.friendsOnly}</p>}
       </div>
 
-      {isFriend && highlightIds.length > 0 && (
-        <Section title={t.highlightsTitle}>
-          <FeedList load={loadHighlights} cursorOf={(x) => x.createdAt} empty={null} />
-        </Section>
+      {isFriend && highlights.length > 0 && (
+        <section className={styles.highlights} aria-labelledby="user-highlights">
+          <h2 id="user-highlights">{t.highlightsTitle}</h2>
+          <ul className={styles.highlightRow}>
+            {highlights.map((x) => (
+              <RemoteTile key={x.id} post={x} n={(posts?.list.indexOf(x) ?? -1) + 1} username={p.username} />
+            ))}
+          </ul>
+        </section>
       )}
-      <Section title={t.postsTitle}>
-        <FeedList
-          load={loadPosts}
-          cursorOf={(x) => x.createdAt}
-          empty={
-            <EmptyState icon={<FeedIcon size={32} />} title={t.emptyTitle}>
-              {t.emptyText}
-            </EmptyState>
-          }
-        />
-      </Section>
+      <PostGrid username={p.username} posts={posts} onMore={() => void loadMore()} />
     </Page>
+  );
+}
+
+function RemoteTile({ post, n, username }: { post: FeedPost; n: number; username: string }) {
+  const url = post.photoUrls[0];
+  return (
+    <li>
+      <Link
+        to={userPostsLink(username, post)}
+        className={styles.tile}
+        aria-label={de.profile.openPost(n, post.caption)}
+      >
+        {url && <img src={url} alt="" loading="lazy" decoding="async" />}
+        {post.photoPaths.length > 1 && (
+          <span className={styles.multi} title={de.profile.multiPhoto}>
+            <ImagesIcon size={18} />
+          </span>
+        )}
+      </Link>
+    </li>
+  );
+}
+
+function PostGrid({
+  username,
+  posts,
+  onMore,
+}: {
+  username: string;
+  posts: PostState | undefined;
+  onMore: () => void;
+}) {
+  if (!posts) return <p className="muted">{t.loading}</p>;
+  if (posts.list.length === 0)
+    return posts.error ? (
+      <Notice tone="error">{t.error}</Notice>
+    ) : (
+      <EmptyState icon={<FeedIcon size={32} />} title={t.emptyTitle}>
+        {t.emptyText}
+      </EmptyState>
+    );
+  return (
+    <>
+      <ul className={styles.grid} aria-label={t.gridLabel}>
+        {posts.list.map((x, i) => (
+          <RemoteTile key={x.id} post={x} n={i + 1} username={username} />
+        ))}
+      </ul>
+      {posts.error && <Notice tone="error">{t.error}</Notice>}
+      {posts.more && (
+        <Button variant="secondary" disabled={posts.loading} onClick={onMore}>
+          {t.more}
+        </Button>
+      )}
+    </>
   );
 }

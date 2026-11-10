@@ -15,7 +15,13 @@
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
 }
+.avatar {
+  position: relative;
+}
+/* Bild füllt den Kreis immer vollständig, nie verzerrt (Fehler Nutzer 2026-11-10) */
 .avatar img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -149,11 +155,16 @@
   margin: 0;
   padding: 0;
   display: flex;
-  /* Doppeltipp = Hecht, nicht Zoomen */
-  touch-action: manipulation;
+  /* alle Beiträge gleich groß: Hochformat 4:5 (Entscheidung Nutzer 2026-11-10) */
+  aspect-ratio: 4 / 5;
+  /* senkrecht scrollt die Seite, waagerecht wischt useSwipeCarousel; Doppeltipp = Hecht, nicht Zoomen */
+  touch-action: pan-y pinch-zoom;
   user-select: none;
   -webkit-user-select: none;
   overflow-x: auto;
+  /* nie senkrecht im Rahmen scrollen (Video Nutzer 2026-11-10: Foto rutschte im Rahmen mit) */
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
 }
@@ -161,12 +172,15 @@
   display: none;
 }
 .slide {
+  position: relative;
   flex: 0 0 100%;
+  height: 100%;
   scroll-snap-align: center;
-  aspect-ratio: 4 / 5;
   background: var(--color-surface-2);
 }
 .slide img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;

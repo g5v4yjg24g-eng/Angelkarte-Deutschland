@@ -13,6 +13,7 @@ import { IconButton } from '../../design/components/Button';
 import { TabLinks } from '../../design/components/TabLinks';
 import { hasMore, initialOf, type FeedPost } from '../../domain/feed';
 import { useProviders } from '../../ports/providersContext';
+import { mergeHandlers, useSwipeCarousel } from '../../lib/useSwipeCarousel';
 import { FounderBadge } from '../badges/FounderBadge';
 import { storedUserId } from '../badges/badgeStore';
 import { Toast } from '../../design/components/Toast';
@@ -62,6 +63,7 @@ function FeedCard({
   const [index, setIndex] = useState(0);
   const [pulse, setPulse] = useState(0);
   const frameRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const likeIconRef = useRef<HTMLSpanElement>(null);
   const haptics = useHaptics();
@@ -78,12 +80,22 @@ function FeedCard({
     },
   });
   const total = post.photoUrls.length;
+  const swipe = useSwipeCarousel(listRef, total);
   return (
     <article className={styles.card} aria-label={t.postLabel(post.displayName, dateOf(post.createdAt))}>
       <header className={styles.head}>
-        <span className={styles.avatar} aria-hidden="true">
-          {avatarUrl ? <img src={avatarUrl} alt="" /> : initialOf(post.displayName)}
-        </span>
+        {/* Profilbild öffnet wie der Name das Profil (Wunsch Nutzer 2026-11-10); für Tastatur/Screenreader reicht
+            der Namens-Link, deshalb hier kein zweiter Halt */}
+        <Link
+          to={`/profil/nutzer/${post.username}`}
+          className={styles.avatarLink}
+          tabIndex={-1}
+          aria-hidden="true"
+        >
+          <span className={styles.avatar}>
+            {avatarUrl ? <img src={avatarUrl} alt="" /> : initialOf(post.displayName)}
+          </span>
+        </Link>
         <span className={styles.who}>
           <strong>
             <Link to={`/profil/nutzer/${post.username}`} className={styles.authorLink}>
@@ -110,7 +122,8 @@ function FeedCard({
       </header>
       <div className={styles.photoFrame} ref={frameRef}>
         <ul
-          {...pike.handlers}
+          ref={listRef}
+          {...mergeHandlers(pike.handlers, swipe)}
           className={styles.photos}
           aria-label={t.photos(post.displayName)}
           tabIndex={0}
