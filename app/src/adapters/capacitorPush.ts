@@ -4,7 +4,10 @@ import { Capacitor } from '@capacitor/core';
 import type { PushPermission } from '../domain/push';
 import type { PushProvider } from '../ports/push';
 
-const plugin = () => import('@capacitor/push-notifications').then((m) => m.PushNotifications);
+// Wichtig: Capacitor-Plugins sind Proxys, die auf jede Eigenschaft antworten – auch auf „then“. Gibt man sie direkt
+// aus einem Promise zurück, hält JavaScript sie für ein Promise und wartet ewig (so blieb die Erlaubnis-Abfrage hängen).
+// Darum immer in ein Objekt verpackt weiterreichen.
+const plugin = () => import('@capacitor/push-notifications').then((m) => ({ push: m.PushNotifications }));
 
 const mapPermission = (p: string): PushPermission =>
   p === 'granted' ? 'granted' : p === 'denied' ? 'denied' : 'prompt';
@@ -22,13 +25,13 @@ export function capacitorPush(): PushProvider {
   return {
     available: true,
     async permission() {
-      return mapPermission((await (await plugin()).checkPermissions()).receive);
+      return mapPermission((await (await plugin()).push.checkPermissions()).receive);
     },
     async requestPermission() {
-      return mapPermission((await (await plugin()).requestPermissions()).receive);
+      return mapPermission((await (await plugin()).push.requestPermissions()).receive);
     },
     async register() {
-      const push = await plugin();
+      const { push } = await plugin();
       return new Promise<string>((resolve, reject) => {
         let done = false;
         const handles = [
@@ -50,7 +53,7 @@ export function capacitorPush(): PushProvider {
     onTap(listener) {
       let handle: { remove: () => Promise<void> } | undefined;
       let stopped = false;
-      void plugin().then((push) =>
+      void plugin().then(({ push }) =>
         push
           .addListener('pushNotificationActionPerformed', (a) => listener(a.notification.data))
           .then((h) => {
