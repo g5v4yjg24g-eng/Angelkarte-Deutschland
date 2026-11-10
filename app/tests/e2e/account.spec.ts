@@ -88,7 +88,23 @@ async function fakeSupabase(
     { id: string; caption: string | null; visibility: string; photo_paths: string[] }
   >();
   let profile: { id: string; username: string; display_name: string } | null = null;
-  const user = { id: 'u-1', aud: 'authenticated', role: 'authenticated', email: 'max@example.de' };
+  const user = {
+    id: 'u-1',
+    aud: 'authenticated',
+    role: 'authenticated',
+    email: 'max@example.de',
+    user_metadata: { has_password: true } as Record<string, unknown>,
+  };
+  // Konten mit Passwort (Anmeldung seit 2026-11-10): E-Mail → Passwort, bestätigt?
+  const logins = new Map<string, { password: string; confirmed: boolean }>();
+  const session = () => ({
+    access_token: token,
+    token_type: 'bearer',
+    expires_in: 3600,
+    expires_at: exp,
+    refresh_token: 'r-1',
+    user,
+  });
   const exp = EXP;
   const token = TOKEN;
   const json = (route: Route, body: unknown, status = 200) =>
@@ -171,24 +187,43 @@ async function fakeSupabase(
       }
     }
     switch (key) {
-      case 'POST /auth/v1/otp':
+      case 'POST /auth/v1/signup': {
+        const b = req.postDataJSON() as { email: string; password: string; data?: Record<string, unknown> };
+        logins.set(b.email, { password: b.password, confirmed: false });
+        // Bestätigung nötig: nur der Nutzer, keine Anmeldung
+        return json(route, { ...user, email: b.email, identities: [{}], user_metadata: b.data ?? {} });
+      }
+      case 'POST /auth/v1/token': {
+        const b = req.postDataJSON() as { email?: string; password?: string };
+        const l = logins.get(b.email ?? '');
+        if (!l || l.password !== b.password)
+          return json(route, { code: 400, error_code: 'invalid_credentials', msg: 'Invalid login credentials' }, 400);
+        if (!l.confirmed)
+          return json(route, { code: 400, error_code: 'email_not_confirmed', msg: 'Email not confirmed' }, 400);
+        user.email = b.email ?? user.email;
+        return json(route, session());
+      }
+      case 'POST /auth/v1/resend':
+      case 'POST /auth/v1/recover':
         return json(route, {});
       case 'POST /auth/v1/verify': {
-        const body = req.postDataJSON() as { token: string };
+        const body = req.postDataJSON() as { token: string; email?: string; type?: string };
         if (body.token !== '123456')
           return json(
             route,
             { code: 403, error_code: 'otp_expired', msg: 'Token has expired or is invalid' },
             403,
           );
-        return json(route, {
-          access_token: token,
-          token_type: 'bearer',
-          expires_in: 3600,
-          expires_at: exp,
-          refresh_token: 'r-1',
-          user,
-        });
+        const l = logins.get(body.email ?? '');
+        if (l) l.confirmed = true;
+        if (body.email) user.email = body.email;
+        return json(route, session());
+      }
+      case 'PUT /auth/v1/user': {
+        const b = req.postDataJSON() as { password?: string; email?: string; data?: Record<string, unknown> };
+        if (b.password) logins.set(user.email, { password: b.password, confirmed: true });
+        if (b.data) user.user_metadata = { ...user.user_metadata, ...b.data };
+        return json(route, { ...user, ...(b.email ? { new_email: b.email } : {}) });
       }
       case 'GET /auth/v1/user':
         return json(route, user);
@@ -672,7 +707,9 @@ async function fakeSupabase(
   };
 }
 
-test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto löschen', async ({ page }) => {
+test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anzeigename ändern, abmelden, anmelden, Konto löschen', async ({
+  page,
+}) => {
   const errors = collectErrors(page);
   const calls = await fakeSupabase(page);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -682,23 +719,29 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   await page.getByRole('link', { name: /^Konto/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Konto' })).toBeVisible();
   expect(calls).toEqual([]); // ohne Anmeldung kein Kontakt zu Supabase
+  // Anmeldemaske: E-Mail und Passwort, „Passwort vergessen?“
+  await expect(page.getByLabel('Passwort', { exact: true })).toHaveAttribute('autocomplete', 'current-password');
+  await expect(page.getByRole('button', { name: 'Passwort vergessen?' })).toBeVisible();
 
+  await page.getByRole('radio', { name: 'Registrieren' }).check({ force: true });
   await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('Max@Example.de');
-  // Regeln der Community vor dem Code (Wunsch Nutzer 2026-11-03): Ablehnen verschickt nichts
-  await page.getByRole('button', { name: 'Code senden' }).click();
+  await page.getByLabel('Passwort', { exact: true }).fill(PASSWORD);
+  await expect(page.getByLabel('Passwort', { exact: true })).toHaveAttribute('autocomplete', 'new-password');
+  // Regeln der Community vor dem Registrieren (Wunsch Nutzer 2026-11-03): Ablehnen verschickt nichts
+  await page.getByRole('button', { name: 'Konto erstellen' }).click();
   const rules = page.getByRole('dialog', { name: 'Regeln der Community' });
   await expect(rules.getByText('Kein Spam und keine Werbung.')).toBeVisible();
   await rules.getByRole('button', { name: 'Ablehnen' }).click();
   await expect(page.getByText(/Es wurde keine E-Mail verschickt/)).toBeVisible();
   expect(calls).toEqual([]);
-  await page.getByRole('button', { name: 'Code senden' }).click();
+  await page.getByRole('button', { name: 'Konto erstellen' }).click();
   await rules.getByRole('button', { name: 'Akzeptieren' }).click();
-  await expect(page.getByText(/Code an max@example\.de geschickt/)).toBeVisible();
+  await expect(page.getByText(/E-Mail an max@example\.de geschickt/)).toBeVisible();
   await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('999999');
-  await page.getByRole('button', { name: 'Anmelden' }).click();
+  await page.getByRole('button', { name: 'Bestätigen' }).click();
   await expect(page.getByText(/Der Code ist falsch oder abgelaufen/)).toBeVisible();
   await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('123456');
-  await page.getByRole('button', { name: 'Anmelden' }).click();
+  await page.getByRole('button', { name: 'Bestätigen' }).click();
 
   await expect(page.getByRole('heading', { name: 'Profil anlegen' })).toBeVisible();
   await page.getByRole('textbox', { name: 'Nutzername' }).fill('hecht');
@@ -708,15 +751,19 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   await page.getByRole('textbox', { name: 'Anzeigename' }).fill('Max');
   await page.getByRole('button', { name: 'Profil speichern' }).click();
   await expect(page.getByText('@zander.max')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Sicherheit' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  expect(
-    await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa'])
-      .analyze()
-      .then((r) =>
-        r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
-      ),
-  ).toEqual([]);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    expect(
+      await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa'])
+        .analyze()
+        .then((r) =>
+          r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+        ),
+    ).toEqual([]);
+  }
 
   // Anmeldung bleibt nach dem Neuladen erhalten; Mehr zeigt „Angemeldet“
   await page.goto('/mehr');
@@ -729,7 +776,19 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
   await page.getByRole('button', { name: 'Speichern' }).click();
   await expect(page.getByText('Max M.')).toBeVisible();
 
+  // abmelden und mit Passwort wieder anmelden
+  await page.getByRole('button', { name: 'Abmelden', exact: true }).click();
+  await expect(page.getByText('Du bist abgemeldet.')).toBeVisible();
+  await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('max@example.de');
+  await page.getByLabel('Passwort', { exact: true }).fill('falsches Passwort');
+  await page.getByRole('button', { name: 'Anmelden', exact: true }).click();
+  await expect(page.getByText('E-Mail-Adresse oder Passwort stimmen nicht.')).toBeVisible();
+  await page.getByLabel('Passwort', { exact: true }).fill(PASSWORD);
+  await page.getByRole('button', { name: 'Anmelden', exact: true }).click();
+  await expect(page.getByText('@zander.max')).toBeVisible();
+
   await page.getByRole('textbox', { name: /deinen Nutzernamen „zander.max“ eingeben/ }).fill('zander.max');
+  await page.getByLabel('Zum Bestätigen dein Passwort eingeben').fill(PASSWORD);
   await page.getByRole('button', { name: 'Konto endgültig löschen' }).click();
   await expect(page.getByText('Dein Konto wurde gelöscht.')).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'E-Mail-Adresse' })).toBeVisible();
@@ -743,22 +802,35 @@ test('ACC-3: Konto anlegen mit E-Mail-Code, Profil, Anzeigename ändern, Konto l
     ),
   ).toBe(true);
   expect(await page.evaluate(() => localStorage.getItem('fangpunkt.auth'))).toBeNull();
-  // erwartet: die Antwort 403 auf den absichtlich falschen Code
-  expect(errors.filter((e) => !e.includes('status of 403'))).toEqual([]);
+  // erwartet: die Antworten 403/400 auf den falschen Code und das falsche Passwort
+  expect(errors.filter((e) => !/status of (403|400)/.test(e))).toEqual([]);
 });
 
-test('ACC-4: Übergangslösung – Anmelde-Link aus der Standard-Mail meldet an, abgelaufener Link wird erklärt', async ({
+test('ACC-4: Links aus den Mails – Bestätigung meldet an, Passwort-Link fragt das neue Passwort ab, abgelaufener Link wird erklärt', async ({
   page,
 }) => {
   const calls = await fakeSupabase(page);
   await page.goto(
-    `/#access_token=${TOKEN}&expires_at=${EXP}&expires_in=3600&refresh_token=r-1&token_type=bearer&type=magiclink`,
+    `/#access_token=${TOKEN}&expires_at=${EXP}&expires_in=3600&refresh_token=r-1&token_type=bearer&type=signup`,
   );
   await waitForApp(page);
   await expect(page).toHaveURL(/\/mehr\/konto#?$/);
+  await expect(page.getByText('E-Mail bestätigt – willkommen bei Fangpunkt!')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Profil anlegen' })).toBeVisible();
   expect(calls).toContain('GET /auth/v1/user');
   expect(await page.evaluate(() => location.hash)).toBe('');
+
+  // „Passwort vergessen?“ per Link
+  await page.evaluate(() => localStorage.removeItem('fangpunkt.auth'));
+  await page.goto(
+    `/#access_token=${TOKEN}&expires_at=${EXP}&expires_in=3600&refresh_token=r-1&token_type=bearer&type=recovery`,
+  );
+  await waitForApp(page);
+  await expect(page.getByRole('heading', { name: 'Neues Passwort festlegen' })).toBeVisible();
+  await page.getByLabel('Neues Passwort').fill('Barsch im Nebel 42');
+  await page.getByRole('button', { name: 'Passwort speichern' }).click();
+  await expect(page.getByRole('heading', { name: 'Profil anlegen' })).toBeVisible();
+  expect(calls).toContain('PUT /auth/v1/user');
 
   await page.evaluate(() => localStorage.removeItem('fangpunkt.auth'));
   await page.goto(
@@ -766,8 +838,57 @@ test('ACC-4: Übergangslösung – Anmelde-Link aus der Standard-Mail meldet an,
   );
   await waitForApp(page);
   await expect(page).toHaveURL(/\/mehr\/konto$/);
-  await expect(page.getByText(/Der Anmelde-Link ist abgelaufen/)).toBeVisible();
+  await expect(page.getByText(/Der Link ist abgelaufen/)).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'E-Mail-Adresse' })).toBeVisible();
+});
+
+test('ACC-6: Passwort vergessen per Code, danach anmelden; Sicherheit: Passwort ändern, E-Mail ändern, andere Geräte abmelden', async ({
+  page,
+}) => {
+  const calls = await fakeSupabase(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.getByRole('button', { name: 'Abmelden', exact: true }).click();
+
+  await page.getByRole('button', { name: 'Passwort vergessen?' }).click();
+  await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('max@example.de');
+  await page.getByRole('button', { name: 'Link senden' }).click();
+  await expect(page.getByText(/Falls es ein Konto mit max@example\.de gibt/)).toBeVisible();
+  expect(calls).toContain('POST /auth/v1/recover');
+  await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('123456');
+  await page.getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(page.getByRole('heading', { name: 'Neues Passwort festlegen' })).toBeVisible();
+  await page.getByLabel('Neues Passwort').fill('Barsch im Nebel 42');
+  await page.getByRole('button', { name: 'Passwort speichern' }).click();
+  await expect(page.getByText('@kevin')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Passwort ändern' }).click();
+  await page.getByLabel('Aktuelles Passwort').fill('Barsch im Nebel 42');
+  await page.getByLabel('Neues Passwort').fill(PASSWORD);
+  await page.getByRole('button', { name: 'Passwort speichern' }).click();
+  await expect(page.getByText(/Passwort gespeichert/)).toBeVisible();
+  // nach dem Ändern: andere Geräte abgemeldet
+  expect(calls.filter((c) => c === 'POST /auth/v1/logout').length).toBeGreaterThan(0);
+
+  await page.getByRole('button', { name: 'E-Mail-Adresse ändern' }).click();
+  await page.getByRole('textbox', { name: 'Neue E-Mail-Adresse' }).fill('neu@example.de');
+  await page.getByLabel('Aktuelles Passwort').fill(PASSWORD);
+  await page.getByRole('button', { name: 'E-Mail-Adresse ändern' }).click();
+  await expect(page.getByText(/an deine bisherige und an neu@example\.de/)).toBeVisible();
+
+  await page.getByRole('button', { name: 'Auf allen anderen Geräten abmelden' }).click();
+  await expect(page.getByText('Auf allen anderen Geräten abgemeldet.')).toBeVisible();
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    expect(
+      await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa'])
+        .analyze()
+        .then((r) =>
+          r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+        ),
+    ).toEqual([]);
+  }
 });
 
 test('ACC-5: Konto freigeschaltet – Mehr → Konto zeigt das Anmeldeformular, ohne vorher Supabase zu fragen', async ({
@@ -790,18 +911,27 @@ test('ACC-5: Konto freigeschaltet – Mehr → Konto zeigt das Anmeldeformular, 
   expect(calls).toEqual([]);
 });
 
-/** Anmelden und Profil anlegen (gemeinsam für die Abzeichen-Tests) */
-async function signInWithProfile(page: Page, username: string) {
+const PASSWORD = 'Zander am Abend 7';
+
+/** Registrieren mit Passwort und Code aus der Bestätigungsmail (Regeln einmal akzeptieren) */
+async function signUp(page: Page, email = 'max@example.de') {
   await page.goto('/mehr/konto');
   await waitForApp(page);
-  await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('max@example.de');
-  await page.getByRole('button', { name: 'Code senden' }).click();
+  await page.getByRole('radio', { name: 'Registrieren' }).check({ force: true });
+  await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill(email);
+  await page.getByLabel('Passwort', { exact: true }).fill(PASSWORD);
+  await page.getByRole('button', { name: 'Konto erstellen' }).click();
   await page
     .getByRole('dialog', { name: 'Regeln der Community' })
     .getByRole('button', { name: 'Akzeptieren' })
     .click();
   await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('123456');
-  await page.getByRole('button', { name: 'Anmelden' }).click();
+  await page.getByRole('button', { name: 'Bestätigen' }).click();
+}
+
+/** Registrieren und Profil anlegen (gemeinsam für viele Tests) */
+async function signInWithProfile(page: Page, username: string) {
+  await signUp(page);
   await page.getByRole('textbox', { name: 'Nutzername' }).fill(username);
   await expect(page.getByText('Frei.')).toBeVisible();
   await page.getByRole('textbox', { name: 'Anzeigename' }).fill('Kevin');
@@ -893,7 +1023,7 @@ test('BADGE-4: normales Konto ohne Abzeichen – auch ein manipulierter Speicher
 
   // abmelden: gemerkte Abzeichen werden vergessen
   await page.goto('/mehr/konto');
-  await page.getByRole('button', { name: 'Abmelden' }).click();
+  await page.getByRole('button', { name: 'Abmelden', exact: true }).click();
   await expect(page.getByText('Du bist abgemeldet.')).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('fangpunkt.badges'))).toBeNull();
 });
@@ -1793,16 +1923,7 @@ test('AVA-2: ohne Server-Profil bleibt das Profilbild auf dem Gerät – kein Fe
 }) => {
   const errors = collectErrors(page);
   const calls = await fakeSupabase(page);
-  await page.goto('/mehr/konto');
-  await waitForApp(page);
-  await page.getByRole('textbox', { name: 'E-Mail-Adresse' }).fill('max@example.de');
-  await page.getByRole('button', { name: 'Code senden' }).click();
-  await page
-    .getByRole('dialog', { name: 'Regeln der Community' })
-    .getByRole('button', { name: 'Akzeptieren' })
-    .click();
-  await page.getByRole('textbox', { name: 'Code aus der E-Mail' }).fill('123456');
-  await page.getByRole('button', { name: 'Anmelden' }).click();
+  await signUp(page);
   await expect(page.getByRole('textbox', { name: 'Nutzername' })).toBeVisible();
 
   await page.goto('/profil/bearbeiten');

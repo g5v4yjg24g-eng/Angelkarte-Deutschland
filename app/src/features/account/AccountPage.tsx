@@ -1,7 +1,8 @@
-// Mehr → Konto (Etappe 1, Entscheidung Nutzer 2026-10-25): freiwillig, Anmeldung per E-Mail-Code, Profil mit
-// Nutzername, Anzeigename ändern, abmelden, Konto löschen. Fangdaten bleiben auf dem Gerät.
+// Mehr → Konto (Etappe 1, Entscheidung Nutzer 2026-10-25): freiwillig, Profil mit Nutzername, Anzeigename ändern,
+// abmelden, Konto löschen. Fangdaten bleiben auf dem Gerät. Seit 2026-11-10 Anmeldung mit E-Mail und Passwort
+// (AuthForms.tsx) und Abschnitt „Sicherheit“ (SecuritySection.tsx).
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
@@ -11,26 +12,22 @@ import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
 import { clearBadges, refreshBadges, useMyBadges } from '../badges/badgeStore';
 import { clearSharedSpots } from '../spots/useSharedSpots';
-import { RulesConsent } from '../moderation/Rules';
 import { unregisterDevice } from '../push/pushDevice';
-import { acceptRules, rulesAccepted } from '../moderation/rulesConsent';
 import type { AccountProvider, AccountUser } from '../../ports/account';
 import {
   accountErrorKind,
   authLinkInHash,
   displayNameValid,
-  normalizeCode,
   normalizeDisplayName,
-  normalizeEmail,
   normalizeUsername,
-  resendIn,
   usernameIssue,
-  validCode,
-  validEmail,
   type AccountErrorKind,
   type Profile,
 } from '../../domain/account';
-import { useNow } from '../../lib/useNow';
+import { NewPasswordForm, SignedOut } from './AuthForms';
+import { SecuritySection } from './SecuritySection';
+import { PasswordField } from './PasswordField';
+import { clearRecovery, markRecovery, useRecovery } from './recoveryState';
 import pageStyles from '../../design/components/Page.module.css';
 import styles from './Account.module.css';
 
@@ -51,142 +48,6 @@ function useOnline() {
     };
   }, []);
   return online;
-}
-
-function SignIn({ account }: { account: AccountProvider }) {
-  const [email, setEmail] = useState('');
-  const [sentTo, setSentTo] = useState<string>();
-  const [sentAt, setSentAt] = useState<number>();
-  const [code, setCode] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string>();
-  const [fieldError, setFieldError] = useState<string>();
-  const now = useNow(1000);
-  const wait = resendIn(sentAt, now);
-  // Regeln der Community vor dem ersten Code (Wunsch Nutzer 2026-11-03): Ablehnen verschickt nichts
-  const [askRules, setAskRules] = useState<string>();
-  const [declined, setDeclined] = useState(false);
-
-  const send = async (to: string) => {
-    setBusy(true);
-    setError(undefined);
-    try {
-      await account.requestCode(to);
-      setSentTo(to);
-      setSentAt(Date.now());
-      setCode('');
-    } catch (e) {
-      setError(errorText(e));
-    } finally {
-      setBusy(false);
-    }
-  };
-  const submitEmail = (e: FormEvent) => {
-    e.preventDefault();
-    if (!validEmail(email)) return setFieldError(t.emailInvalid);
-    setFieldError(undefined);
-    setDeclined(false);
-    const to = normalizeEmail(email);
-    if (rulesAccepted()) void send(to);
-    else setAskRules(to);
-  };
-  const submitCode = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!sentTo) return;
-    if (!validCode(code)) return setFieldError(t.codeInvalid);
-    setFieldError(undefined);
-    setBusy(true);
-    setError(undefined);
-    try {
-      await account.verifyCode(sentTo, normalizeCode(code));
-    } catch (err) {
-      setError(errorText(err));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  if (!sentTo)
-    return (
-      <>
-        <form className={styles.form} onSubmit={submitEmail} noValidate>
-          <TextField
-            label={t.emailLabel}
-            hint={t.emailHint}
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            value={email}
-            error={fieldError}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {error && <Notice tone="error">{error}</Notice>}
-          {declined && <Notice>{de.moderation.declined}</Notice>}
-          <div>
-            <Button type="submit" disabled={busy}>
-              {busy ? t.working : t.sendCode}
-            </Button>
-          </div>
-          <p>
-            <Link to="/mehr/regeln">{de.moderation.rulesLink}</Link>
-          </p>
-        </form>
-        <RulesConsent
-          open={!!askRules}
-          onAccept={() => {
-            const to = askRules;
-            acceptRules();
-            setAskRules(undefined);
-            if (to) void send(to);
-          }}
-          onDecline={() => {
-            setAskRules(undefined);
-            setDeclined(true);
-          }}
-        />
-      </>
-    );
-
-  return (
-    <form className={styles.form} onSubmit={(e) => void submitCode(e)} noValidate>
-      <Notice>{t.codeSent(sentTo)}</Notice>
-      <TextField
-        label={t.codeLabel}
-        inputMode="numeric"
-        autoComplete="one-time-code"
-        maxLength={12}
-        value={code}
-        error={fieldError}
-        onChange={(e) => setCode(e.target.value)}
-        autoFocus
-      />
-      {error && <Notice tone="error">{error}</Notice>}
-      <div className={styles.actions}>
-        <Button type="submit" disabled={busy}>
-          {busy ? t.working : t.verify}
-        </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          disabled={busy || wait > 0}
-          onClick={() => void send(sentTo)}
-        >
-          {wait > 0 ? t.resendIn(wait) : t.resend}
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => {
-            setSentTo(undefined);
-            setError(undefined);
-            setFieldError(undefined);
-          }}
-        >
-          {t.otherEmail}
-        </Button>
-      </div>
-    </form>
-  );
 }
 
 function CreateProfile({
@@ -302,6 +163,8 @@ function ProfileView({
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(profile.displayName);
   const [confirm, setConfirm] = useState('');
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState<string>();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [status, setStatus] = useState<string>();
@@ -394,6 +257,8 @@ function ProfileView({
       {error && <Notice tone="error">{error}</Notice>}
       <Notice>{t.friendsSoon}</Notice>
 
+      <SecuritySection account={account} user={user} />
+
       <section className={styles.danger} aria-labelledby="acc-delete">
         <h2 id="acc-delete" className={styles.h2}>
           {t.deleteTitle}
@@ -407,12 +272,28 @@ function ProfileView({
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
         />
+        {user.hasPassword ? (
+          <PasswordField
+            label={t.deletePasswordLabel}
+            value={deletePassword}
+            onValue={setDeletePassword}
+            error={deleteError}
+          />
+        ) : (
+          <p className="muted">{t.security.needsPassword}</p>
+        )}
         <div>
           <Button
             variant="danger"
-            disabled={busy || normalizeUsername(confirm) !== profile.username}
+            disabled={
+              busy || normalizeUsername(confirm) !== profile.username || !user.hasPassword || !deletePassword
+            }
             onClick={() =>
               void run(async () => {
+                setDeleteError(undefined);
+                // vor dem endgültigen Löschen das Passwort erneut prüfen
+                if (!(await account.verifyPassword(deletePassword)))
+                  return setDeleteError(t.security.wrongCurrent);
                 onDeleted();
                 await account.deleteAccount();
               })
@@ -437,13 +318,15 @@ export function AccountPage() {
   // Anmelde-Link mit Fehler (z. B. abgelaufen): Hinweis zeigen und den #-Teil entfernen
   const { hash } = useLocation();
   const navigate = useNavigate();
-  const [linkError] = useState(() => {
-    const r = authLinkInHash(hash);
-    return r?.kind === 'error' ? r.reason : undefined;
-  });
+  const [link] = useState(() => authLinkInHash(hash));
+  const linkError = link?.kind === 'error' ? link.reason : undefined;
+  // Link aus „Passwort vergessen?“: nach der Anmeldung direkt das neue Passwort abfragen
+  const [linkConfirmed] = useState(() => link?.kind === 'session' && link.type === 'signup');
   useEffect(() => {
+    if (link?.kind === 'session' && link.type === 'recovery') markRecovery();
     if (linkError) navigate('/mehr/konto', { replace: true });
-  }, [linkError, navigate]);
+  }, [link, linkError, navigate]);
+  const recovering = useRecovery();
 
   useEffect(() => {
     if (!account.enabled) return;
@@ -498,6 +381,7 @@ export function AccountPage() {
       ) : (
         <div className={styles.stack}>
           {!online && <Notice tone="warning">{t.offline}</Notice>}
+          {linkConfirmed && user && <Notice tone="success">{t.linkConfirmed}</Notice>}
           {linkError && user === null && (
             <Notice tone="error">{linkError === 'expired' ? t.linkExpired : t.errors.unknown}</Notice>
           )}
@@ -510,8 +394,15 @@ export function AccountPage() {
                   {deleted ? t.deleted : t.signedOut}
                 </p>
               )}
-              <SignIn account={account} />
+              <SignedOut account={account} />
             </>
+          ) : recovering ? (
+            <NewPasswordForm
+              account={account}
+              email={user.email}
+              title={t.setPasswordTitle}
+              onDone={() => clearRecovery()}
+            />
           ) : error ? (
             <Notice tone="error">{error}</Notice>
           ) : profile === undefined ? (

@@ -4,6 +4,8 @@
 import { USERNAME_RE } from './account';
 
 export const PROFILE_LINK_BASE = 'https://fangpunkt.com/profil/';
+/** Öffentliche Adresse der Web-App (GitHub Pages) – Ziel der Links aus Bestätigungs- und Passwort-Mails */
+export const WEB_APP_URL = 'https://g5v4yjg24g-eng.github.io/Angelkarte-Deutschland/';
 const HOSTS = new Set(['fangpunkt.com', 'www.fangpunkt.com']);
 
 export function profileLink(username: string): string {

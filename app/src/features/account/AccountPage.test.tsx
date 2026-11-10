@@ -7,14 +7,29 @@ import { AccountError, type AccountProvider, type AccountUser } from '../../port
 import { ProvidersContext, type Providers } from '../../ports/providersContext';
 import { AccountPage } from './AccountPage';
 
-/** Anbieter im Speicher: ein Nutzer, Code 123456, belegter Name „hecht“ */
-function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] } {
+const PW = 'Zander am Abend 7';
+
+/** Anbieter im Speicher: Konten mit Passwort, Bestätigungs-/Passwort-Code 123456, belegter Name „hecht“ */
+type FakeAccount = AccountProvider & {
+  calls: string[];
+  seed: (email: string, password?: string | null) => void;
+  login: (email: string) => AccountUser;
+};
+function fakeAccount(badges: Badge[] = []): FakeAccount {
   let user: AccountUser | null = null;
   let profile: Profile | null = null;
+  // E-Mail → Passwort (null = Konto aus der Code-Zeit ohne Passwort), bestätigt?
+  const accounts = new Map<string, { password: string | null; confirmed: boolean }>();
+  const signInAs = (email: string) => {
+    const a = accounts.get(email);
+    user = { id: 'u1', email, hasPassword: !!a?.password };
+    emit();
+    return user;
+  };
   const listeners = new Set<(u: AccountUser | null) => void>();
   const emit = () => listeners.forEach((l) => l(user));
   const calls: string[] = [];
-  return {
+  const fake: AccountProvider & { calls: string[] } = {
     calls,
     enabled: true,
     currentUser: () => Promise.resolve(user),
@@ -22,15 +37,56 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
       listeners.add(l);
       return () => listeners.delete(l);
     },
-    requestCode: (email) => {
-      calls.push(`code:${email}`);
+    signIn: (email, password) => {
+      const a = accounts.get(email);
+      if (!a || a.password !== password)
+        return Promise.reject(new AccountError('Invalid login credentials', 400, 'invalid_credentials'));
+      if (!a.confirmed) return Promise.reject(new AccountError('Email not confirmed', 400, 'email_not_confirmed'));
+      return Promise.resolve(signInAs(email));
+    },
+    signUp: (email, password) => {
+      calls.push(`signup:${email}`);
+      accounts.set(email, { password, confirmed: false });
       return Promise.resolve();
     },
-    verifyCode: (email, code) => {
-      if (code !== '123456') return Promise.reject(new AccountError('Token has expired or is invalid', 403));
-      user = { id: 'u1', email };
-      emit();
-      return Promise.resolve(user);
+    confirmSignUp: (email, code) => {
+      const a = accounts.get(email);
+      if (code !== '123456' || !a) return Promise.reject(new AccountError('Token has expired or is invalid', 403));
+      a.confirmed = true;
+      return Promise.resolve(signInAs(email));
+    },
+    resendConfirmation: (email) => {
+      calls.push(`resend:${email}`);
+      return Promise.resolve();
+    },
+    requestPasswordReset: (email) => {
+      calls.push(`reset:${email}`);
+      return Promise.resolve();
+    },
+    confirmPasswordReset: (email, code) => {
+      if (code !== '123456' || !accounts.has(email))
+        return Promise.reject(new AccountError('Token has expired or is invalid', 403));
+      return Promise.resolve(signInAs(email));
+    },
+    setPassword: (password) => {
+      calls.push('setPassword');
+      if (!user) return Promise.reject(new AccountError('not signed in', 401));
+      accounts.set(user.email, { password, confirmed: true });
+      signInAs(user.email);
+      return Promise.resolve();
+    },
+    verifyPassword: (password) => Promise.resolve(!!user && accounts.get(user.email)?.password === password),
+    changeEmail: (email) => {
+      calls.push(`changeEmail:${email}`);
+      if (user) {
+        user = { ...user, newEmail: email };
+        emit();
+      }
+      return Promise.resolve();
+    },
+    signOutOthers: () => {
+      calls.push('signOutOthers');
+      return Promise.resolve();
     },
     signOut: () => {
       user = null;
@@ -92,6 +148,7 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
     modDeleteContent: () => Promise.resolve(),
     modWarn: () => Promise.resolve(),
     modResolve: () => Promise.resolve(),
+    modPasswordNotice: () => Promise.resolve({ pending: 0, sent: 0, failed: 0 }),
     modBan: () => Promise.resolve(),
     modUnban: () => Promise.resolve(),
     publishAvatar: () => Promise.resolve(),
@@ -124,6 +181,13 @@ function fakeAccount(badges: Badge[] = []): AccountProvider & { calls: string[] 
       return Promise.resolve();
     },
   };
+  return Object.assign(fake, {
+    /** Konto direkt anlegen (bestätigt); `password: null` = Konto aus der Code-Zeit */
+    seed: (email: string, password: string | null = PW) => {
+      accounts.set(email, { password, confirmed: true });
+    },
+    login: (email: string) => signInAs(email),
+  });
 }
 
 // jsdom kennt <dialog>.showModal nur eingeschränkt (Regeln-Fenster): minimal nachbilden
@@ -145,34 +209,40 @@ const renderWith = (account: AccountProvider) =>
   );
 
 describe('Mehr → Konto (ACC-2)', () => {
-  it('anmelden mit Code, Profil anlegen, Anzeigename ändern, abmelden', async () => {
+  it('registrieren mit Passwort, Bestätigungscode, Profil anlegen, Anzeigename ändern, abmelden, wieder anmelden', async () => {
     const acc = fakeAccount();
     renderWith(acc);
-    const email = await screen.findByRole('textbox', { name: 'E-Mail-Adresse' });
+    fireEvent.click(await screen.findByRole('radio', { name: 'Registrieren' }));
+    const email = screen.getByRole('textbox', { name: 'E-Mail-Adresse' });
     fireEvent.change(email, { target: { value: 'kein-mail' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Code senden' }));
+    fireEvent.change(screen.getByLabelText('Passwort'), { target: { value: 'kurz' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Konto erstellen' }));
     expect(screen.getByText('Bitte eine gültige E-Mail-Adresse eingeben.')).toBeInTheDocument();
+    expect(screen.getByText('Mindestens 10 Zeichen.')).toBeInTheDocument();
     fireEvent.change(email, { target: { value: ' Max@Example.de ' } });
+    fireEvent.change(screen.getByLabelText('Passwort'), { target: { value: 'passwort123' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Konto erstellen' }));
+    expect(screen.getByText(/Zu leicht zu erraten/)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Passwort'), { target: { value: PW } });
+    expect(screen.getByText(/Stärke: (Gut|Stark)/)).toBeInTheDocument();
     // Regeln der Community: Ablehnen verschickt nichts (Wunsch Nutzer 2026-11-03)
     localStorage.removeItem('fangpunkt.rulesAccepted');
-    fireEvent.click(screen.getByRole('button', { name: 'Code senden' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Konto erstellen' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Ablehnen' }));
     expect(await screen.findByText(/Es wurde keine E-Mail verschickt/)).toBeInTheDocument();
     expect(acc.calls).toEqual([]);
-    fireEvent.click(screen.getByRole('button', { name: 'Code senden' }));
-    expect(screen.getByText(/Kein Spam und keine Werbung/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Konto erstellen' }));
     fireEvent.click(screen.getByRole('button', { name: 'Akzeptieren' }));
-    expect(await screen.findByText(/Code an max@example\.de geschickt/)).toBeInTheDocument();
-    expect(localStorage.getItem('fangpunkt.rulesAccepted')).toBe('1');
-    expect(acc.calls).toEqual(['code:max@example.de']);
-    expect(screen.getByRole('button', { name: /Neuer Code in \d+ s möglich/ })).toBeDisabled();
+    expect(await screen.findByText(/E-Mail an max@example\.de geschickt/)).toBeInTheDocument();
+    expect(acc.calls).toEqual(['signup:max@example.de']);
+    expect(screen.getByRole('button', { name: /Erneut senden in \d+ s möglich/ })).toBeDisabled();
 
     const code = screen.getByRole('textbox', { name: 'Code aus der E-Mail' });
     fireEvent.change(code, { target: { value: '111111' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Anmelden' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Bestätigen' }));
     expect(await screen.findByText(/Der Code ist falsch oder abgelaufen/)).toBeInTheDocument();
     fireEvent.change(code, { target: { value: '123 456' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Anmelden' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Bestätigen' }));
 
     expect(await screen.findByRole('heading', { name: 'Profil anlegen' })).toBeInTheDocument();
     const name = screen.getByRole('textbox', { name: 'Nutzername' });
@@ -184,8 +254,9 @@ describe('Mehr → Konto (ACC-2)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Profil speichern' }));
 
     expect(await screen.findByText('@zander.max')).toBeInTheDocument();
-    expect(screen.getByText('Max')).toBeInTheDocument();
     expect(screen.getByText('Angemeldet als max@example.de')).toBeInTheDocument();
+    // neues Konto hat ein Passwort: kein Hinweis
+    expect(screen.queryByText('Lege ein Passwort fest')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Anzeigename ändern' }));
     fireEvent.change(screen.getByRole('textbox', { name: 'Anzeigename' }), { target: { value: 'Max M.' } });
     fireEvent.click(screen.getByRole('button', { name: 'Speichern' }));
@@ -193,12 +264,99 @@ describe('Mehr → Konto (ACC-2)', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Abmelden' }));
     expect(await screen.findByText('Du bist abgemeldet.')).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'E-Mail-Adresse' })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox', { name: 'E-Mail-Adresse' }), {
+      target: { value: 'max@example.de' },
+    });
+    fireEvent.change(screen.getByLabelText('Passwort'), { target: { value: 'falsch-falsch' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Anmelden' }));
+    expect(await screen.findByText('E-Mail-Adresse oder Passwort stimmen nicht.')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Passwort'), { target: { value: PW } });
+    fireEvent.click(screen.getByRole('button', { name: 'Anmelden' }));
+    expect(await screen.findByText('@zander.max')).toBeInTheDocument();
   });
 
-  it('Konto löschen nur nach Eingabe des Nutzernamens', async () => {
+  it('Passwort vergessen: Code aus der Mail, dann neues Passwort; Konto aus der Code-Zeit genauso', async () => {
     const acc = fakeAccount();
-    await acc.verifyCode('max@example.de', '123456');
+    acc.seed('alt@example.de', null);
+    await acc.createProfile('alt', 'Alt');
+    await acc.signOut();
+    renderWith(acc);
+    expect(await screen.findByText(/bisher mit einem Code angemeldet/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Passwort vergessen?' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'E-Mail-Adresse' }), {
+      target: { value: 'alt@example.de' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Link senden' }));
+    expect(await screen.findByText(/Falls es ein Konto mit alt@example\.de gibt/)).toBeInTheDocument();
+    expect(acc.calls).toEqual(['reset:alt@example.de']);
+    fireEvent.change(screen.getByRole('textbox', { name: 'Code aus der E-Mail' }), { target: { value: '123456' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Bestätigen' }));
+    expect(await screen.findByRole('heading', { name: 'Neues Passwort festlegen' })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Neues Passwort'), { target: { value: PW } });
+    fireEvent.click(screen.getByRole('button', { name: 'Passwort speichern' }));
+    expect(await screen.findByText('@alt')).toBeInTheDocument();
+    expect(acc.calls).toContain('setPassword');
+    expect(sessionStorage.getItem('fangpunkt.passwordRecovery')).toBeNull();
+  });
+
+  it('noch angemeldetes Konto ohne Passwort: Hinweis, Passwort festlegen; danach ändern nur mit dem aktuellen', async () => {
+    const acc = fakeAccount();
+    acc.seed('alt@example.de', null);
+    acc.login('alt@example.de');
+    await acc.createProfile('alt', 'Alt');
+    renderWith(acc);
+    expect(await screen.findByText('Lege ein Passwort fest')).toBeInTheDocument();
+    // E-Mail ändern und Löschen brauchen erst ein Passwort
+    expect(screen.getByRole('button', { name: 'Konto endgültig löschen' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Passwort festlegen' }));
+    fireEvent.change(screen.getByLabelText('Neues Passwort'), { target: { value: PW } });
+    fireEvent.click(screen.getByRole('button', { name: 'Passwort speichern' }));
+    expect(await screen.findByText(/Passwort gespeichert/)).toBeInTheDocument();
+    expect(screen.queryByText('Lege ein Passwort fest')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Passwort ändern' }));
+    fireEvent.change(screen.getByLabelText('Aktuelles Passwort'), { target: { value: 'falsch-falsch' } });
+    fireEvent.change(screen.getByLabelText('Neues Passwort'), { target: { value: 'Barsch im Nebel 42' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Passwort speichern' }));
+    expect(await screen.findByText('Das aktuelle Passwort stimmt nicht.')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Aktuelles Passwort'), { target: { value: PW } });
+    fireEvent.click(screen.getByRole('button', { name: 'Passwort speichern' }));
+    expect(await screen.findByText(/Passwort gespeichert/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Auf allen anderen Geräten abmelden' }));
+    expect(await screen.findByText('Auf allen anderen Geräten abgemeldet.')).toBeInTheDocument();
+  });
+
+  it('E-Mail-Adresse ändern nur mit Passwort, Bestätigung an beide Adressen', async () => {
+    const acc = fakeAccount();
+    acc.seed('max@example.de');
+    acc.login('max@example.de');
+    await acc.createProfile('max', 'Max');
+    renderWith(acc);
+    fireEvent.click(await screen.findByRole('button', { name: 'E-Mail-Adresse ändern' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'Neue E-Mail-Adresse' }), {
+      target: { value: 'max@example.de' },
+    });
+    fireEvent.change(screen.getByLabelText('Aktuelles Passwort'), { target: { value: PW } });
+    fireEvent.click(screen.getByRole('button', { name: 'E-Mail-Adresse ändern' }));
+    expect(screen.getByText('Das ist schon deine E-Mail-Adresse.')).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Neue E-Mail-Adresse' }), {
+      target: { value: 'Neu@Example.de' },
+    });
+    fireEvent.change(screen.getByLabelText('Aktuelles Passwort'), { target: { value: 'falsch-falsch' } });
+    fireEvent.click(screen.getByRole('button', { name: 'E-Mail-Adresse ändern' }));
+    expect(await screen.findByText('Das aktuelle Passwort stimmt nicht.')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Aktuelles Passwort'), { target: { value: PW } });
+    fireEvent.click(screen.getByRole('button', { name: 'E-Mail-Adresse ändern' }));
+    expect(await screen.findByText(/an deine bisherige und an neu@example\.de/)).toBeInTheDocument();
+    expect(screen.getByText('Änderung auf neu@example.de wartet auf Bestätigung.')).toBeInTheDocument();
+    expect(acc.calls).toContain('changeEmail:neu@example.de');
+  });
+
+  it('Konto löschen nur mit Nutzername und Passwort', async () => {
+    const acc = fakeAccount();
+    acc.seed('max@example.de');
+    acc.login('max@example.de');
     await acc.createProfile('zander', 'Max');
     renderWith(acc);
     const del = await screen.findByRole('button', { name: 'Konto endgültig löschen' });
@@ -206,7 +364,14 @@ describe('Mehr → Konto (ACC-2)', () => {
     fireEvent.change(screen.getByRole('textbox', { name: /deinen Nutzernamen „zander“ eingeben/ }), {
       target: { value: 'Zander' },
     });
-    expect(del).toBeEnabled();
+    expect(del).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Zum Bestätigen dein Passwort eingeben'), {
+      target: { value: 'falsch-falsch' },
+    });
+    fireEvent.click(del);
+    expect(await screen.findByText('Das aktuelle Passwort stimmt nicht.')).toBeInTheDocument();
+    expect(acc.calls).not.toContain('delete');
+    fireEvent.change(screen.getByLabelText('Zum Bestätigen dein Passwort eingeben'), { target: { value: PW } });
     fireEvent.click(del);
     expect(await screen.findByText('Dein Konto wurde gelöscht.')).toBeInTheDocument();
     expect(acc.calls).toContain('delete');
@@ -215,7 +380,8 @@ describe('Mehr → Konto (ACC-2)', () => {
   it('FOUNDER-Abzeichen nur für das Konto, dem der Server es gibt (BADGE-2)', async () => {
     localStorage.clear();
     const founder = fakeAccount(['founder']);
-    await founder.verifyCode('kevin@example.de', '123456');
+    founder.seed('kevin@example.de');
+    founder.login('kevin@example.de');
     await founder.createProfile('kevin', 'Kevin');
     const { unmount } = renderWith(founder);
     expect(await screen.findByRole('img', { name: /Abzeichen: Founder/ })).toBeInTheDocument();
@@ -228,7 +394,8 @@ describe('Mehr → Konto (ACC-2)', () => {
       JSON.stringify({ userId: 'u1', badges: ['founder'], checkedAt: 1 }),
     );
     const normal = fakeAccount([]);
-    await normal.verifyCode('max@example.de', '123456');
+    normal.seed('max@example.de');
+    normal.login('max@example.de');
     await normal.createProfile('max', 'Max');
     renderWith(normal);
     expect(await screen.findByText('@max')).toBeInTheDocument();
@@ -246,7 +413,8 @@ describe('Mehr → Konto (ACC-2)', () => {
 
   it('Fehler beim Laden des Profils wird angezeigt', async () => {
     const acc = fakeAccount();
-    await acc.verifyCode('max@example.de', '123456');
+    acc.seed('max@example.de');
+    acc.login('max@example.de');
     acc.getProfile = vi.fn(() => Promise.reject(new AccountError('Failed to fetch')));
     renderWith(acc);
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Keine Verbindung'));

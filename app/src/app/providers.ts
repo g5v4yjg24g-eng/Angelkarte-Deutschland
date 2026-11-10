@@ -5,6 +5,7 @@ import { brightSkyAlerts } from '../adapters/brightSky';
 import { pegelonline } from '../adapters/pegelonline';
 import { hygonNrw } from '../adapters/hygonNrw';
 import { goatCounter } from '../adapters/goatCounter';
+import { WEB_APP_URL } from '../domain/profileLink';
 import { supabaseAccount } from '../adapters/supabaseAccount';
 import { capacitorPush } from '../adapters/capacitorPush';
 import { capacitorHaptics } from '../adapters/capacitorHaptics';
@@ -27,8 +28,9 @@ export const providers: Providers = {
   account: supabaseAccount(
     import.meta.env.VITE_SUPABASE_URL ?? 'https://sgnyymciwnwjgvojptwu.supabase.co',
     import.meta.env.VITE_SUPABASE_KEY ?? 'sb_publishable_OqbYE0xAGayAkr478v3GhQ_43tZhk7j',
-    // Anmelde-Link führt auf die Startseite (= „Site URL“ im Supabase-Projekt); AuthRedirect leitet weiter
-    typeof location === 'undefined' ? undefined : `${location.origin}${import.meta.env.BASE_URL}`,
+    // Links aus den Mails führen auf die Startseite der Web-App; AuthRedirect leitet zur Kontoseite weiter. In der
+    // iPhone-App gibt es keine öffentliche Adresse: dort die Web-App (in der App selbst gilt der Code aus der Mail).
+    authRedirect(),
   ),
   // Push-Mitteilungen nur in der iPhone-App (Capacitor); im Browser aus
   push: capacitorPush(),
@@ -40,3 +42,10 @@ export const providers: Providers = {
   links: capacitorAppLinks(),
   water: staticWaterData(import.meta.env.VITE_WATER_BASE_URL ?? `${import.meta.env.BASE_URL}data/water/`),
 };
+
+function authRedirect(): string | undefined {
+  if (typeof location === 'undefined') return undefined;
+  if (location.protocol === 'http:' || location.protocol === 'https:')
+    return `${location.origin}${import.meta.env.BASE_URL}`;
+  return WEB_APP_URL;
+}

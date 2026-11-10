@@ -22,6 +22,10 @@ import type {
 export interface AccountUser {
   id: string;
   email: string;
+  /** Passwort schon festgelegt? Konten aus der Zeit der Code-Anmeldung haben noch keins (Hinweis in der App) */
+  hasPassword?: boolean;
+  /** Angefragte neue E-Mail-Adresse, solange sie noch nicht an beiden Adressen bestätigt ist */
+  newEmail?: string;
 }
 
 /** Beitrag zum Teilen (Etappe 2): Fotos so, wie sie auf dem Gerät liegen (EXIF schon entfernt) */
@@ -57,8 +61,25 @@ export interface AccountProvider {
   /** gespeicherte Anmeldung lesen (ohne Netz, wenn keine vorhanden) */
   currentUser(): Promise<AccountUser | null>;
   onChange(listener: (user: AccountUser | null) => void): () => void;
-  requestCode(email: string): Promise<void>;
-  verifyCode(email: string, code: string): Promise<AccountUser>;
+  /** Anmelden mit E-Mail und Passwort (seit 2026-11-10 der einzige Weg) */
+  signIn(email: string, password: string): Promise<AccountUser>;
+  /** Registrieren: Bestätigungsmail mit Link und Code (10 min); erst danach ist das Konto aktiv */
+  signUp(email: string, password: string): Promise<void>;
+  /** Registrierung mit dem Code aus der Mail bestätigen (meldet an) */
+  confirmSignUp(email: string, code: string): Promise<AccountUser>;
+  resendConfirmation(email: string): Promise<void>;
+  /** „Passwort vergessen?“: Mail mit Link und Code (10 min) – meldet nie, ob es die Adresse gibt */
+  requestPasswordReset(email: string): Promise<void>;
+  /** Code aus der Passwort-Mail eingeben (meldet für das Neusetzen an) */
+  confirmPasswordReset(email: string, code: string): Promise<AccountUser>;
+  /** Passwort festlegen oder ändern (angemeldet); andere Geräte werden danach abgemeldet */
+  setPassword(password: string): Promise<void>;
+  /** Passwort erneut prüfen (vor heiklen Schritten) – false bei falschem Passwort */
+  verifyPassword(password: string): Promise<boolean>;
+  /** E-Mail-Adresse ändern: Bestätigung per Link an alte und neue Adresse */
+  changeEmail(newEmail: string): Promise<void>;
+  /** Auf allen anderen Geräten abmelden */
+  signOutOthers(): Promise<void>;
   signOut(): Promise<void>;
   getProfile(): Promise<Profile | null>;
   usernameAvailable(username: string): Promise<boolean>;
@@ -168,6 +189,11 @@ export interface AccountProvider {
   ): Promise<void>;
   modWarn(userId: string, note: string, reportId?: string): Promise<void>;
   modResolve(reportId: string, note?: string): Promise<void>;
+  /**
+   * Einmalige Hinweis-Mail „Anmeldung jetzt mit Passwort“ an Konten ohne Passwort (Edge Function password-notice,
+   * nur Moderatoren). `send: false` zählt nur.
+   */
+  modPasswordNotice(send: boolean): Promise<{ pending: number; sent: number; failed: number }>;
   modBan(userId: string, days: BanDuration, reason: string, reportId?: string): Promise<void>;
   modUnban(userId: string, note?: string): Promise<void>;
   /**

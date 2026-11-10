@@ -5,11 +5,13 @@
 	<!-- Push-Mitteilungen über Apple (APNs). Beim Export für den App Store setzt Xcode „production“ ein. -->
 	<key>aps-environment</key>
 	<string>development</string>
-	<!-- Geteilte Profil-Links (fangpunkt.com/profil/?u=…) öffnen die App direkt (Universal Links).
-	     Gegenstück: /.well-known/apple-app-site-association auf fangpunkt.com -->
+	<!-- Geteilte Profil-Links (fangpunkt.com/profil/?u=…) öffnen die App direkt (Universal Links); webcredentials:
+	     Passwörter im iPhone-Schlüsselbund speichern und ausfüllen (Face ID). Gegenstück für beides:
+	     /.well-known/apple-app-site-association auf fangpunkt.com -->
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:fangpunkt.com</string>
+		<string>webcredentials:fangpunkt.com</string>
 	</array>
 </dict>
 </plist>

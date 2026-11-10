@@ -27,8 +27,21 @@ import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUs
 
 type Row = { id: string; username: string; display_name: string };
 const toProfile = (r: Row): Profile => ({ id: r.id, username: r.username, displayName: r.display_name });
-const toUser = (u: { id: string; email?: string | undefined } | null | undefined): AccountUser | null =>
-  u ? { id: u.id, email: u.email ?? '' } : null;
+type AuthUser = {
+  id: string;
+  email?: string | undefined;
+  new_email?: string | undefined;
+  user_metadata?: Record<string, unknown> | undefined;
+};
+const toUser = (u: AuthUser | null | undefined): AccountUser | null =>
+  u
+    ? {
+        id: u.id,
+        email: u.email ?? '',
+        hasPassword: u.user_metadata?.['has_password'] === true,
+        ...(u.new_email ? { newEmail: u.new_email } : {}),
+      }
+    : null;
 const fail = (
   e: { message: string; status?: number | undefined; code?: string | undefined } | null | undefined,
 ): never => {
@@ -118,21 +131,74 @@ export function supabaseAccount(
         unsub();
       };
     },
-    async requestCode(email) {
-      const { error } = await (
-        await get()
-      ).auth.signInWithOtp({
-        email,
-        options: { shouldCreateUser: true, ...(redirectTo ? { emailRedirectTo: redirectTo } : {}) },
-      });
-      if (error) fail(error);
-    },
-    async verifyCode(email, code) {
-      const { data, error } = await (await get()).auth.verifyOtp({ email, token: code, type: 'email' });
+    async signIn(email, password) {
+      const { data, error } = await (await get()).auth.signInWithPassword({ email, password });
       if (error) fail(error);
       const user = toUser(data.user);
       if (!user) throw new AccountError('Anmeldung fehlgeschlagen');
       return user;
+    },
+    async signUp(email, password) {
+      const { error } = await (await get()).auth.signUp({
+        email,
+        password,
+        options: { data: { has_password: true }, ...(redirectTo ? { emailRedirectTo: redirectTo } : {}) },
+      });
+      if (error) fail(error);
+    },
+    async confirmSignUp(email, code) {
+      const { data, error } = await (await get()).auth.verifyOtp({ email, token: code, type: 'signup' });
+      if (error) fail(error);
+      const user = toUser(data.user);
+      if (!user) throw new AccountError('Bestätigung fehlgeschlagen');
+      return user;
+    },
+    async resendConfirmation(email) {
+      const { error } = await (await get()).auth.resend({
+        type: 'signup',
+        email,
+        ...(redirectTo ? { options: { emailRedirectTo: redirectTo } } : {}),
+      });
+      if (error) fail(error);
+    },
+    async requestPasswordReset(email) {
+      const { error } = await (await get()).auth.resetPasswordForEmail(email, redirectTo ? { redirectTo } : {});
+      if (error) fail(error);
+    },
+    async confirmPasswordReset(email, code) {
+      const { data, error } = await (await get()).auth.verifyOtp({ email, token: code, type: 'recovery' });
+      if (error) fail(error);
+      const user = toUser(data.user);
+      if (!user) throw new AccountError('Bestätigung fehlgeschlagen');
+      return user;
+    },
+    async setPassword(password) {
+      const c = await get();
+      const { error } = await c.auth.updateUser({ password, data: { has_password: true } });
+      if (error) fail(error);
+      // wer das Passwort kennt oder ändert, soll die einzige laufende Anmeldung haben
+      await c.auth.signOut({ scope: 'others' }).catch(() => undefined);
+    },
+    async verifyPassword(password) {
+      const c = await get();
+      const { data } = await c.auth.getSession();
+      const email = data.session?.user.email;
+      if (!email) throw new AccountError('not signed in', 401);
+      const { error } = await c.auth.signInWithPassword({ email, password });
+      if (!error) return true;
+      if (error.code === 'invalid_credentials' || /invalid login credentials/i.test(error.message)) return false;
+      return fail(error);
+    },
+    async changeEmail(newEmail) {
+      const { error } = await (await get()).auth.updateUser(
+        { email: newEmail },
+        redirectTo ? { emailRedirectTo: redirectTo } : {},
+      );
+      if (error) fail(error);
+    },
+    async signOutOthers() {
+      const { error } = await (await get()).auth.signOut({ scope: 'others' });
+      if (error) fail(error);
     },
     async signOut() {
       const { error } = await (await get()).auth.signOut();
@@ -550,6 +616,13 @@ export function supabaseAccount(
     async modWarn(userId, note, reportId) {
       const { error } = await (await get()).rpc('mod_warn', { who: userId, report: reportId ?? null, note });
       if (error) fail(error);
+    },
+    async modPasswordNotice(send) {
+      const { data, error } = await (await get()).functions.invoke('password-notice', { body: { send } });
+      if (error) fail(error);
+      const r = (data ?? {}) as { pending?: unknown; sent?: unknown; failed?: unknown };
+      const num = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
+      return { pending: num(r.pending), sent: num(r.sent), failed: num(r.failed) };
     },
     async modResolve(reportId, note) {
       const { error } = await (await get()).rpc('mod_resolve', { report: reportId, note: note ?? null });

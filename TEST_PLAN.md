@@ -164,8 +164,8 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 ### 3.6b Konto
 | ID | Testfall | Erwartung |
 |---|---|---|
-| ACC-1 | Regeln | E-Mail, Code (6–10 Ziffern), Nutzername wie in der Datenbank-Regel, Anzeigename, Fehlerarten, Wartezeit (✅ `domain/account.test.ts`) |
-| ACC-2 | Kontoseite | Code anfordern, falscher/richtiger Code, Profil mit Verfügbarkeitsprüfung, Anzeigename ändern, abmelden, löschen nur nach Eingabe des Nutzernamens, nicht eingerichtet, Ladefehler (✅ `AccountPage.test.tsx`) |
+| ACC-1 | Regeln | E-Mail, Code (6–10 Ziffern), Passwort (≥ 10, leicht zu erraten, nicht die E-Mail) und Stärke, Nutzername wie in der Datenbank-Regel, Anzeigename, Fehlerarten (falsches Passwort, nicht bestätigt, schwach, gleich, E-Mail vergeben), Wartezeit, Links aus den Mails (✅ `domain/account.test.ts`) |
+| ACC-2 | Kontoseite | Registrieren mit Passwort + Bestätigungscode, Regeln vorher, falscher/richtiger Code, Profil, abmelden, mit falschem/richtigem Passwort anmelden; „Passwort vergessen?“ mit Code → neues Passwort (auch Konto aus der Code-Zeit); Hinweis „Passwort festlegen“, Passwort ändern nur mit dem aktuellen, andere Geräte abmelden; E-Mail ändern nur mit Passwort; löschen nur mit Nutzername + Passwort; nicht eingerichtet, Ladefehler (✅ `AccountPage.test.tsx`) |
 | PRF-1 | Profil-Datendienst | Profil anlegen/ändern, Profilbild ersetzen/entfernen, Beitrag mit neuen Fotos und Kopien von Fangfotos, Text ändern, löschen/wiederherstellen, ohne Foto kein Beitrag, Teil der Sicherung (✅ `profileService.test.ts`); Migration v4 → v5 (✅ `db.test.ts`) |
 | PRF-2 | Leiste | Karte · Fangbuch · Profil · Wetter · Mehr; Statistik als Reiter im Fangbuch, Fangbuch dabei aktiv (✅ `AppShell.test.tsx`, `app.spec.ts`) |
 | PRF-4 | Profilseite | einrichten mit Bild, Name, Text; Beitrag mit 2 Fotos; Raster; Beitrag ansehen, Text ändern, löschen + Rückgängig; bleibt nach Neustart; „Profil teilen“ → Demnächst; 390 px, axe hell/dunkel (✅ `profile.spec.ts`) |
@@ -197,8 +197,9 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | PRF-8 | Profilbild zuschneiden | Rechnung (Begrenzung, Zoom um den Fingerpunkt, Ausschnitt unabhängig von der Rahmengröße) (✅ `avatarCrop.test.ts`); Abbrechen behält das alte Bild, Verschieben/Regler/Tastatur/Zurücksetzen, gespeichert quadratisch mit gewähltem Ausschnitt, axe und 390 px (✅ `profile.spec.ts`); Zwei-Finger-Zoom nur auf dem Gerät [O] |
 | PRF-6 | Gefällt mir und Kommentare | Daumen an/aus, Doppeltipp setzt nur, Kommentar im Fenster von unten senden (leer gesperrt, Emoji einfügen, Enter), löschen + Rückgängig, Escape schließt, bleibt nach Neustart, Sichtbarkeit „Alle“, 390 px, axe hell/dunkel (✅ `profile.spec.ts`); Dienst inkl. Sicherung (✅ `profileService.test.ts`), Migration v5 → v6 (✅ `db.test.ts`) |
 | PRF-5 | Beitrag aus Fang | „Im Profil posten“ im Fang, Fangfoto vorausgewählt, Beitrag verlinkt den Fang (✅ `profile.spec.ts`) |
-| ACC-4 | Anmelde-Link (Übergangslösung) | Link mit Anmeldung im #-Teil → Kontoseite, angemeldet; abgelaufener Link → Hinweis und Formular (✅ `account.spec.ts`, `authLinkInHash` in `account.test.ts`) |
-| ACC-3 | Mehr → Konto mit nachgebildetem Supabase | ganzer Ablauf, Anmeldung bleibt nach Neuladen, nur Auth/Profil-Aufrufe, nach Löschen keine Sitzung, 390 px, axe (✅ `account.spec.ts`); ohne Anmeldung keine Anfrage an Supabase (✅ `privacy.spec.ts`) |
+| ACC-4 | Links aus den Mails | Bestätigungslink → angemeldet mit „E-Mail bestätigt“; Passwort-Link → „Neues Passwort festlegen“; abgelaufener Link → Hinweis und Formular (✅ `account.spec.ts`, `authLinkInHash` in `account.test.ts`) |
+| ACC-3 | Mehr → Konto mit nachgebildetem Supabase | Anmeldemaske (autocomplete für den Schlüsselbund), registrieren mit Passwort + Code, Profil, Anmeldung bleibt nach Neuladen, abmelden, falsches/richtiges Passwort, löschen mit Passwort, nur Auth/Profil-Aufrufe, nach Löschen keine Sitzung, 390 px, axe hell/dunkel (✅ `account.spec.ts`); ohne Anmeldung keine Anfrage an Supabase (✅ `privacy.spec.ts`) |
+| ACC-6 | Passwort vergessen und Sicherheit | „Passwort vergessen?“ per Code → neues Passwort → angemeldet; Passwort ändern (andere Geräte abgemeldet), E-Mail ändern, „Auf allen anderen Geräten abmelden“, axe hell/dunkel (✅ `account.spec.ts`) |
 | ACC-5 | Konto freigeschaltet (2026-11-03) | Mehr → Konto zeigt Formular statt „Demnächst“, ohne Eingabe keine Anfrage an Supabase, axe (✅ `account.spec.ts`) |
 | BADGE-1 | Abzeichen-Regeln | nur bekannte Abzeichen vom Server, gemerkter Stand nur für dieselbe Nutzer-ID, kaputter/manipulierter Speicher = keins (✅ `domain/badges.test.ts`) |
 | BADGE-2 | Kontoseite | FOUNDER nur beim Konto, dem der Server es gibt; anderes Konto auf demselben Gerät ohne (✅ `AccountPage.test.tsx`) |
@@ -222,7 +223,7 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | MOD-2 | Beitrag melden | „…“ im Feed → Melden, Grund Pflicht, Hinweis optional; Meldung an den Server, Beitrag sofort und nach Neuladen ausgeblendet; Fenster hell/dunkel ohne axe-Verstöße (✅ `account.spec.ts`) |
 | MOD-3 | Blockieren | Freund blockieren → Freundschaft endet, Liste „Blockiert“, Beiträge weg; Freigeben; 390 px, hell/dunkel (✅ `account.spec.ts`) |
 | MOD-4 | Spot melden | geteilten Spot melden → aus der Liste verschwunden (✅ `account.spec.ts`) |
-| MOD-5 | Regeln vor dem Code | „Code senden“ öffnet die Regeln; Ablehnen verschickt keine Mail, Akzeptieren schon (✅ `AccountPage.test.tsx`, ACC-3 in `account.spec.ts`) |
+| MOD-5 | Regeln vor dem Registrieren | „Konto erstellen“ öffnet die Regeln; Ablehnen verschickt keine Mail, Akzeptieren schon (✅ `AccountPage.test.tsx`, ACC-3 in `account.spec.ts`) |
 | REACT-1 | Reaktionen-Logik | Zahlen und Kommentare vom Server lesen (kaputte/leere fallen weg, älteste zuerst), Daumen sofort umschalten ohne negative Zahl, Fehler zuordnen (✅ `reactions.test.ts`) |
 | REACT-2 | Feed | Daumen hoch mit Zahl, Kommentar schreiben und eigenen löschen, fremden nicht löschbar, aber meldbar (danach ausgeblendet); Fenster hell/dunkel ohne axe-Verstöße (✅ `account.spec.ts`) |
 | REACT-3 | Eigener geteilter Beitrag | Gefällt mir und Kommentare gehen an den Server, nichts landet lokal (✅ `account.spec.ts`) |
