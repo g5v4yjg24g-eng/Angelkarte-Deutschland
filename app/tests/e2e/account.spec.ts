@@ -63,6 +63,23 @@ async function fakeSupabase(
     /** Verwaltung: gesperrte Nutzernamen, Statistik-Antworten je Zeitraum */
     names: [] as { pattern: string; kind: string; note: string | null }[],
     statsCalls: [] as number[],
+    /** Community-Regeln: Fassungen (neueste zuletzt) und Zustimmungen dieses Kontos */
+    rules: [
+      {
+        version: 1,
+        intro: 'Fangpunkt lebt davon, dass sich alle wohlfühlen. Mit einem Konto hältst du dich an diese Regeln:',
+        items: [
+          'Keine beleidigenden, bedrohenden oder diskriminierenden Inhalte.',
+          'Keine Nacktheit, keine Gewalt, keine Tierquälerei und keine anstößigen Bilder.',
+          'Kein Spam und keine Werbung.',
+          'Nur eigene Fotos und keine Daten anderer ohne deren Zustimmung.',
+          'Verstöße können gemeldet werden. Wir prüfen jede Meldung innerhalb von 24 Stunden und löschen unzulässige Inhalte; wer gegen die Regeln verstößt, wird ausgeschlossen.',
+        ],
+        summary: null as string | null,
+        published_at: '2026-11-03T00:00:00Z',
+      },
+    ],
+    consents: [] as number[],
   };
   const comments: {
     id: string;
@@ -710,6 +727,36 @@ async function fakeSupabase(
             { week: '2026-11-09', reports: 1, new_users: 1 },
           ],
         });
+      }
+      // Community-Regeln mit Versionen
+      case 'POST /rest/v1/rpc/current_rules':
+        return json(route, [mod.rules[mod.rules.length - 1]]);
+      case 'POST /rest/v1/rpc/my_rules_consent':
+        return json(route, Math.max(0, ...mod.consents));
+      case 'POST /rest/v1/rpc/accept_rules': {
+        const { v } = req.postDataJSON() as { v: number };
+        if (!mod.rules.some((r) => r.version === v)) return json(route, { code: 'P0001', message: 'not_found' }, 400);
+        if (!mod.consents.includes(v)) mod.consents.push(v);
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/mod_rules_history':
+        if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
+        return json(
+          route,
+          [...mod.rules].reverse().map((r) => ({
+            ...r,
+            publisher_name: r.version > 1 ? 'Kevin' : null,
+            consents: mod.consents.filter((c) => c === r.version).length,
+            accounts: 4,
+          })),
+        );
+      case 'POST /rest/v1/rpc/mod_publish_rules': {
+        if (!mod.founder) return json(route, { code: 'P0001', message: 'founder_only' }, 400);
+        const b = req.postDataJSON() as { intro: string; items: string[]; summary: string };
+        const version = mod.rules.length + 1;
+        mod.rules.push({ version, intro: b.intro, items: b.items, summary: b.summary, published_at: '2026-11-10T13:00:00Z' });
+        mod.log.push({ action: 'publish_rules', who: null, detail: `Fassung ${version}: ${b.summary}` });
+        return json(route, version);
       }
       case 'POST /rest/v1/rpc/mod_can_search_email':
         return json(route, mod.moderator && mod.founder);
@@ -2560,6 +2607,73 @@ test('MODA-6: Verwaltung – Nutzernamen sperren und freigeben, Protokoll, Stati
   await expect(page.getByText('Deine Rolle: Founder')).toBeVisible();
   await expect(page.getByRole('listitem').filter({ hasText: 'Lena' })).toContainText('Moderator');
   await expect(page.getByText(/nur im SQL-Editor/)).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('MODA-7: Community-Regeln – neue Fassung veröffentlichen, angemeldete Nutzer stimmen beim nächsten Start neu zu', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  calls.mod.moderator = true;
+  calls.mod.founder = true;
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  // beim Registrieren zugestimmt → wird still auf dem Server nachgetragen, kein zweites Fenster
+  await expect.poll(() => calls.mod.consents).toEqual([1]);
+  await page.goto('/moderation/verwaltung');
+  await waitForApp(page);
+  await page.getByRole('link', { name: /Community-Regeln/ }).click();
+  await expect(page.getByText(/Aktuell: Fassung 1/)).toBeVisible();
+  await expect(page.getByText('1 von 4 Konten haben zugestimmt').first()).toBeVisible();
+  // unverändert lässt sich nichts veröffentlichen
+  await expect(page.getByRole('button', { name: 'Veröffentlichen' })).toBeDisabled();
+  await expect(page.getByText('Noch keine Änderung gegenüber der aktuellen Fassung.')).toBeVisible();
+  await page.getByRole('button', { name: 'Regel hinzufügen' }).click();
+  await page.getByRole('textbox', { name: 'Regel 6' }).fill('Respektiere Schonzeiten und Mindestmaße.');
+  await page.getByRole('button', { name: 'Regel 6 nach oben' }).click();
+  await expect(page.getByRole('textbox', { name: 'Regel 5' })).toHaveValue('Respektiere Schonzeiten und Mindestmaße.');
+  await expect(page.getByText('Bitte kurz schreiben, was sich ändert.')).toBeVisible();
+  await page.getByRole('textbox', { name: /Was ändert sich/ }).fill('Neue Regel zu Schonzeiten.');
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.getByRole('button', { name: 'Veröffentlichen' }).click();
+  const confirm = page.getByRole('dialog', { name: 'Neue Fassung veröffentlichen?' });
+  await expect(confirm).toContainText('Das wird Fassung 2.');
+  await confirm.getByRole('button', { name: 'Veröffentlichen' }).click();
+  await expect(page.getByText('Fassung 2 ist veröffentlicht.')).toBeVisible();
+  await expect(page.getByText(/Aktuell: Fassung 2/)).toBeVisible();
+  const history = page.getByRole('region', { name: 'Verlauf' });
+  await expect(history.getByText('Neue Regel zu Schonzeiten.')).toBeVisible();
+  await expect(history.getByText('Erste Fassung')).toBeVisible();
+  expect(calls.mod.rules[1]?.items[4]).toBe('Respektiere Schonzeiten und Mindestmaße.');
+
+  // nächster Start: Fenster mit der Änderung; „Später“ schließt nur, nach dem Neustart erneut, dann zustimmen
+  await page.goto('/mehr');
+  await waitForApp(page);
+  const update = page.getByRole('dialog', { name: 'Neue Regeln der Community' });
+  await expect(update).toContainText('Neue Regel zu Schonzeiten.');
+  await expect(update).toContainText('Respektiere Schonzeiten und Mindestmaße.');
+  await expect(update).toContainText('Fassung 2');
+  await update.getByRole('button', { name: 'Später' }).click();
+  await expect(update).toBeHidden();
+  expect(calls.mod.consents).toEqual([1]);
+  await page.reload();
+  await waitForApp(page);
+  await update.getByRole('button', { name: 'Akzeptieren' }).click();
+  await expect(update).toBeHidden();
+  await expect.poll(() => calls.mod.consents).toEqual([1, 2]);
+  await page.reload();
+  await waitForApp(page);
+  await expect(page.getByRole('heading', { level: 1, name: 'Mehr' })).toBeVisible();
+  await expect(update).toHaveCount(0);
+  // Seite „Regeln der Community“ zeigt die neue Fassung
+  await page.goto('/mehr/regeln');
+  await expect(page.getByText('Respektiere Schonzeiten und Mindestmaße.')).toBeVisible();
   expect(errors).toEqual([]);
 });
 

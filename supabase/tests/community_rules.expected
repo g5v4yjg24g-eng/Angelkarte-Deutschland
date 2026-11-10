@@ -1,0 +1,25 @@
+Ohne Konto: aktuelle Fassung|1:5:Fangpunkt
+Ohne Konto: zustimmen|FEHLER: permission denied for function accept_rules
+Ohne Konto: Tabelle Zustimmungen|FEHLER: permission denied for table rules_consents
+B: Zustimmung vorher|0
+B: stimmt zu|
+B: doppelt|
+B: unbekannte Fassung|FEHLER: not_found
+B: Zustimmung|1
+B: veröffentlicht|FEHLER: not_moderator
+B: Verlauf|FEHLER: not_moderator
+B: schreibt Regeln direkt|FEHLER: permission denied for table community_rules
+B: schreibt Zustimmung direkt|FEHLER: permission denied for table rules_consents
+D (Moderator): veröffentlicht|FEHLER: founder_only
+D: Verlauf|1:1/3
+A: ohne Änderungsgrund|FEHLER: no_reason
+A: leer|FEHLER: empty
+A: zu viele|FEHLER: too_long
+A: veröffentlicht|2
+Aktuell|2:Regel A|Regel B:Neue Einleitung:Regel B ergänzt
+Verlauf|1:-:1,2:Anna:0
+B: Zustimmung nach neuer Fassung|1
+B: stimmt neu zu|
+B: Zustimmung danach|2
+B: sieht nur eigene|2
+Protokoll|publish_rules:Fassung 2: Regel B ergänzt

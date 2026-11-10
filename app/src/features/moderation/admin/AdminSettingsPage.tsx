@@ -28,7 +28,12 @@ export function AdminSettingsPage() {
             title={t.messages}
             hint={t.messagesHint}
           />
-          <ListLink to="/mehr/regeln" icon={<ParagraphIcon />} title={t.rules} hint={t.rulesHint} />
+          <ListLink
+            to={`${ADMIN_BASE}/verwaltung/regeln`}
+            icon={<ParagraphIcon />}
+            title={t.rules}
+            hint={t.rulesHint}
+          />
           <ListLink
             to={`${ADMIN_BASE}/verwaltung/namen`}
             icon={<LockIcon />}

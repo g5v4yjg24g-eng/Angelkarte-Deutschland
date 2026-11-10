@@ -294,3 +294,15 @@
 .table thead th {
   font-weight: 600;
 }
+/* Community-Regeln bearbeiten */
+.ruleEditor {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-3);
+}
+.ruleEditor li {
+  display: grid;
+  gap: var(--space-1);
+}

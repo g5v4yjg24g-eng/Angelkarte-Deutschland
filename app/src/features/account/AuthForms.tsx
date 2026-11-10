@@ -8,7 +8,8 @@ import { Notice } from '../../design/components/Notice';
 import { TextField } from '../../design/components/Field';
 import { SegmentedControl } from '../../design/components/SegmentedControl';
 import { RulesConsent } from '../moderation/Rules';
-import { acceptRules, rulesAccepted } from '../moderation/rulesConsent';
+import { acceptRules, loadCurrentRules, rulesAccepted } from '../moderation/rulesConsent';
+import type { CommunityRules } from '../../domain/communityRules';
 import type { AccountProvider } from '../../ports/account';
 import {
   accountErrorKind,
@@ -46,7 +47,8 @@ export function SignedOut({ account }: { account: AccountProvider }) {
   const [passwordError, setPasswordError] = useState<string>();
   const [codeError, setCodeError] = useState<string>();
   // Regeln der Community vor dem Registrieren (Wunsch Nutzer 2026-11-03): Ablehnen verschickt nichts
-  const [askRules, setAskRules] = useState(false);
+  // aktuelle Fassung vom Server (beim Registrieren gibt es ohnehin Netz); undefined = Fenster zu
+  const [askRules, setAskRules] = useState<CommunityRules>();
   const [declined, setDeclined] = useState(false);
   const now = useNow(1000);
 
@@ -110,8 +112,10 @@ export function SignedOut({ account }: { account: AccountProvider }) {
     const issue = passwordIssue(password, email);
     if (issue) setPasswordError(t.passwordIssues[issue]);
     if (!to || issue) return;
-    if (rulesAccepted()) void register(to);
-    else setAskRules(true);
+    void loadCurrentRules(account).then((rules) => {
+      if (rulesAccepted(rules.version)) void register(to);
+      else setAskRules(rules);
+    });
   };
 
   const submitCode = (e: FormEvent, fn: (c: string) => Promise<unknown>) => {
@@ -273,15 +277,16 @@ export function SignedOut({ account }: { account: AccountProvider }) {
         </p>
       </form>
       <RulesConsent
-        open={askRules}
+        open={!!askRules}
+        rules={askRules}
         onAccept={() => {
-          acceptRules();
-          setAskRules(false);
+          acceptRules(askRules?.version);
+          setAskRules(undefined);
           const to = checkEmail();
           if (to) void register(to);
         }}
         onDecline={() => {
-          setAskRules(false);
+          setAskRules(undefined);
           setDeclined(true);
         }}
       />

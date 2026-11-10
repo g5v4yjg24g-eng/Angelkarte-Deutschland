@@ -159,6 +159,7 @@ export const LOG_ACTIONS = [
   'search_email',
   'block_name',
   'unblock_name',
+  'publish_rules',
 ] as const;
 
 // Statistiken -----------------------------------------------------------------------------------------------
