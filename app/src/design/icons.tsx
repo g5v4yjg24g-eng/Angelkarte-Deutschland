@@ -253,6 +253,14 @@ export const BookmarkIcon = ({ filled, ...p }: IconProps & { filled?: boolean })
     />
   </Icon>
 );
+/** Teilen wie im iPhone-Teilen-Menü: Kasten mit Pfeil nach oben */
+export const ShareIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3.5v11" />
+    <path d="m8 7.5 4-4 4 4" />
+    <path d="M8.5 10.5H7a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-1.5-1.5h-1.5" />
+  </Icon>
+);
 export const ClockIcon = (p: IconProps) => (
   <Icon {...p}>
     <circle cx="12" cy="12" r="8.5" />

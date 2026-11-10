@@ -1,6 +1,8 @@
 // Ein Beitrag: Fotos zum Wischen (Doppeltipp = „Gefällt mir“), Daumen und Kommentare, Text, Datum, verknüpfter Fang,
 // Sichtbarkeit; bearbeiten, löschen (Rückgängig im Profil). Ist der Beitrag geteilt und das Konto angemeldet, kommen
 // „Gefällt mir“ und Kommentare vom Server (Wunsch Nutzer 2026-11-04), sonst bleiben sie auf dem Gerät.
+import { canShare, shareContent } from '../../lib/share';
+import { postShareText, sharePhotoName } from '../../domain/share';
 import { useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -126,6 +128,7 @@ export function PostPage() {
   const navigate = useNavigate();
   // undefined = lädt, null = nicht vorhanden
   const post = useLiveQuery(async () => (await getDb().posts.get(id)) ?? null, [id]);
+  const [shareError, setShareError] = useState<string>();
   const linked = useLiveQuery(
     async () => (post?.catchId ? ((await getDb().catches.get(post.catchId)) ?? null) : null),
     [post?.catchId],
@@ -188,6 +191,17 @@ export function PostPage() {
 
   const total = photos?.length ?? post.photoIds.length;
   const name = profile?.name || t.placeholderName;
+  // Teilen (Paket 10): nur eigene Beiträge, Fotos und Text – nie Fangort oder Koordinaten
+  const share = canShare()
+    ? () =>
+        void shareContent({
+          title: t.postTitle,
+          text: postShareText(post, t.shareFooter),
+          files: (photos ?? []).map(
+            (p, i) => new File([p.blob], sharePhotoName(post.createdAt, i, p.mime), { type: p.mime }),
+          ),
+        }).catch(() => setShareError(t.shareError))
+    : undefined;
   const likes = reactions?.likes ?? [];
   const comments = reactions?.comments ?? [];
   const liked = likes.some((l) => l.id === likeIdOf(LOCAL_AUTHOR, post.id));
@@ -236,7 +250,9 @@ export function PostPage() {
         onComments={() => setCommentsOpen(true)}
         likeIconRef={likeIconRef}
         pulse={pulse}
+        onShare={share}
       />
+      {shareError && <Notice tone="error">{shareError}</Notice>}
       {srv.error && server && <Notice tone="error">{srv.error}</Notice>}
       {editing ? (
         <EditForm post={post} onDone={() => setEditing(false)} />

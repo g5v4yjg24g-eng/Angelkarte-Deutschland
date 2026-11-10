@@ -23,7 +23,7 @@ Eingereicht wird nur durch den Nutzer; TestFlight-Bauten nur auf ausdrücklichen
 | Bau und Upload über GitHub Actions (`ios.yml`) | – | ✅ erste Version 2026-11-03 [V] |
 | Push-Mitteilungen (Server, Function `send-push`, APNs-Secrets) | Nutzer prüft am iPhone | 🔲 auf dem Gerät ungeprüft [O] |
 | Haptik, Tastatur, „wie eine echte App“ | Nutzer prüft am iPhone | 🔲 auf dem Gerät ungeprüft [O] |
-| **Dateien speichern in der App** (Sicherung, CSV, Kalenderdatei): Downloads aus der Webansicht funktionieren in iOS-Apps in der Regel nicht → natives Teilen (`@capacitor/share` + `filesystem`) | Claude | 🔲 **wichtig**, sonst ist die Sicherung in der App nicht nutzbar [A, am Gerät prüfen] |
+| **Dateien speichern in der App** (Sicherung, CSV, Kalenderdatei) über das Teilen-Menü (Web Share, ohne neue Abhängigkeit, Paket 10) | Claude, Nutzer prüft am iPhone | ✅ gebaut, 🔲 am iPhone prüfen; falls es dort nicht klappt: `@capacitor/share` + `filesystem` |
 | Erinnerungen vor Angelterminen (`@capacitor/local-notifications`) | Claude | 🔲 gewünscht (Nutzer 2026-11-02), hilft gegen Ablehnung nach Regel 4.2 |
 | Hintergrund-Route bei Sessions (Wunsch Nutzer 2026-11-03, „vor dem Einreichen“) | Claude, Plugin vorher freigeben | 🔲 Plugin-Auswahl offen; Apple prüft Hintergrund-Standort streng |
 | Kamera/Fotoauswahl nativ (`@capacitor/camera`) | Claude | 🔲 optional – `<input type=file>` öffnet Kamera/Fotos schon |

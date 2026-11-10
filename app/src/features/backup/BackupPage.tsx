@@ -1,3 +1,4 @@
+import { saveFile } from '../../lib/share';
 import { useEffect, useState } from 'react';
 import { de } from '../../i18n/de';
 import { Page, Section } from '../../design/components/Page';
@@ -6,7 +7,6 @@ import { Notice } from '../../design/components/Notice';
 import { exportBackup, restoreSnapshot } from '../../data/backupService';
 import { userMessage } from '../../data/errors';
 import {
-  downloadBlob,
   formatBytes,
   formatDateTime,
   requestPersist,
@@ -37,8 +37,8 @@ export function BackupPage() {
     setMessage(undefined);
     try {
       const r = await exportBackup({ withPhotos });
-      downloadBlob(r.blob, r.fileName);
-      setMessage({ tone: 'success', text: de.backup.exportDone(r.fileName) });
+      const how = await saveFile(r.blob, r.fileName);
+      if (how !== 'cancelled') setMessage({ tone: 'success', text: de.backup.exportDone(r.fileName) });
     } catch (e) {
       setMessage({ tone: 'error', text: userMessage(e) });
     } finally {
@@ -53,8 +53,8 @@ export function BackupPage() {
       const { csv, count } = catchesCsv(await db.catches.toArray(), await db.sessions.toArray());
       if (!count) return setCsvMessage({ tone: 'warning', text: de.backup.csvEmpty });
       const name = `fangpunkt-fangbuch-${toZonedIso(Date.now()).slice(0, 10)}.csv`;
-      downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8' }), name);
-      setCsvMessage({ tone: 'success', text: de.backup.csvDone(name, count) });
+      const how = await saveFile(new Blob([csv], { type: 'text/csv;charset=utf-8' }), name);
+      if (how !== 'cancelled') setCsvMessage({ tone: 'success', text: de.backup.csvDone(name, count) });
     } catch (e) {
       setCsvMessage({ tone: 'error', text: userMessage(e) });
     }

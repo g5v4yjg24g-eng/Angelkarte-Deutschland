@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-28',
+    title: 'Teilen',
+    items: [
+      'Beiträge: Deine eigenen Beiträge kannst du über das Teilen-Symbol weitergeben – mit Fotos und Text, nie mit dem Fangort.',
+      'iPhone-App: Sicherung, CSV-Export und Kalenderdatei öffnen das Teilen-Menü, z. B. „In Dateien sichern“.',
+    ],
+  },
+  {
     id: '2026-11-27',
     title: 'Kleine Verbesserungen',
     items: [

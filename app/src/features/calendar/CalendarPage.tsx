@@ -273,7 +273,7 @@ export function CalendarPage() {
       showDate={showDate}
       onEdit={() => setEditing(x.id)}
       onDelete={() => void remove(x)}
-      onExport={() => exportTrips([x], `angeltermin-${x.date}.ics`)}
+      onExport={() => void exportTrips([x], `angeltermin-${x.date}.ics`)}
     />
   );
   const editTrip = live.find((x) => x.id === editing);
@@ -398,7 +398,7 @@ export function CalendarPage() {
             {upcoming.length > 1 && (
               <Button
                 variant="secondary"
-                onClick={() => exportTrips(upcoming, `angeltermine-ab-${today}.ics`)}
+                onClick={() => void exportTrips(upcoming, `angeltermine-ab-${today}.ics`)}
               >
                 {t.allToCalendar}
               </Button>
