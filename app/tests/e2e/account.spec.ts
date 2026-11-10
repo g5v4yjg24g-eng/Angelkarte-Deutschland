@@ -2508,7 +2508,7 @@ test('MODA-6: Verwaltung – Nutzernamen sperren und freigeben, Protokoll, Stati
   await word.fill('H.a_ss');
   await page.getByRole('textbox', { name: /Notiz/ }).fill('Hassrede');
   await page.getByRole('button', { name: 'Sperren' }).click();
-  await expect(page.getByText('Gesperrt.')).toBeVisible();
+  await expect(page.getByText('Gesperrt.', { exact: true })).toBeVisible();
   const item = page.getByRole('listitem').filter({ hasText: 'Hassrede' });
   await expect(item).toContainText('hass');
   await expect(item).toContainText('enthält');
