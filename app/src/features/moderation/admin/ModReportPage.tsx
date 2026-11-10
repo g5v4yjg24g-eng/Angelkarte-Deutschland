@@ -1,4 +1,6 @@
-// Eine Meldung (Mehr → Moderation → Meldung): Grund, Inhalt mit Fotos, beteiligte Konten und Aktionen.
+// Admin → Meldungen → Meldung (Meldungsverwaltung, Wunsch Nutzer 2026-11-10): Grund, Stand, Inhalt mit Fotos,
+// beteiligte Konten, Verlauf und Entscheidungen. Nur sinnvolle Aktionen je Art; jede Aktion mit Bestätigung, Eingriffe
+// nur mit Begründung. Die meldende Person wird erst auf Knopfdruck gezeigt (wird protokolliert).
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { de } from '../../../i18n/de';
@@ -6,24 +8,35 @@ import { Page, Section } from '../../../design/components/Page';
 import { Button } from '../../../design/components/Button';
 import { Notice } from '../../../design/components/Notice';
 import { Toast } from '../../../design/components/Toast';
-import type { BanDuration, ModContent, ModReport, ModUser } from '../../../domain/modAdmin';
+import type {
+  BanDuration,
+  ModContent,
+  ModLogEntry,
+  ModPostState,
+  ModReport,
+  ModReporter,
+  ModUser,
+} from '../../../domain/modAdmin';
 import { useProviders } from '../../../ports/providersContext';
 import { ModActionSheet, type ModAction } from './ModActions';
 import { modDate, modErrorText } from './modErrors';
-import { useIsModerator } from './useIsModerator';
 import { ADMIN_BASE, adminUser } from './adminPaths';
+import { StatusTag } from './ModerationPage';
 import styles from './ModAdmin.module.css';
 
 const t = de.modAdmin;
+const r = t.reports;
 
 export function ModReportPage() {
   const { id = '' } = useParams();
   const { account } = useProviders();
-  const moderator = useIsModerator();
   const [report, setReport] = useState<ModReport | null>();
   const [content, setContent] = useState<ModContent | null>();
+  const [postState, setPostState] = useState<ModPostState>();
   const [user, setUser] = useState<ModUser>();
   const [photos, setPhotos] = useState<string[]>([]);
+  const [history, setHistory] = useState<ModLogEntry[]>();
+  const [reporter, setReporter] = useState<ModReporter | null>();
   const [error, setError] = useState<string>();
   const [action, setAction] = useState<ModAction>();
   const [busy, setBusy] = useState(false);
@@ -32,16 +45,19 @@ export function ModReportPage() {
 
   const load = useCallback(async () => {
     try {
-      const r = (await account.modReports('all')).find((x) => x.id === id) ?? null;
-      setReport(r);
-      if (!r) return;
-      if (r.targetUserId) setUser(await account.modUser(r.targetUserId));
-      if (r.kind === 'user') {
+      const rep = (await account.modReports('all')).find((x) => x.id === id) ?? null;
+      setReport(rep);
+      if (!rep) return;
+      setHistory(await account.modReportLog(rep.id).catch(() => []));
+      if (rep.targetUserId) setUser(await account.modUser(rep.targetUserId));
+      if (rep.kind === 'user') {
         setContent(null);
         return;
       }
-      const c = (await account.modContent(r.kind, r.targetId)) ?? null;
+      const c = (await account.modContent(rep.kind, rep.targetId)) ?? null;
       setContent(c);
+      if (rep.kind === 'post' && c)
+        setPostState(await account.modPostState(rep.targetId).catch(() => undefined));
       setPhotos(c?.photoPaths.length ? await account.modPhotoUrls(c.photoPaths) : []);
     } catch (e) {
       setError(modErrorText(e));
@@ -49,57 +65,100 @@ export function ModReportPage() {
   }, [account, id]);
 
   useEffect(() => {
-    if (!moderator) return;
     // erst nach dem Zeichnen laden (Zustand wird nur asynchron gesetzt)
     const timer = setTimeout(() => void load(), 0);
     return () => clearTimeout(timer);
-  }, [moderator, load]);
+  }, [load]);
 
-  if (moderator === false)
-    return (
-      <Page title={t.reportTitle} back="/mehr">
-        <Notice>{t.notModerator}</Notice>
-      </Page>
-    );
+  const back = `${ADMIN_BASE}/meldungen`;
   if (error)
     return (
-      <Page title={t.reportTitle} back={`${ADMIN_BASE}/meldungen`}>
+      <Page title={t.reportTitle} back={back}>
         <Notice tone="error">{error}</Notice>
       </Page>
     );
   if (report === undefined)
     return (
-      <Page title={t.reportTitle} back={`${ADMIN_BASE}/meldungen`}>
+      <Page title={t.reportTitle} back={back}>
         <p className="muted">{t.loading}</p>
       </Page>
     );
   if (report === null)
     return (
-      <Page title={t.reportTitle} back={`${ADMIN_BASE}/meldungen`}>
+      <Page title={t.reportTitle} back={back}>
         <Notice>{t.errors.notFound}</Notice>
       </Page>
     );
 
   const targetName = report.targetName ?? user?.displayName ?? '–';
+  const hidden = !!postState?.hiddenAt;
+  const done = report.status === 'done';
+
+  /** Stand direkt setzen (ohne Fenster): in Bearbeitung nehmen, wieder öffnen */
+  const setStatus = async (status: 'in_progress' | 'open') => {
+    setBusy(true);
+    try {
+      await account.modSetReportStatus(report.id, status);
+      setToast(r.done[status]);
+      await load();
+    } catch (e) {
+      setToast(modErrorText(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const run = async (note: string, days?: BanDuration) => {
     if (!action) return;
     setBusy(true);
     setActionError(undefined);
     try {
       const who = report.targetUserId ?? '';
-      if (action.kind === 'delete' && report.kind !== 'user')
-        await account.modDeleteContent(
-          report.kind,
-          report.targetId,
-          content?.photoPaths ?? [],
-          report.id,
-          note,
-        );
-      if (action.kind === 'warn') await account.modWarn(who, note, report.id);
-      if (action.kind === 'resolve') await account.modResolve(report.id, note);
-      if (action.kind === 'ban') await account.modBan(who, days ?? null, note, report.id);
-      if (action.kind === 'unban') await account.modUnban(who, note);
-      setToast(t.done_[action.kind]);
+      let message: string;
+      switch (action.kind) {
+        case 'delete':
+          if (report.kind === 'user') return;
+          await account.modDeleteContent(
+            report.kind,
+            report.targetId,
+            content?.photoPaths ?? [],
+            report.id,
+            note,
+          );
+          message = t.done_.delete;
+          break;
+        case 'hide':
+          await account.modHidePost(report.targetId, report.id, note);
+          message = r.done.hide;
+          break;
+        case 'restore':
+          await account.modRestorePost(report.targetId, report.id, note);
+          message = r.done.restore;
+          break;
+        case 'noViolation':
+          await account.modSetReportStatus(report.id, 'done', note || r.noViolationTitle);
+          message = r.done.noViolation;
+          break;
+        case 'resolve':
+          await account.modSetReportStatus(report.id, 'done', note);
+          message = t.done_.resolve;
+          break;
+        case 'warn':
+          await account.modWarn(who, note, report.id);
+          message = t.done_.warn;
+          break;
+        case 'ban':
+          await account.modBan(who, days ?? null, note, report.id);
+          message = t.done_.ban;
+          break;
+        case 'unban':
+          await account.modUnban(who, note);
+          message = t.done_.unban;
+          break;
+        default:
+          return;
+      }
+      setToast(message);
       setAction(undefined);
       await load();
     } catch (e) {
@@ -110,13 +169,12 @@ export function ModReportPage() {
   };
 
   return (
-    <Page title={t.reportTitle} back={`${ADMIN_BASE}/meldungen`}>
+    <Page title={t.reportTitle} back={back}>
       <dl className={styles.facts}>
         <dt>{t.kinds[report.kind]}</dt>
         <dd>
-          <span className={report.status === 'open' ? styles.tagDanger : styles.tag}>
-            {report.status === 'open' ? t.statusOpen : t.statusDone}
-          </span>
+          <StatusTag status={report.status} />
+          {hidden && <span className={styles.tag}> {r.hidden}</span>}
         </dd>
         <dt>{t.reason}</dt>
         <dd>{de.moderation.reasons[report.reason as keyof typeof de.moderation.reasons] ?? report.reason}</dd>
@@ -126,8 +184,6 @@ export function ModReportPage() {
             <dd>{report.details}</dd>
           </>
         )}
-        <dt>{t.reportedBy}</dt>
-        <dd>{report.reporterName ?? '–'}</dd>
         <dt>{t.against}</dt>
         <dd>
           {targetName}
@@ -136,7 +192,38 @@ export function ModReportPage() {
         </dd>
         <dt>{t.reportedAt}</dt>
         <dd>{modDate(report.createdAt)}</dd>
+        <dt>{r.reporter}</dt>
+        <dd>
+          {reporter === undefined ? (
+            <>
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  void account
+                    .modReportReporter(report.id)
+                    .then((p) => setReporter(p ?? null))
+                    .catch((e: unknown) => setToast(modErrorText(e)))
+                }
+              >
+                {r.showReporter}
+              </Button>
+              <span className={`muted ${styles.small}`}>{r.reporterHint}</span>
+            </>
+          ) : (
+            <>
+              {reporter?.displayName ?? '–'}
+              {reporter?.username && ` (${t.handle(reporter.username)})`}
+            </>
+          )}
+        </dd>
+        {report.handledByName && (
+          <>
+            <dt>{r.statusFilter}</dt>
+            <dd>{r.handled(report.handledByName, report.handledAt ? modDate(report.handledAt) : '')}</dd>
+          </>
+        )}
       </dl>
+      {(report.sameTarget ?? 1) > 1 && <Notice>{r.sameTarget(report.sameTarget ?? 1)}</Notice>}
       {report.openAgainst > 1 && <Notice>{t.openAgainst(report.openAgainst)}</Notice>}
 
       {report.kind !== 'user' && (
@@ -145,6 +232,7 @@ export function ModReportPage() {
           {content === null && <p className="muted">{t.contentGone}</p>}
           {content && (
             <>
+              {hidden && <Notice tone="warning">{r.hiddenInfo(postState?.hiddenReason ?? '–')}</Notice>}
               {report.kind === 'comment' && content.extra && (
                 <p className="muted">{t.onPost(content.extra)}</p>
               )}
@@ -168,34 +256,88 @@ export function ModReportPage() {
         </p>
       )}
 
-      <Section title={t.actions}>
+      <Section title={r.history}>
+        {history === undefined && <p className="muted">{t.loading}</p>}
+        {history && history.length === 0 && <p className="muted">{r.noHistory}</p>}
+        {history && history.length > 0 && (
+          <ol className={styles.timeline}>
+            {history.map((h, i) => (
+              <li key={i}>
+                <strong>{t.logActions[h.action] ?? h.action}</strong>
+                {h.detail && `: ${h.detail}`}
+                <span className="muted">
+                  {' '}
+                  · {modDate(h.createdAt)}
+                  {h.moderatorName && ` · ${t.byModerator(h.moderatorName)}`}
+                </span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </Section>
+
+      <Section title={r.decision}>
         <div className={styles.buttons}>
-          {content && (
-            <Button variant="danger" onClick={() => setAction({ kind: 'delete' })}>
-              {t.deleteContent}
+          {report.status === 'open' && (
+            <Button variant="secondary" disabled={busy} onClick={() => void setStatus('in_progress')}>
+              {r.startWork}
             </Button>
           )}
-          {report.targetUserId && (
-            <>
-              <Button variant="secondary" onClick={() => setAction({ kind: 'warn' })}>
-                {t.warn}
-              </Button>
-              {user?.banned ? (
-                <Button variant="secondary" onClick={() => setAction({ kind: 'unban', name: targetName })}>
-                  {t.unban}
-                </Button>
-              ) : (
-                <Button variant="danger" onClick={() => setAction({ kind: 'ban', name: targetName })}>
-                  {t.ban}
-                </Button>
-              )}
-            </>
+          {done && (
+            <Button variant="secondary" disabled={busy} onClick={() => void setStatus('open')}>
+              {r.reopen}
+            </Button>
           )}
-          {report.status === 'open' && (
-            <Button onClick={() => setAction({ kind: 'resolve' })}>{t.resolve}</Button>
+          {!done && (
+            <>
+              <Button variant="secondary" onClick={() => setAction({ kind: 'noViolation' })}>
+                {r.noViolation}
+              </Button>
+              <Button onClick={() => setAction({ kind: 'resolve' })}>{t.resolve}</Button>
+            </>
           )}
         </div>
       </Section>
+
+      {content && (
+        <Section title={r.contentActions}>
+          <div className={styles.buttons}>
+            {report.kind === 'post' &&
+              (hidden ? (
+                <Button variant="secondary" onClick={() => setAction({ kind: 'restore' })}>
+                  {r.restore}
+                </Button>
+              ) : (
+                <Button variant="secondary" onClick={() => setAction({ kind: 'hide' })}>
+                  {r.hide}
+                </Button>
+              ))}
+            <Button variant="danger" onClick={() => setAction({ kind: 'delete' })}>
+              {r.remove}
+            </Button>
+          </div>
+        </Section>
+      )}
+
+      {report.targetUserId && (
+        <Section title={r.personActions}>
+          <div className={styles.buttons}>
+            <Button variant="secondary" onClick={() => setAction({ kind: 'warn' })}>
+              {t.warn}
+            </Button>
+            {user?.banned ? (
+              <Button variant="secondary" onClick={() => setAction({ kind: 'unban', name: targetName })}>
+                {t.unban}
+              </Button>
+            ) : (
+              <Button variant="danger" onClick={() => setAction({ kind: 'ban', name: targetName })}>
+                {t.ban}
+              </Button>
+            )}
+          </div>
+        </Section>
+      )}
+
       <ModActionSheet
         key={action?.kind ?? 'none'}
         action={action}

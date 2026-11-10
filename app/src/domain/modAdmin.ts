@@ -9,16 +9,26 @@ export interface ModReport {
   targetId: string;
   reason: string;
   details?: string | undefined;
-  status: 'open' | 'done';
+  status: ModReportStatus;
   createdAt: string;
-  reporterId: string;
+  /** nur aus der alten Liste (mod_reports); die neue liefert die meldende Person nur auf Anfrage */
+  reporterId?: string | undefined;
   reporterName?: string | undefined;
   targetUserId?: string | undefined;
   targetName?: string | undefined;
   targetUsername?: string | undefined;
   targetBanned: boolean;
   openAgainst: number;
+  /** Meldungen zum selben Inhalt (mit dieser) */
+  sameTarget?: number | undefined;
+  handledAt?: string | undefined;
+  handledByName?: string | undefined;
+  /** gemeldeter Beitrag ist ausgeblendet */
+  targetHidden?: boolean | undefined;
 }
+
+export type ModReportStatus = 'open' | 'in_progress' | 'done';
+export const REPORT_STATUSES: readonly ModReportStatus[] = ['open', 'in_progress', 'done'];
 
 export interface ModContent {
   authorId: string;
@@ -67,15 +77,19 @@ const ReportRow = z.object({
   target_id: z.string(),
   reason: z.string(),
   details: opt,
-  status: z.enum(['open', 'done']),
+  status: z.enum(['open', 'in_progress', 'done']),
   created_at: z.string(),
-  reporter: z.string(),
+  reporter: opt,
   reporter_name: opt,
   target_user: opt,
   target_name: opt,
   target_username: opt,
   target_banned: z.boolean().nullable().optional(),
   open_against: z.number().int().nullable().optional(),
+  same_target: z.number().int().nullable().optional(),
+  handled_at: opt,
+  handled_by_name: opt,
+  target_hidden: z.boolean().nullable().optional(),
 });
 const u = (v: string | null | undefined) => v ?? undefined;
 
@@ -93,13 +107,17 @@ export function parseModReports(rows: readonly unknown[] | null | undefined): Mo
       details: u(d.details),
       status: d.status,
       createdAt: d.created_at,
-      reporterId: d.reporter,
+      reporterId: u(d.reporter),
       reporterName: u(d.reporter_name),
       targetUserId: u(d.target_user),
       targetName: u(d.target_name),
       targetUsername: u(d.target_username),
       targetBanned: d.target_banned ?? false,
       openAgainst: d.open_against ?? 0,
+      ...(d.same_target != null ? { sameTarget: d.same_target } : {}),
+      ...(d.handled_at ? { handledAt: d.handled_at } : {}),
+      ...(d.handled_by_name ? { handledByName: d.handled_by_name } : {}),
+      ...(d.target_hidden != null ? { targetHidden: d.target_hidden } : {}),
     });
   }
   return out;
@@ -223,9 +241,18 @@ export function banRemaining(
 
 export function modErrorKind(
   e: { message?: string; status?: number } | undefined,
-): 'notModerator' | 'self' | 'notFound' | 'noReason' | 'notSignedIn' | 'offline' | 'unknown' {
+):
+  | 'notModerator'
+  | 'self'
+  | 'notFound'
+  | 'noReason'
+  | 'tooMany'
+  | 'notSignedIn'
+  | 'offline'
+  | 'unknown' {
   const m = (e?.message ?? '').toLowerCase();
   if (m.includes('not_moderator')) return 'notModerator';
+  if (m.includes('too_many_actions')) return 'tooMany';
   if (m.includes('self')) return 'self';
   if (m.includes('not_found') || m.includes('not_banned')) return 'notFound';
   if (m.includes('no_reason')) return 'noReason';
@@ -240,7 +267,7 @@ export function modErrorKind(
 /** Kennzahlen der Übersicht; fehlt ein Wert, gibt es ihn (noch) nicht – angezeigt wird dann „–“, nie eine Schätzung */
 export interface ModOverview {
   openReports: number;
-  /** Stand „in Bearbeitung“ folgt in Phase 3 */
+  /** Meldungen im Stand „in Bearbeitung“ */
   inProgress?: number | undefined;
   /** heute (Europe/Berlin) erledigte Meldungen */
   doneToday?: number | undefined;
@@ -253,6 +280,7 @@ export interface ModOverview {
 
 const OverviewRow = z.object({
   open_reports: z.number().int().min(0),
+  in_progress: z.number().int().min(0).nullable().optional(),
   done_today: z.number().int().min(0).nullable().optional(),
   banned_now: z.number().int().min(0).nullable().optional(),
   new_users_7d: z.number().int().min(0).nullable().optional(),
@@ -264,6 +292,7 @@ export function parseModOverview(rows: readonly unknown[] | null | undefined): M
   if (!r.success) return undefined;
   return {
     openReports: r.data.open_reports,
+    inProgress: r.data.in_progress ?? undefined,
     doneToday: r.data.done_today ?? undefined,
     bannedNow: r.data.banned_now ?? undefined,
     newUsers7d: r.data.new_users_7d ?? undefined,
@@ -279,7 +308,7 @@ const SEVERE = new Set(['abuse', 'violence', 'nudity']);
  * (keine Sperre wegen vieler Meldungen, Wunsch Nutzer 2026-11-10).
  */
 export function reportPriority(r: Pick<ModReport, 'reason' | 'openAgainst' | 'status'>): ModPriority {
-  if (r.status !== 'open') return 'low';
+  if (r.status === 'done') return 'low';
   if (SEVERE.has(r.reason) || r.openAgainst >= 3) return 'high';
   if (r.reason === 'privacy' || r.openAgainst >= 2) return 'mid';
   return 'low';
@@ -310,9 +339,47 @@ export function reportedUsers(reports: readonly ModReport[]): ReportedUser[] {
       last: r.createdAt,
     };
     cur.reports++;
-    if (r.status === 'open') cur.open++;
+    if (r.status !== 'done') cur.open++;
     if (r.createdAt > cur.last) cur.last = r.createdAt;
     by.set(r.targetUserId, cur);
   }
   return [...by.values()].sort((a, b) => b.open - a.open || b.last.localeCompare(a.last));
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Meldungsverwaltung (Wunsch Nutzer 2026-11-10): Filter, Stand eines Beitrags, Verlauf.
+
+export interface ReportFilter {
+  kind?: ModKind | undefined;
+  reason?: string | undefined;
+}
+/** Nach Art und Grund filtern (Stand filtert schon der Server); Reihenfolge bleibt (neueste zuerst) */
+export function filterReports(list: readonly ModReport[], f: ReportFilter): ModReport[] {
+  return list.filter((r) => (!f.kind || r.kind === f.kind) && (!f.reason || r.reason === f.reason));
+}
+
+export interface ModPostState {
+  hiddenAt?: string | undefined;
+  hiddenReason?: string | undefined;
+}
+const PostStateRow = z.object({ hidden_at: opt, hidden_reason: opt });
+/** Stand eines Beitrags; undefined = Beitrag gibt es nicht (mehr) */
+export function parseModPostState(rows: readonly unknown[] | null | undefined): ModPostState | undefined {
+  const p = PostStateRow.safeParse(rows?.[0]);
+  if (!p.success) return undefined;
+  return {
+    ...(p.data.hidden_at ? { hiddenAt: p.data.hidden_at } : {}),
+    ...(p.data.hidden_reason ? { hiddenReason: p.data.hidden_reason } : {}),
+  };
+}
+
+export interface ModReporter {
+  displayName?: string | undefined;
+  username?: string | undefined;
+}
+const ReporterRow = z.object({ display_name: opt, username: opt });
+export function parseModReporter(rows: readonly unknown[] | null | undefined): ModReporter | undefined {
+  const p = ReporterRow.safeParse(rows?.[0]);
+  if (!p.success) return undefined;
+  return { displayName: u(p.data.display_name), username: u(p.data.username) };
 }

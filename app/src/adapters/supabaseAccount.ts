@@ -19,6 +19,8 @@ import { newId } from '../domain/id';
 import {
   parseModContent,
   parseModOverview,
+  parseModPostState,
+  parseModReporter,
   parseModLog,
   parseModReports,
   parseModUser,
@@ -569,9 +571,54 @@ export function supabaseAccount(
       return data === true;
     },
     async modReports(state) {
-      const { data, error } = await (await get()).rpc('mod_reports', { state });
+      const c = await get();
+      const { data, error } = await c.rpc('mod_reports2', { state });
+      if (!error) return parseModReports(data as unknown[] | null);
+      // neue Funktion noch nicht eingespielt: bisherige Liste (kennt „in Bearbeitung“ noch nicht)
+      if (!/mod_reports2|PGRST202|does not exist/i.test(`${error.code ?? ''} ${error.message}`)) fail(error);
+      if (state === 'in_progress') return [];
+      const old = await c.rpc('mod_reports', { state });
+      if (old.error) fail(old.error);
+      return parseModReports(old.data as unknown[] | null);
+    },
+    async modSetReportStatus(reportId, status, note) {
+      const { error } = await (await get()).rpc('mod_set_report_status', {
+        report: reportId,
+        new_status: status,
+        note: note ?? null,
+      });
       if (error) fail(error);
-      return parseModReports(data as unknown[] | null);
+    },
+    async modReportReporter(reportId) {
+      const { data, error } = await (await get()).rpc('mod_report_reporter', { report: reportId });
+      if (error) fail(error);
+      return parseModReporter(data as unknown[] | null);
+    },
+    async modReportLog(reportId) {
+      const { data, error } = await (await get()).rpc('mod_report_log', { report: reportId });
+      if (error) fail(error);
+      return parseModLog(data as unknown[] | null);
+    },
+    async modHidePost(postId, reportId, reason) {
+      const { error } = await (await get()).rpc('mod_hide_post', {
+        post: postId,
+        report: reportId ?? null,
+        reason,
+      });
+      if (error) fail(error);
+    },
+    async modRestorePost(postId, reportId, note) {
+      const { error } = await (await get()).rpc('mod_restore_post', {
+        post: postId,
+        report: reportId ?? null,
+        note: note ?? null,
+      });
+      if (error) fail(error);
+    },
+    async modPostState(postId) {
+      const { data, error } = await (await get()).rpc('mod_post_state', { post: postId });
+      if (error) fail(error);
+      return parseModPostState(data as unknown[] | null);
     },
     async modOverview() {
       const c = await get();

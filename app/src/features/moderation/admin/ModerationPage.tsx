@@ -6,26 +6,40 @@ import { de } from '../../../i18n/de';
 import { Page } from '../../../design/components/Page';
 import { Notice } from '../../../design/components/Notice';
 import { SegmentedControl } from '../../../design/components/SegmentedControl';
-import { reportPriority, type ModPriority, type ModReport } from '../../../domain/modAdmin';
+import {
+  filterReports,
+  reportPriority,
+  type ModKind,
+  type ModPriority,
+  type ModReport,
+  type ModReportStatus,
+} from '../../../domain/modAdmin';
+import { SelectField } from '../../../design/components/Field';
 import { ADMIN_BASE } from './adminPaths';
 import { useProviders } from '../../../ports/providersContext';
 import { modDate, modErrorText } from './modErrors';
 import styles from './ModAdmin.module.css';
 
 const t = de.modAdmin;
-type Filter = 'open' | 'done' | 'all';
+type Filter = 'open' | 'in_progress' | 'done' | 'all';
 const FILTERS = [
   { value: 'open', label: t.open },
+  { value: 'in_progress', label: t.reports.inProgressShort },
   { value: 'done', label: t.done },
   { value: 'all', label: t.all },
 ] as const satisfies readonly { value: Filter; label: string }[];
+const KINDS: readonly ModKind[] = ['post', 'comment', 'spot', 'user'];
+const REASONS = Object.keys(de.moderation.reasons);
 
 export function ModerationPage() {
   const { account } = useProviders();
   const [filter, setFilter] = useState<Filter>('open');
   // Ergebnis je Filter: beim Umschalten gilt die alte Liste nicht mehr (= lädt)
   const [loaded, setLoaded] = useState<{ filter: Filter; list?: ModReport[]; error?: string }>();
-  const list = loaded?.filter === filter ? loaded.list : undefined;
+  const [kind, setKind] = useState<ModKind | ''>('');
+  const [reason, setReason] = useState('');
+  const all = loaded?.filter === filter ? loaded.list : undefined;
+  const list = all && filterReports(all, { kind: kind || undefined, reason: reason || undefined });
   const error = loaded?.filter === filter ? loaded.error : undefined;
 
   useEffect(() => {
@@ -41,10 +55,48 @@ export function ModerationPage() {
 
   return (
     <Page title={t.nav.reports}>
-      <SegmentedControl label={t.filter} options={FILTERS} value={filter} onChange={setFilter} />
+      <SegmentedControl
+        label={t.reports.statusFilter}
+        options={FILTERS}
+        value={filter}
+        onChange={setFilter}
+      />
+      <div className={styles.filters}>
+        <SelectField
+          label={t.reports.kindFilter}
+          value={kind}
+          onChange={(e) => setKind(e.target.value as ModKind | '')}
+          options={[
+            { value: '', label: t.reports.allKinds },
+            ...KINDS.map((k) => ({ value: k, label: t.kinds[k] })),
+          ]}
+        />
+        <SelectField
+          label={t.reports.reasonFilter}
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          options={[
+            { value: '', label: t.reports.allReasons },
+            ...REASONS.map((x) => ({
+              value: x,
+              label: de.moderation.reasons[x as keyof typeof de.moderation.reasons],
+            })),
+          ]}
+        />
+      </div>
       {error && <Notice tone="error">{error}</Notice>}
       {!list && !error && <p className="muted">{t.loading}</p>}
-      {list && list.length === 0 && <p className="muted">{filter === 'open' ? t.emptyOpen : t.empty}</p>}
+      {list && list.length === 0 && (
+        <p className="muted">
+          {kind || reason
+            ? t.reports.emptyFiltered
+            : filter === 'open'
+              ? t.emptyOpen
+              : filter === 'in_progress'
+                ? t.reports.emptyInProgress
+                : t.empty}
+        </p>
+      )}
       {list && list.length > 0 && (
         <ul className={styles.list}>
           {list.map((r) => (
@@ -70,8 +122,9 @@ export function ReportItem({ report: r, priority }: { report: ModReport; priorit
           {t.kinds[r.kind]}:{' '}
           {de.moderation.reasons[r.reason as keyof typeof de.moderation.reasons] ?? r.reason}
         </strong>
-        <span className={r.status === 'open' ? styles.tagDanger : styles.tag}>
-          {r.status === 'open' ? t.statusOpen : t.statusDone}
+        <span>
+          <StatusTag status={r.status} />
+          {r.targetHidden && <span className={styles.tag}> {t.reports.hidden}</span>}
         </span>
       </span>
       <span>
@@ -80,9 +133,17 @@ export function ReportItem({ report: r, priority }: { report: ModReport; priorit
         {r.targetBanned && <span className={styles.tagDanger}> {t.banned}</span>}
       </span>
       <span className="muted">
-        {modDate(r.createdAt)} · {t.reportedBy} {r.reporterName ?? '–'}
-        {r.status === 'open' && priority !== 'low' && ` · ${t.overview.priority[priority]}`}
+        {modDate(r.createdAt)}
+        {(r.sameTarget ?? 1) > 1 && ` · ${t.reports.sameTarget(r.sameTarget ?? 1)}`}
+        {r.status !== 'done' && priority !== 'low' && ` · ${t.overview.priority[priority]}`}
       </span>
     </Link>
   );
+}
+
+/** Stand einer Meldung als Marke: offen (rot), in Bearbeitung (hervorgehoben), erledigt */
+export function StatusTag({ status }: { status: ModReportStatus }) {
+  if (status === 'open') return <span className={styles.tagDanger}>{t.statusOpen}</span>;
+  if (status === 'in_progress') return <span className={styles.tagWork}>{t.reports.statusInProgress}</span>;
+  return <span className={styles.tag}>{t.statusDone}</span>;
 }

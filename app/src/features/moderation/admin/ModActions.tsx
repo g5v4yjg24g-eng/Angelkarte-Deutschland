@@ -13,6 +13,9 @@ const t = de.modAdmin;
 
 export type ModAction =
   | { kind: 'delete' }
+  | { kind: 'hide' }
+  | { kind: 'restore' }
+  | { kind: 'noViolation' }
   | { kind: 'avatar' }
   | { kind: 'profile' }
   | { kind: 'warn' }
@@ -36,36 +39,51 @@ export function ModActionSheet({
 }) {
   const [note, setNote] = useState('');
   const [days, setDays] = useState<BanDuration>(7);
+  const r = t.reports;
   const title = !action
     ? ''
-    : action.kind === 'delete'
-      ? t.deleteTitle
-      : action.kind === 'avatar'
-        ? t.avatarTitle
-        : action.kind === 'profile'
-          ? t.profileTitle
-          : action.kind === 'warn'
-            ? t.warnTitle
-            : action.kind === 'resolve'
-              ? t.resolveTitle
-              : action.kind === 'ban'
-                ? t.banTitle(action.name)
-                : t.unbanTitle(action.name);
+    : action.kind === 'hide'
+      ? r.hideTitle
+      : action.kind === 'restore'
+        ? r.restoreTitle
+        : action.kind === 'noViolation'
+          ? r.noViolationTitle
+          : action.kind === 'delete'
+            ? r.removeTitle
+            : action.kind === 'avatar'
+              ? t.avatarTitle
+              : action.kind === 'profile'
+                ? t.profileTitle
+                : action.kind === 'warn'
+                  ? t.warnTitle
+                  : action.kind === 'resolve'
+                    ? t.resolveTitle
+                    : action.kind === 'ban'
+                      ? t.banTitle(action.name)
+                      : t.unbanTitle(action.name);
   const text =
-    action?.kind === 'delete'
-      ? t.deleteText
-      : action?.kind === 'avatar'
-        ? t.avatarText
-        : action?.kind === 'profile'
-          ? t.profileText
-          : action?.kind === 'warn'
-            ? t.warnText
-            : action?.kind === 'ban'
-              ? t.banText
-              : action?.kind === 'unban'
-                ? t.unbanText
-                : undefined;
+    action?.kind === 'hide'
+      ? r.hideText
+      : action?.kind === 'restore'
+        ? r.restoreText
+        : action?.kind === 'noViolation'
+          ? r.noViolationText
+          : action?.kind === 'delete'
+            ? t.deleteText
+            : action?.kind === 'avatar'
+              ? t.avatarText
+              : action?.kind === 'profile'
+                ? t.profileText
+                : action?.kind === 'warn'
+                  ? t.warnText
+                  : action?.kind === 'ban'
+                    ? t.banText
+                    : action?.kind === 'unban'
+                      ? t.unbanText
+                      : undefined;
   const ban = action?.kind === 'ban';
+  // Begründung Pflicht bei Eingriffen (Wunsch Nutzer 2026-11-10); der Server prüft dasselbe
+  const reasonRequired = ban || action?.kind === 'delete' || action?.kind === 'hide';
   const close = () => {
     setNote('');
     onCancel();
@@ -91,11 +109,11 @@ export function ModActionSheet({
           </fieldset>
         )}
         <TextArea
-          label={ban ? t.banReason : t.note}
+          label={ban ? t.banReason : reasonRequired ? r.reasonRequired : t.note}
           value={note}
           maxLength={500}
           rows={3}
-          required={ban}
+          required={reasonRequired}
           onChange={(e) => setNote(e.target.value)}
         />
         {error && <Notice tone="error">{error}</Notice>}
@@ -110,7 +128,7 @@ export function ModActionSheet({
                 ? 'danger'
                 : 'primary'
             }
-            disabled={busy || (ban && !note.trim())}
+            disabled={busy || (reasonRequired && !note.trim())}
           >
             {t.confirm}
           </Button>
