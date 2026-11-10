@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-02-3',
+    title: 'Beiträge wie bei Instagram',
+    items: [
+      'Beiträge: Fischart und Länge stehen jetzt direkt unter deinem Namen – im Profil und im Feed.',
+      'Profil: Tippst du auf ein Bild, kannst du nach unten weiterscrollen und siehst deine nächsten Beiträge.',
+      'Optionen: Bearbeiten, Anheften, Teilen und Löschen findest du über „⋯“ rechts neben dem Namen. Unter dem Bild bleibt es aufgeräumt.',
+    ],
+  },
+  {
     id: '2026-12-02-2',
     title: 'Beiträge teilen',
     items: [

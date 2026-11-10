@@ -951,6 +951,7 @@ test('PST-3: Beitrag teilen – angemeldet wird er mit Fotos hochgeladen, Änder
   await page.getByLabel('Text').fill('Hecht vom Steg');
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await openPostMenu(page);
   await expect(page.getByRole('status').filter({ hasText: 'Geteilt' })).toBeVisible();
   // der Abgleich läuft im Hintergrund (PostSync): auf den Server-Stand warten statt sofort zu prüfen
   await expect
@@ -968,6 +969,7 @@ test('PST-3: Beitrag teilen – angemeldet wird er mit Fotos hochgeladen, Änder
   await expect.poll(() => [...server.posts.values()][0]?.caption).toBe('Hecht vom Steg, 92 cm');
   expect([...server.posts.values()][0]?.visibility).toBe('public');
 
+  await openPostMenu(page);
   await page.getByRole('button', { name: 'Nicht mehr teilen' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Nur auf diesem Gerät' })).toBeVisible();
   await expect.poll(() => server.posts.size).toBe(0);
@@ -985,6 +987,7 @@ test('PST-4: ohne Anmeldung bleibt ein neuer Beitrag auf dem Gerät', async ({ p
   await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await openPostMenu(page);
   await expect(page.getByRole('status').filter({ hasText: 'Nur auf diesem Gerät' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Teilen' })).toHaveCount(0);
   expect(server).toEqual([]);
@@ -1018,6 +1021,13 @@ test('PST-5: vor der Anmeldung gepostete Beiträge – Hinweis im Profil und „
     .toEqual([expect.objectContaining({ caption: 'Barsch am Morgen', visibility: 'friends' })]);
   await expect(page.getByRole('button', { name: 'Alle teilen' })).toHaveCount(0);
 });
+
+/** Optionen eines eigenen Beitrags (Detailansicht, „⋯“ rechts neben dem Namen) */
+const openPostMenu = async (page: Page) => {
+  await page.getByRole('button', { name: 'Optionen für den Beitrag' }).first().click();
+  await expect(page.getByRole('dialog', { name: 'Optionen für den Beitrag' })).toBeVisible();
+};
+const closePostMenu = (page: Page) => page.keyboard.press('Escape');
 
 const feedRow = (o: Record<string, unknown>) => ({
   id: '11111111-1111-4111-8111-111111111111',
@@ -1486,8 +1496,10 @@ test('REACT-3: eigener geteilter Beitrag – Gefällt mir und Kommentare kommen 
   await page.getByLabel('Text').fill('Barsch am Morgen');
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await openPostMenu(page);
   await expect(page.getByRole('status').filter({ hasText: 'Geteilt' })).toBeVisible();
   await expect(page.getByText(/sehen alle, die diesen Beitrag sehen dürfen/)).toBeVisible();
+  await closePostMenu(page);
   const postId = [...calls.posts.keys()][0] ?? '';
   await page.getByRole('button', { name: 'Gefällt mir' }).click();
   await expect.poll(() => calls.likes.get(postId)?.mine).toBe(true);

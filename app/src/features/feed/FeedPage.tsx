@@ -91,6 +91,7 @@ function FeedCard({
             </Link>
             {post.badges.includes('founder') && <FounderBadge />}
           </strong>
+          <CatchTag speciesId={post.speciesId} lengthCm={post.lengthCm} variant="line" />
           <span className="muted">
             {t.handle(post.username)} · {dateOf(post.createdAt)}
           </span>
@@ -137,7 +138,6 @@ function FeedCard({
           ))}
         </div>
       )}
-      <CatchTag speciesId={post.speciesId} lengthCm={post.lengthCm} />
       {post.caption && (
         <p className={styles.caption}>
           <strong>{post.displayName}</strong> {post.caption}
