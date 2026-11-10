@@ -2784,6 +2784,7 @@ test('MODA-8: Einspruch gegen eine Sperre – über den Link aus der Mail ohne A
   await expect(page.getByText(/Dieser Link ist ungültig oder abgelaufen/)).toBeVisible();
   // gültiger Link ohne Anmeldung: Sperre sehen, Begründung Pflicht (mind. 10 Zeichen), einmal senden
   await page.goto(`/einspruch?t=${T_CARL}`);
+  await waitForApp(page);
   await expect(page.getByRole('heading', { level: 1, name: 'Einspruch gegen die Sperre' })).toBeVisible();
   await expect(page.getByText('Dauerhaft gesperrt')).toBeVisible();
   await expect(page.getByText('Grund: Beleidigungen')).toBeVisible();
