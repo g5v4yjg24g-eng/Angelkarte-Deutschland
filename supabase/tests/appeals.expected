@@ -1,0 +1,29 @@
+Info gültig|open:true:Spam
+Info falsch|invalid
+Info abgelaufen|invalid
+Info zu kurz|invalid
+Einspruch zu kurz|FEHLER: too_short
+Einspruch falscher Schlüssel|FEHLER: invalid_token
+Einspruch abgelaufen|FEHLER: invalid_token
+Einspruch B|
+Einspruch B zweimal|FEHLER: already_used
+Info danach|used:open
+Einspruch C|
+Ohne Anmeldung: Liste|FEHLER: permission denied for function mod_appeals
+Ohne Anmeldung: Tabelle|FEHLER: permission denied for table appeals
+D: Liste|FEHLER: not_moderator
+D: entscheidet|FEHLER: not_moderator
+D: Tabelle|FEHLER: permission denied for table appeals
+D: Schlüssel anlegen|FEHLER: permission denied for table appeal_tokens
+Offen|bert:Das war ein Irrtum, bitte prüfen.:true,carl:Ich habe nichts Falsches geschrieben.:true
+Übersicht|2
+Ablehnen ohne Grund|FEHLER: no_reason
+Ablehnen|
+Annehmen|
+Nochmal entscheiden|FEHLER: already_decided
+Stand|bert:accepted:Irrtum:false:Anna,carl:rejected:Beleidigungen sind belegt.:true:Anna
+Übersicht danach|0
+B entsperrt|t|t
+C weiter gesperrt|t
+Protokoll|appeal_reject:Beleidigungen sind belegt. > appeal_accept:Irrtum > unban:Irrtum
+Mail-Ereignisse|unban

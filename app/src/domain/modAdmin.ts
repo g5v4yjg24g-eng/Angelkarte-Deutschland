@@ -251,6 +251,7 @@ export function modErrorKind(
   | 'emailNotAllowed'
   | 'exists'
   | 'founderOnly'
+  | 'alreadyDecided'
   | 'notSignedIn'
   | 'offline'
   | 'unknown' {
@@ -261,6 +262,7 @@ export function modErrorKind(
   if (m.includes('email_not_allowed')) return 'emailNotAllowed';
   if (/\bexists\b/.test(m)) return 'exists';
   if (m.includes('founder_only')) return 'founderOnly';
+  if (m.includes('already_decided')) return 'alreadyDecided';
   if (m.includes('self')) return 'self';
   if (m.includes('not_found') || m.includes('not_banned')) return 'notFound';
   if (m.includes('no_reason')) return 'noReason';
@@ -282,7 +284,7 @@ export interface ModOverview {
   bannedNow?: number | undefined;
   /** neue Profile der letzten 7 Tage */
   newUsers7d?: number | undefined;
-  /** Einsprüche folgen in Phase 5 */
+  /** offene Einsprüche gegen Sperren */
   openAppeals?: number | undefined;
 }
 
@@ -292,6 +294,7 @@ const OverviewRow = z.object({
   done_today: z.number().int().min(0).nullable().optional(),
   banned_now: z.number().int().min(0).nullable().optional(),
   new_users_7d: z.number().int().min(0).nullable().optional(),
+  open_appeals: z.number().int().min(0).nullable().optional(),
 });
 
 /** Zeile von mod_overview(); kaputt oder leer = undefined (dann zählt die App nur, was sie selbst sicher weiß) */
@@ -304,6 +307,7 @@ export function parseModOverview(rows: readonly unknown[] | null | undefined): M
     doneToday: r.data.done_today ?? undefined,
     bannedNow: r.data.banned_now ?? undefined,
     newUsers7d: r.data.new_users_7d ?? undefined,
+    openAppeals: r.data.open_appeals ?? undefined,
   };
 }
 

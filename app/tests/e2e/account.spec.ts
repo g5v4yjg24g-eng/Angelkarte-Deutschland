@@ -80,6 +80,9 @@ async function fakeSupabase(
       },
     ],
     consents: [] as number[],
+    /** Einsprüche: Schlüssel → Stand; eingegangene Einsprüche */
+    appealTokens: new Map<string, { user: string; used: boolean }>(),
+    appeals: [] as Record<string, unknown>[],
   };
   const comments: {
     id: string;
@@ -757,6 +760,78 @@ async function fakeSupabase(
         mod.rules.push({ version, intro: b.intro, items: b.items, summary: b.summary, published_at: '2026-11-10T13:00:00Z' });
         mod.log.push({ action: 'publish_rules', who: null, detail: `Fassung ${version}: ${b.summary}` });
         return json(route, version);
+      }
+      // Einsprüche (ohne Anmeldung, nur mit Schlüssel)
+      case 'POST /rest/v1/rpc/appeal_info': {
+        const { token } = req.postDataJSON() as { token: string };
+        const tok = mod.appealTokens.get(token);
+        if (!tok) return json(route, [{ state: 'invalid', ban_until: null, ban_reason: null, appeal_status: null }]);
+        const u = mod.users.get(tok.user);
+        const a = mod.appeals.find((x) => x.token === token);
+        return json(route, [
+          {
+            state: tok.used ? 'used' : u?.banned ? 'open' : 'ended',
+            ban_until: u?.ban_until ?? null,
+            ban_reason: u?.ban_reason ?? null,
+            appeal_status: a?.status ?? null,
+          },
+        ]);
+      }
+      case 'POST /rest/v1/rpc/submit_appeal': {
+        const b = req.postDataJSON() as { token: string; body: string };
+        const tok = mod.appealTokens.get(b.token);
+        if (!tok) return json(route, { code: 'P0001', message: 'invalid_token' }, 400);
+        if (tok.used) return json(route, { code: 'P0001', message: 'already_used' }, 400);
+        if (b.body.trim().length < 10) return json(route, { code: 'P0001', message: 'too_short' }, 400);
+        tok.used = true;
+        const u = mod.users.get(tok.user);
+        mod.appeals.push({
+          id: `ap-${mod.appeals.length + 1}`,
+          token: b.token,
+          user_id: tok.user,
+          username: u?.username,
+          display_name: u?.display_name,
+          body: b.body,
+          status: 'open',
+          created_at: '2026-11-10T14:00:00Z',
+          decided_at: null,
+          decided_by_name: null,
+          decision_note: null,
+        });
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/mod_appeals': {
+        if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
+        const { state } = req.postDataJSON() as { state: string };
+        return json(
+          route,
+          mod.appeals
+            .filter((a) => state === 'all' || a.status === state)
+            .map((a) => {
+              const u = mod.users.get(a.user_id as string);
+              return { ...a, banned: u?.banned ?? false, ban_until: u?.ban_until ?? null, ban_reason: u?.ban_reason ?? null };
+            }),
+        );
+      }
+      case 'POST /rest/v1/rpc/mod_decide_appeal': {
+        const b = req.postDataJSON() as { appeal: string; accept: boolean; note: string | null };
+        const a = mod.appeals.find((x) => x.id === b.appeal);
+        if (!a) return json(route, { code: 'P0001', message: 'not_found' }, 400);
+        if (a.status !== 'open') return json(route, { code: 'P0001', message: 'already_decided' }, 400);
+        if (!b.accept && !b.note?.trim()) return json(route, { code: 'P0001', message: 'no_reason' }, 400);
+        Object.assign(a, {
+          status: b.accept ? 'accepted' : 'rejected',
+          decided_at: '2026-11-10T15:00:00Z',
+          decided_by_name: 'Kevin',
+          decision_note: b.note,
+        });
+        mod.log.push({ action: b.accept ? 'appeal_accept' : 'appeal_reject', who: a.user_id, detail: b.note });
+        if (b.accept) {
+          const u = mod.users.get(a.user_id as string);
+          if (u) Object.assign(u, { banned: false, ban_until: null, ban_reason: null });
+          mod.log.push({ action: 'unban', who: a.user_id, detail: b.note });
+        }
+        return route.fulfill({ status: 204 });
       }
       case 'POST /rest/v1/rpc/mod_can_search_email':
         return json(route, mod.moderator && mod.founder);
@@ -2675,6 +2750,97 @@ test('MODA-7: Community-Regeln – neue Fassung veröffentlichen, angemeldete Nu
   // Seite „Regeln der Community“ zeigt die neue Fassung
   await page.goto('/mehr/regeln');
   await expect(page.getByText('Respektiere Schonzeiten und Mindestmaße.')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('MODA-8: Einspruch gegen eine Sperre – über den Link aus der Mail ohne Anmeldung, Entscheidung im Admin-Bereich', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  const T_CARL = 'c'.repeat(64);
+  const T_OTTO = 'd'.repeat(64);
+  const banned = (id: string, username: string, name: string, until: string | null, reason: string) => ({
+    user_id: id,
+    username,
+    display_name: name,
+    banned: true,
+    ban_until: until,
+    ban_reason: reason,
+    posts: 0,
+    comments: 0,
+    spots: 0,
+    reports_against: 1,
+    joined: '2026-11-01T08:00:00Z',
+  });
+  calls.mod.users.set('u-carl', banned('u-carl', 'carl', 'Carl', null, 'Beleidigungen'));
+  calls.mod.users.set('u-otto', banned('u-otto', 'otto', 'Otto', '2026-11-17T10:00:00Z', 'Spam'));
+  calls.mod.appealTokens.set(T_CARL, { user: 'u-carl', used: false });
+  calls.mod.appealTokens.set(T_OTTO, { user: 'u-otto', used: false });
+  await page.setViewportSize({ width: 390, height: 844 });
+  // ungültiger Link: keine Anfrage, klarer Hinweis
+  await page.goto('/einspruch?t=kaputt');
+  await waitForApp(page);
+  await expect(page.getByText(/Dieser Link ist ungültig oder abgelaufen/)).toBeVisible();
+  // gültiger Link ohne Anmeldung: Sperre sehen, Begründung Pflicht (mind. 10 Zeichen), einmal senden
+  await page.goto(`/einspruch?t=${T_CARL}`);
+  await waitForApp(page);
+  await expect(page.getByRole('heading', { level: 1, name: 'Einspruch gegen die Sperre' })).toBeVisible();
+  await expect(page.getByText('Dauerhaft gesperrt')).toBeVisible();
+  await expect(page.getByText('Grund: Beleidigungen')).toBeVisible();
+  const text = page.getByRole('textbox', { name: 'Deine Begründung' });
+  await text.fill('kurz');
+  await expect(page.getByRole('button', { name: 'Einspruch senden' })).toBeDisabled();
+  await text.fill('Das war ein Missverständnis, ich habe niemanden beleidigt.');
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.getByRole('button', { name: 'Einspruch senden' }).click();
+  await expect(page.getByText(/Dein Einspruch ist angekommen/)).toBeVisible();
+  await page.reload();
+  await expect(page.getByText(/schon Einspruch eingelegt/)).toBeVisible();
+  await expect(page.getByText('Er wird noch geprüft.')).toBeVisible();
+  // zweiter Einspruch (anderes Konto)
+  await page.goto(`/einspruch?t=${T_OTTO}`);
+  await page.getByRole('textbox', { name: 'Deine Begründung' }).fill('Ich habe keine Werbung gemacht, bitte prüfen.');
+  await page.getByRole('button', { name: 'Einspruch senden' }).click();
+  await expect(page.getByText(/Dein Einspruch ist angekommen/)).toBeVisible();
+
+  // Moderator entscheidet: ablehnen nur mit Begründung, annehmen hebt die Sperre auf
+  calls.mod.moderator = true;
+  calls.mod.founder = true;
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/moderation/verwaltung');
+  await waitForApp(page);
+  await page.getByRole('link', { name: /Einsprüche/ }).click();
+  const carl = page.getByRole('listitem').filter({ hasText: 'Carl' });
+  await expect(carl).toContainText('Das war ein Missverständnis');
+  await expect(carl).toContainText('dauerhaft gesperrt');
+  await carl.getByRole('button', { name: 'Ablehnen' }).click();
+  const reject = page.getByRole('dialog', { name: 'Einspruch ablehnen?' });
+  await expect(reject.getByRole('button', { name: 'Bestätigen' })).toBeDisabled();
+  await reject.getByRole('textbox', { name: /Begründung/ }).fill('Die Beleidigungen sind belegt.');
+  await reject.getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(page.getByText('Abgelehnt. Die Person bekommt eine Mail.')).toBeVisible();
+  const otto = page.getByRole('listitem').filter({ hasText: 'Otto' });
+  await otto.getByRole('button', { name: 'Annehmen' }).click();
+  await page.getByRole('dialog', { name: 'Einspruch annehmen?' }).getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(page.getByText('Angenommen. Die Sperre ist aufgehoben.')).toBeVisible();
+  await expect(page.getByText('Keine offenen Einsprüche.')).toBeVisible();
+  expect(calls.mod.users.get('u-otto')?.banned).toBe(false);
+  expect(calls.mod.users.get('u-carl')?.banned).toBe(true);
+  await page.getByRole('radio', { name: 'Alle' }).click();
+  await expect(page.getByText(/Abgelehnt von Kevin/)).toBeVisible();
+  await expect(page.getByText(/Begründung: Die Beleidigungen sind belegt\./)).toBeVisible();
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+  }
+  expect(calls.mod.log.map((l) => l.action)).toEqual(['appeal_reject', 'appeal_accept', 'unban']);
   expect(errors).toEqual([]);
 });
 
