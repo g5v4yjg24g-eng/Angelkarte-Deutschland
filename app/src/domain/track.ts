@@ -180,3 +180,21 @@ export function spreadOffsets(points: readonly LatLng[], radiusM = 4, iconPx = 3
   }
   return out;
 }
+
+/**
+ * Punkte aus dem Puffer der iPhone-App (Hintergrund-Route, Weg B) prüfen: nur gültige Zahlen und Koordinaten,
+ * zeitlich sortiert, doppelte Zeitpunkte nur einmal. Alles andere fällt still weg.
+ */
+export function parseRouteFixes(raw: readonly unknown[]): Fix[] {
+  const ok = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+  const fixes: Fix[] = [];
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') continue;
+    const { lat, lng, acc, t } = r as Record<string, unknown>;
+    if (!ok(lat) || !ok(lng) || !ok(acc) || !ok(t)) continue;
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180 || acc < 0 || t <= 0) continue;
+    fixes.push({ lat, lng, acc, t });
+  }
+  fixes.sort((a, b) => a.t - b.t);
+  return fixes.filter((f, i) => i === 0 || f.t !== fixes[i - 1]?.t);
+}

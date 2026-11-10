@@ -9,6 +9,7 @@ import type { UsageCounter } from './usage';
 import type { AccountProvider } from './account';
 import type { PushProvider } from './push';
 import type { HapticsProvider } from './haptics';
+import type { BackgroundRoute } from './backgroundRoute';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
@@ -23,6 +24,8 @@ export interface Providers {
   account: AccountProvider;
   push: PushProvider;
   haptics: HapticsProvider;
+  /** Hintergrund-Route – nur in der iPhone-App, sonst fehlt der Anbieter */
+  route?: BackgroundRoute | undefined;
 }
 
 export const ProvidersContext = createContext<Providers | null>(null);

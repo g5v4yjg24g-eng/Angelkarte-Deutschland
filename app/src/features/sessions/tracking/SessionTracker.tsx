@@ -1,18 +1,22 @@
 // Zeichnet während einer laufenden Session die Route auf (Session-Rückblick). Genau ein Standort-Zuhörer für die
-// ganze App; er läuft nur, solange die Session läuft, nicht pausiert ist, die Einstellung an ist und die App
-// sichtbar ist. Im Hintergrund liefern Browser (vor allem iOS) keinen Standort – dort entsteht eine Lücke, die im
-// Rückblick nicht überbrückt wird.
+// ganze App; er läuft nur, solange die Session läuft, nicht pausiert ist und die Einstellung an ist.
+// Browser/PWA: nur bei sichtbarer App – im Hintergrund liefern Browser (vor allem iOS) keinen Standort, dort entsteht
+// eine Lücke, die im Rückblick nicht überbrückt wird. iPhone-App (Weg B): das Swift-Modul zeichnet auch bei
+// gesperrtem Bildschirm auf (`nativeRoute.ts`).
 import { useEffect, useState } from 'react';
 import { recordFix } from '../../../data/trackService';
 import { openPause } from '../../../domain/session';
 import { useBoolSetting } from '../../settings/useBoolSetting';
 import { useRunningSession } from '../useSessions';
 import { onRetry, setTrackStatus } from './trackStatus';
+import { useProviders } from '../../../ports/providersContext';
+import { runNativeRoute } from './nativeRoute';
 
 const supported = typeof navigator !== 'undefined' && 'geolocation' in navigator;
 
 export function SessionTracker() {
   const session = useRunningSession();
+  const { route } = useProviders();
   const enabled = useBoolSetting('trackSessions', true);
   const [visible, setVisible] = useState(() => document.visibilityState !== 'hidden');
   const [attempt, setAttempt] = useState(0);
@@ -31,13 +35,16 @@ export function SessionTracker() {
   const loaded = session !== undefined;
   const sessionId = session ? session.id : undefined;
   const paused = !!session && !!openPause(session);
+  // In der iPhone-App läuft die Aufzeichnung im Hintergrund weiter – Sichtbarkeit zählt nur im Browser
+  const webVisible = route ? true : visible;
 
   useEffect(() => {
     if (!loaded || enabled === undefined) return;
     if (!sessionId) return setTrackStatus({ state: 'idle', weak: false });
     if (!enabled) return setTrackStatus({ state: 'off', weak: false });
     if (paused) return setTrackStatus({ state: 'paused', weak: false });
-    if (!visible) return setTrackStatus({ state: 'hidden', weak: false });
+    if (route) return runNativeRoute(route, sessionId);
+    if (!webVisible) return setTrackStatus({ state: 'hidden', weak: false });
     if (!supported) return setTrackStatus({ state: 'unavailable', weak: false });
 
     setTrackStatus({ state: 'waiting', weak: false });
@@ -79,7 +86,7 @@ export function SessionTracker() {
       alive = false;
       navigator.geolocation.clearWatch(id);
     };
-  }, [loaded, sessionId, enabled, paused, visible, attempt]);
+  }, [loaded, sessionId, enabled, paused, webVisible, attempt, route]);
 
   return null;
 }

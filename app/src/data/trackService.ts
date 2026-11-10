@@ -14,7 +14,7 @@ export async function getTrack(sessionId: string, db: FangpunktDB = getDb()): Pr
 }
 
 /**
- * Nimmt einen GPS-Fix entgegen. Gespeichert wird nur, solange die Session läuft und nicht pausiert ist.
+ * Nimmt einen GPS-Fix entgegen. Gespeichert wird nur, was zwischen Start und Ende außerhalb von Pausen liegt.
  * `restart`: erster Fix nach Start, Pause oder Rückkehr aus dem Hintergrund → neuer Abschnitt.
  */
 export async function recordFix(
@@ -25,9 +25,13 @@ export async function recordFix(
 ): Promise<FixDecision> {
   return db.transaction('rw', db.sessions, db.tracks, async () => {
     const s = await db.sessions.get(sessionId);
-    if (!s || s.deletedAt || s.endAt) return { kind: 'skip', reason: 'past' } as const;
-    const open = s.pauses?.at(-1);
-    if (open && !open.to) return { kind: 'skip', reason: 'past' } as const;
+    if (!s || s.deletedAt) return { kind: 'skip', reason: 'past' } as const;
+    // Punkte aus dem Puffer der iPhone-App können kurz nach Pause/Ende ankommen: zählt der Zeitpunkt des Punkts
+    if (s.endAt && fix.t > Date.parse(s.endAt)) return { kind: 'skip', reason: 'past' } as const;
+    const inPause = (s.pauses ?? []).some(
+      (p) => fix.t >= Date.parse(p.from) && (!p.to || fix.t < Date.parse(p.to)),
+    );
+    if (inPause) return { kind: 'skip', reason: 'past' } as const;
     if (fix.t < Date.parse(s.startAt)) return { kind: 'skip', reason: 'past' } as const;
     const cur = await db.tracks.get(trackIdOf(sessionId));
     const segments = cur?.segments ?? [];

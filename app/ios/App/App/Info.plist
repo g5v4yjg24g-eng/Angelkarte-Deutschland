@@ -27,7 +27,11 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Fangpunkt zeigt deinen Standort auf der Karte, speichert ihn bei einem Fang und – während einer laufenden Session – als Route auf deinem Gerät. Für das Wetter wird nur eine auf etwa 100 m gerundete Position übertragen.</string>
+	<string>Fangpunkt zeigt deinen Standort auf der Karte, speichert ihn bei einem Fang und – während einer laufenden Session, auch bei gesperrtem Bildschirm – als Route auf deinem Gerät. Für das Wetter wird nur eine auf etwa 100 m gerundete Position übertragen.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Fangpunkt nutzt die Kamera für Fotos von deinem Fang und für dein Profilbild. Die Fotos bleiben auf deinem Gerät.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

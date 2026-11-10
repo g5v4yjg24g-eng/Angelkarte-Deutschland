@@ -77,10 +77,14 @@ Je Funktion ein Port mit Web-Adapter (heutiges Verhalten) und Capacitor-Adapter;
 Optional später: `@capacitor/geolocation` (vermeidet die doppelte Standort-Frage der Webansicht [A]).
 
 **Hintergrund-Route bei Sessions** (Wunsch Nutzer 2026-11-03, direkt nach der ersten TestFlight-Version, vor dem Einreichen):
-natives Modul zeichnet den Standort auch bei gesperrtem Bildschirm auf, nur während einer laufenden Session
-(blaues Standort-Symbol von iOS, Berechtigung „Immer“, `UIBackgroundModes: location`), Punkte grob genug für den Akku;
-die Web-App übernimmt sie beim Öffnen in `tracks`. Plugin vor Einbau auswählen und begründen [O]. Apple prüft
-Hintergrund-Standort streng → Zweck im Prüfhinweis erklären; Datenschutzseite + Website ergänzen.
+**gebaut 2026-11-10 (Weg B, eigenes Swift-Modul statt fremdem Plugin)**: `ios/App/App/RoutePlugin.swift` zeichnet
+nur während einer laufenden Session auf, auch bei gesperrtem Bildschirm. Berechtigung nur „Beim Verwenden der App“ (kein
+„Immer“): Läuft die Aufzeichnung schon, darf iOS sie im Hintergrund fortsetzen und zeigt die blaue Standort-Anzeige
+(`showsBackgroundLocationIndicator`, `UIBackgroundModes: location`). 10 m Abstand, Puffer als Datei auf dem Gerät; die
+Web-App holt die Punkte alle 5 s bzw. beim Zurückkehren ab und speichert sie in `tracks`. Wird die App von iOS oder
+dem Nutzer beendet, endet die Aufzeichnung (Lücke, nicht verbunden); gepufferte Punkte gehen nicht verloren.
+Offen [O]: Übersetzen (erst im Workflow `ios.yml`), Verhalten und Akku am iPhone, Zweck im Prüfhinweis an Apple
+erklären. Datenschutzseite der App und Website ergänzt.
 
 **Moderationsbereich** (Wunsch Nutzer 2026-11-04, Variante A, `MODERATION_PLAN.md`): gebaut 2026-11-05 (Mehr →
 Moderation, nur für Moderatoren) – Meldungen ansehen, Inhalte löschen, Nutzer sperren/entsperren mit Mail.

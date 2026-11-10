@@ -7,12 +7,14 @@ import { Button } from '../../../design/components/Button';
 import { getTrack } from '../../../data/trackService';
 import { pointCount, trackDistanceM } from '../../../domain/track';
 import { retryTracking, useTrackStatus } from './trackStatus';
+import { useProviders } from '../../../ports/providersContext';
 import styles from '../Sessions.module.css';
 
 const t = de.tracking;
 
 export function TrackingStatus({ sessionId }: { sessionId: string }) {
   const status = useTrackStatus();
+  const { route } = useProviders();
   const track = useLiveQuery(() => getTrack(sessionId), [sessionId]);
   if (status.state === 'idle') return null;
   const tone =
@@ -54,7 +56,7 @@ export function TrackingStatus({ sessionId }: { sessionId: string }) {
           )}
         </div>
       </Notice>
-      <p className="muted">{t.foreground}</p>
+      <p className="muted">{route ? t.background : t.foreground}</p>
     </section>
   );
 }

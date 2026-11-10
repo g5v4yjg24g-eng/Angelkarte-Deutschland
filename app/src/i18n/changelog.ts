@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-30',
+    title: 'Route im Hintergrund',
+    items: [
+      'iPhone-App: Während einer laufenden Session wird deine Route jetzt auch bei gesperrtem Bildschirm aufgezeichnet. iOS zeigt das mit der blauen Standort-Anzeige; Pause oder Ende halten die Aufzeichnung an. Die Route bleibt auf deinem Gerät.',
+    ],
+  },
+  {
     id: '2026-11-29',
     title: 'Profil erweitern',
     items: [

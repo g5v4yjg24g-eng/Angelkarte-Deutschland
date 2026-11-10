@@ -450,6 +450,8 @@ export const de = {
     enable: 'In den Einstellungen einschalten',
     foreground:
       'Hinweis: Im Browser bzw. als Homescreen-App wird die Route nur aufgezeichnet, solange Fangpunkt geöffnet und der Bildschirm an ist. Lücken werden im Rückblick nicht überbrückt.',
+    background:
+      'In der iPhone-App läuft die Aufzeichnung auch bei gesperrtem Bildschirm weiter – iOS zeigt das mit der blauen Standort-Anzeige. Pause oder Ende der Session halten sie an.',
     chipLabel: 'GPS aktiv',
   },
   review: {
@@ -1825,7 +1827,7 @@ export const de = {
     trackingOff: 'Aus',
     trackingOn: 'Aufzeichnen',
     trackingHint:
-      'Zeichnet während einer laufenden Session deinen Weg per GPS auf – für den Rückblick nach der Session. Die Route bleibt auf dem Gerät und ist Teil deiner Sicherung. Aufgezeichnet wird nur, solange Fangpunkt geöffnet ist. Standard: an.',
+      'Zeichnet während einer laufenden Session deinen Weg per GPS auf – für den Rückblick nach der Session. Die Route bleibt auf dem Gerät und ist Teil deiner Sicherung. Im Browser wird nur aufgezeichnet, solange Fangpunkt geöffnet ist; in der iPhone-App auch bei gesperrtem Bildschirm (blaue Standort-Anzeige). Standard: an.',
     weather: 'Wetter am Fang',
     weatherOff: 'Aus',
     weatherOn: 'Automatisch laden',
@@ -2741,7 +2743,7 @@ export const de = {
     ],
     locationTitle: 'Standort',
     location:
-      'Der Browser fragt einmal um Erlaubnis. Der Standort wird auf der Karte gezeigt und – während einer laufenden Session – als Route auf dem Gerät gespeichert (für den Rückblick, Teil deiner Sicherung). Übertragen wird er nicht – einzige Ausnahme ist das Wetter (siehe unten). Abschalten: Mehr → Einstellungen → Standort bzw. Route bei Sessions.',
+      'Der Browser fragt einmal um Erlaubnis. Der Standort wird auf der Karte gezeigt und – während einer laufenden Session – als Route auf dem Gerät gespeichert (für den Rückblick, Teil deiner Sicherung). In der iPhone-App läuft diese Aufzeichnung während einer laufenden Session auch bei gesperrtem Bildschirm weiter (iOS zeigt das mit der blauen Standort-Anzeige, Erlaubnis nur „Beim Verwenden der App“); Pause oder Ende der Session halten sie an. Übertragen wird er nicht – einzige Ausnahme ist das Wetter (siehe unten). Abschalten: Mehr → Einstellungen → Standort bzw. Route bei Sessions.',
     serversTitle: 'Verbindungen zu anderen Servern',
     serversIntro:
       'Wie bei jeder Website erfährt der jeweilige Server dabei technisch deine IP-Adresse. Fangpunkt sendet keine Fänge, Fotos oder Notizen.',
