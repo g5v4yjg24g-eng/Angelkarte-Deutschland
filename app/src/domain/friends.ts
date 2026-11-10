@@ -1,5 +1,5 @@
-// Freunde (Etappe 1, Entscheidung Nutzer 2026-11-03: Freundschaftsanfrage). Regeln wie in
-// supabase/migrations/*_friendships.sql – rein, ohne Netz.
+// Freunde = folgen sich gegenseitig (seit Paket C, *_follows.sql; vorher Freundschaftsanfrage). Liste für Spots
+// und gemeinsame Sessions – rein, ohne Netz.
 import { z } from 'zod';
 import { parseBadges, type Badge } from './badges';
 
@@ -64,9 +64,6 @@ export function groupFriends(list: readonly FriendEntry[]): FriendGroups {
     friends: sorted.filter((f) => f.status === 'accepted'),
   };
 }
-
-export type FriendRequestResult = 'sent' | 'accepted' | 'already';
-export const FriendRequestResultSchema = z.enum(['sent', 'accepted', 'already']);
 
 /** Fehler des Servers auf eine Fehlerart abbilden */
 export type FriendErrorKind = 'notFound' | 'self' | 'noProfile' | 'notSignedIn' | 'offline' | 'unknown';

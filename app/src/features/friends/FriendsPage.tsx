@@ -1,18 +1,21 @@
-// Freunde (Etappe 1, Wunsch Nutzer 2026-11-03): Anfrage per Nutzername, annehmen/ablehnen, zurückziehen, entfernen.
-// Alles läuft über Server-Funktionen (supabase/migrations/*_friendships.sql); die App schreibt nie direkt.
+// Follower (Paket C, Wunsch Nutzer 2026-11-10: Folgen statt Freundschaft): Leute finden und folgen, Anfragen
+// bestätigen, Follower entfernen, nicht mehr folgen, „Privates Konto“ und Blockierte. Adresse bleibt /profil/freunde.
+// Alles läuft über Server-Funktionen (supabase/migrations/*_follows.sql); die App schreibt nie direkt.
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page, Section } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
 import { TextField } from '../../design/components/Field';
 import { Notice } from '../../design/components/Notice';
 import { normalizeUsername, type Profile } from '../../domain/account';
-import { friendErrorKind, groupFriends, type FriendEntry } from '../../domain/friends';
+import { followErrorKind, groupFollows, type FollowEntry } from '../../domain/follows';
+import { followMessage } from './followMessage';
 import { AccountError } from '../../ports/account';
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
-import { useFriends } from './useFriends';
+import { useFollows } from './useFollows';
+import { PrivateAccountSwitch } from './PrivateAccountSwitch';
 import { UserSearchResults } from './UserSearchResults';
 import { hiddenKey, type BlockedUser } from '../../domain/moderation';
 import { SafetyMenu } from '../moderation/SafetyMenu';
@@ -24,14 +27,16 @@ import styles from './Friends.module.css';
 const t = de.friends;
 
 const errorText = (e: unknown) =>
-  t.errors[friendErrorKind(e instanceof AccountError || e instanceof Error ? e : undefined)];
+  t.errors[followErrorKind(e instanceof AccountError || e instanceof Error ? e : undefined)];
 
 function Person({
   f,
+  mutual,
   children,
   onSafety,
 }: {
-  f: FriendEntry;
+  f: FollowEntry;
+  mutual?: boolean;
   children?: React.ReactNode;
   onSafety?: (message: string) => void;
 }) {
@@ -46,7 +51,10 @@ function Person({
           </Link>
           {f.badges.includes('founder') && <FounderBadge />}
         </strong>
-        <span className="muted">{t.handle(f.username)}</span>
+        <span className="muted">
+          {t.handle(f.username)}
+          {mutual && ` · ${t.mutual}`}
+        </span>
       </span>
       <span className={styles.buttons}>
         {children}
@@ -65,16 +73,23 @@ function Person({
 
 export function FriendsPage() {
   const { account } = useProviders();
-  const { state, reload } = useFriends();
+  const { state, reload } = useFollows();
   const [me, setMe] = useState<Profile | null>();
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string>();
   const [error, setError] = useState<string>();
-  const [confirm, setConfirm] = useState<string>();
+  const [confirm, setConfirm] = useState<{ id: string; kind: 'unfollow' | 'remove' }>();
   const [blocked, setBlocked] = useState<BlockedUser[]>();
   const [blockTick, setBlockTick] = useState(0);
   const hidden = useHidden();
+  const { hash } = useLocation();
+  // aus dem Profil: zu Follower bzw. Gefolgt springen, sobald die Liste da ist
+  const ready = state.kind === 'ready';
+  useEffect(() => {
+    if (!ready || !hash) return;
+    document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' });
+  }, [ready, hash]);
 
   useEffect(() => {
     if (state.kind === 'signedOut') return;
@@ -128,9 +143,9 @@ export function FriendsPage() {
     const u = normalizeUsername(name.replace(/^@/, ''));
     if (!u) return setError(t.errors.empty);
     void run(async () => {
-      const r = await account.sendFriendRequest(u);
+      const r = await account.follow(u);
       setName('');
-      return r === 'sent' ? t.sent(u) : r === 'accepted' ? t.nowFriends(u) : t.already(u);
+      return followMessage(r, u);
     });
   };
 
@@ -151,10 +166,12 @@ export function FriendsPage() {
 
   const groups =
     state.kind === 'ready'
-      ? groupFriends(
+      ? groupFollows(
           state.list.filter((f) => !hidden.has(hiddenKey('user', f.userId)) || f.status === 'accepted'),
         )
       : undefined;
+  const followingIds = new Set(groups?.following.map((f) => f.userId));
+  const requestedIds = new Set(groups?.requested.map((f) => f.userId));
 
   return (
     <Page title={t.title} back="/profil">
@@ -186,28 +203,29 @@ export function FriendsPage() {
           reloadKey={state.kind === 'ready' ? state.list.length : 0}
           onRequest={(u) =>
             void run(async () => {
-              const r = await account.sendFriendRequest(u);
-              return r === 'sent' ? t.sent(u) : r === 'accepted' ? t.nowFriends(u) : t.already(u);
+              const r = await account.follow(u);
+              return followMessage(r, u);
             })
           }
         />
       </Section>
+      <PrivateAccountSwitch onChange={reload} />
 
       {state.kind === 'loading' && <p className="muted">{t.loading}</p>}
       {state.kind === 'error' && <Notice tone="error">{errorText(state.error)}</Notice>}
       {groups && (
         <>
-          {groups.incoming.length > 0 && (
-            <Section title={t.incomingTitle}>
+          {groups.requests.length > 0 && (
+            <Section title={t.requestsTitle(groups.requests.length)}>
               <ul className={styles.list}>
-                {groups.incoming.map((f) => (
-                  <Person key={f.requestId} f={f} onSafety={safetyDone}>
+                {groups.requests.map((f) => (
+                  <Person key={f.userId} f={f} onSafety={safetyDone}>
                     <Button
                       disabled={busy}
                       onClick={() =>
                         void run(async () => {
-                          await account.respondFriendRequest(f.requestId, true);
-                          return t.nowFriends(f.username);
+                          await account.respondFollowRequest(f.userId, true);
+                          return t.acceptedMsg(f.username);
                         })
                       }
                     >
@@ -218,7 +236,7 @@ export function FriendsPage() {
                       disabled={busy}
                       onClick={() =>
                         void run(async () => {
-                          await account.respondFriendRequest(f.requestId, false);
+                          await account.respondFollowRequest(f.userId, false);
                           return undefined;
                         })
                       }
@@ -230,44 +248,23 @@ export function FriendsPage() {
               </ul>
             </Section>
           )}
-          {groups.outgoing.length > 0 && (
-            <Section title={t.outgoingTitle}>
-              <ul className={styles.list}>
-                {groups.outgoing.map((f) => (
-                  <Person key={f.requestId} f={f}>
-                    <Button
-                      variant="secondary"
-                      disabled={busy}
-                      onClick={() =>
-                        void run(async () => {
-                          await account.removeFriend(f.userId);
-                          return undefined;
-                        })
-                      }
-                    >
-                      {t.withdraw}
-                    </Button>
-                  </Person>
-                ))}
-              </ul>
-            </Section>
-          )}
-          <Section title={t.friendsTitle(groups.friends.length)}>
-            {groups.friends.length === 0 ? (
-              <p className="muted">{t.noFriends}</p>
+          <Section title={t.followersTitle(groups.followers.length)}>
+            <span id="follower" />
+            {groups.followers.length === 0 ? (
+              <p className="muted">{t.noFollowers}</p>
             ) : (
-              <ul className={styles.list}>
-                {groups.friends.map((f) => (
-                  <Person key={f.requestId} f={f} onSafety={safetyDone}>
-                    {confirm === f.userId ? (
+              <ul className={styles.list} aria-label={t.followersTitle(groups.followers.length)}>
+                {groups.followers.map((f) => (
+                  <Person key={f.userId} f={f} mutual={groups.mutual.has(f.userId)} onSafety={safetyDone}>
+                    {confirm?.id === f.userId && confirm.kind === 'remove' ? (
                       <>
-                        <span className={styles.confirm}>{t.confirmRemove(f.displayName)}</span>
+                        <span className={styles.confirm}>{t.confirmRemoveFollower(f.displayName)}</span>
                         <Button
                           variant="danger"
                           disabled={busy}
                           onClick={() =>
                             void run(async () => {
-                              await account.removeFriend(f.userId);
+                              await account.removeFollower(f.userId);
                               return undefined;
                             })
                           }
@@ -279,8 +276,68 @@ export function FriendsPage() {
                         </Button>
                       </>
                     ) : (
-                      <Button variant="ghost" disabled={busy} onClick={() => setConfirm(f.userId)}>
-                        {t.remove}
+                      <>
+                        {!followingIds.has(f.userId) && !requestedIds.has(f.userId) && (
+                          <Button
+                            variant="secondary"
+                            disabled={busy}
+                            onClick={() =>
+                              void run(async () =>
+                                followMessage(await account.follow(f.username), f.username),
+                              )
+                            }
+                          >
+                            {t.followBack}
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          disabled={busy}
+                          onClick={() => setConfirm({ id: f.userId, kind: 'remove' })}
+                        >
+                          {t.removeFollower}
+                        </Button>
+                      </>
+                    )}
+                  </Person>
+                ))}
+              </ul>
+            )}
+          </Section>
+          <Section title={t.followingTitle(groups.following.length)}>
+            <span id="gefolgt" />
+            {groups.following.length === 0 ? (
+              <p className="muted">{t.noFollowing}</p>
+            ) : (
+              <ul className={styles.list} aria-label={t.followingTitle(groups.following.length)}>
+                {groups.following.map((f) => (
+                  <Person key={f.userId} f={f} mutual={groups.mutual.has(f.userId)} onSafety={safetyDone}>
+                    {confirm?.id === f.userId && confirm.kind === 'unfollow' ? (
+                      <>
+                        <span className={styles.confirm}>{t.confirmUnfollow(f.displayName)}</span>
+                        <Button
+                          variant="danger"
+                          disabled={busy}
+                          onClick={() =>
+                            void run(async () => {
+                              await account.unfollow(f.userId);
+                              return undefined;
+                            })
+                          }
+                        >
+                          {t.yesUnfollow}
+                        </Button>
+                        <Button variant="ghost" onClick={() => setConfirm(undefined)}>
+                          {t.cancel}
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        disabled={busy}
+                        onClick={() => setConfirm({ id: f.userId, kind: 'unfollow' })}
+                      >
+                        {t.unfollow}
                       </Button>
                     )}
                   </Person>
@@ -288,6 +345,29 @@ export function FriendsPage() {
               </ul>
             )}
           </Section>
+          {groups.requested.length > 0 && (
+            <Section title={t.requestedTitle}>
+              <ul className={styles.list}>
+                {groups.requested.map((f) => (
+                  <Person key={f.userId} f={f}>
+                    <Button
+                      variant="secondary"
+                      disabled={busy}
+                      onClick={() =>
+                        void run(async () => {
+                          await account.unfollow(f.userId);
+                          return undefined;
+                        })
+                      }
+                    >
+                      {t.withdraw}
+                    </Button>
+                  </Person>
+                ))}
+              </ul>
+            </Section>
+          )}
+          <p className="muted">{t.friendsHint}</p>
         </>
       )}
       {blocked && blocked.length > 0 && (

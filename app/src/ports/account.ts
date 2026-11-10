@@ -1,7 +1,8 @@
 // Port für das freiwillige Nutzerkonto. Features kennen nur diese Schnittstelle, nicht den Anbieter.
 import type { Profile } from '../domain/account';
 import type { Badge } from '../domain/badges';
-import type { FriendEntry, FriendRequestResult } from '../domain/friends';
+import type { FriendEntry } from '../domain/friends';
+import type { FollowCounts, FollowEntry, FollowResult } from '../domain/follows';
 import type { GroupMember, GroupSession } from '../domain/groupSessions';
 import type { FeedPost } from '../domain/feed';
 import type { ProfileExtrasPayload, PublicProfile, UserHit } from '../domain/userProfile';
@@ -106,13 +107,23 @@ export interface AccountProvider {
   updateDisplayName(displayName: string): Promise<Profile>;
   /** Abzeichen des angemeldeten Kontos – nur vom Server vergeben (Tabelle user_badges) */
   myBadges(): Promise<Badge[]>;
-  /** Freunde und offene Anfragen (Server-Funktion my_friends) */
+  /**
+   * Freunde = folgen sich gegenseitig (Server-Funktion my_friends, seit Paket C auf follows); nur `accepted` sind
+   * Freunde – für Spots und gemeinsame Sessions
+   */
   friends(): Promise<FriendEntry[]>;
-  /** Anfrage per Nutzername; hat der andere schon angefragt, sind beide sofort befreundet */
-  sendFriendRequest(username: string): Promise<FriendRequestResult>;
-  respondFriendRequest(requestId: string, accept: boolean): Promise<void>;
-  /** Freundschaft beenden oder eigene Anfrage zurückziehen */
-  removeFriend(userId: string): Promise<void>;
+  /** Paket C: eigene Follower, Gefolgte und offene Anfragen (Server-Funktion my_follows) */
+  follows(): Promise<FollowEntry[]>;
+  /** Einer Person folgen; bei privatem Konto wird daraus eine Anfrage */
+  follow(username: string): Promise<FollowResult>;
+  /** Nicht mehr folgen oder eigene Anfrage zurückziehen */
+  unfollow(userId: string): Promise<void>;
+  removeFollower(userId: string): Promise<void>;
+  respondFollowRequest(userId: string, accept: boolean): Promise<void>;
+  followCounts(): Promise<FollowCounts>;
+  accountPrivate(): Promise<boolean>;
+  /** Ausschalten bestätigt offene Anfragen */
+  setAccountPrivate(value: boolean): Promise<void>;
   /**
    * Beitrag mit Fotos veröffentlichen (Server-Funktion publish_post): legt höchstens einmal an, erneut aufgerufen
    * wird nur der Stand nachgezogen. Danach wird geprüft, dass das erste Foto abrufbar ist.

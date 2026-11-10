@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { extrasKey, extrasPayload, parseUserHits, parseUserProfile, searchTerm } from './userProfile';
 
-describe('Profile anderer und Suche (Paket 12, SOC-3)', () => {
+describe('Profile anderer und Suche (Paket 12/C, SOC-1)', () => {
   it('parseUserProfile: prüft Zeilen, verwirft Unbekanntes, ohne Zeile null', () => {
     expect(parseUserProfile([])).toBeNull();
     expect(parseUserProfile([{ username: 'x' }])).toBeNull();
@@ -11,8 +11,11 @@ describe('Profile anderer und Suche (Paket 12, SOC-3)', () => {
         username: 'anna',
         display_name: 'Anna',
         badges: ['founder', 'quatsch'],
-        relation: 'friend',
-        friend_count: 3,
+        relation: 'following',
+        follows_me: true,
+        is_private: false,
+        follower_count: 3,
+        following_count: 2,
         bio: '',
         target_species: ['pike', 'BAD', 'zander'],
         methods: ['spinning', 'dynamit'],
@@ -25,8 +28,11 @@ describe('Profile anderer und Suche (Paket 12, SOC-3)', () => {
       username: 'anna',
       displayName: 'Anna',
       badges: ['founder'],
-      relation: 'friend',
-      friendCount: 3,
+      relation: 'following',
+      followsMe: true,
+      isPrivate: false,
+      followerCount: 3,
+      followingCount: 2,
       bio: undefined,
       targetSpecies: ['pike', 'zander'],
       methods: ['spinning'],
@@ -41,17 +47,25 @@ describe('Profile anderer und Suche (Paket 12, SOC-3)', () => {
       targetSpecies: [],
       methods: [],
       highlightPostIds: [],
-      friendCount: 0,
+      followsMe: false,
+      // fehlt die Angabe, gilt das Konto als privat (Standard)
+      isPrivate: true,
+      followerCount: 0,
+      followingCount: 0,
     });
+    // alte Beziehungen (vor Paket C) gelten nicht mehr
+    expect(parseUserProfile([{ user_id: 'u', username: 'b', display_name: 'B', relation: 'friend' }])).toBeNull();
   });
 
   it('parseUserHits und searchTerm', () => {
     expect(
       parseUserHits([
-        { user_id: 'u', username: 'anna', display_name: 'Anna', relation: 'outgoing' },
+        { user_id: 'u', username: 'anna', display_name: 'Anna', relation: 'requested', follows_me: true },
         { user_id: 'v', username: 'x', display_name: 'X', relation: 'boss' },
       ]),
-    ).toEqual([{ userId: 'u', username: 'anna', displayName: 'Anna', badges: [], relation: 'outgoing' }]);
+    ).toEqual([
+      { userId: 'u', username: 'anna', displayName: 'Anna', badges: [], relation: 'requested', followsMe: true },
+    ]);
     expect(searchTerm('  An ')).toBeUndefined();
     expect(searchTerm(' ANN ')).toBe('ann');
     expect(searchTerm('x'.repeat(41))).toBeUndefined();

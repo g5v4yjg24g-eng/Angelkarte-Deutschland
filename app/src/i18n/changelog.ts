@@ -4,6 +4,16 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-07',
+    title: 'Folgen statt Freundschaft',
+    items: [
+      'Folgen: Statt Freundschaftsanfragen folgst du jetzt anderen Anglern. Im Profil siehst du Follower und Gefolgt – auch bei anderen.',
+      'Privates Konto: Standardmäßig an – wer dir folgen möchte, braucht deine Bestätigung. Ausschalten unter Profil → Follower.',
+      'Beiträge: Die Sichtbarkeit „Freunde“ heißt jetzt „Follower“. Deine bisherigen Freunde folgen dir weiter und du ihnen.',
+      'Spots und gemeinsame Sessions teilst du weiter nur mit Freunden – Leuten, denen du folgst und die dir auch folgen.',
+    ],
+  },
+  {
     id: '2026-12-06-2',
     title: 'Erfolge im Profil',
     items: [

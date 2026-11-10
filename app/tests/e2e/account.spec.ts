@@ -42,6 +42,24 @@ async function fakeSupabase(
   spots: Record<string, unknown>[] = [],
 ) {
   const calls: string[] = [];
+  // Folgen (Paket C): aus den Freundschaften der Vorgabe – Freund = folgen sich gegenseitig
+  type FakeFollow = Omit<FakeFriend, 'request_id' | 'direction'> & { direction: 'follower' | 'following' };
+  const follows: FakeFollow[] = friends.flatMap((f): FakeFollow[] => {
+    const base = {
+      user_id: f.user_id,
+      username: f.username,
+      display_name: f.display_name,
+      badges: f.badges,
+      since: f.since,
+    };
+    return f.status === 'accepted'
+      ? [
+          { ...base, direction: 'follower', status: 'accepted' },
+          { ...base, direction: 'following', status: 'accepted' },
+        ]
+      : [{ ...base, direction: f.direction === 'incoming' ? 'follower' : 'following', status: 'pending' }];
+  });
+  const followState = { isPrivate: true };
   const reports: Record<string, unknown>[] = [];
   const blocks: { user_id: string; username: string; display_name: string }[] = [];
   // Gefällt mir / Kommentare (Wunsch Nutzer 2026-11-04): je Beitrag Anzahl fremder Likes, eigener Like, Kommentare
@@ -313,6 +331,59 @@ async function fakeSupabase(
         );
       case 'POST /rest/v1/rpc/my_friends':
         return json(route, friends);
+      case 'POST /rest/v1/rpc/my_follows':
+        return json(route, follows);
+      case 'POST /rest/v1/rpc/my_follow_counts':
+        return json(route, [
+          {
+            followers: follows.filter((f) => f.direction === 'follower' && f.status === 'accepted').length,
+            following: follows.filter((f) => f.direction === 'following' && f.status === 'accepted').length,
+            requests: follows.filter((f) => f.direction === 'follower' && f.status === 'pending').length,
+          },
+        ]);
+      case 'POST /rest/v1/rpc/follow_user': {
+        const { name } = req.postDataJSON() as { name: string };
+        if (name === 'gibtsnicht') return json(route, { code: 'P0001', message: 'not_found' }, 400);
+        const known = people.profiles.get(name);
+        const userId = String(known?.user_id ?? `u-${name}`);
+        if (follows.some((f) => f.user_id === userId && f.direction === 'following')) return json(route, 'already');
+        const open = known?.is_private === false;
+        follows.push({
+          user_id: userId,
+          username: name,
+          display_name: String(known?.display_name ?? name),
+          badges: [],
+          since: '2026-11-04T10:00:00Z',
+          direction: 'following',
+          status: open ? 'accepted' : 'pending',
+        });
+        if (known) known.relation = open ? 'following' : 'requested';
+        return json(route, open ? 'following' : 'requested');
+      }
+      case 'POST /rest/v1/rpc/unfollow_user':
+      case 'POST /rest/v1/rpc/remove_follower': {
+        const { other } = req.postDataJSON() as { other: string };
+        const dir = key.endsWith('unfollow_user') ? 'following' : 'follower';
+        const i = follows.findIndex((f) => f.user_id === other && f.direction === dir);
+        if (i >= 0) follows.splice(i, 1);
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/respond_follow_request': {
+        const { other, accept } = req.postDataJSON() as { other: string; accept: boolean };
+        const i = follows.findIndex((f) => f.user_id === other && f.direction === 'follower' && f.status === 'pending');
+        if (i < 0) return json(route, { code: 'P0001', message: 'not_found' }, 400);
+        if (accept) (follows[i] as FakeFollow).status = 'accepted';
+        else follows.splice(i, 1);
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/my_account_private':
+        return json(route, followState.isPrivate);
+      case 'POST /rest/v1/rpc/set_account_private': {
+        followState.isPrivate = (req.postDataJSON() as { v: boolean }).v;
+        if (!followState.isPrivate)
+          for (const f of follows) if (f.direction === 'follower') f.status = 'accepted';
+        return route.fulfill({ status: 204 });
+      }
       case 'POST /rest/v1/rpc/send_friend_request': {
         const { name } = req.postDataJSON() as { name: string };
         if (name === 'gibtsnicht') return json(route, { code: 'P0001', message: 'not_found' }, 400);
@@ -401,6 +472,7 @@ async function fakeSupabase(
           display_name: f?.display_name ?? other,
         });
         if (f) friends.splice(friends.indexOf(f), 1);
+        for (let i = follows.length - 1; i >= 0; i--) if (follows[i]?.user_id === other) follows.splice(i, 1);
         return route.fulfill({ status: 204 });
       }
       case 'POST /rest/v1/rpc/unblock_user': {
@@ -1059,7 +1131,7 @@ async function fakeSupabase(
         } as { id: string; caption: string | null; visibility: string; photo_paths: string[] });
         return json(route, created ? 'created' : 'updated');
       }
-      case 'POST /rest/v1/rpc/user_profile': {
+      case 'POST /rest/v1/rpc/user_profile_v2': {
         const { name } = req.postDataJSON() as { name: string };
         const p = people.profiles.get(name);
         return json(route, p ? [p] : []);
@@ -1097,7 +1169,7 @@ async function fakeSupabase(
         const { author } = req.postDataJSON() as { author: string };
         return json(route, people.achievements.get(author) ?? [{ visible: false, key: null, unlocked_at: null }]);
       }
-      case 'POST /rest/v1/rpc/search_users': {
+      case 'POST /rest/v1/rpc/search_users_v2': {
         const { q } = req.postDataJSON() as { q: string };
         people.searches.push(q);
         return json(
@@ -1110,6 +1182,7 @@ async function fakeSupabase(
               display_name: p.display_name,
               badges: p.badges ?? [],
               relation: p.relation,
+              follows_me: p.follows_me ?? false,
             })),
         );
       }
@@ -1243,7 +1316,7 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules)))/.test(
         c,
       ),
     ),
@@ -1475,11 +1548,11 @@ test('BADGE-4: normales Konto ohne Abzeichen – auch ein manipulierter Speicher
   expect(await page.evaluate(() => localStorage.getItem('fangpunkt.badges'))).toBeNull();
 });
 
-test('FRD-2: Freunde – Anfrage annehmen, senden, zurückziehen, entfernen; Zahl im Profil', async ({
+test('FRD-2: Folgen – Anfrage bestätigen, folgen, zurückziehen, privates Konto, Follower entfernen; Zahlen im Profil', async ({
   page,
 }) => {
   const errors = collectErrors(page);
-  await fakeSupabase(
+  const server = await fakeSupabase(
     page,
     [],
     [
@@ -1495,29 +1568,36 @@ test('FRD-2: Freunde – Anfrage annehmen, senden, zurückziehen, entfernen; Zah
       },
     ],
   );
+  // Annas Konto ist öffentlich: Zurückfolgen gilt sofort
+  server.people.profiles.set('anna', { user_id: 'u-anna', username: 'anna', display_name: 'Anna', is_private: false });
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
   await page.goto('/profil');
   await waitForApp(page);
-  await page.getByRole('button', { name: 'Freunde hinzufügen' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Freunde' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '1 Folge-Anfrage' })).toBeVisible();
+  await page.getByRole('button', { name: 'Leute finden' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Follower' })).toBeVisible();
   await expect(page.getByText('Dein Nutzername: @kevin')).toBeVisible();
 
-  const incoming = page.getByRole('region', { name: 'Anfragen an dich' });
-  await expect(incoming.getByText('Anna', { exact: true })).toBeVisible();
-  await expect(incoming.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
-  await incoming.getByRole('button', { name: 'Annehmen' }).click();
-  await expect(page.getByText('Du und @anna seid jetzt befreundet.')).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Deine Freunde (1)' }).getByText('@anna')).toBeVisible();
+  const requests = page.getByRole('region', { name: 'Anfragen (1)' });
+  await expect(requests.getByText('Anna', { exact: true })).toBeVisible();
+  await expect(requests.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
+  await requests.getByRole('button', { name: 'Bestätigen' }).click();
+  await expect(page.getByText('@anna folgt dir jetzt.')).toBeVisible();
+  const followers = page.getByRole('region', { name: 'Follower (1)' });
+  await expect(followers.getByText('@anna')).toBeVisible();
+  await expect(followers.getByRole('button', { name: 'Zurück folgen' })).toBeVisible();
 
   await page.getByRole('textbox', { name: 'Nutzername' }).fill('gibtsnicht');
-  await page.getByRole('button', { name: 'Anfrage senden' }).click();
+  await page.getByRole('button', { name: 'Folgen', exact: true }).click();
   await expect(page.getByText('Diesen Nutzernamen gibt es nicht.', { exact: false })).toBeVisible();
   await page.getByRole('textbox', { name: 'Nutzername' }).fill('@Zander');
-  await page.getByRole('button', { name: 'Anfrage senden' }).click();
-  await expect(page.getByText('Anfrage an @zander gesendet.')).toBeVisible();
-  const outgoing = page.getByRole('region', { name: 'Gesendete Anfragen' });
-  await expect(outgoing.getByText('@zander')).toBeVisible();
+  await page.getByRole('button', { name: 'Folgen', exact: true }).click();
+  await expect(page.getByText('Anfrage an @zander gesendet – @zander muss sie bestätigen.')).toBeVisible();
+  const requested = page.getByRole('region', { name: 'Von dir angefragt' });
+  await expect(requested.getByText('@zander')).toBeVisible();
+  // privates Konto: Standard an
+  await expect(page.getByRole('checkbox', { name: 'Privates Konto' })).toBeChecked();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
@@ -1526,25 +1606,64 @@ test('FRD-2: Freunde – Anfrage annehmen, senden, zurückziehen, entfernen; Zah
       r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
     ).toEqual([]);
   }
-  await outgoing.getByRole('button', { name: 'Zurückziehen' }).click();
-  await expect(page.getByRole('region', { name: 'Gesendete Anfragen' })).toHaveCount(0);
+  await requested.getByRole('button', { name: 'Zurückziehen' }).click();
+  await expect(page.getByRole('region', { name: 'Von dir angefragt' })).toHaveCount(0);
+
+  // zurück folgen → Freunde (folgen sich gegenseitig)
+  await followers.getByRole('button', { name: 'Zurück folgen' }).click();
+  await expect(page.getByRole('region', { name: 'Gefolgt (1)' }).getByText('@anna · Freunde')).toBeVisible();
 
   await page.goto('/profil');
-  await expect(page.getByText('1', { exact: true }).locator('xpath=..')).toContainText('Freunde');
-  await page.goto('/profil/freunde');
-  const friendsList = page.getByRole('region', { name: 'Deine Freunde (1)' });
-  await friendsList.getByRole('button', { name: 'Entfernen' }).click();
-  await friendsList.getByRole('button', { name: 'Ja, entfernen' }).click();
-  await expect(page.getByRole('region', { name: 'Deine Freunde (0)' })).toBeVisible();
+  const counts = page.getByRole('region', { name: 'Profil' });
+  await expect(counts.getByRole('link', { name: /^1\s*Follower$/ })).toBeVisible();
+  await expect(counts.getByRole('link', { name: /^1\s*Gefolgt$/ })).toBeVisible();
+  await counts.getByRole('link', { name: /Follower$/ }).click();
+  await expect(page).toHaveURL(/\/profil\/freunde#follower$/);
+  const list = page.getByRole('region', { name: 'Follower (1)' });
+  await list.getByRole('button', { name: 'Entfernen' }).click();
+  await list.getByRole('button', { name: 'Ja, entfernen' }).click();
+  await expect(page.getByRole('region', { name: 'Follower (0)' })).toBeVisible();
   // erwartet: die Antwort 400 auf den unbekannten Nutzernamen
   expect(errors.filter((e) => !e.includes('status of 400'))).toEqual([]);
+});
+
+test('FRD-4: Privates Konto ausschalten bestätigt offene Anfragen', async ({ page }) => {
+  await fakeSupabase(
+    page,
+    [],
+    [
+      {
+        request_id: 'r-bert',
+        user_id: 'u-bert',
+        username: 'bert',
+        display_name: 'Bert',
+        status: 'pending',
+        direction: 'incoming',
+        badges: [],
+        since: '2026-11-04T09:00:00Z',
+      },
+    ],
+  );
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil/freunde');
+  await waitForApp(page);
+  await expect(page.getByRole('region', { name: 'Anfragen (1)' })).toBeVisible();
+  const box = page.getByRole('checkbox', { name: 'Privates Konto' });
+  await box.click();
+  await expect(box).not.toBeChecked();
+  await expect(page.getByText(/Aus: Jeder mit Konto kann dir sofort folgen/)).toBeVisible();
+  await page.reload();
+  await waitForApp(page);
+  await expect(page.getByRole('checkbox', { name: 'Privates Konto' })).not.toBeChecked();
+  await expect(page.getByRole('region', { name: 'Follower (1)' }).getByText('@bert')).toBeVisible();
+  await expect(page.getByRole('region', { name: /^Anfragen/ })).toHaveCount(0);
 });
 
 test('FRD-3: Freunde ohne Anmeldung – Hinweis aufs Konto, keine Anfrage an Supabase', async ({ page }) => {
   const calls = await fakeSupabase(page);
   await page.goto('/profil/freunde');
   await waitForApp(page);
-  await expect(page.getByText(/Für Freunde brauchst du ein Konto/)).toBeVisible();
+  await expect(page.getByText(/Zum Folgen brauchst du ein Konto/)).toBeVisible();
   await page.getByRole('link', { name: 'Zum Konto' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Konto' })).toBeVisible();
   expect(calls).toEqual([]);
@@ -1749,7 +1868,7 @@ test('FEED-2: Feed in der Leiste – Beiträge von Freunden mit Fotos, Name, Abz
   expect(errors).toEqual([]);
 });
 
-test('FEED-3: leerer Feed führt zu „Freunde hinzufügen“; ohne Anmeldung Hinweis und keine Anfrage', async ({
+test('FEED-3: leerer Feed führt zu „Leute finden“; ohne Anmeldung Hinweis und keine Anfrage', async ({
   page,
 }) => {
   const calls = await fakeSupabase(page);
@@ -1761,8 +1880,8 @@ test('FEED-3: leerer Feed führt zu „Freunde hinzufügen“; ohne Anmeldung Hi
   await signInWithProfile(page, 'kevin');
   await page.goto('/feed');
   await expect(page.getByText('Noch keine Beiträge')).toBeVisible();
-  await page.getByRole('link', { name: 'Freunde hinzufügen' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Freunde' })).toBeVisible();
+  await page.getByRole('link', { name: 'Leute finden' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Follower' })).toBeVisible();
 });
 
 const ANNA: FakeFriend = {
@@ -2016,7 +2135,7 @@ test('MOD-2: Beitrag im Feed melden – Grund wählen, Meldung geht an den Serve
   expect(errors).toEqual([]);
 });
 
-test('MOD-3: Freund blockieren und wieder freigeben – Freundschaft endet, Liste „Blockiert“', async ({
+test('MOD-3: Freund blockieren und wieder freigeben – Folgen endet in beide Richtungen, Liste „Blockiert“', async ({
   page,
 }) => {
   const errors = collectErrors(page);
@@ -2025,17 +2144,18 @@ test('MOD-3: Freund blockieren und wieder freigeben – Freundschaft endet, List
   await signInWithProfile(page, 'kevin');
   await page.goto('/profil/freunde');
   await waitForApp(page);
-  const list = page.getByRole('region', { name: 'Deine Freunde (1)' });
+  const list = page.getByRole('region', { name: 'Follower (1)' });
   await list.getByRole('button', { name: 'Optionen zu Anna' }).click();
   await page
     .getByRole('dialog', { name: 'Optionen' })
     .getByRole('button', { name: 'Anna blockieren' })
     .click();
   const confirm = page.getByRole('dialog', { name: 'Anna blockieren?' });
-  await expect(confirm.getByText(/nicht mehr befreundet/)).toBeVisible();
+  await expect(confirm.getByText(/folgt euch dann nicht mehr/)).toBeVisible();
   await confirm.getByRole('button', { name: 'Blockieren' }).click();
   await expect(page.getByText('Anna ist blockiert.')).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Deine Freunde (0)' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Follower (0)' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Gefolgt (0)' })).toBeVisible();
   const blocked = page.getByRole('region', { name: 'Blockiert' });
   await expect(blocked.getByText('@anna')).toBeVisible();
   expect(calls.blocks.map((b) => b.user_id)).toEqual(['u-anna']);
@@ -3329,7 +3449,7 @@ test('SAVE-1: Beitrag speichern – Lesezeichen im Feed, Liste „Gespeichert“
   expect(errors).toEqual([]);
 });
 
-test('SOC-1: Nutzer suchen, Profil eines Freundes mit Angaben, Highlights und Beiträgen; Fremde ohne Angaben', async ({
+test('SOC-1: Nutzer suchen, Profil mit Follower/Gefolgt, Angaben, Highlights und Beiträgen; Fremde ohne Angaben, Folgen als Anfrage', async ({
   page,
 }) => {
   const errors = collectErrors(page);
@@ -3351,8 +3471,11 @@ test('SOC-1: Nutzer suchen, Profil eines Freundes mit Angaben, Highlights und Be
     username: 'anna',
     display_name: 'Anna Hecht',
     badges: ['founder'],
-    relation: 'friend',
-    friend_count: 4,
+    relation: 'following',
+    follows_me: true,
+    is_private: true,
+    follower_count: 4,
+    following_count: 7,
     bio: 'Raubfisch am Rhein',
     target_species: ['pike', 'zander'],
     methods: ['spinning'],
@@ -3365,7 +3488,9 @@ test('SOC-1: Nutzer suchen, Profil eines Freundes mit Angaben, Highlights und Be
     display_name: 'Fremder Angler',
     badges: [],
     relation: 'none',
-    friend_count: 0,
+    is_private: true,
+    follower_count: 0,
+    following_count: 0,
   });
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
@@ -3380,8 +3505,8 @@ test('SOC-1: Nutzer suchen, Profil eines Freundes mit Angaben, Highlights und Be
   const hits = page.getByRole('list', { name: 'Treffer' });
   await expect(hits.getByRole('link', { name: 'Profil von Fremder Angler ansehen' })).toBeVisible();
   await field.fill('anna');
-  await expect(hits.getByText('@anna · Befreundet')).toBeVisible();
-  await expect(hits.getByRole('button', { name: 'Anfrage senden' })).toHaveCount(0);
+  await expect(hits.getByText('@anna · Gefolgt · Folgt dir')).toBeVisible();
+  await expect(hits.getByRole('button', { name: 'Folgen' })).toHaveCount(0);
   expect(calls.people.searches).toEqual(['angler', 'anna']);
 
   // Profil eines Freundes
@@ -3394,7 +3519,9 @@ test('SOC-1: Nutzer suchen, Profil eines Freundes mit Angaben, Highlights und Be
   await expect(facts).toContainText('Nordrhein-Westfalen');
   // aufgebaut wie das eigene Profil: Zahlen, Highlights und Beiträge als Kacheln (Wunsch Nutzer 2026-11-10)
   await expect(page.getByText('2Beiträge', { exact: false })).toBeVisible();
-  await expect(page.getByText('4Freunde', { exact: false })).toBeVisible();
+  await expect(page.getByText('4Follower', { exact: false })).toBeVisible();
+  await expect(page.getByText('7Gefolgt', { exact: false })).toBeVisible();
+  await expect(page.getByText('Folgt dir', { exact: true })).toBeVisible();
   const highlights = page.getByRole('region', { name: 'Highlights' });
   await expect(highlights.getByRole('link')).toHaveCount(1);
   await expect(highlights.getByRole('link', { name: /Hecht im Schilf/ })).toBeVisible();
@@ -3421,13 +3548,14 @@ test('SOC-1: Nutzer suchen, Profil eines Freundes mit Angaben, Highlights und Be
   await expect(page.getByRole('article')).toHaveCount(1);
   await expect(page.getByRole('article')).toContainText('Hecht im Schilf');
 
-  // Fremder: keine Angaben, Anfrage möglich
+  // Fremder (privat): keine Angaben, Folgen wird zur Anfrage
   await page.goto('/profil/nutzer/fremd');
   await expect(page.getByRole('heading', { level: 1, name: 'Fremder Angler' })).toBeVisible();
-  await expect(page.getByText('sobald ihr befreundet seid', { exact: false })).toBeVisible();
+  await expect(page.getByText('Privates Konto – folge @fremd', { exact: false })).toBeVisible();
   await expect(page.locator('dl')).toHaveCount(0);
-  await page.getByRole('button', { name: 'Freund hinzufügen' }).click();
-  await expect(page.getByText('Anfrage an @fremd gesendet.')).toBeVisible();
+  await page.getByRole('button', { name: 'Folgen', exact: true }).click();
+  await expect(page.getByText('Anfrage an @fremd gesendet – @fremd muss sie bestätigen.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Angefragt · Anfrage zurückziehen' })).toBeVisible();
 
   // unbekannt
   await page.goto('/profil/nutzer/niemand');
@@ -3472,8 +3600,9 @@ test('SOC-3: Erfolge – Stufen gehen einmal an den Server, Sichtbarkeit wählba
     username: 'anna',
     display_name: 'Anna Hecht',
     badges: [],
-    relation: 'friend',
-    friend_count: 1,
+    relation: 'following',
+    follower_count: 1,
+    following_count: 1,
   });
   calls.people.profiles.set('fremd', {
     user_id: 'u-fremd',
@@ -3481,7 +3610,6 @@ test('SOC-3: Erfolge – Stufen gehen einmal an den Server, Sichtbarkeit wählba
     display_name: 'Fremder Angler',
     badges: [],
     relation: 'none',
-    friend_count: 0,
   });
   calls.people.achievements.set('u-anna', [
     { visible: true, key: 'first', unlocked_at: '2026-10-01T10:00:00+00:00' },
@@ -3524,7 +3652,7 @@ test('SOC-3: Erfolge – Stufen gehen einmal an den Server, Sichtbarkeit wählba
 
   // Sichtbarkeit: Standard Freunde, „Niemand“ wird sofort gespeichert
   const choice = page.getByRole('group', { name: 'Wer sieht deine Erfolge?' });
-  await expect(choice.getByRole('radio', { name: 'Freunde' })).toBeChecked();
+  await expect(choice.getByRole('radio', { name: 'Follower' })).toBeChecked();
   // ganz unten auf der Seite: erst in die Mitte holen, sonst liegt die schwebende Leiste darüber
   await choice.evaluate((el) => el.scrollIntoView({ block: 'center' }));
   await choice.getByRole('radio', { name: 'Niemand' }).click();
@@ -3579,7 +3707,7 @@ test('SHR-2: Profil teilen – Link mit Nutzernamen ans Teilen-Menü, ohne Teile
     .poll(() => page.evaluate(() => (window as unknown as { __shared?: unknown }).__shared))
     .toEqual({
       title: 'Mein Fangpunkt-Profil',
-      text: 'Kevin (@kevin) auf Fangpunkt – schick mir eine Freundschaftsanfrage!',
+      text: 'Kevin (@kevin) auf Fangpunkt – folg mir!',
       url: 'https://fangpunkt.com/profil/?u=kevin',
     });
 
