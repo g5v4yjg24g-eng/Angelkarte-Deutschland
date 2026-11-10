@@ -59,7 +59,9 @@ export function AchievementVisibility() {
       ) : (
         !error && <p className="muted">{online ? de.achievements.loading : t.offline}</p>
       )}
-      <p className="muted">{value ? t.hints[value] : null} {t.what}</p>
+      <p className="muted">
+        {value ? t.hints[value] : null} {t.what}
+      </p>
       <p role="status" className="visually-hidden">
         {saved ? t.saved : ''}
       </p>

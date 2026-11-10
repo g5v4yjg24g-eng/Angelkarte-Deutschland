@@ -29,7 +29,9 @@ describe('sharedAchievements', () => {
       visible: true,
       unlocked: {},
     });
-    expect(parseRemoteAchievements([{ visible: false, key: null, unlocked_at: null }])).toEqual({ visible: false });
+    expect(parseRemoteAchievements([{ visible: false, key: null, unlocked_at: null }])).toEqual({
+      visible: false,
+    });
     expect(parseRemoteAchievements([])).toEqual({ visible: false });
     expect(parseRemoteAchievements(null)).toEqual({ visible: false });
   });

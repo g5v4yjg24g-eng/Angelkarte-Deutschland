@@ -3525,7 +3525,9 @@ test('SOC-3: Erfolge – Stufen gehen einmal an den Server, Sichtbarkeit wählba
   // Sichtbarkeit: Standard Freunde, „Niemand“ wird sofort gespeichert
   const choice = page.getByRole('group', { name: 'Wer sieht deine Erfolge?' });
   await expect(choice.getByRole('radio', { name: 'Freunde' })).toBeChecked();
-  await choice.getByText('Niemand').click();
+  // ganz unten auf der Seite: erst in die Mitte holen, sonst liegt die schwebende Leiste darüber
+  await choice.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await choice.getByRole('radio', { name: 'Niemand' }).click();
   await expect(choice.getByRole('radio', { name: 'Niemand' })).toBeChecked();
   await expect.poll(() => calls.people.achVisibility).toBe('private');
   await expect(page.getByText('Nur du siehst deine Erfolge.')).toBeVisible();
@@ -3533,9 +3535,11 @@ test('SOC-3: Erfolge – Stufen gehen einmal an den Server, Sichtbarkeit wählba
 
   // Profil anderer: Erfolge nur, wenn freigegeben
   await page.goto('/profil/nutzer/anna');
+  await waitForApp(page);
   const card = page.getByRole('region', { name: /^Erfolge/ });
   await expect(card).toContainText('2 von 22 Stufen');
   await expect(card.getByRole('img', { name: 'Hecht: Silber' })).toBeVisible();
+  await animationsDone(page.locator('body'));
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
