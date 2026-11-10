@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-01',
+    title: 'Freunde finden und Profile ansehen',
+    items: [
+      'Suche: Unter Profil → Freunde findest du andere über Nutzername oder Namen (ab 3 Zeichen).',
+      'Profile: Tippe auf einen Namen im Feed oder in der Freundesliste. Freunde sehen deinen Profiltext, Lieblingsfische, Methoden, Region und deine angehefteten Beiträge – Fremde nicht.',
+      'Sessions: „Zusammenfassung teilen“ macht aus einer beendeten Session einen Beitrag mit Angelzeit, Fängen und Arten – ohne Route, Koordinaten oder Gewässernamen.',
+    ],
+  },
+  {
     id: '2026-11-30',
     title: 'Route im Hintergrund',
     items: [

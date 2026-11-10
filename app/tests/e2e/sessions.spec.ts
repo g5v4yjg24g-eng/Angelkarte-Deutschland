@@ -171,3 +171,28 @@ test('SES-4: Pause und Weiter, Pause nachtragen; Angelzeit ohne Pausen', async (
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
+
+test('SES-9: Session-Zusammenfassung als Beitrag – Bild mit Zahlen, ohne Ort, Text vorausgefüllt', async ({
+  page,
+}) => {
+  test.slow();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openMap(page);
+  await page.getByRole('button', { name: 'Session starten' }).click();
+  await expect(page.getByText('Session gestartet.', { exact: false })).toBeVisible();
+  await addCatch(page, 'Zander');
+  await page.getByRole('link', { name: /Laufende Session/ }).click();
+  await page.getByRole('button', { name: 'Session beenden' }).click();
+  await page.getByRole('button', { name: 'Rückblick schließen' }).click();
+
+  await page.getByRole('button', { name: 'Zusammenfassung teilen' }).click();
+  await expect(page).toHaveURL(/\/profil\/neu\?session=/);
+  await expect(page.getByText('ohne Route, Koordinaten oder Gewässernamen', { exact: false })).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Foto 1' })).toBeVisible();
+  await expect(page.getByLabel('Text')).toHaveValue(/^Session vom \d+\. \S+ \d{4}$/);
+  await page.emulateMedia({ colorScheme: 'dark' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await expect(page).toHaveURL(/\/profil$/);
+  await expect(page.getByRole('list', { name: 'Beiträge' }).getByRole('link')).toHaveCount(1);
+});

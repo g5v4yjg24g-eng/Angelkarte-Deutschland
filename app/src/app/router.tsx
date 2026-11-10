@@ -148,6 +148,13 @@ export const routes = [
             ),
           },
           {
+            path: 'profil/nutzer/:username',
+            lazy: page(
+              () => import('../features/profile/UserProfilePage'),
+              (m) => m.UserProfilePage,
+            ),
+          },
+          {
             path: 'profil/gespeichert',
             lazy: page(
               () => import('../features/feed/SavedPostsPage'),

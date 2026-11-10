@@ -4,6 +4,7 @@ import type { Badge } from '../domain/badges';
 import type { FriendEntry, FriendRequestResult } from '../domain/friends';
 import type { GroupMember, GroupSession } from '../domain/groupSessions';
 import type { FeedPost } from '../domain/feed';
+import type { ProfileExtrasPayload, PublicProfile, UserHit } from '../domain/userProfile';
 import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
 import type { BlockedUser, ReportInput } from '../domain/moderation';
 import type { ServerComment, ServerReactions } from '../domain/reactions';
@@ -101,6 +102,14 @@ export interface AccountProvider {
   groupSessionMembers(groupId: string): Promise<GroupMember[]>;
   /** Highlights einer gemeinsamen Session (Paket 8b), neueste zuerst; `before` = createdAt */
   groupHighlights(groupId: string, before?: string): Promise<FeedPost[]>;
+  /** Paket 12: freiwillige Angaben des eigenen Profils für Freunde (Server prüft und filtert Highlights) */
+  setProfileExtras(payload: ProfileExtrasPayload): Promise<void>;
+  /** Profil einer Person per Nutzername; null = nicht gefunden, blockiert oder gesperrt */
+  userProfile(username: string): Promise<PublicProfile | null>;
+  /** Beiträge einer Person, die man sehen darf, neueste zuerst; `before` = createdAt; `onlyIds` = nur diese */
+  userPosts(userId: string, before?: string, onlyIds?: string[]): Promise<FeedPost[]>;
+  /** Nutzer suchen (ab 3 Zeichen, höchstens 20 Treffer) */
+  searchUsers(term: string): Promise<UserHit[]>;
   /** Entdecken (Paket 7c): Beiträge mit „Alle“ von anderen Konten, zuletzt geteilt zuerst; `before` = sharedAt */
   discoverFeed(before?: string): Promise<FeedPost[]>;
   /** Geteilte Spots: eigene Freigaben und die von Freunden (Server-Funktion my_shared_spots) */
@@ -156,6 +165,9 @@ export interface AccountProvider {
   avatarUrls(userIds: string[]): Promise<Map<string, string>>;
   /** Moderation: Profilbild eines Kontos entfernen (Eintrag und Datei) */
   modClearAvatar(userId: string, reportId?: string, note?: string): Promise<void>;
+  /** Paket 12: Profiltext und Angaben einer Person (nur Moderatoren) und entfernen */
+  modProfileText(userId: string): Promise<{ bio?: string | undefined; facts: string[] } | undefined>;
+  modClearProfile(userId: string, note?: string): Promise<void>;
   /** Konto und Profil endgültig löschen, danach abgemeldet */
   deleteAccount(): Promise<void>;
 }

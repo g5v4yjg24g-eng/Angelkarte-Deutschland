@@ -13,6 +13,7 @@ import { AccountError } from '../../ports/account';
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useFriends } from './useFriends';
+import { UserSearchResults } from './UserSearchResults';
 import { hiddenKey, type BlockedUser } from '../../domain/moderation';
 import { SafetyMenu } from '../moderation/SafetyMenu';
 import { unhideContent, useHidden } from '../moderation/hiddenStore';
@@ -40,7 +41,9 @@ function Person({
       <Avatar url={avatarUrl} size={40} />
       <span className={styles.who}>
         <strong>
-          {f.displayName}
+          <Link to={`/profil/nutzer/${f.username}`} className={styles.nameLink}>
+            {f.displayName}
+          </Link>
           {f.badges.includes('founder') && <FounderBadge />}
         </strong>
         <span className="muted">{t.handle(f.username)}</span>
@@ -177,6 +180,17 @@ export function FriendsPage() {
           {status}
         </p>
         {error && <Notice tone="error">{error}</Notice>}
+        <UserSearchResults
+          query={name}
+          busy={busy}
+          reloadKey={state.kind === 'ready' ? state.list.length : 0}
+          onRequest={(u) =>
+            void run(async () => {
+              const r = await account.sendFriendRequest(u);
+              return r === 'sent' ? t.sent(u) : r === 'accepted' ? t.nowFriends(u) : t.already(u);
+            })
+          }
+        />
       </Section>
 
       {state.kind === 'loading' && <p className="muted">{t.loading}</p>}

@@ -7,13 +7,21 @@ test.beforeEach(async ({ page }) => {
   await useLocalExternals(page);
 });
 
-const axe = (page: Page) =>
-  new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa'])
-    .analyze()
-    .then((r) =>
-      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
-    );
+// Kontrast erst messen, wenn Ein-/Ausblendungen (Hinweise, Seitenwechsel) fertig sind – unter Last sonst wackelig
+const settled = (page: Page) =>
+  page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+        .map((a) => a.finished.catch(() => undefined)),
+    ),
+  );
+const axe = async (page: Page) => {
+  await settled(page);
+  const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  return r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id);
+};
 const noOverflow = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
 

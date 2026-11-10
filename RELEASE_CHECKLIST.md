@@ -61,7 +61,7 @@ Kein Tracking (keine Weitergabe an Werbenetzwerke, keine Verknüpfung mit fremde
 |---|---|---|---|
 | Kontaktdaten – E-Mail-Adresse | App-Funktion (Anmeldung) | ja | nur mit Konto |
 | Nutzerinhalte – Fotos | App-Funktion (geteilte Beiträge, Profilbild) | ja | nur was man teilt |
-| Nutzerinhalte – andere (Text, Kommentare, Fischart/Länge) | App-Funktion | ja | nur was man teilt |
+| Nutzerinhalte – andere (Text, Kommentare, Fischart/Länge, Profiltext und -angaben für Freunde) | App-Funktion | ja | nur was man teilt bzw. mit Konto angibt |
 | Standort – genau | App-Funktion (geteilte Spots) | ja | nur wenn man einen Spot teilt |
 | Standort – ungefähr | App-Funktion (Wetter, gerundet) | nein | Wetter an |
 | Kennungen – Nutzer-ID | App-Funktion (Konto) | ja | nur mit Konto |

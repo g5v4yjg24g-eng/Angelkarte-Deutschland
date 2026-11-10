@@ -59,7 +59,11 @@ function Count({ value, label }: { value: string; label: string }) {
 }
 
 /** Freiwillige Angaben (Paket 11): nur zeigen, was ausgefüllt ist */
-function ProfileFacts({ profile }: { profile: Profile }) {
+export function ProfileFacts({
+  profile,
+}: {
+  profile: Pick<Profile, 'targetSpecies' | 'methods' | 'region'>;
+}) {
   const species = (profile.targetSpecies ?? []).map((id) => speciesById(id)?.de ?? id);
   const methods = (profile.methods ?? []).map((m) => de.catchForm.methods[m]);
   if (!species.length && !methods.length && !profile.region) return null;

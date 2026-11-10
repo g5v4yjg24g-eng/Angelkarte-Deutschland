@@ -9,6 +9,7 @@ import { parseBadges } from '../domain/badges';
 import { FriendRequestResultSchema, parseFriendRows } from '../domain/friends';
 import { photoExt } from '../domain/postSync';
 import { FEED_PAGE, parseFeedRows, type FeedPost } from '../domain/feed';
+import { parseUserHits, parseUserProfile } from '../domain/userProfile';
 import { parseSharedSpotRows } from '../domain/sharedSpots';
 import { parseBlockRows } from '../domain/moderation';
 import { parseCommentRows, parseReactionRows } from '../domain/reactions';
@@ -336,6 +337,39 @@ export function supabaseAccount(
       if (error) fail(error);
       return withPhotoUrls(c, parseFeedRows(data as unknown[] | null));
     },
+    async setProfileExtras(payload) {
+      const { error } = await (
+        await get()
+      ).rpc('set_my_profile_extras', {
+        new_bio: payload.bio,
+        species: payload.targetSpecies,
+        new_methods: payload.methods,
+        new_region: payload.region,
+        highlights: payload.highlightPostIds,
+      });
+      if (error) fail(error);
+    },
+    async userProfile(username) {
+      const { data, error } = await (await get()).rpc('user_profile', { name: username });
+      if (error) fail(error);
+      return parseUserProfile(data as unknown[] | null);
+    },
+    async userPosts(userId, before, onlyIds) {
+      const c = await get();
+      const { data, error } = await c.rpc('user_posts', {
+        author: userId,
+        before: before ?? null,
+        max_rows: FEED_PAGE,
+        only_ids: onlyIds ?? null,
+      });
+      if (error) fail(error);
+      return withPhotoUrls(c, parseFeedRows(data as unknown[] | null));
+    },
+    async searchUsers(term) {
+      const { data, error } = await (await get()).rpc('search_users', { q: term });
+      if (error) fail(error);
+      return parseUserHits(data as unknown[] | null);
+    },
     async sharedSpots() {
       const { data, error } = await (await get()).rpc('my_shared_spots');
       if (error) fail(error);
@@ -537,6 +571,31 @@ export function supabaseAccount(
         if (u) out.set(id, u);
       }
       return out;
+    },
+    async modProfileText(userId) {
+      const { data, error } = await (await get()).rpc('mod_profile_text', { who: userId });
+      if (error) fail(error);
+      const row = (Array.isArray(data) ? data[0] : undefined) as
+        | {
+            bio?: string | null;
+            target_species?: string[] | null;
+            methods?: string[] | null;
+            region?: string | null;
+          }
+        | undefined;
+      if (!row) return undefined;
+      const facts = [
+        ...(row.target_species ?? []),
+        ...(row.methods ?? []),
+        ...(row.region ? [row.region] : []),
+      ];
+      return { bio: row.bio ?? undefined, facts };
+    },
+    async modClearProfile(userId, note) {
+      const { error } = await (
+        await get()
+      ).rpc('mod_clear_profile', { who: userId, report: null, note: note ?? null });
+      if (error) fail(error);
     },
     async modClearAvatar(userId, reportId, note) {
       const c = await get();

@@ -1,6 +1,7 @@
 // Neuer Beitrag: Fotos wählen (neu kodiert, ohne EXIF), Text, optional mit einem Fang verknüpfen. Ist ein Fang
 // gewählt, lassen sich seine Fotos übernehmen (als Kopie). Aufruf aus einem Fang: /profil/neu?fang=<id>.
-import { useMemo, useState, type FormEvent } from 'react';
+// Aus einer Session (Paket 12): /profil/neu?session=<id> – fügt ein Bild der Zusammenfassung (ohne Ort) ein.
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
@@ -28,6 +29,7 @@ import { processPhoto, type ProcessedPhoto } from '../../lib/processPhoto';
 import { PhotoThumb } from '../catches/CatchPhotos';
 import { catchSummary } from './catchSummary';
 import { usePhotos } from './usePhoto';
+import { createSessionSummary } from '../sessions/share/sessionSummary';
 import photoStyles from '../catches/CatchPhotos.module.css';
 import styles from './Profile.module.css';
 
@@ -50,16 +52,40 @@ export function NewPostPage() {
   /** Highlight einer gemeinsamen Session (Paket 8b) – nur bewusst, Standard aus */
   const [asHighlight, setAsHighlight] = useState(false);
 
+  // Session-Zusammenfassung (Paket 12): einmal erstellen und als erstes Bild einfügen
+  const summaryOf = params.get('session') ?? '';
+  const [summary, setSummary] = useState<'loading' | 'error' | { groupId?: string | undefined } | undefined>(
+    () => (summaryOf ? 'loading' : undefined),
+  );
+  useEffect(() => {
+    if (!summaryOf) return;
+    let live = true;
+    createSessionSummary(summaryOf)
+      .then((r) => {
+        if (!live) return;
+        if (!r) return setSummary('error');
+        setPending((p) => [{ key: newId(), photo: r.photo }, ...p]);
+        setCaption((c) => c || r.caption);
+        setSummary({ groupId: r.groupId });
+      })
+      .catch(() => live && setSummary('error'));
+    return () => {
+      live = false;
+    };
+  }, [summaryOf]);
+
   const catches = useLiveQuery(
     async () => (await getDb().catches.orderBy('at').reverse().toArray()).filter((c) => !c.deletedAt),
     [],
   );
   const chosen = catches?.find((c) => c.id === catchId);
   const catchPhotos = usePhotos(chosen?.photoIds);
-  const groupId = useLiveQuery(
+  const catchGroupId = useLiveQuery(
     async () => (chosen?.sessionId ? (await getDb().sessions.get(chosen.sessionId))?.groupId : undefined),
     [chosen?.sessionId],
   );
+  const summaryGroup = typeof summary === 'object' ? summary.groupId : undefined;
+  const groupId = catchGroupId ?? summaryGroup;
   const highlight = asHighlight && !!groupId && !!storedUserId();
   const takenFromCatch = (catchPhotos ?? []).filter((p) => !skipped.includes(p.id));
   const species = info?.species ?? chosen?.speciesId ?? '';
@@ -139,6 +165,15 @@ export function NewPostPage() {
   return (
     <Page title={t.newPost} back="/profil">
       <form className={styles.form} onSubmit={(e) => void submit(e)} noValidate>
+        {summaryOf && (
+          <Notice tone={summary === 'error' ? 'error' : 'info'}>
+            {summary === 'loading'
+              ? de.sessionShare.preparing
+              : summary === 'error'
+                ? de.sessionShare.error
+                : de.sessionShare.notice}
+          </Notice>
+        )}
         <SelectField
           label={t.linkCatch}
           value={catchId}
@@ -224,7 +259,7 @@ export function NewPostPage() {
         {!highlight && <VisibilityField value={visibility} onChange={setVisibility} />}
         {error && <Notice tone="error">{error}</Notice>}
         <div className={styles.formActions}>
-          <Button type="submit" disabled={busy}>
+          <Button type="submit" disabled={busy || summary === 'loading'}>
             {t.publish}
           </Button>
           <Button variant="secondary" onClick={() => void navigate('/profil')}>

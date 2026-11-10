@@ -77,6 +77,12 @@ async function fakeSupabase(
     ended: [] as string[],
     left: [] as string[],
   };
+  // Paket 12: Profile anderer (per Nutzername), Suchtreffer, eigene Angaben auf dem Server
+  const people = {
+    profiles: new Map<string, Record<string, unknown>>(),
+    extras: [] as Record<string, unknown>[],
+    searches: [] as string[],
+  };
   const posts = new Map<
     string,
     { id: string; caption: string | null; visibility: string; photo_paths: string[] }
@@ -557,6 +563,42 @@ async function fakeSupabase(
         group.ended.push(session);
         return route.fulfill({ status: 204 });
       }
+      case 'POST /rest/v1/rpc/mod_profile_text':
+        return json(route, []);
+      case 'POST /rest/v1/rpc/set_my_profile_extras':
+        people.extras.push(req.postDataJSON() as Record<string, unknown>);
+        return route.fulfill({ status: 204 });
+      case 'POST /rest/v1/rpc/user_profile': {
+        const { name } = req.postDataJSON() as { name: string };
+        const p = people.profiles.get(name);
+        return json(route, p ? [p] : []);
+      }
+      case 'POST /rest/v1/rpc/user_posts': {
+        const { author, only_ids } = req.postDataJSON() as { author: string; only_ids: string[] | null };
+        return json(
+          route,
+          feed.filter((p) => {
+            const x = p as { author_id?: string; id?: string };
+            return x.author_id === author && (!only_ids || only_ids.includes(x.id ?? ''));
+          }),
+        );
+      }
+      case 'POST /rest/v1/rpc/search_users': {
+        const { q } = req.postDataJSON() as { q: string };
+        people.searches.push(q);
+        return json(
+          route,
+          [...people.profiles.values()]
+            .filter((p) => `${String(p.username)} ${String(p.display_name)}`.toLowerCase().includes(q))
+            .map((p) => ({
+              user_id: p.user_id,
+              username: p.username,
+              display_name: p.display_name,
+              badges: p.badges ?? [],
+              relation: p.relation,
+            })),
+        );
+      }
       case 'POST /rest/v1/rpc/delete_my_account':
         profile = null;
         return route.fulfill({ status: 204 });
@@ -577,7 +619,9 @@ async function fakeSupabase(
     avatars: { value: avatars },
     saves: { value: saves },
     group: { value: group },
+    people: { value: people },
   }) as string[] & {
+    people: typeof people;
     group: typeof group;
     saves: typeof saves;
     avatars: typeof avatars;
@@ -2110,4 +2154,122 @@ test('SAVE-1: Beitrag speichern – Lesezeichen im Feed, Liste „Gespeichert“
   await expect(savedCard.getByRole('button', { name: 'Speichern' })).toHaveAttribute('aria-pressed', 'false');
   await expect.poll(() => calls.saves.length).toBe(0);
   expect(errors).toEqual([]);
+});
+
+test('SOC-1: Nutzer suchen, Profil eines Freundes mit Angaben, Highlights und Beiträgen; Fremde ohne Angaben', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(
+    page,
+    [],
+    [],
+    [
+      feedRow({}),
+      feedRow({
+        id: '33333333-3333-4333-8333-333333333333',
+        caption: 'Hecht im Schilf',
+        created_at: '2026-11-05T18:00:00+00:00',
+      }),
+    ],
+  );
+  calls.people.profiles.set('anna', {
+    user_id: 'u-anna',
+    username: 'anna',
+    display_name: 'Anna Hecht',
+    badges: ['founder'],
+    relation: 'friend',
+    friend_count: 4,
+    bio: 'Raubfisch am Rhein',
+    target_species: ['pike', 'zander'],
+    methods: ['spinning'],
+    region: 'NW',
+    highlight_post_ids: ['33333333-3333-4333-8333-333333333333'],
+  });
+  calls.people.profiles.set('fremd', {
+    user_id: 'u-fremd',
+    username: 'fremd',
+    display_name: 'Fremder Angler',
+    badges: [],
+    relation: 'none',
+    friend_count: 0,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil/freunde');
+  await waitForApp(page);
+
+  // Suche ab 3 Zeichen
+  const field = page.getByRole('textbox', { name: 'Nutzername' });
+  await field.fill('an');
+  await expect(page.getByRole('heading', { name: 'Treffer' })).toHaveCount(0);
+  await field.fill('angler');
+  const hits = page.getByRole('list', { name: 'Treffer' });
+  await expect(hits.getByRole('link', { name: 'Profil von Fremder Angler ansehen' })).toBeVisible();
+  await field.fill('anna');
+  await expect(hits.getByText('@anna · Befreundet')).toBeVisible();
+  await expect(hits.getByRole('button', { name: 'Anfrage senden' })).toHaveCount(0);
+  expect(calls.people.searches).toEqual(['angler', 'anna']);
+
+  // Profil eines Freundes
+  await hits.getByRole('link', { name: 'Profil von Anna Hecht ansehen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Anna Hecht' })).toBeVisible();
+  await expect(page.getByText('Raubfisch am Rhein')).toBeVisible();
+  const facts = page.locator('dl');
+  await expect(facts).toContainText('Hecht · Zander');
+  await expect(facts).toContainText('Spinnfischen');
+  await expect(facts).toContainText('Nordrhein-Westfalen');
+  const highlights = page.getByRole('region', { name: 'Highlights' });
+  await expect(highlights.getByText('Hecht im Schilf')).toBeVisible();
+  await expect(highlights.getByText('Zander am Abend')).toHaveCount(0);
+  const postsSection = page.getByRole('region', { name: 'Beiträge' });
+  await expect(postsSection.getByText('Zander am Abend')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+
+  // Fremder: keine Angaben, Anfrage möglich
+  await page.goto('/profil/nutzer/fremd');
+  await expect(page.getByRole('heading', { level: 1, name: 'Fremder Angler' })).toBeVisible();
+  await expect(page.getByText('sobald ihr befreundet seid', { exact: false })).toBeVisible();
+  await expect(page.locator('dl')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Freund hinzufügen' }).click();
+  await expect(page.getByText('Anfrage an @fremd gesendet.')).toBeVisible();
+
+  // unbekannt
+  await page.goto('/profil/nutzer/niemand');
+  await expect(page.getByText('Dieses Profil gibt es nicht', { exact: false })).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('SOC-2: eigene Angaben gehen angemeldet genau einmal an den Server', async ({ page }) => {
+  const calls = await fakeSupabase(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil/bearbeiten');
+  await page.getByLabel('Name', { exact: true }).fill('Kevin');
+  await page.getByLabel('Über dich').fill('Am liebsten früh am Morgen');
+  await page.getByLabel('Fischart hinzufügen').selectOption({ label: 'Hecht' });
+  await page.getByLabel('Region').selectOption({ label: 'Nordrhein-Westfalen' });
+  await page.getByRole('button', { name: 'Speichern' }).click();
+  await expect(page).toHaveURL(/\/profil$/);
+  await expect
+    .poll(() => calls.people.extras.at(-1))
+    .toEqual({
+      new_bio: 'Am liebsten früh am Morgen',
+      species: ['pike'],
+      new_methods: [],
+      new_region: 'NW',
+      highlights: [],
+    });
+  const sent = calls.people.extras.length;
+  await page.reload();
+  await waitForApp(page);
+  await page.waitForTimeout(500);
+  expect(calls.people.extras.length).toBe(sent);
 });
