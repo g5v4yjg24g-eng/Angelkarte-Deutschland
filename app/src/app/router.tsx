@@ -113,6 +113,13 @@ export const routes = [
             ),
           },
           {
+            path: 'verwaltung/regeln',
+            lazy: page(
+              () => import('../features/moderation/admin/RulesAdminPage'),
+              (m) => m.RulesAdminPage,
+            ),
+          },
+          {
             path: 'verwaltung/rollen',
             lazy: page(
               () => import('../features/moderation/admin/RolesPage'),

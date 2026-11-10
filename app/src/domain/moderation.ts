@@ -70,14 +70,15 @@ export function isHidden(
 }
 
 /**
- * Regeln der Community: Zustimmung vor dem Versand des Anmeldecodes (Wunsch Nutzer 2026-11-03).
- * Ändern sich die Regeln, Version erhöhen – dann erscheint das Fenster erneut.
+ * Regeln der Community: Zustimmung vor dem Registrieren (Wunsch Nutzer 2026-11-03). Seit 2026-11-10 kommen neue
+ * Fassungen vom Server (domain/communityRules.ts); RULES_VERSION ist die in der App eingebaute Fassung.
  */
 export const RULES_VERSION = 1;
 
-export function needsRulesConsent(stored: string | null): boolean {
+/** Gerätespeicher (Zahl als Text) gegen die aktuelle Fassung */
+export function needsRulesConsent(stored: string | null, current: number = RULES_VERSION): boolean {
   const n = Number(stored);
-  return !(stored && Number.isFinite(n) && n >= RULES_VERSION);
+  return !(stored && Number.isFinite(n) && n >= current);
 }
 
 export function moderationErrorKind(

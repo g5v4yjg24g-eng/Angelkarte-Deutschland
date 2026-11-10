@@ -19,6 +19,7 @@ import { UsageTracker } from '../features/usage/UsageTracker';
 import { AuthRedirect } from '../features/account/AuthRedirect';
 import { SessionTracker } from '../features/sessions/tracking/SessionTracker';
 import { GaugeSync } from '../features/weather/GaugeSync';
+import { RulesSync } from '../features/moderation/RulesSync';
 import { ProfileNavIcon } from '../features/profile/ProfileNavIcon';
 import { BottomNav, type NavItem } from './BottomNav';
 import styles from './AppShell.module.css';
@@ -66,6 +67,7 @@ export function RootLayout() {
       <AuthRedirect />
       <SessionTracker />
       <GaugeSync />
+      <RulesSync />
     </>
   );
 }

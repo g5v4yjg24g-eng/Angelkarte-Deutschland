@@ -52,3 +52,17 @@
   display: grid;
   gap: var(--space-2);
 }
+.small {
+  font-size: var(--text-sm);
+}
+.changed {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-2, var(--color-surface));
+  border: 1px solid var(--color-border);
+}
+.changed p {
+  margin: 0;
+}

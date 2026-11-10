@@ -165,6 +165,11 @@ function fakeAccount(badges: Badge[] = []): FakeAccount {
     modRemoveBlockedName: () => Promise.resolve(),
     modLogList: () => Promise.resolve([]),
     modStats: () => Promise.resolve(undefined),
+    currentRules: () => Promise.resolve(undefined),
+    myRulesConsent: () => Promise.resolve(0),
+    acceptRules: () => Promise.resolve(),
+    modRulesHistory: () => Promise.resolve([]),
+    modPublishRules: () => Promise.resolve(2),
     modResolve: () => Promise.resolve(),
     modPasswordNotice: () => Promise.resolve({ pending: 0, sent: 0, failed: 0 }),
     modBan: () => Promise.resolve(),
@@ -250,7 +255,7 @@ describe('Mehr → Konto (ACC-2)', () => {
     expect(await screen.findByText(/Es wurde keine E-Mail verschickt/)).toBeInTheDocument();
     expect(acc.calls).toEqual([]);
     fireEvent.click(screen.getByRole('button', { name: 'Konto erstellen' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Akzeptieren' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Akzeptieren' }));
     expect(await screen.findByText(/E-Mail an max@example\.de geschickt/)).toBeInTheDocument();
     expect(acc.calls).toEqual(['signup:max@example.de']);
     expect(screen.getByRole('button', { name: /Erneut senden in \d+ s möglich/ })).toBeDisabled();

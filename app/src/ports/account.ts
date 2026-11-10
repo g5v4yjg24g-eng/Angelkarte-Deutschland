@@ -34,6 +34,7 @@ import type {
   ModStats,
   StatsPeriod,
 } from '../domain/modTools';
+import type { CommunityRules, RulesVersion } from '../domain/communityRules';
 
 export interface AccountUser {
   id: string;
@@ -238,6 +239,14 @@ export interface AccountProvider {
   modRemoveBlockedName(pattern: string): Promise<void>;
   /** Moderationsprotokoll, neueste zuerst, 100 je Seite; `before` = Zeitpunkt des letzten Eintrags */
   modLogList(action?: string, before?: string): Promise<ModLogItem[]>;
+  /** Community-Regeln: aktuelle Fassung (auch ohne Konto lesbar), eigene Zustimmung, zustimmen */
+  currentRules(): Promise<CommunityRules | undefined>;
+  /** höchste Fassung, der dieses Konto zugestimmt hat (0 = keiner) */
+  myRulesConsent(): Promise<number>;
+  acceptRules(version: number): Promise<void>;
+  /** Admin: alle Fassungen mit Zustimmungen; neue Fassung veröffentlichen (nur Founder) – liefert die Nummer */
+  modRulesHistory(): Promise<RulesVersion[]>;
+  modPublishRules(intro: string, items: string[], summary: string): Promise<number>;
   /** Statistiken über einen Zeitraum (nur Zahlen) */
   modStats(days: StatsPeriod): Promise<ModStats | undefined>;
   modResolve(reportId: string, note?: string): Promise<void>;

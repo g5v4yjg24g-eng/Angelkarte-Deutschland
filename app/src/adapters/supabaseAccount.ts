@@ -29,6 +29,7 @@ import {
   parseModUserItems,
 } from '../domain/modAdmin';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
+import { parseCurrentRules, parseRulesHistory } from '../domain/communityRules';
 import { parseBlockedNames, parseModLogItems, parseModRole, parseModRoles, parseModStats } from '../domain/modTools';
 
 type Row = { id: string; username: string; display_name: string };
@@ -735,6 +736,30 @@ export function supabaseAccount(
       });
       if (error) fail(error);
       return parseModLogItems(data as unknown[] | null);
+    },
+    async currentRules() {
+      const { data, error } = await (await get()).rpc('current_rules');
+      if (error) fail(error);
+      return parseCurrentRules(data as unknown[] | null);
+    },
+    async myRulesConsent() {
+      const { data, error } = await (await get()).rpc('my_rules_consent');
+      if (error) fail(error);
+      return typeof data === 'number' ? data : 0;
+    },
+    async acceptRules(version) {
+      const { error } = await (await get()).rpc('accept_rules', { v: version });
+      if (error) fail(error);
+    },
+    async modRulesHistory() {
+      const { data, error } = await (await get()).rpc('mod_rules_history');
+      if (error) fail(error);
+      return parseRulesHistory(data as unknown[] | null);
+    },
+    async modPublishRules(intro, items, summary) {
+      const { data, error } = await (await get()).rpc('mod_publish_rules', { intro, items, summary });
+      if (error) fail(error);
+      return typeof data === 'number' ? data : 0;
     },
     async modStats(days) {
       const { data, error } = await (await get()).rpc('mod_stats', { days });

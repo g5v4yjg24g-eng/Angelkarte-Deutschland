@@ -250,6 +250,7 @@ export function modErrorKind(
   | 'reauth'
   | 'emailNotAllowed'
   | 'exists'
+  | 'founderOnly'
   | 'notSignedIn'
   | 'offline'
   | 'unknown' {
@@ -259,6 +260,7 @@ export function modErrorKind(
   if (m.includes('reauth_required')) return 'reauth';
   if (m.includes('email_not_allowed')) return 'emailNotAllowed';
   if (/\bexists\b/.test(m)) return 'exists';
+  if (m.includes('founder_only')) return 'founderOnly';
   if (m.includes('self')) return 'self';
   if (m.includes('not_found') || m.includes('not_banned')) return 'notFound';
   if (m.includes('no_reason')) return 'noReason';
