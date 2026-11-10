@@ -805,6 +805,8 @@ export const de = {
     commentRestored: 'Kommentar wiederhergestellt.',
     reactionsNote:
       'Dieser Beitrag ist nur auf deinem Gerät: Gefällt mir und Kommentare sind nur deine eigenen. Teilst du ihn mit deinem Konto, können Freunde mitmachen.',
+    reactionsNoteSignedIn:
+      'Noch nicht geteilt: Tippe oben auf „Teilen“, dann erscheint der Beitrag im Feed und Freunde können mitmachen.',
     visibilityLabel: 'Sichtbar für',
     visibility: { friends: 'Freunde', public: 'Alle' },
     visibilityHint:
@@ -824,6 +826,14 @@ export const de = {
     shareLimited:
       'Tagesgrenze erreicht (20 neue Beiträge in 24 Stunden). Der Beitrag wird später automatisch geteilt.',
     shareNow: 'Teilen',
+    shareFailed: 'Teilen hat nicht geklappt – prüfe die Verbindung.',
+    shareRetry: 'Erneut versuchen',
+    localPosts: (n: number) =>
+      n === 1
+        ? '1 Beitrag ist nur auf diesem Gerät – Freunde sehen ihn nicht.'
+        : `${n} Beiträge sind nur auf diesem Gerät – Freunde sehen sie nicht.`,
+    shareAll: 'Alle teilen',
+    sharedAll: (n: number) => (n === 1 ? '1 Beitrag wird geteilt.' : `${n} Beiträge werden geteilt.`),
     unshare: 'Nicht mehr teilen',
     visibleFor: (who: string) => `Sichtbar für: ${who}`,
   },

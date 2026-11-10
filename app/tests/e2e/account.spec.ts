@@ -990,6 +990,35 @@ test('PST-4: ohne Anmeldung bleibt ein neuer Beitrag auf dem Gerät', async ({ p
   expect(server).toEqual([]);
 });
 
+test('PST-5: vor der Anmeldung gepostete Beiträge – Hinweis im Profil und „Alle teilen“ lädt sie hoch', async ({
+  page,
+}) => {
+  const server = await fakeSupabase(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
+  await page.getByLabel('Text').fill('Barsch am Morgen');
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await expect(page.getByRole('list', { name: 'Beiträge' }).getByRole('link')).toHaveCount(1);
+  // ohne Konto kein Hinweis
+  await expect(
+    page.getByText('nur auf diesem Gerät – Freunde sehen ihn nicht', { exact: false }),
+  ).toHaveCount(0);
+
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil');
+  await waitForApp(page);
+  await expect(page.getByText('1 Beitrag ist nur auf diesem Gerät – Freunde sehen ihn nicht.')).toBeVisible();
+  expect(server.posts.size).toBe(0);
+  await page.getByRole('button', { name: 'Alle teilen' }).click();
+  await expect(page.getByText('1 Beitrag wird geteilt.')).toBeVisible();
+  await expect
+    .poll(() => [...server.posts.values()])
+    .toEqual([expect.objectContaining({ caption: 'Barsch am Morgen', visibility: 'friends' })]);
+  await expect(page.getByRole('button', { name: 'Alle teilen' })).toHaveCount(0);
+});
+
 const feedRow = (o: Record<string, unknown>) => ({
   id: '11111111-1111-4111-8111-111111111111',
   author_id: 'u-anna',

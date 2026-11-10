@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-02-2',
+    title: 'Beiträge teilen',
+    items: [
+      'Profil: Liegen Beiträge noch nur auf deinem Gerät (z. B. von vor der Anmeldung), zeigt das Profil einen Hinweis mit „Alle teilen“.',
+      'Beitrag: Klappt das Teilen nicht, siehst du das jetzt und kannst es erneut versuchen.',
+    ],
+  },
+  {
     id: '2026-12-02',
     title: 'Profil teilen',
     items: [

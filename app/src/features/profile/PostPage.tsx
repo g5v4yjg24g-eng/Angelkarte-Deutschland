@@ -34,7 +34,7 @@ import { useObjectUrl } from '../../lib/useObjectUrl';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useMyBadges } from '../badges/badgeStore';
 import { setShare } from '../../data/postSyncService';
-import { useLimitedPosts } from '../sharing/postLimitStore';
+import { retryPostSync, useFailedPosts, useLimitedPosts } from '../sharing/postLimitStore';
 import { shareStatus } from '../../domain/postSync';
 import { storedUserId } from '../badges/badgeStore';
 import { Avatar } from './Avatar';
@@ -119,9 +119,15 @@ function EditForm({ post, onDone }: { post: Post; onDone: () => void }) {
 function ShareRow({ postId, status }: { postId: string; status: 'local' | 'pending' | 'shared' }) {
   const signedIn = !!storedUserId();
   const limited = useLimitedPosts().has(postId) && status === 'pending';
+  const failed = useFailedPosts().has(postId) && status === 'pending';
   return (
     <p className={`muted ${styles.shareRow}`}>
-      <span role="status">{limited ? t.shareLimited : t.shareStatus[status]}</span>
+      <span role="status">{limited ? t.shareLimited : failed ? t.shareFailed : t.shareStatus[status]}</span>
+      {signedIn && failed && (
+        <Button variant="secondary" onClick={retryPostSync}>
+          {t.shareRetry}
+        </Button>
+      )}
       {signedIn && status === 'local' && (
         <Button variant="secondary" onClick={() => void setShare(postId, 'pending')}>
           {t.shareNow}
@@ -315,7 +321,13 @@ export function PostPage() {
           onClose={() => setCommentsOpen(false)}
         />
       )}
-      <p className={`muted ${styles.note}`}>{server ? de.reactions.sharedNote : t.reactionsNote}</p>
+      <p className={`muted ${styles.note}`}>
+        {server
+          ? de.reactions.sharedNote
+          : storedUserId() && shareStatus(post) === 'local'
+            ? t.reactionsNoteSignedIn
+            : t.reactionsNote}
+      </p>
       {!editing && (
         <div className={styles.formActions}>
           <Button variant="secondary" onClick={() => setEditing(true)}>
