@@ -4,7 +4,7 @@ import { freshDb } from '../test/dbTestUtils';
 import type { AccountProvider, SharedPostInput } from '../ports/account';
 import type { NewPhoto } from './catchService';
 import { createPost, removePost, restorePost, updatePost } from './profileService';
-import { setShare, syncPosts } from './postSyncService';
+import { setShare, shareAllLocal, syncPosts } from './postSyncService';
 
 const photo = (): NewPhoto => ({
   blob: new Blob([new Uint8Array(20)], { type: 'image/jpeg' }),
@@ -47,10 +47,10 @@ describe('Beiträge teilen (PST-2)', () => {
     const p = await createPost({ caption: 'Hecht!', share: 'pending', photos: [photo(), photo()] }, db);
     await createPost({ caption: 'nur lokal', photos: [photo()] }, db);
 
-    expect(await syncPosts(s.account, db)).toEqual({ done: 1, failed: 0, limited: [] });
+    expect(await syncPosts(s.account, db)).toEqual({ done: 1, failed: 0, limited: [], failedIds: [] });
     expect(s.posts.get(p.id)).toMatchObject({ caption: 'Hecht!', visibility: 'friends', photos: 2 });
     expect((await db.posts.get(p.id))?.share).toBe('shared');
-    expect(await syncPosts(s.account, db)).toEqual({ done: 0, failed: 0, limited: [] }); // nichts mehr zu tun
+    expect(await syncPosts(s.account, db)).toEqual({ done: 0, failed: 0, limited: [], failedIds: [] }); // nichts mehr zu tun
 
     await updatePost(p.id, { caption: 'Hecht, 92 cm', visibility: 'public' }, db);
     await syncPosts(s.account, db);
@@ -82,7 +82,12 @@ describe('Beiträge teilen (PST-2)', () => {
   it('ohne Verbindung bleibt der Beitrag zum Hochladen vorgemerkt', async () => {
     const db = freshDb();
     const p = await createPost({ share: 'pending', photos: [photo()] }, db);
-    expect(await syncPosts(server(true).account, db)).toEqual({ done: 0, failed: 1, limited: [] });
+    expect(await syncPosts(server(true).account, db)).toEqual({
+      done: 0,
+      failed: 1,
+      limited: [],
+      failedIds: [p.id],
+    });
     expect((await db.posts.get(p.id))?.share).toBe('pending');
   });
 
@@ -93,6 +98,7 @@ describe('Beiträge teilen (PST-2)', () => {
       done: 0,
       failed: 1,
       limited: [p.id],
+      failedIds: [],
     });
     expect((await db.posts.get(p.id))?.share).toBe('pending');
   });
@@ -107,5 +113,21 @@ describe('Beiträge teilen (PST-2)', () => {
     expect((await db.posts.get(p.id))?.groupId).toBe('g1');
     await syncPosts(s.account, db);
     expect(s.posts.get(p.id)).toMatchObject({ groupId: 'g1' });
+  });
+
+  it('„Alle teilen“ merkt nur Beiträge vor, die bisher nur auf dem Gerät liegen (PST-3)', async () => {
+    const db = freshDb();
+    const local1 = await createPost({ photos: [photo()] }, db);
+    const local2 = await createPost({ photos: [photo()], visibility: 'public' }, db);
+    const shared = await createPost({ share: 'pending', photos: [photo()] }, db);
+    const gone = await createPost({ photos: [photo()] }, db);
+    await removePost(gone.id, db);
+    expect(await shareAllLocal(db)).toBe(2);
+    expect((await db.posts.get(local1.id))?.share).toBe('pending');
+    expect(await db.posts.get(local2.id)).toMatchObject({ share: 'pending', visibility: 'public' });
+    expect((await db.posts.get(gone.id))?.share).toBeUndefined();
+    const srv = server();
+    await syncPosts(srv.account, db);
+    expect([...srv.posts.keys()].sort()).toEqual([local1.id, local2.id, shared.id].sort());
   });
 });

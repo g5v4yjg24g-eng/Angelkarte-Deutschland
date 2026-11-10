@@ -10,6 +10,8 @@ export interface PostSyncResult {
   failed: number;
   /** Server-Grenze erreicht (Paket 7c: höchstens 20 neue Beiträge in 24 h) – Beiträge, die deshalb warten */
   limited: string[];
+  /** Hochladen fehlgeschlagen (nicht wegen der Grenze) – die App zeigt „Erneut versuchen“ */
+  failedIds: string[];
 }
 
 /** Fehler der Server-Grenze für neue Beiträge (*_discover.sql) */
@@ -32,7 +34,7 @@ export async function syncPosts(
   db: FangpunktDB = getDb(),
 ): Promise<PostSyncResult> {
   const plan = planPostSync(await db.posts.toArray());
-  const result: PostSyncResult = { done: 0, failed: 0, limited: [] };
+  const result: PostSyncResult = { done: 0, failed: 0, limited: [], failedIds: [] };
   const step = async (fn: () => Promise<void>, id?: string) => {
     try {
       await fn();
@@ -40,6 +42,7 @@ export async function syncPosts(
     } catch (e) {
       result.failed++;
       if (id && isPostLimitError(e)) result.limited.push(id);
+      else if (id) result.failedIds.push(id);
     }
   };
   for (const p of plan.upload)
@@ -98,6 +101,15 @@ export async function syncPosts(
 }
 
 /** Teilen anstoßen oder zurücknehmen (ändert rev nicht) */
+/** Alle Beiträge, die nur auf dem Gerät liegen, zum Teilen vormerken (bewusst per Knopf); liefert die Anzahl */
+export async function shareAllLocal(db: FangpunktDB = getDb()): Promise<number> {
+  return db.posts
+    .filter((p) => !p.deletedAt && !p.share)
+    .modify((p) => {
+      p.share = 'pending';
+    });
+}
+
 export async function setShare(id: string, share: 'pending' | 'unshare', db: FangpunktDB = getDb()) {
   await db.posts
     .where('id')

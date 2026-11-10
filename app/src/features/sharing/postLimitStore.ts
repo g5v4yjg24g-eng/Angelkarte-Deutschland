@@ -23,3 +23,29 @@ const snapshot = () => limited;
 export function useLimitedPosts(): ReadonlySet<string> {
   return useSyncExternalStore(subscribe, snapshot);
 }
+
+// Beiträge, deren Hochladen fehlgeschlagen ist (z. B. keine Verbindung) – nur im Speicher; „Erneut versuchen“
+// stößt einen neuen Abgleich an
+let failed: ReadonlySet<string> = new Set();
+let retryTick = 0;
+const failedListeners = new Set<() => void>();
+const notifyFailed = () => failedListeners.forEach((l) => l());
+
+export function setFailedPosts(ids: readonly string[]) {
+  if (ids.length === failed.size && ids.every((id) => failed.has(id))) return;
+  failed = new Set(ids);
+  notifyFailed();
+}
+export function retryPostSync() {
+  retryTick++;
+  failed = new Set();
+  notifyFailed();
+}
+const subscribeFailed = (l: () => void) => {
+  failedListeners.add(l);
+  return () => {
+    failedListeners.delete(l);
+  };
+};
+export const useFailedPosts = (): ReadonlySet<string> => useSyncExternalStore(subscribeFailed, () => failed);
+export const useRetryTick = (): number => useSyncExternalStore(subscribeFailed, () => retryTick);
