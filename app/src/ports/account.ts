@@ -25,6 +25,15 @@ import type {
   ModUserRow,
   ModWarning,
 } from '../domain/modAdmin';
+import type {
+  BlockedName,
+  BlockedNameKind,
+  ModLogItem,
+  ModRole,
+  ModRoleEntry,
+  ModStats,
+  StatsPeriod,
+} from '../domain/modTools';
 
 export interface AccountUser {
   id: string;
@@ -220,6 +229,17 @@ export interface AccountProvider {
   modUsers(query: string, filter: ModUserFilter, before?: string): Promise<ModUserRow[]>;
   /** Darf dieses Konto per E-Mail suchen? (nur Anzeige; der Server prüft selbst) */
   modCanSearchEmail(): Promise<boolean>;
+  /** Verwaltung: eigene Rolle (undefined = keine) und alle Moderatoren; vergeben wird nur im SQL-Editor */
+  modMyRole(): Promise<ModRole | undefined>;
+  modRoles(): Promise<ModRoleEntry[]>;
+  /** Gesperrte Nutzernamen (gelten nur für neue Konten) */
+  modBlockedNames(): Promise<BlockedName[]>;
+  modAddBlockedName(pattern: string, kind: BlockedNameKind, note?: string): Promise<void>;
+  modRemoveBlockedName(pattern: string): Promise<void>;
+  /** Moderationsprotokoll, neueste zuerst, 100 je Seite; `before` = Zeitpunkt des letzten Eintrags */
+  modLogList(action?: string, before?: string): Promise<ModLogItem[]>;
+  /** Statistiken über einen Zeitraum (nur Zahlen) */
+  modStats(days: StatsPeriod): Promise<ModStats | undefined>;
   modResolve(reportId: string, note?: string): Promise<void>;
   /**
    * Einmalige Hinweis-Mail „Anmeldung jetzt mit Passwort“ an Konten ohne Passwort (Edge Function password-notice,

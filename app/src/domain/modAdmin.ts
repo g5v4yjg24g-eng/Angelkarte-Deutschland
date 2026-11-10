@@ -249,6 +249,7 @@ export function modErrorKind(
   | 'tooMany'
   | 'reauth'
   | 'emailNotAllowed'
+  | 'exists'
   | 'notSignedIn'
   | 'offline'
   | 'unknown' {
@@ -257,6 +258,7 @@ export function modErrorKind(
   if (m.includes('too_many_actions')) return 'tooMany';
   if (m.includes('reauth_required')) return 'reauth';
   if (m.includes('email_not_allowed')) return 'emailNotAllowed';
+  if (/\bexists\b/.test(m)) return 'exists';
   if (m.includes('self')) return 'self';
   if (m.includes('not_found') || m.includes('not_banned')) return 'notFound';
   if (m.includes('no_reason')) return 'noReason';

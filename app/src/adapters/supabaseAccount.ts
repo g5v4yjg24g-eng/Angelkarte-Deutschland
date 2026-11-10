@@ -29,6 +29,7 @@ import {
   parseModUserItems,
 } from '../domain/modAdmin';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
+import { parseBlockedNames, parseModLogItems, parseModRole, parseModRoles, parseModStats } from '../domain/modTools';
 
 type Row = { id: string; username: string; display_name: string };
 const toProfile = (r: Row): Profile => ({ id: r.id, username: r.username, displayName: r.display_name });
@@ -702,6 +703,43 @@ export function supabaseAccount(
       ).rpc('mod_users', { q: query, filter, before: before ?? null });
       if (error) fail(error);
       return parseModUserRows(data as unknown[] | null);
+    },
+    async modMyRole() {
+      const { data, error } = await (await get()).rpc('mod_my_role');
+      // fehlt die Funktion noch: keine Rolle anzeigen
+      if (error) return undefined;
+      return parseModRole(data);
+    },
+    async modRoles() {
+      const { data, error } = await (await get()).rpc('mod_roles');
+      if (error) fail(error);
+      return parseModRoles(data as unknown[] | null);
+    },
+    async modBlockedNames() {
+      const { data, error } = await (await get()).rpc('mod_blocked_usernames');
+      if (error) fail(error);
+      return parseBlockedNames(data as unknown[] | null);
+    },
+    async modAddBlockedName(pattern, kind, note) {
+      const { error } = await (await get()).rpc('mod_add_blocked_username', { pattern, kind, note: note ?? null });
+      if (error) fail(error);
+    },
+    async modRemoveBlockedName(pattern) {
+      const { error } = await (await get()).rpc('mod_remove_blocked_username', { pattern });
+      if (error) fail(error);
+    },
+    async modLogList(action, before) {
+      const { data, error } = await (await get()).rpc('mod_log_list', {
+        what: action ?? null,
+        before: before ?? null,
+      });
+      if (error) fail(error);
+      return parseModLogItems(data as unknown[] | null);
+    },
+    async modStats(days) {
+      const { data, error } = await (await get()).rpc('mod_stats', { days });
+      if (error) fail(error);
+      return parseModStats(data);
     },
     async modCanSearchEmail() {
       const { data, error } = await (await get()).rpc('mod_can_search_email');

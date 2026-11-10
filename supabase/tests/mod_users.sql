@@ -9,7 +9,7 @@ insert into public.profiles(id, username, display_name, created_at) values
   ('00000000-0000-0000-0000-0000000000c1','carl','Carl', now() - interval '1 hour'),
   ('00000000-0000-0000-0000-0000000000d1','dora','Dora', now() - interval '3 days');
 -- A: Moderatorin mit Founder-Abzeichen; D: Moderatorin ohne
-insert into public.moderators(user_id) values ('00000000-0000-0000-0000-0000000000a1'),('00000000-0000-0000-0000-0000000000d1');
+insert into public.moderators(user_id, role) values ('00000000-0000-0000-0000-0000000000a1','founder'),('00000000-0000-0000-0000-0000000000d1','moderator');
 insert into public.user_badges(user_id, badge) values ('00000000-0000-0000-0000-0000000000a1','founder');
 insert into public.reports(id, reporter, target_type, target_id, target_user, reason) values
   ('20000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-0000000000b1','user','c','00000000-0000-0000-0000-0000000000c1','spam');

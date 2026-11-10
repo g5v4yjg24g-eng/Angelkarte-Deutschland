@@ -55,6 +55,7 @@ describe('Konto-Regeln (ACC-1)', () => {
 
   it('Fehler des Anbieters werden eingeordnet', () => {
     expect(accountErrorKind({ code: '23505', message: 'duplicate key value' })).toBe('usernameTaken');
+    expect(accountErrorKind({ code: 'P0001', message: 'username_blocked' })).toBe('usernameTaken');
     expect(accountErrorKind({ status: 429, message: 'x' })).toBe('rateLimit');
     expect(
       accountErrorKind({ message: 'For security purposes, you can only request this after 42 seconds.' }),
