@@ -15,7 +15,7 @@ import {
 import { AccountError } from '../../ports/account';
 import { useProviders } from '../../ports/providersContext';
 import { storedUserId } from '../badges/badgeStore';
-import { registerDevice } from './pushDevice';
+import { lastPushRegisterError, registerDevice } from './pushDevice';
 import styles from './Push.module.css';
 
 const t = de.push;
@@ -55,7 +55,10 @@ export function PushSettings() {
     setError(undefined);
     const p = await push.requestPermission();
     setPermission(p);
-    if (p === 'granted') await registerDevice(push, account).catch(() => setError(t.registerError));
+    if (p === 'granted')
+      await registerDevice(push, account)
+        .then(() => account.pushStatus().then(setStatus))
+        .catch((e: unknown) => setError(t.registerFailed(e instanceof Error ? e.message : String(e))));
   };
 
   // Test an sich selbst: zeigt, ob das iPhone angemeldet ist und ob Apple die Mitteilung annimmt
@@ -65,7 +68,13 @@ export function PushSettings() {
     try {
       let n = await account.sendTestPush();
       if (n === 0 && permission === 'granted') {
-        await registerDevice(push, account);
+        try {
+          await registerDevice(push, account);
+        } catch (e) {
+          setStatus({ devices: 0 });
+          setTestMsg(t.registerFailed(e instanceof Error ? e.message : String(e)));
+          return;
+        }
         n = await account.sendTestPush();
       }
       if (n === 0) {
@@ -127,6 +136,9 @@ export function PushSettings() {
           {permission === 'granted' && (
             <div className={styles.test}>
               {status && <p className="muted">{status.devices > 0 ? t.deviceOk : t.deviceMissing}</p>}
+              {status?.devices === 0 && lastPushRegisterError() && (
+                <p className="muted">{t.registerFailed(lastPushRegisterError() ?? '')}</p>
+              )}
               <div>
                 <Button variant="secondary" disabled={testing} onClick={() => void sendTest()}>
                   {t.test}

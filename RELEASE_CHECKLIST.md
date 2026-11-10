@@ -21,7 +21,7 @@ Eingereicht wird nur durch den Nutzer; TestFlight-Bauten nur auf ausdrücklichen
 | Punkt | Wer | Stand |
 |---|---|---|
 | Bau und Upload über GitHub Actions (`ios.yml`) | – | ✅ erste Version 2026-11-03 [V], zweite 2026-11-10 mit Paketen 7–12 und Hintergrund-Route [V] |
-| Push-Mitteilungen (Server, Function `send-push`, APNs-Secrets) | Nutzer prüft am iPhone | 🔲 auf dem Gerät ungeprüft [O] |
+| Push-Mitteilungen (Server, Function `send-push`, APNs-Secrets) | Nutzer prüft am iPhone | 🔲 2026-11-10: 0 Geräte angemeldet – Bau prüft jetzt `aps-environment` in der signierten App, Einstellungen zeigen den Anmeldefehler und „Test-Mitteilung senden“ [O] |
 | Haptik, Tastatur, „wie eine echte App“ | Nutzer prüft am iPhone | 🔲 auf dem Gerät ungeprüft [O] |
 | **Dateien speichern in der App** (Sicherung, CSV, Kalenderdatei) über das Teilen-Menü (Web Share, ohne neue Abhängigkeit, Paket 10) | Claude, Nutzer prüft am iPhone | ✅ gebaut, 🔲 am iPhone prüfen; falls es dort nicht klappt: `@capacitor/share` + `filesystem` |
 | Erinnerungen vor Angelterminen (`@capacitor/local-notifications`) | Claude | 🔲 gewünscht (Nutzer 2026-11-02), hilft gegen Ablehnung nach Regel 4.2 |

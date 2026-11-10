@@ -13,9 +13,13 @@ export function PushSetup() {
   const userId = account.enabled ? storedUserId() : undefined;
 
   useEffect(() => {
-    if (!push.available || !userId) return;
-    // Fehler (z. B. ohne Netz) sind nicht schlimm: beim nächsten Start erneut
-    setupPush(push, account).catch(() => undefined);
+    if (!push.available || !account.enabled) return;
+    // Fehler (z. B. ohne Netz) sind nicht schlimm: beim nächsten Start erneut (Einstellungen zeigen den Fehler)
+    if (userId) setupPush(push, account).catch(() => undefined);
+    // nach dem Anmelden am Konto sofort, nicht erst beim nächsten Start
+    return account.onChange((user) => {
+      if (user) setupPush(push, account).catch(() => undefined);
+    });
   }, [push, account, userId]);
 
   useEffect(() => {

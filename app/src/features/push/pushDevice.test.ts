@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import type { AccountProvider } from '../../ports/account';
 import type { PushProvider } from '../../ports/push';
-import { setupPush, unregisterDevice } from './pushDevice';
+import { lastPushRegisterError, registerDevice, setupPush, unregisterDevice } from './pushDevice';
 
 const TOKEN = 'ab'.repeat(32);
 
@@ -74,5 +74,17 @@ describe('Gerät für Mitteilungen anmelden (PUSH-2)', () => {
     const f = fakes('granted');
     await setupPush({ ...f.push, available: false }, f.account);
     expect(f.calls).toEqual([]);
+  });
+
+  it('Fehler beim Anmelden wird gemerkt (Einstellungen zeigen ihn) und nach Erfolg gelöscht', async () => {
+    const { push, account } = fakes('granted');
+    const failing = {
+      ...push,
+      register: () => Promise.reject(new Error("no valid 'aps-environment' entitlement string found")),
+    };
+    await expect(registerDevice(failing, account)).rejects.toThrow();
+    expect(lastPushRegisterError()).toMatch(/aps-environment/);
+    await registerDevice(push, account);
+    expect(lastPushRegisterError()).toBeUndefined();
   });
 });
