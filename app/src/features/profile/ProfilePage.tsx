@@ -10,7 +10,7 @@ import { Notice } from '../../design/components/Notice';
 import { Toast } from '../../design/components/Toast';
 import { ImagesIcon, MapIcon, PlusIcon, UserPlusIcon, BookmarkIcon } from '../../design/icons';
 import { restorePost } from '../../data/profileService';
-import type { Post } from '../../domain/schemas';
+import type { Post, Profile } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useMyBadges } from '../badges/badgeStore';
@@ -18,6 +18,8 @@ import { useFriends } from '../friends/useFriends';
 import { Avatar } from './Avatar';
 import { usePhotos, usePosts, useProfile } from './usePhoto';
 import { ProfileAchievements } from '../achievements/ProfileAchievements';
+import { highlightedPosts } from '../../domain/profile';
+import { speciesById } from '../../domain/species';
 import styles from './Profile.module.css';
 
 const t = de.profile;
@@ -53,6 +55,50 @@ function Count({ value, label }: { value: string; label: string }) {
       <strong>{value}</strong>
       <span>{label}</span>
     </span>
+  );
+}
+
+/** Freiwillige Angaben (Paket 11): nur zeigen, was ausgefüllt ist */
+function ProfileFacts({ profile }: { profile: Profile }) {
+  const species = (profile.targetSpecies ?? []).map((id) => speciesById(id)?.de ?? id);
+  const methods = (profile.methods ?? []).map((m) => de.catchForm.methods[m]);
+  if (!species.length && !methods.length && !profile.region) return null;
+  return (
+    <dl className={styles.facts}>
+      {species.length > 0 && (
+        <div>
+          <dt>{t.factSpecies}</dt>
+          <dd>{species.join(' · ')}</dd>
+        </div>
+      )}
+      {methods.length > 0 && (
+        <div>
+          <dt>{t.factMethods}</dt>
+          <dd>{methods.join(' · ')}</dd>
+        </div>
+      )}
+      {profile.region && (
+        <div>
+          <dt>{t.factRegion}</dt>
+          <dd>{de.water.states[profile.region]}</dd>
+        </div>
+      )}
+    </dl>
+  );
+}
+
+/** Angeheftete Beiträge (Paket 11, höchstens drei) */
+function Highlights({ posts, all }: { posts: Post[]; all: Post[] }) {
+  if (!posts.length) return null;
+  return (
+    <section className={styles.highlights} aria-labelledby="profile-highlights">
+      <h2 id="profile-highlights">{t.highlightsTitle}</h2>
+      <ul className={styles.highlightRow}>
+        {posts.map((p) => (
+          <Tile key={p.id} post={p} n={all.indexOf(p) + 1} />
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -103,6 +149,7 @@ export function ProfilePage() {
           </div>
         </section>
         {profile?.bio && <p className={styles.bio}>{profile.bio}</p>}
+        {profile && <ProfileFacts profile={profile} />}
         <div className={styles.buttons}>
           <Button variant="secondary" onClick={() => void navigate('/profil/bearbeiten')}>
             {t.edit}
@@ -132,6 +179,7 @@ export function ProfilePage() {
       </div>
 
       <ProfileAchievements />
+      <Highlights posts={highlightedPosts(profile?.highlightPostIds, posts)} all={posts} />
 
       {posts.length === 0 ? (
         <EmptyState

@@ -41,3 +41,36 @@ export function parsePostLength(text: string): number | undefined | 'invalid' {
 
 /** Länge zum Anzeigen im Eingabefeld (Komma) */
 export const lengthText = (cm: number | undefined) => (cm === undefined ? '' : String(cm).replace('.', ','));
+
+/** Paket 11: Höchstzahlen der freiwilligen Profilangaben (gleich wie im Schema) */
+export const MAX_TARGET_SPECIES = 5;
+export const MAX_HIGHLIGHTS = 3;
+
+/** Beitrag im Profil anheften oder lösen; voll = schon drei angeheftet, nichts geändert */
+export function toggleHighlight(
+  ids: readonly string[] | undefined,
+  postId: string,
+): { ids: string[]; full: boolean } {
+  const cur = [...(ids ?? [])];
+  if (cur.includes(postId)) return { ids: cur.filter((x) => x !== postId), full: false };
+  if (cur.length >= MAX_HIGHLIGHTS) return { ids: cur, full: true };
+  return { ids: [...cur, postId], full: false };
+}
+
+/** Angeheftete Beiträge in Anzeige-Reihenfolge; gelöschte fallen weg */
+export function highlightedPosts<T extends { id: string; deletedAt?: string | undefined }>(
+  ids: readonly string[] | undefined,
+  posts: readonly T[],
+): T[] {
+  const byId = new Map(posts.filter((p) => !p.deletedAt).map((p) => [p.id, p]));
+  return (ids ?? []).flatMap((id) => {
+    const p = byId.get(id);
+    return p ? [p] : [];
+  });
+}
+
+/** Liste umschalten (z. B. Lieblingsfische), höchstens `max` Einträge */
+export function toggleInList<T>(list: readonly T[], item: T, max: number): T[] {
+  if (list.includes(item)) return list.filter((x) => x !== item);
+  return list.length >= max ? [...list] : [...list, item];
+}

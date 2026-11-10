@@ -14,8 +14,21 @@ import { Notice } from '../../design/components/Notice';
 import { TextArea } from '../../design/components/Field';
 import { ImagesIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
-import { postReactions, removePost, toggleLike, updatePost } from '../../data/profileService';
-import { lengthText, likeIdOf, parsePostLength, POST_CAPTION_MAX } from '../../domain/profile';
+import {
+  postReactions,
+  removePost,
+  toggleLike,
+  toggleProfileHighlight,
+  updatePost,
+} from '../../data/profileService';
+import {
+  lengthText,
+  likeIdOf,
+  MAX_HIGHLIGHTS,
+  parsePostLength,
+  POST_CAPTION_MAX,
+} from '../../domain/profile';
+import { Toast } from '../../design/components/Toast';
 import { LOCAL_AUTHOR, type Photo, type Post } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
 import { FounderBadge } from '../badges/FounderBadge';
@@ -136,6 +149,8 @@ export function PostPage() {
   const reactions = useLiveQuery(() => postReactions(id), [id]);
   const photos = usePhotos(post?.photoIds);
   const profile = useProfile();
+  const [pinMsg, setPinMsg] = useState<string>();
+  const pinned = !!post && !!profile?.highlightPostIds?.includes(post.id);
   const founder = useMyBadges().includes('founder');
   const [editing, setEditing] = useState(false);
   const [index, setIndex] = useState(0);
@@ -307,6 +322,17 @@ export function PostPage() {
             {t.editCaption}
           </Button>
           <Button
+            variant="secondary"
+            aria-pressed={pinned}
+            onClick={() =>
+              void toggleProfileHighlight(post.id).then((ok) =>
+                setPinMsg(ok ? (pinned ? undefined : t.pinned) : t.pinFull(MAX_HIGHLIGHTS)),
+              )
+            }
+          >
+            {pinned ? t.unpin : t.pin}
+          </Button>
+          <Button
             variant="danger"
             onClick={() =>
               void removePost(post.id).then(() =>
@@ -318,6 +344,7 @@ export function PostPage() {
           </Button>
         </div>
       )}
+      {pinMsg && <Toast onDismiss={() => setPinMsg(undefined)}>{pinMsg}</Toast>}
     </Page>
   );
 }

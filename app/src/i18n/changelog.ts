@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-11-29',
+    title: 'Profil erweitern',
+    items: [
+      'Profil: Lieblingsfische, bevorzugte Methoden und deine Region (nur das Bundesland) kannst du jetzt freiwillig angeben.',
+      'Highlights: Bis zu drei Beiträge lassen sich oben im Profil anheften.',
+    ],
+  },
+  {
     id: '2026-11-28',
     title: 'Teilen',
     items: [

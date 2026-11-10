@@ -517,3 +517,64 @@ test('SHR-1: ohne Teilen-Funktion des Geräts gibt es keinen Teilen-Knopf', asyn
   await expect(page.getByRole('button', { name: 'Gefällt mir' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Teilen' })).toHaveCount(0);
 });
+
+test('PRF-12: freiwillige Angaben (Lieblingsfische, Methoden, Region) und angeheftete Beiträge', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.goto('/profil/bearbeiten');
+  await waitForApp(page);
+  await page.getByLabel('Name').fill('Kevin');
+  const add = page.getByLabel('Fischart hinzufügen');
+  await add.selectOption({ label: 'Hecht' });
+  await add.selectOption({ label: 'Zander' });
+  await expect(page.getByRole('button', { name: 'Hecht entfernen' })).toBeVisible();
+  await page.getByRole('button', { name: 'Zander entfernen' }).click();
+  await expect(page.getByRole('button', { name: 'Zander entfernen' })).toHaveCount(0);
+  await page
+    .getByRole('group', { name: 'Bevorzugte Methoden' })
+    .getByRole('button', { name: 'Jiggen' })
+    .click();
+  await expect(page.getByRole('button', { name: 'Jiggen' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByLabel('Region').selectOption({ label: 'Nordrhein-Westfalen' });
+  expect(await noOverflow(page)).toBe(true);
+  expect(await axe(page)).toEqual([]);
+  await page.getByRole('button', { name: 'Speichern' }).click();
+
+  await expect(page).toHaveURL(/\/profil$/);
+  const facts = page.locator('dl');
+  await expect(facts).toContainText('Hecht');
+  await expect(facts).toContainText('Jiggen');
+  await expect(facts).toContainText('Nordrhein-Westfalen');
+  await expect(page.getByRole('heading', { name: 'Highlights' })).toHaveCount(0);
+
+  // Beitrag anlegen und anheften
+  await page.goto('/profil/neu');
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page, '#e67e22'));
+  await expect(page.getByRole('img', { name: 'Foto 1' })).toBeVisible();
+  await page.getByLabel('Text').fill('Mein bester Hecht');
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await page.getByRole('button', { name: 'Im Profil anheften' }).click();
+  await expect(page.getByText('Im Profil angeheftet.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Nicht mehr anheften' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  await page.goto('/profil');
+  const hl = page.getByRole('region', { name: 'Highlights' });
+  await expect(hl.getByRole('link')).toHaveCount(1);
+  expect(await noOverflow(page)).toBe(true);
+  expect(await axe(page)).toEqual([]);
+
+  // Lösen entfernt das Highlight
+  await hl.getByRole('link').click();
+  await page.getByRole('button', { name: 'Nicht mehr anheften' }).click();
+  await expect(page.getByRole('button', { name: 'Im Profil anheften' })).toBeVisible();
+  await page.goto('/profil');
+  await expect(page.getByRole('heading', { name: 'Highlights' })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});

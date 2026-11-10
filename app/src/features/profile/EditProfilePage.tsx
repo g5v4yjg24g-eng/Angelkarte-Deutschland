@@ -11,6 +11,7 @@ import { profileNameValid, PROFILE_BIO_MAX, PROFILE_NAME_MAX } from '../../domai
 import type { Profile } from '../../domain/schemas';
 import type { ProcessedPhoto } from '../../lib/processPhoto';
 import { AvatarEditor } from './AvatarEditor';
+import { ProfileExtrasFields, type ProfileExtras } from './ProfileExtrasFields';
 import { Avatar } from './Avatar';
 import { useProfile } from './usePhoto';
 import photoStyles from '../catches/CatchPhotos.module.css';
@@ -22,6 +23,11 @@ function Form({ initial }: { initial: Profile | null }) {
   const navigate = useNavigate();
   const [name, setName] = useState(initial?.name ?? '');
   const [bio, setBio] = useState(initial?.bio ?? '');
+  const [extras, setExtras] = useState<ProfileExtras>({
+    targetSpecies: initial?.targetSpecies ?? [],
+    methods: initial?.methods ?? [],
+    ...(initial?.region ? { region: initial.region } : {}),
+  });
   // undefined = unverändert, null = entfernen
   const [avatar, setAvatar] = useState<ProcessedPhoto | null>();
   const [nameError, setNameError] = useState<string>();
@@ -42,7 +48,7 @@ function Form({ initial }: { initial: Profile | null }) {
     setNameError(undefined);
     setBusy(true);
     try {
-      await saveProfile({ name: name.trim(), bio: bio.trim() }, avatar);
+      await saveProfile({ name: name.trim(), bio: bio.trim(), extras }, avatar);
       void navigate('/profil');
     } catch {
       setError(t.saveError);
@@ -95,6 +101,7 @@ function Form({ initial }: { initial: Profile | null }) {
         maxLength={PROFILE_BIO_MAX}
         onChange={(e) => setBio(e.target.value)}
       />
+      <ProfileExtrasFields value={extras} onChange={setExtras} />
       {error && <Notice tone="error">{error}</Notice>}
       {editing && (
         <AvatarEditor
