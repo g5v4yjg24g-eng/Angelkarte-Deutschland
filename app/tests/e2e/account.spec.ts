@@ -2273,3 +2273,45 @@ test('SOC-2: eigene Angaben gehen angemeldet genau einmal an den Server', async 
   await page.waitForTimeout(500);
   expect(calls.people.extras.length).toBe(sent);
 });
+
+test('SHR-2: Profil teilen – Link mit Nutzernamen ans Teilen-Menü, ohne Teilen-Funktion in die Zwischenablage', async ({
+  page,
+  context,
+}) => {
+  const errors = collectErrors(page);
+  await fakeSupabase(page);
+  await page.addInitScript(() => {
+    const w = window as unknown as { __shared?: unknown };
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: (d: { title: string; text: string; url?: string }) => {
+        w.__shared = d;
+        return Promise.resolve();
+      },
+    });
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Profil teilen' }).click();
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { __shared?: unknown }).__shared))
+    .toEqual({
+      title: 'Mein Fangpunkt-Profil',
+      text: 'Kevin (@kevin) auf Fangpunkt – schick mir eine Freundschaftsanfrage!',
+      url: 'https://fangpunkt.com/profil/?u=kevin',
+    });
+
+  // Computer ohne Teilen-Menü: Link landet in der Zwischenablage
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.evaluate(() =>
+    Object.defineProperty(navigator, 'share', { value: undefined, configurable: true }),
+  );
+  await page.getByRole('button', { name: 'Profil teilen' }).click();
+  await expect(page.getByText('Link zu deinem Profil kopiert.')).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(
+    'https://fangpunkt.com/profil/?u=kevin',
+  );
+  expect(errors).toEqual([]);
+});

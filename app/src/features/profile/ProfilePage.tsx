@@ -20,6 +20,11 @@ import { usePhotos, usePosts, useProfile } from './usePhoto';
 import { ProfileAchievements } from '../achievements/ProfileAchievements';
 import { highlightedPosts } from '../../domain/profile';
 import { speciesById } from '../../domain/species';
+import { useProviders } from '../../ports/providersContext';
+import type { AccountProvider } from '../../ports/account';
+import { profileLink } from '../../domain/profileLink';
+import { canShare, shareContent } from '../../lib/share';
+import { storedUserId } from '../badges/badgeStore';
 import styles from './Profile.module.css';
 
 const t = de.profile;
@@ -106,6 +111,36 @@ function Highlights({ posts, all }: { posts: Post[]; all: Post[] }) {
   );
 }
 
+/**
+ * Profil teilen: Link mit dem Nutzernamen übers Teilen-Menü; ohne Teilen-Funktion (Computer) in die Zwischenablage.
+ * Liefert den Hinweistext (oder nichts, wenn das Teilen-Menü offen war).
+ */
+async function shareMyProfile(
+  account: AccountProvider,
+  localName: string | undefined,
+): Promise<string | undefined> {
+  if (!account.enabled || !storedUserId()) return t.shareNeedsAccount;
+  let me;
+  try {
+    me = await account.getProfile();
+  } catch {
+    return t.shareError;
+  }
+  if (!me) return t.shareNeedsAccount;
+  const url = profileLink(me.username);
+  const text = t.shareProfileText(me.displayName || localName || me.username, me.username);
+  try {
+    if (canShare()) {
+      await shareContent({ title: t.shareProfileTitle, text, url });
+      return undefined;
+    }
+    await navigator.clipboard.writeText(`${text}\n${url}`);
+    return t.linkCopied;
+  } catch {
+    return t.shareError;
+  }
+}
+
 export function ProfilePage() {
   const profile = useProfile();
   const posts = usePosts();
@@ -117,7 +152,8 @@ export function ProfilePage() {
       : t.noCount;
   const navigate = useNavigate();
   const location = useLocation();
-  const [soon, setSoon] = useState(false);
+  const [notice, setNotice] = useState<string>();
+  const { account } = useProviders();
   const [undoId, setUndoId] = useState(() => (location.state as ProfileState | null)?.deletedPostId);
   const [restored, setRestored] = useState(false);
 
@@ -158,7 +194,10 @@ export function ProfilePage() {
           <Button variant="secondary" onClick={() => void navigate('/profil/bearbeiten')}>
             {t.edit}
           </Button>
-          <Button variant="secondary" className={styles.soon} onClick={() => setSoon(true)}>
+          <Button
+            variant="secondary"
+            onClick={() => void shareMyProfile(account, profile?.name).then(setNotice)}
+          >
             {t.share}
           </Button>
           <IconButton
@@ -202,7 +241,7 @@ export function ProfilePage() {
       )}
       <p className={`muted ${styles.note}`}>{t.localNote}</p>
 
-      {soon && <Toast onDismiss={() => setSoon(false)}>{t.comingSoon}</Toast>}
+      {notice && <Toast onDismiss={() => setNotice(undefined)}>{notice}</Toast>}
       {(undoId || restored) && (
         <Toast
           onDismiss={() => {

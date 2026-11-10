@@ -10,6 +10,9 @@ importers:
 
   app:
     dependencies:
+      '@capacitor/app':
+        specifier: 8.1.2
+        version: 8.1.2(@capacitor/core@8.5.3)
       '@capacitor/core':
         specifier: 8.5.3
         version: 8.5.3
@@ -719,6 +722,11 @@ packages:
 
   '@cacheable/utils@2.5.0':
     resolution: {integrity: sha512-buipgOVDkkPXNR5+xBpDw7Zk2n1EvU7qBJCNUcL7rhQ//kfpOXPAvQ511Os0vpLYJ1pZnvudNytkQt2hst3wqA==}
+
+  '@capacitor/app@8.1.2':
+    resolution: {integrity: sha512-uKBlsrXH0IdvUn69e/KKYbZ32A06pcrUdG8LWuZ/6y33YMXZXLEEdNSwl+jKS/SrsTWqnePs8EqSWaiQM3mUGA==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
 
   '@capacitor/cli@8.5.3':
     resolution: {integrity: sha512-/G6xwna+p4GS3lthSdWN3OThCH2F85O0Ukdy8rv3oAXvgEMeyFgPEIA3PMAS++IkHwUuBYBAKOQJnZfcrh1n0w==}
@@ -4616,6 +4624,10 @@ snapshots:
     dependencies:
       hashery: 1.5.1
       keyv: 5.6.0
+
+  '@capacitor/app@8.1.2(@capacitor/core@8.5.3)':
+    dependencies:
+      '@capacitor/core': 8.5.3
 
   '@capacitor/cli@8.5.3':
     dependencies:

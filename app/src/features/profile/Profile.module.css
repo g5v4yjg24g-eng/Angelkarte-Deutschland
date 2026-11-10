@@ -69,9 +69,6 @@
   width: 100%;
   min-width: 0;
 }
-.soon {
-  color: var(--color-text-muted);
-}
 .buttons > .squareButton {
   min-width: var(--touch);
 }

@@ -9,6 +9,7 @@ import { supabaseAccount } from '../adapters/supabaseAccount';
 import { capacitorPush } from '../adapters/capacitorPush';
 import { capacitorHaptics } from '../adapters/capacitorHaptics';
 import { capacitorRoute } from '../adapters/capacitorRoute';
+import { capacitorAppLinks } from '../adapters/capacitorAppLinks';
 import type { Providers } from '../ports/providersContext';
 
 /** Zusammenstecken der Anbieter (einzige Stelle, die Adapter kennt). */
@@ -35,5 +36,7 @@ export const providers: Providers = {
   haptics: capacitorHaptics(),
   // Route auch bei gesperrtem Bildschirm (Weg B, eigenes Swift-Modul) – nur in der iPhone-App
   route: capacitorRoute(),
+  // Geteilte Profil-Links öffnen die App direkt (Universal Links, nur iPhone-App)
+  links: capacitorAppLinks(),
   water: staticWaterData(import.meta.env.VITE_WATER_BASE_URL ?? `${import.meta.env.BASE_URL}data/water/`),
 };
