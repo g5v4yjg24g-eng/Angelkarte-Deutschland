@@ -160,6 +160,8 @@ export const LOG_ACTIONS = [
   'block_name',
   'unblock_name',
   'publish_rules',
+  'appeal_accept',
+  'appeal_reject',
 ] as const;
 
 // Statistiken -----------------------------------------------------------------------------------------------

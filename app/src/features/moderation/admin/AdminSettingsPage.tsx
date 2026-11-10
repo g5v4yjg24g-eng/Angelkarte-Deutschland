@@ -1,4 +1,4 @@
-// Admin → Verwaltung: Werkzeuge. Was erst später kommt (Einsprüche), steht als „folgt“ (nicht antippbar).
+// Admin → Verwaltung: Werkzeuge (Systemnachrichten, Regeln, Namen, Protokoll, Statistik, Rollen, Einsprüche).
 import { de } from '../../../i18n/de';
 import { Page, Section } from '../../../design/components/Page';
 import { ListLink } from '../../../design/components/ListLink';
@@ -58,7 +58,12 @@ export function AdminSettingsPage() {
             title={t.roles}
             hint={t.rolesHint}
           />
-          <ListLink icon={<FeedIcon />} title={t.appeals} hint={t.soon} />
+          <ListLink
+            to={`${ADMIN_BASE}/verwaltung/einsprueche`}
+            icon={<FeedIcon />}
+            title={t.appeals}
+            hint={t.appealsHint}
+          />
         </div>
       </Section>
       <div className={pageStyles.card}>

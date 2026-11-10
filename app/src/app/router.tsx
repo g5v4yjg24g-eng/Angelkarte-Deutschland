@@ -120,6 +120,13 @@ export const routes = [
             ),
           },
           {
+            path: 'verwaltung/einsprueche',
+            lazy: page(
+              () => import('../features/moderation/admin/AppealsAdminPage'),
+              (m) => m.AppealsAdminPage,
+            ),
+          },
+          {
             path: 'verwaltung/rollen',
             lazy: page(
               () => import('../features/moderation/admin/RolesPage'),
@@ -358,6 +365,14 @@ export const routes = [
                 lazy: page(
                   () => import('../features/about/PrivacyPage'),
                   (m) => m.PrivacyPage,
+                ),
+              },
+              // Einspruch gegen eine Sperre (Link aus der Sperr-Mail, ohne Anmeldung)
+              {
+                path: 'einspruch',
+                lazy: page(
+                  () => import('../features/moderation/AppealPage'),
+                  (m) => m.AppealPage,
                 ),
               },
               {

@@ -35,6 +35,7 @@ import type {
   StatsPeriod,
 } from '../domain/modTools';
 import type { CommunityRules, RulesVersion } from '../domain/communityRules';
+import type { AppealInfo, AppealStatus, ModAppeal } from '../domain/appeals';
 
 export interface AccountUser {
   id: string;
@@ -247,6 +248,12 @@ export interface AccountProvider {
   /** Admin: alle Fassungen mit Zustimmungen; neue Fassung veröffentlichen (nur Founder) – liefert die Nummer */
   modRulesHistory(): Promise<RulesVersion[]>;
   modPublishRules(intro: string, items: string[], summary: string): Promise<number>;
+  /** Einspruch gegen eine Sperre – ohne Anmeldung, nur mit dem Schlüssel aus der Sperr-Mail */
+  appealInfo(token: string): Promise<AppealInfo>;
+  submitAppeal(token: string, body: string): Promise<void>;
+  /** Admin: Einsprüche nach Stand; entscheiden (annehmen hebt die Sperre auf, ablehnen braucht eine Begründung) */
+  modAppeals(state: AppealStatus | 'all'): Promise<ModAppeal[]>;
+  modDecideAppeal(id: string, accept: boolean, note?: string): Promise<void>;
   /** Statistiken über einen Zeitraum (nur Zahlen) */
   modStats(days: StatsPeriod): Promise<ModStats | undefined>;
   modResolve(reportId: string, note?: string): Promise<void>;

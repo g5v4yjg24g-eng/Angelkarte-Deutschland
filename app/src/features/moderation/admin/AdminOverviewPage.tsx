@@ -6,7 +6,7 @@ import { de } from '../../../i18n/de';
 import { Page, Section } from '../../../design/components/Page';
 import { Notice } from '../../../design/components/Notice';
 import { ListLink } from '../../../design/components/ListLink';
-import { FeedIcon, FlagIcon, MailIcon, ParagraphIcon } from '../../../design/icons';
+import { FeedIcon, FlagIcon, MailIcon, ParagraphIcon, ShieldIcon } from '../../../design/icons';
 import { reportPriority, type ModOverview, type ModReport } from '../../../domain/modAdmin';
 import { useProviders } from '../../../ports/providersContext';
 import { ADMIN_BASE } from './adminPaths';
@@ -63,7 +63,14 @@ export function AdminOverviewPage() {
             <Kpi value={overview.newUsers7d} label={t.newUsers} />
             <Kpi value={overview.openAppeals} label={t.appeals} />
           </div>
-          <p className={`muted ${styles.small}`}>{t.missingHint}</p>
+          {/* Hinweis nur, solange der Server eine Zahl noch nicht liefert (ältere Fassung von mod_overview) */}
+          {[
+            overview.inProgress,
+            overview.doneToday,
+            overview.bannedNow,
+            overview.newUsers7d,
+            overview.openAppeals,
+          ].some((v) => v === undefined) && <p className={`muted ${styles.small}`}>{t.missingHint}</p>}
         </>
       )}
       <Section title={t.recent}>
@@ -86,7 +93,12 @@ export function AdminOverviewPage() {
           <ListLink to={`${ADMIN_BASE}/meldungen`} icon={<FlagIcon />} title={t.quickReports} />
           <ListLink to={`${ADMIN_BASE}/nutzer?auswahl=reported`} icon={<FeedIcon />} title={t.quickUsers} />
           <ListLink to={`${ADMIN_BASE}/verwaltung/nachrichten`} icon={<MailIcon />} title={t.quickMessages} />
-          <ListLink to="/mehr/regeln" icon={<ParagraphIcon />} title={t.quickRules} />
+          <ListLink
+            to={`${ADMIN_BASE}/verwaltung/einsprueche`}
+            icon={<ShieldIcon />}
+            title={t.quickAppeals}
+          />
+          <ListLink to={`${ADMIN_BASE}/verwaltung/regeln`} icon={<ParagraphIcon />} title={t.quickRules} />
         </div>
       </Section>
     </Page>

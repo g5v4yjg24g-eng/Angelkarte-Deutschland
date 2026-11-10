@@ -30,6 +30,7 @@ import {
 } from '../domain/modAdmin';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
 import { parseCurrentRules, parseRulesHistory } from '../domain/communityRules';
+import { parseAppealInfo, parseModAppeals } from '../domain/appeals';
 import { parseBlockedNames, parseModLogItems, parseModRole, parseModRoles, parseModStats } from '../domain/modTools';
 
 type Row = { id: string; username: string; display_name: string };
@@ -760,6 +761,24 @@ export function supabaseAccount(
       const { data, error } = await (await get()).rpc('mod_publish_rules', { intro, items, summary });
       if (error) fail(error);
       return typeof data === 'number' ? data : 0;
+    },
+    async appealInfo(token) {
+      const { data, error } = await (await get()).rpc('appeal_info', { token });
+      if (error) fail(error);
+      return parseAppealInfo(data as unknown[] | null);
+    },
+    async submitAppeal(token, body) {
+      const { error } = await (await get()).rpc('submit_appeal', { token, body });
+      if (error) fail(error);
+    },
+    async modAppeals(state) {
+      const { data, error } = await (await get()).rpc('mod_appeals', { state });
+      if (error) fail(error);
+      return parseModAppeals(data as unknown[] | null);
+    },
+    async modDecideAppeal(id, accept, note) {
+      const { error } = await (await get()).rpc('mod_decide_appeal', { appeal: id, accept, note: note ?? null });
+      if (error) fail(error);
     },
     async modStats(days) {
       const { data, error } = await (await get()).rpc('mod_stats', { days });
