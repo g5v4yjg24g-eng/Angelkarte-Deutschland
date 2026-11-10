@@ -84,7 +84,7 @@ export function AdminOverviewPage() {
       <Section title={t.quick}>
         <div className={pageStyles.card}>
           <ListLink to={`${ADMIN_BASE}/meldungen`} icon={<FlagIcon />} title={t.quickReports} />
-          <ListLink to={`${ADMIN_BASE}/nutzer`} icon={<FeedIcon />} title={t.quickUsers} />
+          <ListLink to={`${ADMIN_BASE}/nutzer?auswahl=reported`} icon={<FeedIcon />} title={t.quickUsers} />
           <ListLink to={`${ADMIN_BASE}/verwaltung/nachrichten`} icon={<MailIcon />} title={t.quickMessages} />
           <ListLink to="/mehr/regeln" icon={<ParagraphIcon />} title={t.quickRules} />
         </div>

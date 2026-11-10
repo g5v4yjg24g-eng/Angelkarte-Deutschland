@@ -1,0 +1,43 @@
+Alle Konten|carl,bert,dora,anna
+Seite 2|dora,anna
+Name (Teil, groß/klein, @)|bert
+Nutzer-ID|carl
+Gemeldete|carl:1/1
+Falscher Filter|FEHLER: bad_filter
+E-Mail (Founder, exakt)|carl
+E-Mail Teil findet nichts|0
+E-Mail unbekannt|0
+Darf E-Mail suchen|true
+Verwarnen ohne Grund|FEHLER: no_reason
+Sich selbst verwarnen|FEHLER: self
+Verwarnen|true
+Verwarnen (alt)|
+Verwarnen (alt) ohne Grund|FEHLER: no_reason
+Verwarnte|carl:2
+Liste|Beleidigung:true:Anna:true,Spam:true:Anna:false
+Zurücknehmen|
+Doppelt zurücknehmen|FEHLER: not_found
+Aktiv danach|1
+Dauerhaft ohne Passwort|FEHLER: reauth_required
+Dauerhaft mit altem Passwort (10 min)|FEHLER: reauth_required
+Dauerhaft mit frischem Passwort|
+7 Tage ohne Passwort|
+Gesperrte|carl:false,bert:true
+Gesperrt: Beitrag|FEHLER: banned
+Gesperrt: Profil ändern|FEHLER: banned
+Gesperrt: Freundschaft|FEHLER: banned
+Gesperrt: liest Verwarnungen|FEHLER: permission denied for table warnings
+D: E-Mail-Suche|FEHLER: email_not_allowed
+D: Darf E-Mail suchen|false
+D: Name|carl
+D: Profil von C bearbeiten geht für Moderation|
+C: Konten|FEHLER: not_moderator
+C: Verwarnen|FEHLER: not_moderator
+C: Zurücknehmen|FEHLER: permission denied for table warnings
+C: eigene Verwarnungen lesen|FEHLER: permission denied for table warnings
+C: Verwarnungsliste|FEHLER: not_moderator
+C: E-Mail-Recht|false
+C: Hilfsfunktion Passwort|FEHLER: permission denied for function recent_password_auth
+C: dauerhaft sperren|FEHLER: not_moderator
+Protokoll|search_email:- > search_email:kein Treffer > warn:Beleidigung > warn:Spam > revoke_warning:Irrtum > ban:dauerhaft: Hetze > ban:7 Tage: Spam > clear_profile:test
+E-Mail nie im Protokoll|0

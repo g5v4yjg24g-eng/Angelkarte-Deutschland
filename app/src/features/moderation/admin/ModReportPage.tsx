@@ -19,7 +19,7 @@ import type {
 } from '../../../domain/modAdmin';
 import { useProviders } from '../../../ports/providersContext';
 import { ModActionSheet, type ModAction } from './ModActions';
-import { modDate, modErrorText } from './modErrors';
+import { banUser, modActionErrorText, modDate, modErrorText } from './modErrors';
 import { ADMIN_BASE, adminUser } from './adminPaths';
 import { StatusTag } from './ModerationPage';
 import styles from './ModAdmin.module.css';
@@ -108,7 +108,7 @@ export function ModReportPage() {
     }
   };
 
-  const run = async (note: string, days?: BanDuration) => {
+  const run = async (note: string, days?: BanDuration, password?: string) => {
     if (!action) return;
     setBusy(true);
     setActionError(undefined);
@@ -144,11 +144,16 @@ export function ModReportPage() {
           message = t.done_.resolve;
           break;
         case 'warn':
-          await account.modWarn(who, note, report.id);
+          await account.modAddWarning(
+            who,
+            note,
+            report.id,
+            report.kind === 'post' ? report.targetId : undefined,
+          );
           message = t.done_.warn;
           break;
         case 'ban':
-          await account.modBan(who, days ?? null, note, report.id);
+          await banUser(account, who, days ?? null, note, password, report.id);
           message = t.done_.ban;
           break;
         case 'unban':
@@ -162,7 +167,7 @@ export function ModReportPage() {
       setAction(undefined);
       await load();
     } catch (e) {
-      setActionError(modErrorText(e));
+      setActionError(modActionErrorText(e));
     } finally {
       setBusy(false);
     }
@@ -347,7 +352,7 @@ export function ModReportPage() {
           setAction(undefined);
           setActionError(undefined);
         }}
-        onConfirm={(note, days) => void run(note, days)}
+        onConfirm={(note, days, password) => void run(note, days, password)}
       />
       {toast && <Toast onDismiss={() => setToast(undefined)}>{toast}</Toast>}
     </Page>
