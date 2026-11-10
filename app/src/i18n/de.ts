@@ -2606,6 +2606,10 @@ export const de = {
       'Die Test-Mitteilung wurde nicht verschickt – die Server-Funktion „send-push“ hat nicht geantwortet.',
     testLimit: 'Zu viele Tests in der letzten Stunde. Versuch es später noch einmal.',
     registerFailed: (e: string) => `Anmelden für Mitteilungen hat nicht geklappt: ${e}`,
+    permissionFailed: (e: string) =>
+      `Das iPhone hat die Frage nach Mitteilungen mit einem Fehler beantwortet: ${e}`,
+    permissionTimeout:
+      'Das iPhone antwortet nicht auf die Frage, ob Mitteilungen erlaubt sind. Tippe auf „Mitteilungen erlauben“ oder sende einen Test.',
   },
   reactions: {
     errors: {
