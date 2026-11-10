@@ -111,7 +111,10 @@ export function AdminStatsPage() {
 function Kpi({ label, value }: { label: string; value: number | string }) {
   return (
     <div className={styles.kpi}>
-      <b>{typeof value === 'number' ? value.toLocaleString('de-DE') : value}</b>
+      {/* Zahlen groß, Text (z. B. „5,5 Std.“) etwas kleiner, damit er in die Kachel passt */}
+      <b className={typeof value === 'number' ? undefined : styles.kpiText}>
+        {typeof value === 'number' ? value.toLocaleString('de-DE') : value}
+      </b>
       <span>{label}</span>
     </div>
   );

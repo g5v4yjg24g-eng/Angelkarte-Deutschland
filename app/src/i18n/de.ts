@@ -2497,8 +2497,8 @@ export const de = {
     users: {
       title: 'Nutzer',
       searchLabel: 'Konto suchen',
-      searchPlaceholder: 'Nutzername, Name oder Nutzer-ID',
-      searchPlaceholderEmail: 'Nutzername, Name, Nutzer-ID oder E-Mail',
+      searchPlaceholder: 'Name oder Nutzer-ID',
+      searchPlaceholderEmail: 'Name, Nutzer-ID oder E-Mail',
       searchHint: 'Nutzer-ID findet genau ein Konto, sonst genügt ein Teil des Namens.',
       searchHintEmail:
         'E-Mail-Adressen nur vollständig – nur dein Founder-Konto darf so suchen, und jede Suche steht im Protokoll.',

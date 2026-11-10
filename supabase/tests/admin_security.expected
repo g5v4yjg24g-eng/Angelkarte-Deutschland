@@ -1,0 +1,18 @@
+Geprüfte mod_*-Funktionen|39
+Normales Konto kommt durch|keine
+Eigener Stand für normales Konto|mod_can_search_email=false, mod_my_role=∅
+Ohne Anmeldung kommt durch|keine
+Ohne Anmeldung aufrufbar|appeal_info, current_rules, submit_appeal
+Tabellen ohne RLS|keine
+security definer ohne search_path|keine
+Moderator werden|FEHLER: permission denied for table moderators
+Founder-Abzeichen|FEHLER: permission denied for table user_badges
+Sperre aufheben|FEHLER: permission denied for table bans
+Protokoll lesen|FEHLER: permission denied for table moderation_log
+Protokoll fälschen|FEHLER: permission denied for table moderation_log
+Meldungen lesen|FEHLER: permission denied for table reports
+Verwarnungen lesen|FEHLER: permission denied for table warnings
+Einsprüche lesen|FEHLER: permission denied for table appeals
+Gesperrte Namen lesen|FEHLER: permission denied for table blocked_usernames
+Regeln überschreiben|FEHLER: permission denied for table community_rules
+Gerade gesperrt?|false
