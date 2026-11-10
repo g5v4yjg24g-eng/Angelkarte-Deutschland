@@ -1,9 +1,11 @@
-// Ein Beitrag: Fotos zum Wischen (Doppeltipp = „Gefällt mir“), Daumen und Kommentare, Text, Datum, verknüpfter Fang,
-// Sichtbarkeit; bearbeiten, löschen (Rückgängig im Profil). Ist der Beitrag geteilt und das Konto angemeldet, kommen
-// „Gefällt mir“ und Kommentare vom Server (Wunsch Nutzer 2026-11-04), sonst bleiben sie auf dem Gerät.
+// Eigene Beiträge wie bei Instagram (Wunsch Nutzer 2026-11-10): der angetippte Beitrag oben, beim Herunterscrollen
+// die nächsten. Je Beitrag: Kopf mit Name, darunter Fischart · Länge, rechts „⋯“ (Bearbeiten, Anheften, Teilen,
+// Löschen, Datum/Sichtbarkeit, verknüpfter Fang); darunter nur Fotos (Doppeltipp = „Gefällt mir“), Daumen,
+// Kommentare und Text. Ist der Beitrag geteilt und das Konto angemeldet, kommen „Gefällt mir“ und Kommentare vom
+// Server (Wunsch Nutzer 2026-11-04), sonst bleiben sie auf dem Gerät.
 import { canShare, shareContent } from '../../lib/share';
 import { postShareText, sharePhotoName } from '../../domain/share';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
@@ -12,7 +14,9 @@ import { Button } from '../../design/components/Button';
 import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
 import { TextArea } from '../../design/components/Field';
-import { ImagesIcon } from '../../design/icons';
+import { ImagesIcon, MoreIcon } from '../../design/icons';
+import { IconButton } from '../../design/components/Button';
+import { Sheet } from '../../design/components/Sheet';
 import { getDb } from '../../data/db';
 import {
   postReactions,
@@ -45,7 +49,7 @@ import { ServerCommentsSheet } from '../reactions/ServerCommentsSheet';
 import { useServerReactions } from '../reactions/useServerReactions';
 import { VisibilityField } from './NewPostPage';
 import type { ProfileState } from './ProfilePage';
-import { usePhotos, useProfile } from './usePhoto';
+import { usePhotos, usePosts, useProfile } from './usePhoto';
 import { useHaptics } from '../haptics/useHaptics';
 import { usePikeLike } from '../reactions/usePikeLike';
 import { CatchInfoFields, CatchTag } from './CatchInfoFields';
@@ -142,62 +146,42 @@ function ShareRow({ postId, status }: { postId: string; status: 'local' | 'pendi
   );
 }
 
+/** Wie viele Beiträge auf einmal dazukommen (beim Herunterscrollen) */
+const PAGE = 3;
+
 export function PostPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
-  // undefined = lädt, null = nicht vorhanden
-  const post = useLiveQuery(async () => (await getDb().posts.get(id)) ?? null, [id]);
-  const [shareError, setShareError] = useState<string>();
-  const linked = useLiveQuery(
-    async () => (post?.catchId ? ((await getDb().catches.get(post.catchId)) ?? null) : null),
-    [post?.catchId],
-  );
-  const reactions = useLiveQuery(() => postReactions(id), [id]);
-  const photos = usePhotos(post?.photoIds);
-  const profile = useProfile();
-  const [pinMsg, setPinMsg] = useState<string>();
-  const pinned = !!post && !!profile?.highlightPostIds?.includes(post.id);
-  const founder = useMyBadges().includes('founder');
-  const [editing, setEditing] = useState(false);
-  const [index, setIndex] = useState(0);
-  const [pulse, setPulse] = useState(0);
-  const frameRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const likeIconRef = useRef<HTMLSpanElement>(null);
-  const [commentsOpen, setCommentsOpen] = useState(false);
-  // geteilt + angemeldet: Reaktionen vom Server
-  const server = !!post && !post.deletedAt && !!storedUserId() && shareStatus(post) === 'shared';
-  const srv = useServerReactions(post ? [post.id] : [], server);
-  const haptics = useHaptics();
-  const likedNow =
-    !!post &&
-    (server
-      ? srv.get(post.id).liked
-      : (reactions?.likes ?? []).some((l) => l.id === likeIdOf(LOCAL_AUTHOR, post.id)));
-  // Doppeltipp aufs Foto: Hecht schwimmt zum Daumen; setzt „Gefällt mir“ (nie zurücknehmen)
-  const pike = usePikeLike({
-    frame: frameRef,
-    canvas: canvasRef,
-    target: likeIconRef,
-    liked: likedNow,
-    onLike: () => {
-      if (!post) return;
-      if (server) srv.toggle(post.id);
-      else void toggleLike(post.id);
-    },
-    onArrive: () => {
-      setPulse((n) => n + 1);
-      haptics.light();
-    },
-  });
+  const posts = usePosts();
+  // undefined = lädt, null = nicht (mehr) vorhanden
+  const exists = useLiveQuery(async () => {
+    const p = await getDb().posts.get(id);
+    return p && !p.deletedAt ? true : null;
+  }, [id]);
+  const [count, setCount] = useState(PAGE);
+  const sentinel = useRef<HTMLDivElement>(null);
+  const start = posts ? posts.findIndex((p) => p.id === id) : -1;
+  const list = posts && start >= 0 ? posts.slice(start, start + count) : [];
+  const more = !!posts && start >= 0 && start + count < posts.length;
 
-  if (post === undefined)
+  // Weitere Beiträge, sobald das Ende der Liste in Sicht kommt
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el || !more || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) setCount((n) => n + PAGE);
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [more, list.length]);
+
+  if (posts === undefined || exists === undefined)
     return (
       <Page title={t.postTitle} back="/profil">
         <Notice>{t.loading}</Notice>
       </Page>
     );
-  if (post === null || post.deletedAt)
+  if (exists === null || start < 0)
     return (
       <Page title={t.postTitle} back="/profil">
         <EmptyState
@@ -209,6 +193,68 @@ export function PostPage() {
         </EmptyState>
       </Page>
     );
+
+  return (
+    <Page title={t.postTitle} back="/profil">
+      <div className={styles.postList}>
+        {list.map((p) => (
+          <PostCard key={p.id} post={p} />
+        ))}
+      </div>
+      {more && (
+        <div ref={sentinel}>
+          <Button variant="ghost" onClick={() => setCount((n) => n + PAGE)}>
+            {t.morePosts}
+          </Button>
+        </div>
+      )}
+    </Page>
+  );
+}
+
+function PostCard({ post }: { post: Post }) {
+  const navigate = useNavigate();
+  const [shareError, setShareError] = useState<string>();
+  const linked = useLiveQuery(
+    async () => (post.catchId ? ((await getDb().catches.get(post.catchId)) ?? null) : null),
+    [post.catchId],
+  );
+  const reactions = useLiveQuery(() => postReactions(post.id), [post.id]);
+  const photos = usePhotos(post.photoIds);
+  const profile = useProfile();
+  const [pinMsg, setPinMsg] = useState<string>();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const pinned = !!profile?.highlightPostIds?.includes(post.id);
+  const founder = useMyBadges().includes('founder');
+  const [editing, setEditing] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [pulse, setPulse] = useState(0);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const likeIconRef = useRef<HTMLSpanElement>(null);
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  // geteilt + angemeldet: Reaktionen vom Server
+  const server = !post.deletedAt && !!storedUserId() && shareStatus(post) === 'shared';
+  const srv = useServerReactions([post.id], server);
+  const haptics = useHaptics();
+  const likedNow = server
+    ? srv.get(post.id).liked
+    : (reactions?.likes ?? []).some((l) => l.id === likeIdOf(LOCAL_AUTHOR, post.id));
+  // Doppeltipp aufs Foto: Hecht schwimmt zum Daumen; setzt „Gefällt mir“ (nie zurücknehmen)
+  const pike = usePikeLike({
+    frame: frameRef,
+    canvas: canvasRef,
+    target: likeIconRef,
+    liked: likedNow,
+    onLike: () => {
+      if (server) srv.toggle(post.id);
+      else void toggleLike(post.id);
+    },
+    onArrive: () => {
+      setPulse((n) => n + 1);
+      haptics.light();
+    },
+  });
 
   const total = photos?.length ?? post.photoIds.length;
   const name = profile?.name || t.placeholderName;
@@ -230,12 +276,18 @@ export function PostPage() {
   const commentTotal = server ? serverReactions.commentCount : comments.length;
 
   return (
-    <Page title={t.postTitle} back="/profil">
-      <div className={styles.postHead}>
+    <article className={styles.postCard} aria-label={t.postLabel(dateOf(post.createdAt))}>
+      <header className={styles.postCardHead}>
         <Avatar photoId={profile?.avatarPhotoId} size={36} />
-        <strong>{name}</strong>
-        {founder && <FounderBadge />}
-      </div>
+        <div className={styles.postCardWho}>
+          <span>
+            {name}
+            {founder && <FounderBadge />}
+          </span>
+          <CatchTag speciesId={post.speciesId} lengthCm={post.lengthCm} variant="line" />
+        </div>
+        <IconButton label={t.postOptions} icon={<MoreIcon size={20} />} onClick={() => setMenuOpen(true)} />
+      </header>
       <div className={styles.carouselWrap}>
         <div className={styles.carouselBox} ref={frameRef}>
           <ul
@@ -278,31 +330,19 @@ export function PostPage() {
       {editing ? (
         <EditForm post={post} onDone={() => setEditing(false)} />
       ) : (
-        <div className={styles.top}>
-          <CatchTag speciesId={post.speciesId} lengthCm={post.lengthCm} />
-          {post.caption && (
-            <p className={styles.bio}>
-              <strong>{name}</strong>
-              {founder && <FounderBadge />} {post.caption}
-            </p>
-          )}
-          <p className={`muted ${styles.note}`}>
-            {t.postedOn(dateOf(post.createdAt))} ·{' '}
-            {post.groupId ? t.visibleForGroup : t.visibleFor(t.visibility[post.visibility ?? 'friends'])}
+        post.caption && (
+          <p className={styles.bio}>
+            <strong>{name}</strong>
+            {founder && <FounderBadge />} {post.caption}
           </p>
-          <ShareRow postId={post.id} status={shareStatus(post)} />
-          {linked && !linked.deletedAt && (
-            <Link to={`/fangbuch/${linked.id}`} className={styles.catchLink}>
-              {t.linkedCatch}: {catchSummary(linked)}
-            </Link>
-          )}
-        </div>
+        )
       )}
       {commentTotal > 0 && (
         <button type="button" className={`${styles.linkish} muted`} onClick={() => setCommentsOpen(true)}>
           {t.viewComments(commentTotal)}
         </button>
       )}
+      <p className={`muted ${styles.postDate}`}>{dateOf(post.createdAt)}</p>
       {server ? (
         <ServerCommentsSheet
           open={commentsOpen}
@@ -321,25 +361,42 @@ export function PostPage() {
           onClose={() => setCommentsOpen(false)}
         />
       )}
-      <p className={`muted ${styles.note}`}>
-        {server
-          ? de.reactions.sharedNote
-          : storedUserId() && shareStatus(post) === 'local'
-            ? t.reactionsNoteSignedIn
-            : t.reactionsNote}
-      </p>
-      {!editing && (
-        <div className={styles.formActions}>
-          <Button variant="secondary" onClick={() => setEditing(true)}>
+      <Sheet open={menuOpen} title={t.postOptions} onClose={() => setMenuOpen(false)}>
+        <div className={styles.postMenu}>
+          <p className="muted">
+            {t.postedOn(dateOf(post.createdAt))} ·{' '}
+            {post.groupId ? t.visibleForGroup : t.visibleFor(t.visibility[post.visibility ?? 'friends'])}
+          </p>
+          <ShareRow postId={post.id} status={shareStatus(post)} />
+          <p className={`muted ${styles.note}`}>
+            {server
+              ? de.reactions.sharedNote
+              : storedUserId() && shareStatus(post) === 'local'
+                ? t.reactionsNoteSignedIn
+                : t.reactionsNote}
+          </p>
+          {linked && !linked.deletedAt && (
+            <Link to={`/fangbuch/${linked.id}`} className={styles.catchLink}>
+              {t.linkedCatch}: {catchSummary(linked)}
+            </Link>
+          )}
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setMenuOpen(false);
+              setEditing(true);
+            }}
+          >
             {t.editCaption}
           </Button>
           <Button
             variant="secondary"
             aria-pressed={pinned}
             onClick={() =>
-              void toggleProfileHighlight(post.id).then((ok) =>
-                setPinMsg(ok ? (pinned ? undefined : t.pinned) : t.pinFull(MAX_HIGHLIGHTS)),
-              )
+              void toggleProfileHighlight(post.id).then((ok) => {
+                setMenuOpen(false);
+                setPinMsg(ok ? (pinned ? t.unpinned : t.pinned) : t.pinFull(MAX_HIGHLIGHTS));
+              })
             }
           >
             {pinned ? t.unpin : t.pin}
@@ -355,8 +412,8 @@ export function PostPage() {
             {t.delete}
           </Button>
         </div>
-      )}
+      </Sheet>
       {pinMsg && <Toast onDismiss={() => setPinMsg(undefined)}>{pinMsg}</Toast>}
-    </Page>
+    </article>
   );
 }

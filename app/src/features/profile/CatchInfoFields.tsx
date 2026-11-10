@@ -48,19 +48,22 @@ export function CatchInfoFields({
 }
 
 /** Kleines Etikett „Hecht · 87 cm“; nichts, wenn beides fehlt */
+/** Fischart · Länge – als Zeile unter dem Namen (wie der Ort bei Instagram) oder als Etikett */
 export function CatchTag({
   speciesId,
   lengthCm,
+  variant = 'tag',
 }: {
   speciesId?: string | undefined;
   lengthCm?: number | undefined;
+  variant?: 'tag' | 'line';
 }) {
   const name = speciesById(speciesId)?.de;
   const len = lengthCm !== undefined ? `${lengthCm.toLocaleString('de-DE')} cm` : undefined;
   const text = [name, len].filter(Boolean).join(' · ');
   if (!text) return null;
   return (
-    <p className={styles.catchTag}>
+    <p className={variant === 'line' ? styles.catchLine : styles.catchTag}>
       <span className="visually-hidden">{t.tagLabel}: </span>
       {text}
     </p>

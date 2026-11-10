@@ -22,6 +22,12 @@ const axe = async (page: Page) => {
   const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   return r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id);
 };
+/** Optionen eines eigenen Beitrags (Detailansicht, „⋯“ rechts neben dem Namen) */
+const openPostMenu = async (page: Page) => {
+  await page.getByRole('button', { name: 'Optionen für den Beitrag' }).first().click();
+  await expect(page.getByRole('dialog', { name: 'Optionen für den Beitrag' })).toBeVisible();
+};
+const closePostMenu = (page: Page) => page.keyboard.press('Escape');
 const noOverflow = (page: Page) =>
   page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
 
@@ -95,6 +101,7 @@ test('PRF-4: Profil einrichten, Beitrag mit zwei Fotos posten, ansehen, Text än
   await grid.getByRole('link', { name: /Erster Abend/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Beitrag' })).toBeVisible();
   await expect(page.getByRole('img', { name: 'Foto 2' })).toBeAttached();
+  await openPostMenu(page);
   await page.getByRole('button', { name: 'Bearbeiten' }).click();
   await page.getByLabel('Text').fill('Erster Abend am Rursee – zwei Bisse');
   await page.getByRole('button', { name: 'Speichern' }).click();
@@ -102,6 +109,7 @@ test('PRF-4: Profil einrichten, Beitrag mit zwei Fotos posten, ansehen, Text än
   await page.emulateMedia({ colorScheme: 'dark' });
   expect(await axe(page)).toEqual([]);
 
+  await openPostMenu(page);
   await page.getByRole('button', { name: 'Löschen' }).click();
   await expect(page.getByText('Beitrag gelöscht.')).toBeVisible();
   await page.getByRole('button', { name: 'Rückgängig' }).click();
@@ -160,7 +168,9 @@ test('PRF-5: Beitrag aus einem Fang – Fangfoto wird übernommen, Beitrag verwe
   await page.getByRole('button', { name: 'Posten' }).click();
 
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
-  await expect(page.getByText('Hecht · 68,5 cm')).toBeVisible();
+  // Fischart · Länge stehen unter dem Namen
+  await expect(page.getByRole('article').first().locator('header')).toContainText('Hecht · 68,5 cm');
+  await openPostMenu(page);
   await page.getByRole('link', { name: /^Zum Fang: Fang · Hecht/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Fang' })).toBeVisible();
 
@@ -185,7 +195,9 @@ test('PRF-6: Gefällt mir per Daumen und Doppeltipp, Kommentare im Fenster von u
   await page.getByRole('radio', { name: 'Alle' }).check({ force: true });
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await openPostMenu(page);
   await expect(page.getByText(/Sichtbar für: Alle/)).toBeVisible();
+  await closePostMenu(page);
 
   const like = page.getByRole('button', { name: 'Gefällt mir' });
   await expect(like).toHaveAttribute('aria-pressed', 'false');
@@ -565,14 +577,17 @@ test('PRF-12: freiwillige Angaben (Lieblingsfische, Methoden, Region) und angehe
   await page.getByLabel('Text').fill('Mein bester Hecht');
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await openPostMenu(page);
   await page.getByRole('button', { name: 'Im Profil anheften' }).click();
   await expect(page.getByText('Im Profil angeheftet.')).toBeVisible();
+  await openPostMenu(page);
   await expect(page.getByRole('button', { name: 'Nicht mehr anheften' })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
 
   await page.goto('/profil');
+  await waitForApp(page);
   const hl = page.getByRole('region', { name: 'Highlights' });
   await expect(hl.getByRole('link')).toHaveCount(1);
   expect(await noOverflow(page)).toBe(true);
@@ -580,9 +595,69 @@ test('PRF-12: freiwillige Angaben (Lieblingsfische, Methoden, Region) und angehe
 
   // Lösen entfernt das Highlight
   await hl.getByRole('link').click();
+  await openPostMenu(page);
   await page.getByRole('button', { name: 'Nicht mehr anheften' }).click();
+  await expect(page.getByText('Nicht mehr angeheftet.')).toBeVisible();
+  await openPostMenu(page);
   await expect(page.getByRole('button', { name: 'Im Profil anheften' })).toBeVisible();
   await page.goto('/profil');
+  await waitForApp(page);
   await expect(page.getByRole('heading', { name: 'Highlights' })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('PRF-14: Beitrag antippen – darunter folgen die älteren Beiträge; Fischart · Länge unter dem Namen; Optionen über „⋯“', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.goto('/profil');
+  await waitForApp(page);
+  for (const [color, text, species] of [
+    ['#2d9cdb', 'Erster', 'Hecht'],
+    ['#27ae60', 'Zweiter', ''],
+    ['#e67e22', 'Dritter', 'Zander'],
+  ] as const) {
+    await page.goto('/profil/neu');
+    await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page, color));
+    await expect(page.getByRole('img', { name: 'Foto 1' })).toBeVisible();
+    await page.getByLabel('Text').fill(text);
+    if (species) {
+      const info = page.getByRole('group', { name: 'Angaben zum Fang (freiwillig)' });
+      await info.getByLabel('Fischart').selectOption({ label: species });
+      await info.getByLabel('Länge in cm').fill('71');
+    }
+    await page.getByRole('button', { name: 'Posten' }).click();
+    await expect(page).toHaveURL(/\/profil$/);
+  }
+  // Raster: neuester zuerst → der mittlere ist „Zweiter“
+  await page
+    .getByRole('list', { name: 'Beiträge' })
+    .getByRole('link', { name: /Zweiter/ })
+    .click();
+  const cards = page.getByRole('article');
+  await expect(cards).toHaveCount(2);
+  await expect(cards.nth(0)).toContainText('Zweiter');
+  await expect(cards.nth(1)).toContainText('Erster');
+  // Fischart · Länge im Kopf, nicht unter dem Bild
+  await expect(cards.nth(1).locator('header')).toContainText('Hecht · 71 cm');
+  await expect(cards.nth(0).locator('header')).not.toContainText('cm');
+  // unter dem Bild keine Hinweise oder Knöpfe mehr
+  await expect(cards.nth(0).getByRole('button', { name: 'Löschen' })).toHaveCount(0);
+  await expect(cards.nth(0).getByText(/nur auf deinem Gerät/)).toHaveCount(0);
+  expect(await noOverflow(page)).toBe(true);
+  expect(await axe(page)).toEqual([]);
+
+  // „⋯“ des zweiten Beitrags: Optionen gelten für ihn
+  await cards.nth(1).getByRole('button', { name: 'Optionen für den Beitrag' }).click();
+  const menu = page.getByRole('dialog', { name: 'Optionen für den Beitrag' });
+  await expect(menu.getByRole('button', { name: 'Bearbeiten' })).toBeVisible();
+  await expect(menu.getByRole('button', { name: 'Im Profil anheften' })).toBeVisible();
+  await expect(menu.getByText(/Nur auf diesem Gerät/)).toBeVisible();
+  await menu.getByRole('button', { name: 'Löschen' }).click();
+  await expect(page.getByText('Beitrag gelöscht.')).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Beiträge' }).getByRole('link')).toHaveCount(2);
+  await expect(page.getByRole('list', { name: 'Beiträge' })).not.toContainText('Erster');
   expect(errors).toEqual([]);
 });
