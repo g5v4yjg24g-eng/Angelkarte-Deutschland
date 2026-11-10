@@ -266,7 +266,7 @@ interface WaterLink extends Meta {
 ### 5.5b2 Profile und Post (Profilseite, DB v5, seit 2026-10-27)
 Wunsch Nutzer 2026-10-27. Bleiben auf dem Gerät und sind Teil der Sicherung; später mit dem Konto verknüpft.
 - `Profile` (Tabelle `profiles`, genau ein Datensatz `id = 'me'`): `name` (1–40), `bio?` (≤ 300), `avatarPhotoId?` (Photo mit `ownerType: 'profile'`).
-- `Post` (Tabelle `posts`): `photoIds` (1–10, Photos mit `ownerType: 'post'`), `caption?` (≤ 2200), `catchId?` (verknüpfter Fang). Fotos aus einem Fang werden beim Posten **kopiert**, damit der Beitrag den Fang überlebt. Löschen = Papierkorb (`deletedAt`) mit „Rückgängig“.
+- `Post` (Tabelle `posts`): `photoIds` (1–10, Photos mit `ownerType: 'post'`), `caption?` (≤ 2200), `catchId?` (verknüpfter Fang), `visibility?` (`private` „Nur ich“ | `friends` | `public`; fehlt = noch nicht festgelegt → beim Sichern `private` + `visibilityAssumed`), Server-Abgleich `share?`/`sharedRev?`/`accountId?`/`syncError?`/`syncAttempts?`/`syncRetryAt?` (2026-11-10, optionale Felder ohne Dexie-Version). Fotos aus einem Fang werden beim Posten **kopiert**, damit der Beitrag den Fang überlebt. Löschen = Papierkorb (`deletedAt`) mit „Rückgängig“.
 - `Post.visibility?` (`friends` | `public`, fehlt = Freunde; Entscheidung Nutzer 2026-10-27: pro Beitrag wählbar), gilt ab dem Konto.
 - `PostLike` (Tabelle `postLikes`, DB v6): `postId`, `authorId`; ID `like-<authorId>-<postId>` (je Verfasser eines), Zurücknehmen = `deletedAt`.
 - `PostComment` (Tabelle `postComments`, DB v6): `postId`, `authorId`, `text` (1–1000). Vorerst nur `authorId = 'me'` (dieses Gerät); mit dem Konto die Nutzer-ID.

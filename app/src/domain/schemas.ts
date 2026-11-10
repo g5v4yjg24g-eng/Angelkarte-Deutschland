@@ -272,6 +272,10 @@ export const ProfileSchema = MetaSchema.extend({
   highlightPostIds: z.array(id).max(3).optional(),
 });
 
+/** Sichtbarkeit eines Beitrags: „Nur ich“ (Freigabe Nutzer 2026-11-10), Freunde, alle mit Konto */
+export const PostVisibilitySchema = z.enum(['private', 'friends', 'public']);
+export type PostVisibility = z.infer<typeof PostVisibilitySchema>;
+
 /** Beitrag im Profil: ein oder mehrere Fotos, Text, optional verknüpft mit einem Fang aus dem Fangbuch. */
 export const PostSchema = MetaSchema.extend({
   caption: text(2200).optional(),
@@ -283,8 +287,13 @@ export const PostSchema = MetaSchema.extend({
     .regex(/^[a-z][a-z0-9_]{1,39}$/)
     .optional(),
   lengthCm: z.number().gt(0).max(250).optional(),
-  /** Wer den Beitrag später (mit Konto) sehen, liken und kommentieren darf; fehlt = Freunde (Entscheidung 2026-10-27) */
-  visibility: z.enum(['friends', 'public']).optional(),
+  /**
+   * Wer den Beitrag (mit Konto) sehen, liken und kommentieren darf: „Nur ich“, Freunde oder alle. Fehlt = noch nicht
+   * festgelegt; beim automatischen Übertragen wird daraus „Nur ich“ (Freigabe Nutzer 2026-11-10).
+   */
+  visibility: PostVisibilitySchema.optional(),
+  /** Sichtbarkeit wurde beim Übertragen auf „Nur ich“ gesetzt, weil keine festgelegt war – bitte prüfen */
+  visibilityAssumed: z.literal(true).optional(),
   /** Highlight einer gemeinsamen Session (Paket 8b): sichtbar nur für deren Teilnehmer */
   groupId: id.optional(),
   /**
@@ -294,6 +303,13 @@ export const PostSchema = MetaSchema.extend({
   share: z.enum(['pending', 'shared', 'unshare']).optional(),
   /** Stand (`rev`), der zuletzt auf dem Server angekommen ist */
   sharedRev: z.number().int().min(0).optional(),
+  /** Konto, mit dem der Beitrag gesichert ist (fehlt = noch keinem zugeordnet) – nie mit einem anderen Konto hochladen */
+  accountId: z.string().min(1).max(64).optional(),
+  /** Letzter Fehlschlag beim Übertragen: Verbindung/Server, Tagesgrenze, Fotodatei fehlt auf dem Gerät */
+  syncError: z.enum(['failed', 'limited', 'photo_missing']).optional(),
+  /** Fehlversuche in Folge und frühester nächster Versuch */
+  syncAttempts: z.number().int().min(0).optional(),
+  syncRetryAt: isoDateTime.optional(),
 });
 
 /** Verfasser: vorerst nur `me` (dieses Gerät); mit dem Konto die Nutzer-ID */

@@ -1,0 +1,38 @@
+Upsert alt|FEHLER: permission denied for table posts
+P1 privat|created
+P2 Freunde|created
+P3 Alle|created
+Datum P1 erhalten|true
+Datum Zukunft gekappt|true
+P2 erneut|updated
+Anzahl A|3
+P2 Datum bleibt|true Freunde neu
+Foto fehlt|FEHLER: photo_missing
+Fremder Ordner|FEHLER: bad_photos
+Falsche Sichtbarkeit|FEHLER: bad_visibility
+Thumb als Foto|FEHLER: bad_photos
+Übernahme durch C|FEHLER: not_owner
+C P9 Alle|created
+A Feed|Alle,Freunde neu,Nur ich
+A Entdecken|von C
+A eigene (user_posts)|Alle,Freunde neu,Nur ich
+A Foto privat lesbar|1
+B Feed (Freund)|Alle,Freunde neu
+B Entdecken|Alle,von C
+B Tabelle|Alle,Freunde neu,von C
+B Profil A|Alle,Freunde neu
+B Foto privat|0
+B Foto Freunde|1
+B liked privat|FEHLER: not_found
+C Feed (fremd)|von C
+C Entdecken|Alle
+C Tabelle|Alle,von C
+C Foto Freunde|0
+C Foto Alle|1
+A P3 → privat|1
+C Entdecken nach privat|∅
+C Foto nach privat|0
+A Freund entfernen|
+B Feed ohne Freundschaft|∅
+B Foto ohne Freundschaft|0
+Mitteilungen|new_post→00000000-0000-0000-0000-0000000000b1,new_post→00000000-0000-0000-0000-0000000000b1

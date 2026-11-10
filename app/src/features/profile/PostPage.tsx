@@ -33,12 +33,11 @@ import {
   POST_CAPTION_MAX,
 } from '../../domain/profile';
 import { Toast } from '../../design/components/Toast';
-import { LOCAL_AUTHOR, type Photo, type Post } from '../../domain/schemas';
+import { LOCAL_AUTHOR, type Photo, type Post, type PostVisibility } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useMyBadges } from '../badges/badgeStore';
-import { setShare } from '../../data/postSyncService';
-import { retryPostSync, useFailedPosts, useLimitedPosts } from '../sharing/postLimitStore';
+import { retryPost } from '../../data/postSyncService';
 import { shareStatus } from '../../domain/postSync';
 import { storedUserId } from '../badges/badgeStore';
 import { Avatar } from './Avatar';
@@ -71,7 +70,7 @@ function Slide({ photo, n, total }: { photo: Photo; n: number; total: number }) 
 
 function EditForm({ post, onDone }: { post: Post; onDone: () => void }) {
   const [caption, setCaption] = useState(post.caption ?? '');
-  const [visibility, setVisibility] = useState(post.visibility ?? 'friends');
+  const [visibility, setVisibility] = useState<PostVisibility>(post.visibility ?? 'private');
   const [species, setSpecies] = useState(post.speciesId ?? '');
   const [length, setLength] = useState(lengthText(post.lengthCm));
   const [lengthError, setLengthError] = useState<string>();
@@ -119,30 +118,22 @@ function EditForm({ post, onDone }: { post: Post; onDone: () => void }) {
   );
 }
 
-/** Teilen-Stand (Etappe 2): nur auf dem Gerät, wird geteilt, geteilt – mit Knopf zum Teilen/Zurücknehmen */
-function ShareRow({ postId, status }: { postId: string; status: 'local' | 'pending' | 'shared' }) {
+/** Stand der Sicherung auf dem Server (zentrale Bildspeicherung): automatisch, mit „Erneut versuchen“ bei Fehlern */
+function ShareRow({ post }: { post: Post }) {
   const signedIn = !!storedUserId();
-  const limited = useLimitedPosts().has(postId) && status === 'pending';
-  const failed = useFailedPosts().has(postId) && status === 'pending';
+  const status = shareStatus(post);
   return (
-    <p className={`muted ${styles.shareRow}`}>
-      <span role="status">{limited ? t.shareLimited : failed ? t.shareFailed : t.shareStatus[status]}</span>
-      {signedIn && failed && (
-        <Button variant="secondary" onClick={retryPostSync}>
-          {t.shareRetry}
-        </Button>
-      )}
-      {signedIn && status === 'local' && (
-        <Button variant="secondary" onClick={() => void setShare(postId, 'pending')}>
-          {t.shareNow}
-        </Button>
-      )}
-      {signedIn && status === 'shared' && (
-        <Button variant="ghost" onClick={() => void setShare(postId, 'unshare')}>
-          {t.unshare}
-        </Button>
-      )}
-    </p>
+    <>
+      <p className={`muted ${styles.shareRow}`}>
+        <span role="status">{t.shareStatus[status]}</span>
+        {signedIn && (status === 'failed' || status === 'missing') && (
+          <Button variant="secondary" onClick={() => void retryPost(post.id)}>
+            {t.shareRetry}
+          </Button>
+        )}
+      </p>
+      {post.visibilityAssumed && <Notice>{t.visibilityAssumed}</Notice>}
+    </>
   );
 }
 
@@ -365,13 +356,13 @@ function PostCard({ post }: { post: Post }) {
         <div className={styles.postMenu}>
           <p className="muted">
             {t.postedOn(dateOf(post.createdAt))} ·{' '}
-            {post.groupId ? t.visibleForGroup : t.visibleFor(t.visibility[post.visibility ?? 'friends'])}
+            {post.groupId ? t.visibleForGroup : t.visibleFor(t.visibility[post.visibility ?? 'private'])}
           </p>
-          <ShareRow postId={post.id} status={shareStatus(post)} />
+          <ShareRow post={post} />
           <p className={`muted ${styles.note}`}>
             {server
               ? de.reactions.sharedNote
-              : storedUserId() && shareStatus(post) === 'local'
+              : storedUserId()
                 ? t.reactionsNoteSignedIn
                 : t.reactionsNote}
           </p>

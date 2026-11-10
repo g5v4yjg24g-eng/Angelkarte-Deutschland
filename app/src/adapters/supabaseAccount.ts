@@ -7,7 +7,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
 import { FriendRequestResultSchema, parseFriendRows } from '../domain/friends';
-import { photoExt } from '../domain/postSync';
+import { photoPath, thumbPath } from '../domain/postSync';
 import { FEED_PAGE, parseFeedRows, type FeedPost } from '../domain/feed';
 import { parseUserHits, parseUserProfile } from '../domain/userProfile';
 import { parseSharedSpotRows } from '../domain/sharedSpots';
@@ -36,13 +36,15 @@ const fail = (
 };
 
 const POST_BUCKET = 'post-photos';
+/** Gültigkeit der Foto-Adressen: nach „Nur ich“ ist ein Bild höchstens so lange über eine alte Adresse abrufbar */
+const PHOTO_URL_SECONDS = 600;
 
-/** Zeitlich begrenzte Foto-Adressen (1 h); der Speicher prüft dabei selbst, ob man den Beitrag sehen darf */
+/** Zeitlich begrenzte Foto-Adressen (10 min, Freigabe Nutzer 2026-11-10); der Speicher prüft dabei selbst, ob man den Beitrag sehen darf */
 async function withPhotoUrls(c: SupabaseClient, posts: Omit<FeedPost, 'photoUrls'>[]): Promise<FeedPost[]> {
   const paths = posts.flatMap((p) => p.photoPaths);
   const urls = new Map<string, string>();
   if (paths.length) {
-    const { data: signed, error } = await c.storage.from(POST_BUCKET).createSignedUrls(paths, 3600);
+    const { data: signed, error } = await c.storage.from(POST_BUCKET).createSignedUrls(paths, PHOTO_URL_SECONDS);
     if (error) fail(error);
     for (const s of signed ?? []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
   }
@@ -205,34 +207,59 @@ export function supabaseAccount(
     async publishPost(post) {
       const c = await get();
       const id = await uid(c);
+      const folder = `${id}/${post.id}`;
+      // Was schon im Speicher liegt (früherer, abgebrochener Versuch), wird nicht erneut hochgeladen
+      const { data: existing, error: listError } = await c.storage.from(POST_BUCKET).list(folder, { limit: 100 });
+      if (listError) fail(listError);
+      const have = new Set((existing ?? []).map((f) => `${folder}/${f.name}`));
+      const upload = async (path: string, blob: Blob, contentType: string) => {
+        if (have.has(path)) return;
+        const { error } = await c.storage.from(POST_BUCKET).upload(path, blob, { contentType, upsert: true });
+        if (error) fail(error);
+      };
       const paths: string[] = [];
       for (const [i, photo] of post.photos.entries()) {
-        const path = `${id}/${post.id}/${i + 1}.${photoExt(photo.mime)}`;
-        const { error } = await c.storage
-          .from(POST_BUCKET)
-          .upload(path, photo.blob, { contentType: photo.mime, upsert: true });
-        if (error) fail(error);
+        const path = photoPath(id, post.id, i, photo.mime);
+        await upload(path, photo.blob, photo.mime);
+        if (photo.thumb) await upload(thumbPath(path), photo.thumb, 'image/jpeg');
         paths.push(path);
       }
-      const { error } = await c.from('posts').upsert({
-        id: post.id,
-        author_id: id,
+      // Kein Upsert: der bräuchte Schreibrechte auf alle Spalten und scheiterte immer (*_publish_post.sql)
+      const { error } = await c.rpc('publish_post', {
+        post_id: post.id,
         caption: post.caption ?? null,
-        visibility: post.visibility,
-        photo_paths: paths,
-        created_at: post.createdAt,
-        species_id: post.speciesId ?? null,
-        length_cm: post.lengthCm ?? null,
-        // nur mitschicken, wenn gesetzt (Highlight, Paket 8b)
-        ...(post.groupId ? { group_session_id: post.groupId } : {}),
-        updated_at: new Date().toISOString(),
+        vis: post.visibility,
+        paths,
+        created: post.createdAt,
+        species: post.speciesId ?? null,
+        length: post.lengthCm ?? null,
+        grp: post.groupId ?? null,
       });
-      if (error) {
-        // Tagesgrenze (*_discover.sql): hochgeladene Fotos wieder entfernen, sonst bleiben sie verwaist liegen
-        if (error.message.includes('too_many_posts'))
-          await removeFolder(c, `${id}/${post.id}`).catch(() => {});
-        fail(error);
+      if (error) fail(error);
+      // Gegenprobe: Ist das Foto für den Eigentümer abrufbar?
+      const { error: checkError } = await c.storage.from(POST_BUCKET).createSignedUrl(paths[0] ?? '', 60);
+      if (checkError) fail(checkError);
+    },
+    async downloadPostPhotos(paths) {
+      const c = await get();
+      const folder = paths[0]?.split('/').slice(0, 2).join('/') ?? '';
+      // erst nachsehen, was da ist (ältere Beiträge haben kein Vorschaubild) – so gibt es keine Fehlanfragen
+      const { data: files, error: listError } = await c.storage.from(POST_BUCKET).list(folder, { limit: 100 });
+      if (listError) return undefined;
+      const have = new Set((files ?? []).map((f) => `${folder}/${f.name}`));
+      const load = async (path: string) => {
+        const { data, error } = await c.storage.from(POST_BUCKET).download(path);
+        return error || !data ? undefined : data;
+      };
+      const out: { blob: Blob; thumb?: Blob | undefined }[] = [];
+      for (const path of paths) {
+        if (!have.has(path)) return undefined;
+        const blob = await load(path);
+        if (!blob) return undefined;
+        const thumb = have.has(thumbPath(path)) ? await load(thumbPath(path)) : undefined;
+        out.push({ blob, thumb });
       }
+      return out;
     },
     async updateSharedPost(postId, changes) {
       const c = await get();
@@ -501,7 +528,7 @@ export function supabaseAccount(
     },
     async modPhotoUrls(paths) {
       if (paths.length === 0) return [];
-      const { data, error } = await (await get()).storage.from(POST_BUCKET).createSignedUrls(paths, 3600);
+      const { data, error } = await (await get()).storage.from(POST_BUCKET).createSignedUrls(paths, PHOTO_URL_SECONDS);
       if (error) fail(error);
       const urls = new Map((data ?? []).map((s) => [s.path, s.signedUrl]));
       return paths.map((p) => urls.get(p) ?? '');

@@ -1,0 +1,14 @@
+create schema auth; create schema storage; create schema net; create schema extensions;
+grant usage on schema public, auth, storage, net to anon, authenticated, service_role;
+create table auth.users (id uuid primary key, email text, banned_until timestamptz);
+create table auth.sessions (id uuid primary key default gen_random_uuid(), user_id uuid references auth.users on delete cascade);
+create table auth.refresh_tokens (id bigserial primary key, user_id text);
+create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+grant execute on function auth.uid() to anon, authenticated, service_role;
+create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
+create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text, name text, owner uuid);
+alter table storage.objects enable row level security;
+grant select, insert, update, delete on storage.objects to authenticated;
+create function storage.foldername(name text) returns text[] language sql immutable as $$ select (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'),1)-1] $$;
+grant execute on function storage.foldername(text) to authenticated;
+create function net.http_post(url text, body jsonb, headers jsonb) returns bigint language sql as $$ select 1::bigint $$;

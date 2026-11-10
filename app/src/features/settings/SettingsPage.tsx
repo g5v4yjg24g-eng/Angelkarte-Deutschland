@@ -6,6 +6,7 @@ import { applyTheme, readTheme, type ThemeChoice } from '../../lib/theme';
 import { setSetting } from '../../data/settings';
 import { useWeatherEnabled } from '../weather/useWeatherEnabled';
 import { useBoolSetting } from './useBoolSetting';
+import { SyncStatusSection } from '../sharing/SyncStatus';
 import { PushSettings } from '../push/PushSettings';
 import { useProviders } from '../../ports/providersContext';
 
@@ -96,6 +97,7 @@ export function SettingsPage() {
         )}
         <p className="muted">{de.settings.usageHint}</p>
       </Section>
+      <SyncStatusSection />
       <PushSettings />
       {haptics.available && (
         <Section title={de.settings.haptics}>

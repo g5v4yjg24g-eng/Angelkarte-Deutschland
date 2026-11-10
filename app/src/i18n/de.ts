@@ -810,13 +810,13 @@ export const de = {
     reactionsNote:
       'Dieser Beitrag ist nur auf deinem Gerät: Gefällt mir und Kommentare sind nur deine eigenen. Teilst du ihn mit deinem Konto, können Freunde mitmachen.',
     reactionsNoteSignedIn:
-      'Noch nicht geteilt: Tippe oben auf „Teilen“, dann erscheint der Beitrag im Feed und Freunde können mitmachen.',
+      'Wird gerade gesichert: Danach erscheint der Beitrag im Feed (außer bei „Nur ich“) und Freunde können mitmachen.',
     visibilityLabel: 'Sichtbar für',
-    visibility: { friends: 'Freunde', public: 'Alle' },
+    visibility: { private: 'Nur ich', friends: 'Freunde', public: 'Alle' },
     visibilityHint:
-      'Ohne Konto bleibt der Beitrag nur auf diesem Gerät. Melde dich unter Mehr → Konto an, um ihn zu teilen.',
+      'Ohne Konto bleibt der Beitrag nur auf diesem Gerät. Melde dich unter Mehr → Konto an, dann wird er automatisch gesichert.',
     visibilityHintShared:
-      'Wird mit deinem Konto geteilt – „Freunde“: nur deine Freunde, „Alle“: alle mit Fangpunkt-Konto.',
+      'Wird mit deinem Konto gesichert – „Nur ich“: nur du (auf all deinen Geräten), „Freunde“: deine Freunde, „Alle“: alle mit Fangpunkt-Konto.',
     asHighlight: 'Als Highlight der gemeinsamen Session teilen',
     asHighlightHint: 'Sehen nur die Teilnehmer der Session – im Feed und in der Session. Ohne Fangort.',
     visibleForGroup: 'Sichtbar für: Teilnehmer der gemeinsamen Session',
@@ -824,21 +824,26 @@ export const de = {
       'Für alle mit Fangpunkt-Konto sichtbar – auch für Fremde unter Feed → Entdecken. Höchstens 20 neue Beiträge in 24 Stunden.',
     shareStatus: {
       local: 'Nur auf diesem Gerät',
-      pending: 'Wird geteilt …',
-      shared: 'Geteilt',
+      pending: 'Wird hochgeladen …',
+      shared: 'Auf dem Server gesichert',
+      failed: 'Hochladen hat nicht geklappt – wird automatisch erneut versucht.',
+      limited:
+        'Tagesgrenze erreicht (20 neue Beiträge in 24 Stunden). Der Beitrag wird später automatisch hochgeladen.',
+      missing: 'Foto nicht mehr auf dem Gerät – der Beitrag kann nicht hochgeladen werden.',
     },
-    shareLimited:
-      'Tagesgrenze erreicht (20 neue Beiträge in 24 Stunden). Der Beitrag wird später automatisch geteilt.',
-    shareNow: 'Teilen',
-    shareFailed: 'Teilen hat nicht geklappt – prüfe die Verbindung.',
     shareRetry: 'Erneut versuchen',
-    localPosts: (n: number) =>
+    visibilityAssumed: 'Sichtbarkeit war nicht festgelegt und wurde auf „Nur ich“ gesetzt – bitte prüfen.',
+    syncTitle: 'Beiträge sichern',
+    syncSignedOut: 'Beiträge liegen nur auf diesem Gerät. Mit Konto werden sie automatisch auf dem Server gesichert.',
+    syncAllSaved: (n: number) =>
+      n === 0 ? 'Noch keine Beiträge.' : n === 1 ? '1 Beitrag gesichert.' : `Alle ${n} Beiträge gesichert.`,
+    syncProgress: (saved: number, total: number) => `${saved} von ${total} Beiträgen gesichert – wird übertragen …`,
+    syncFailed: (n: number) =>
       n === 1
-        ? '1 Beitrag ist nur auf diesem Gerät – Freunde sehen ihn nicht.'
-        : `${n} Beiträge sind nur auf diesem Gerät – Freunde sehen sie nicht.`,
-    shareAll: 'Alle teilen',
-    sharedAll: (n: number) => (n === 1 ? '1 Beitrag wird geteilt.' : `${n} Beiträge werden geteilt.`),
-    unshare: 'Nicht mehr teilen',
+        ? '1 Beitrag konnte noch nicht übertragen werden – wird automatisch erneut versucht.'
+        : `${n} Beiträge konnten noch nicht übertragen werden – wird automatisch erneut versucht.`,
+    syncMissing: (n: number) =>
+      n === 1 ? '1 Beitrag: Foto fehlt auf dem Gerät.' : `${n} Beiträge: Foto fehlt auf dem Gerät.`,
     visibleFor: (who: string) => `Sichtbar für: ${who}`,
   },
   knots: {
@@ -2399,7 +2404,7 @@ export const de = {
     photoMissing: 'Foto nicht verfügbar',
     postedOn: (d: string) => d,
     handle: (u: string) => `@${u}`,
-    visibility: { friends: 'Freunde', public: 'Alle' },
+    visibility: { private: 'Nur ich', friends: 'Freunde', public: 'Alle' },
     postLabel: (name: string, date: string) => `Beitrag von ${name}, ${date}`,
     highlight: (title?: string) => (title ? `Highlight · ${title}` : 'Highlight der gemeinsamen Session'),
   },

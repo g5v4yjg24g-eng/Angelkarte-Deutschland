@@ -130,8 +130,8 @@ export function NewPostPage() {
         speciesId: species || undefined,
         lengthCm,
         groupId: highlight ? groupId : undefined,
-        // angemeldet: mit dem Konto teilen (Etappe 2); sonst bleibt der Beitrag auf dem Gerät
-        ...(storedUserId() ? { share: 'pending' as const } : {}),
+        // angemeldet: sofort auf dem Server sichern; sonst bleibt der Beitrag auf dem Gerät (bis zur Anmeldung)
+        ...(storedUserId() ? { share: 'pending' as const, accountId: storedUserId() } : {}),
         photos: pending.map((p) => p.photo),
         catchPhotoIds: takenFromCatch.map((p) => p.id),
       });
@@ -288,6 +288,7 @@ export function VisibilityField({
         value={value}
         onChange={onChange}
         options={[
+          { value: 'private', label: t.visibility.private },
           { value: 'friends', label: t.visibility.friends },
           { value: 'public', label: t.visibility.public },
         ]}
