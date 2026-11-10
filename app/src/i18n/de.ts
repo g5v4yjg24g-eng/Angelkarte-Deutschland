@@ -2605,6 +2605,7 @@ export const de = {
     testStuck:
       'Die Test-Mitteilung wurde nicht verschickt – die Server-Funktion „send-push“ hat nicht geantwortet.',
     testLimit: 'Zu viele Tests in der letzten Stunde. Versuch es später noch einmal.',
+    registerFailed: (e: string) => `Anmelden für Mitteilungen hat nicht geklappt: ${e}`,
   },
   reactions: {
     errors: {

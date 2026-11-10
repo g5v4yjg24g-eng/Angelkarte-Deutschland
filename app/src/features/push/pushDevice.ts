@@ -22,13 +22,23 @@ function write(key: string, value: string | null) {
   }
 }
 
+/** Letzter Fehler beim Anmelden (nur im Speicher) – die Einstellungen zeigen ihn, damit man sieht, woran es hakt */
+let lastError: string | undefined;
+export const lastPushRegisterError = () => lastError;
+
 /** Erlaubnis vorhanden → beim System und beim Konto anmelden. Liefert das Token. */
 export async function registerDevice(push: PushProvider, account: AccountProvider): Promise<string> {
-  const token = (await push.register()).toLowerCase();
-  if (!validPushToken(token)) throw new Error('Ungültiges Geräte-Token');
-  await account.registerPushDevice(token);
-  write(PUSH_TOKEN_KEY, token);
-  return token;
+  try {
+    const token = (await push.register()).toLowerCase();
+    if (!validPushToken(token)) throw new Error('Ungültiges Geräte-Token');
+    await account.registerPushDevice(token);
+    write(PUSH_TOKEN_KEY, token);
+    lastError = undefined;
+    return token;
+  } catch (e) {
+    lastError = e instanceof Error ? e.message : String(e);
+    throw e;
+  }
 }
 
 /** Beim Start: einmal von selbst um Erlaubnis bitten, danach nur noch anmelden, wenn erlaubt. */

@@ -100,6 +100,27 @@ jobs:
           app="$RUNNER_TEMP/Fangpunkt.xcarchive/Products/Applications/App.app"
           codesign --force --sign - --entitlements app/ios/App/App/App.entitlements "$app"
           codesign -d --entitlements - "$app"
+      # Erst nur exportieren und die endgültigen Berechtigungen prüfen: fehlt „aps-environment“, kann sich kein
+      # iPhone für Mitteilungen anmelden (Push Notifications für die App-ID im Apple-Entwicklerkonto einschalten).
+      - name: Signierte App prüfen (Mitteilungen, Universal Links)
+        run: |
+          sed "s/TEAM_ID/$APPLE_TEAM_ID/; s#<string>upload</string>#<string>export</string>#" app/ios/ci/ExportOptions.plist > "$RUNNER_TEMP/ExportCheck.plist"
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Fangpunkt.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportCheck.plist" \
+            -exportPath "$RUNNER_TEMP/check" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/asc/AuthKey.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+          mkdir -p "$RUNNER_TEMP/check/ipa" && unzip -q "$RUNNER_TEMP"/check/*.ipa -d "$RUNNER_TEMP/check/ipa"
+          codesign -d --entitlements - --xml "$RUNNER_TEMP"/check/ipa/Payload/*.app > "$RUNNER_TEMP/check/ent.plist" 2>/dev/null
+          plutil -p "$RUNNER_TEMP/check/ent.plist"
+          if ! grep -q "aps-environment" "$RUNNER_TEMP/check/ent.plist"; then
+            echo "::error::Die signierte App hat keine Push-Berechtigung (aps-environment). Im Apple-Entwicklerkonto für com.fangpunkt.app „Push Notifications“ einschalten."
+            exit 1
+          fi
+          grep -q "applinks:fangpunkt.com" "$RUNNER_TEMP/check/ent.plist" || echo "::warning::Universal Links (applinks:fangpunkt.com) fehlen in der signierten App."
       - name: Für den App Store signieren und zu TestFlight hochladen
         run: |
           sed "s/TEAM_ID/$APPLE_TEAM_ID/" app/ios/ci/ExportOptions.plist > "$RUNNER_TEMP/ExportOptions.plist"
