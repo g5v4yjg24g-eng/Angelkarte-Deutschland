@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-06-2',
+    title: 'Erfolge im Profil',
+    items: [
+      'Erfolge: Deine Freunde sehen jetzt deine Erfolge in deinem Profil – und du ihre.',
+      'Sichtbarkeit: Unter Profil → Erfolge → „Wer sieht deine Erfolge?“ wählst du Freunde, alle mit Konto oder niemand. Übertragen werden nur die Stufen mit Datum, keine Fänge.',
+    ],
+  },
+  {
     id: '2026-12-06',
     title: 'Feed und Profile',
     items: [

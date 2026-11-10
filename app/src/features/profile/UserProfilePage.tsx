@@ -14,6 +14,8 @@ import type { PublicProfile } from '../../domain/userProfile';
 import { FEED_PAGE, type FeedPost } from '../../domain/feed';
 import { AccountError } from '../../ports/account';
 import { useProviders } from '../../ports/providersContext';
+import type { RemoteAchievements } from '../../domain/sharedAchievements';
+import { AchievementCard } from '../achievements/AchievementCard';
 import { FounderBadge } from '../badges/FounderBadge';
 import { storedUserId } from '../badges/badgeStore';
 import { SafetyMenu } from '../moderation/SafetyMenu';
@@ -83,6 +85,19 @@ export function UserProfilePage() {
       setPosts({ ...posts, loading: false, error: true });
     }
   }, [account, userId, posts]);
+  // Erfolge (Paket B): nur, wenn die Person sie freigegeben hat – sonst erscheint nichts
+  const [achievements, setAchievements] = useState<RemoteAchievements>();
+  useEffect(() => {
+    if (!userId) return;
+    let live = true;
+    account
+      .userAchievements(userId)
+      .then((a) => live && setAchievements(a))
+      .catch(() => live && setAchievements({ visible: false }));
+    return () => {
+      live = false;
+    };
+  }, [account, userId, tick]);
   const highlightKey = state.kind === 'ready' ? state.profile.highlightPostIds.join(',') : '';
   const [highlights, setHighlights] = useState<FeedPost[]>([]);
   useEffect(() => {
@@ -224,6 +239,7 @@ export function UserProfilePage() {
         {!isFriend && <p className="muted">{t.friendsOnly}</p>}
       </div>
 
+      {achievements?.visible && <AchievementCard id="user-achievements" unlocked={achievements.unlocked} />}
       {isFriend && highlights.length > 0 && (
         <section className={styles.highlights} aria-labelledby="user-highlights">
           <h2 id="user-highlights">{t.highlightsTitle}</h2>

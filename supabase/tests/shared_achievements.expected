@@ -1,0 +1,27 @@
+Tabelle direkt lesen|FEHLER: permission denied for table user_achievements
+Tabelle direkt schreiben|FEHLER: permission denied for table user_achievements
+Standard-Sichtbarkeit|friends
+Hochladen|3
+Zukunft gekappt|true
+Nochmal (nimmt nur dazu)|1
+Datum bleibt|2026-11-01
+Kein Objekt|FEHLER: bad_entries
+Kaputtes Datum|FEHLER: bad_entries
+Zu viele|FEHLER: bad_entries
+Selbst|catches:bronze,first,species:bronze,waters:gold
+Freund (friends)|catches:bronze,first,species:bronze,waters:gold
+Bert ohne Erfolge|-
+Fremder (friends)|-(verborgen)
+Unbekanntes Konto|0
+Falsche Sichtbarkeit|FEHLER: bad_visibility
+Auf public|
+Fremder (public)|catches:bronze,first,species:bronze,waters:gold
+Blockierende (public)|-(verborgen)
+Auf private|
+Selbst (private)|catches:bronze,first,species:bronze,waters:gold
+Freund (private)|-(verborgen)
+Ohne Profil Sichtbarkeit|FEHLER: no_profile
+Gesperrt hochladen|FEHLER: banned
+Gesperrt sehen (Freund)|-(verborgen)
+Anon lesen|FEHLER: permission denied for function user_achievements
+Anon schreiben|FEHLER: permission denied for function set_my_achievements

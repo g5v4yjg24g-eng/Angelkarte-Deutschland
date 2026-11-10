@@ -10,6 +10,7 @@ import { FriendRequestResultSchema, parseFriendRows } from '../domain/friends';
 import { photoPath, thumbPath } from '../domain/postSync';
 import { FEED_PAGE, parseFeedRows, type FeedPost } from '../domain/feed';
 import { parseUserHits, parseUserProfile } from '../domain/userProfile';
+import { isAchVisibility, parseRemoteAchievements } from '../domain/sharedAchievements';
 import { parseSharedSpotRows } from '../domain/sharedSpots';
 import { parseBlockRows } from '../domain/moderation';
 import { parseCommentRows, parseReactionRows } from '../domain/reactions';
@@ -465,6 +466,24 @@ export function supabaseAccount(
       });
       if (error) fail(error);
       return withPhotoUrls(c, parseFeedRows(data as unknown[] | null));
+    },
+    async setMyAchievements(entries) {
+      const { error } = await (await get()).rpc('set_my_achievements', { entries });
+      if (error) fail(error);
+    },
+    async myAchievementsVisibility() {
+      const { data, error } = await (await get()).rpc('my_achievements_visibility');
+      if (error) fail(error);
+      return isAchVisibility(data) ? data : 'friends';
+    },
+    async setMyAchievementsVisibility(v) {
+      const { error } = await (await get()).rpc('set_my_achievements_visibility', { v });
+      if (error) fail(error);
+    },
+    async userAchievements(userId) {
+      const { data, error } = await (await get()).rpc('user_achievements', { author: userId });
+      if (error) fail(error);
+      return parseRemoteAchievements(data as unknown[] | null);
     },
     async searchUsers(term) {
       const { data, error } = await (await get()).rpc('search_users', { q: term });

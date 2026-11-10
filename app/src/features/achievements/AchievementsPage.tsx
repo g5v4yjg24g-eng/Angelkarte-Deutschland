@@ -16,6 +16,7 @@ import {
   type FamilyId,
 } from '../../domain/achievements';
 import { AchievementBadge } from './AchievementBadge';
+import { AchievementVisibility } from './AchievementVisibility';
 import { useAchievements } from './useAchievements';
 import styles from './Achievements.module.css';
 
@@ -117,6 +118,7 @@ export function AchievementsPage() {
         })}
       </ul>
       <p className="muted">{t.rules}</p>
+      <AchievementVisibility />
     </Page>
   );
 }
