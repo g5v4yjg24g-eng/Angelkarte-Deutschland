@@ -162,6 +162,9 @@
   user-select: none;
   -webkit-user-select: none;
   overflow-x: auto;
+  /* nie senkrecht im Rahmen scrollen (Video Nutzer 2026-11-10: Foto rutschte im Rahmen mit) */
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
 }
