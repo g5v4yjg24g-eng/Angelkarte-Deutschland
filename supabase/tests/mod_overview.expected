@@ -1,0 +1,6 @@
+Moderatorin|2 1 1 2
+Normales Konto|FEHLER: not_moderator
+Normales Konto liest Meldungen|FEHLER: permission denied for table reports
+Normales Konto liest Protokoll|FEHLER: permission denied for table moderation_log
+Normales Konto macht sich zum Moderator|FEHLER: permission denied for table moderators
+Ohne Anmeldung|FEHLER: permission denied for function mod_overview

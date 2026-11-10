@@ -136,6 +136,43 @@ export const CloseIcon = (p: IconProps) => (
   </Icon>
 );
 
+/** Admin-Übersicht: vier Kacheln */
+export const DashboardIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3.5" y="3.5" width="7" height="9" rx="1.5" />
+    <rect x="13.5" y="3.5" width="7" height="5" rx="1.5" />
+    <rect x="13.5" y="11.5" width="7" height="9" rx="1.5" />
+    <rect x="3.5" y="15.5" width="7" height="5" rx="1.5" />
+  </Icon>
+);
+/** Meldungen */
+export const FlagIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5 21V4" />
+    <path d="M5 4h11l-2 4 2 4H5" />
+  </Icon>
+);
+/** Verwaltung/Einstellungen */
+export const GearIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7" />
+  </Icon>
+);
+/** Admin-Bereich verlassen */
+export const ExitIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M14 4h5v16h-5M10 8l-4 4 4 4M6 12h10" />
+  </Icon>
+);
+/** Mail */
+export const MailIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m4 7 8 6 8-6" />
+  </Icon>
+);
+
 /** Markenzeichen (Fisch). Mit title wird es für Screenreader benannt, sonst dekorativ. */
 export function FishMark({
   size = 32,

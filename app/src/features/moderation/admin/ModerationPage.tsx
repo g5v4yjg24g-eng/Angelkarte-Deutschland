@@ -1,15 +1,15 @@
-// Mehr → Moderation (nur Moderatoren, MODERATION_PLAN.md): Meldungen nach Stand, neueste zuerst.
+// Admin → Meldungen (nur Moderatoren, MODERATION_PLAN.md): Meldungen nach Stand, neueste zuerst, mit Priorität
+// (nur als Hinweis – nie automatisch gehandelt).
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import { de } from '../../../i18n/de';
 import { Page } from '../../../design/components/Page';
 import { Notice } from '../../../design/components/Notice';
 import { SegmentedControl } from '../../../design/components/SegmentedControl';
-import type { ModReport } from '../../../domain/modAdmin';
+import { reportPriority, type ModPriority, type ModReport } from '../../../domain/modAdmin';
+import { ADMIN_BASE } from './adminPaths';
 import { useProviders } from '../../../ports/providersContext';
 import { modDate, modErrorText } from './modErrors';
-import { useIsModerator } from './useIsModerator';
-import { PasswordNotice } from './PasswordNotice';
 import styles from './ModAdmin.module.css';
 
 const t = de.modAdmin;
@@ -22,7 +22,6 @@ const FILTERS = [
 
 export function ModerationPage() {
   const { account } = useProviders();
-  const moderator = useIsModerator();
   const [filter, setFilter] = useState<Filter>('open');
   // Ergebnis je Filter: beim Umschalten gilt die alte Liste nicht mehr (= lädt)
   const [loaded, setLoaded] = useState<{ filter: Filter; list?: ModReport[]; error?: string }>();
@@ -30,7 +29,6 @@ export function ModerationPage() {
   const error = loaded?.filter === filter ? loaded.error : undefined;
 
   useEffect(() => {
-    if (!moderator) return;
     let live = true;
     account
       .modReports(filter)
@@ -39,17 +37,10 @@ export function ModerationPage() {
     return () => {
       live = false;
     };
-  }, [account, moderator, filter]);
-
-  if (moderator === false)
-    return (
-      <Page title={t.title} back="/mehr">
-        <Notice>{t.notModerator}</Notice>
-      </Page>
-    );
+  }, [account, filter]);
 
   return (
-    <Page title={t.title} back="/mehr">
+    <Page title={t.nav.reports}>
       <SegmentedControl label={t.filter} options={FILTERS} value={filter} onChange={setFilter} />
       {error && <Notice tone="error">{error}</Notice>}
       {!list && !error && <p className="muted">{t.loading}</p>}
@@ -58,30 +49,40 @@ export function ModerationPage() {
         <ul className={styles.list}>
           {list.map((r) => (
             <li key={r.id}>
-              <Link to={`/mehr/moderation/${r.id}`} className={styles.item}>
-                <span className={styles.row}>
-                  <strong>
-                    {t.kinds[r.kind]}:{' '}
-                    {de.moderation.reasons[r.reason as keyof typeof de.moderation.reasons] ?? r.reason}
-                  </strong>
-                  <span className={r.status === 'open' ? styles.tagDanger : styles.tag}>
-                    {r.status === 'open' ? t.statusOpen : t.statusDone}
-                  </span>
-                </span>
-                <span>
-                  {t.against}: {r.targetName ?? '–'}
-                  {r.targetUsername && ` (${t.handle(r.targetUsername)})`}
-                  {r.targetBanned && <span className={styles.tagDanger}> {t.banned}</span>}
-                </span>
-                <span className="muted">
-                  {modDate(r.createdAt)} · {t.reportedBy} {r.reporterName ?? '–'}
-                </span>
-              </Link>
+              <ReportItem report={r} priority={reportPriority(r)} />
             </li>
           ))}
         </ul>
       )}
-      {moderator && <PasswordNotice />}
     </Page>
+  );
+}
+
+/** Eine Meldung in der Liste (auch in der Übersicht): Art und Grund, gegen wen, wann, Stand, Priorität */
+export function ReportItem({ report: r, priority }: { report: ModReport; priority: ModPriority }) {
+  return (
+    <Link
+      to={`${ADMIN_BASE}/meldungen/${r.id}`}
+      className={[styles.item, priority === 'low' ? '' : styles[`prio_${priority}`]].join(' ')}
+    >
+      <span className={styles.row}>
+        <strong>
+          {t.kinds[r.kind]}:{' '}
+          {de.moderation.reasons[r.reason as keyof typeof de.moderation.reasons] ?? r.reason}
+        </strong>
+        <span className={r.status === 'open' ? styles.tagDanger : styles.tag}>
+          {r.status === 'open' ? t.statusOpen : t.statusDone}
+        </span>
+      </span>
+      <span>
+        {t.against}: {r.targetName ?? '–'}
+        {r.targetUsername && ` (${t.handle(r.targetUsername)})`}
+        {r.targetBanned && <span className={styles.tagDanger}> {t.banned}</span>}
+      </span>
+      <span className="muted">
+        {modDate(r.createdAt)} · {t.reportedBy} {r.reporterName ?? '–'}
+        {r.status === 'open' && priority !== 'low' && ` · ${t.overview.priority[priority]}`}
+      </span>
+    </Link>
   );
 }

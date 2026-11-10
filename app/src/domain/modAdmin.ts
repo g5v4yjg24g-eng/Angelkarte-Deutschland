@@ -233,3 +233,86 @@ export function modErrorKind(
   if (m.includes('fetch') || m.includes('network')) return 'offline';
   return 'unknown';
 }
+
+// ---------------------------------------------------------------------------------------------------------
+// Admin-Bereich, Phase 1 (Wunsch Nutzer 2026-11-10): Kennzahlen der Übersicht, Priorität, Nutzer aus Meldungen.
+
+/** Kennzahlen der Übersicht; fehlt ein Wert, gibt es ihn (noch) nicht – angezeigt wird dann „–“, nie eine Schätzung */
+export interface ModOverview {
+  openReports: number;
+  /** Stand „in Bearbeitung“ folgt in Phase 3 */
+  inProgress?: number | undefined;
+  /** heute (Europe/Berlin) erledigte Meldungen */
+  doneToday?: number | undefined;
+  bannedNow?: number | undefined;
+  /** neue Profile der letzten 7 Tage */
+  newUsers7d?: number | undefined;
+  /** Einsprüche folgen in Phase 5 */
+  openAppeals?: number | undefined;
+}
+
+const OverviewRow = z.object({
+  open_reports: z.number().int().min(0),
+  done_today: z.number().int().min(0).nullable().optional(),
+  banned_now: z.number().int().min(0).nullable().optional(),
+  new_users_7d: z.number().int().min(0).nullable().optional(),
+});
+
+/** Zeile von mod_overview(); kaputt oder leer = undefined (dann zählt die App nur, was sie selbst sicher weiß) */
+export function parseModOverview(rows: readonly unknown[] | null | undefined): ModOverview | undefined {
+  const r = OverviewRow.safeParse(rows?.[0]);
+  if (!r.success) return undefined;
+  return {
+    openReports: r.data.open_reports,
+    doneToday: r.data.done_today ?? undefined,
+    bannedNow: r.data.banned_now ?? undefined,
+    newUsers7d: r.data.new_users_7d ?? undefined,
+  };
+}
+
+export type ModPriority = 'high' | 'mid' | 'low';
+/** Schwere Gründe bzw. mehrere offene Meldungen gegen dieselbe Person */
+const SEVERE = new Set(['abuse', 'violence', 'nudity']);
+
+/**
+ * Priorität nur als Hinweis für die Reihenfolge des Ansehens – es wird nie automatisch gehandelt
+ * (keine Sperre wegen vieler Meldungen, Wunsch Nutzer 2026-11-10).
+ */
+export function reportPriority(r: Pick<ModReport, 'reason' | 'openAgainst' | 'status'>): ModPriority {
+  if (r.status !== 'open') return 'low';
+  if (SEVERE.has(r.reason) || r.openAgainst >= 3) return 'high';
+  if (r.reason === 'privacy' || r.openAgainst >= 2) return 'mid';
+  return 'low';
+}
+
+export interface ReportedUser {
+  userId: string;
+  name?: string | undefined;
+  username?: string | undefined;
+  banned: boolean;
+  reports: number;
+  open: number;
+  last: string;
+}
+
+/** Gemeldete Konten aus der Meldungsliste: je Person zusammengefasst, offene zuerst, dann neueste */
+export function reportedUsers(reports: readonly ModReport[]): ReportedUser[] {
+  const by = new Map<string, ReportedUser>();
+  for (const r of reports) {
+    if (!r.targetUserId) continue;
+    const cur = by.get(r.targetUserId) ?? {
+      userId: r.targetUserId,
+      name: r.targetName,
+      username: r.targetUsername,
+      banned: r.targetBanned,
+      reports: 0,
+      open: 0,
+      last: r.createdAt,
+    };
+    cur.reports++;
+    if (r.status === 'open') cur.open++;
+    if (r.createdAt > cur.last) cur.last = r.createdAt;
+    by.set(r.targetUserId, cur);
+  }
+  return [...by.values()].sort((a, b) => b.open - a.open || b.last.localeCompare(a.last));
+}

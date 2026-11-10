@@ -232,8 +232,9 @@ Stichprobe WAT-2 (automatisiert: `tools/water-pipeline/src/sample.ts`, läuft in
 | PUSH-3 | Einstellungen → Mitteilungen | im Browser unsichtbar; jede Art einzeln, auf dem Server gespeichert; Knopf „Erlauben“ bzw. Hinweis auf die iPhone-Einstellungen (✅ `PushSettings.test.tsx`) |
 | PUSH-4 | Auf dem iPhone (von Hand, TestFlight) | Erlaubnis-Dialog nach der Anmeldung; Mitteilung bei Anfrage, Gefällt mir, Kommentar, Spot; Antippen öffnet den Bereich [O] |
 | MODA-1 | Moderations-Logik | Meldungen, Inhalt, Konto, Inhalte, Protokoll lesen (kaputte fallen weg, fehlender Inhalt = gelöscht); Sperrdauer 1/7/30/dauerhaft, Restzeit; Fehler zuordnen (✅ `modAdmin.test.ts`) |
-| MODA-2 | Moderationsbereich | Mehr → Moderation → Meldung: Inhalt löschen, Sperren (Grund Pflicht, 7 Tage voreingestellt), Konto-Seite mit Restzeit und Protokoll, Sperre aufheben, Meldung erledigt; 390 px, hell/dunkel (✅ `account.spec.ts`) |
-| MODA-3 | Ohne Recht | kein Eintrag unter Mehr, Seite zeigt Hinweis (✅ `account.spec.ts`); der Server prüft jede `mod_*`-Funktion selbst (von außen geprüft nach dem Einspielen) |
+| ADM-1 | Admin-Bereich: Übersicht | Kennzahlen nur aus echten Werten (fehlende bleiben leer), Priorität als Hinweis, gemeldete Konten zusammengefasst (✅ `modAdmin.test.ts`); `mod_overview()` liefert der Moderatorin echte Zahlen, normale Konten/ohne Anmeldung abgewiesen, Tabellen nicht lesbar, niemand macht sich selbst zum Moderator (✅ `supabase/tests/mod_overview.sql`) |
+| MODA-2 | Moderationsbereich | Mehr → Moderation öffnet den Admin-Bereich: Übersicht mit Kennzahlen, eigene Leiste (4 Punkte, Zahl offener Meldungen), normale Leiste weg; Meldungen → Meldung: Inhalt löschen, Sperren (Grund Pflicht, 7 Tage voreingestellt), Konto-Seite mit Restzeit und Protokoll, Sperre aufheben, Meldung erledigt; alte Adresse `/mehr/moderation` leitet weiter; Verwaltung → Systemnachrichten; „Zur App“ stellt die normale Leiste wieder her, weiter angemeldet; 390 px, hell/dunkel (✅ `account.spec.ts`) |
+| MODA-3 | Ohne Recht | kein Eintrag unter Mehr, alte und neue Adressen (auch Unterseiten) zeigen nur den Hinweis, keine Admin-Leiste (✅ `account.spec.ts`); der Server prüft jede `mod_*`-Funktion selbst (von außen geprüft nach dem Einspielen) |
 
 ### 3.7 Datensicherung
 | ID | Testfall | Erwartung |

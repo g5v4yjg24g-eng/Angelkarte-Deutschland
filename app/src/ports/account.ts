@@ -14,6 +14,7 @@ import type {
   BanDuration,
   ModContent,
   ModLogEntry,
+  ModOverview,
   ModReport,
   ModUser,
   ModUserItem,
@@ -173,6 +174,8 @@ export interface AccountProvider {
   /** Moderationsbereich (nur Moderatoren; der Server prüft jede Anfrage selbst) */
   isModerator(): Promise<boolean>;
   modReports(state: 'open' | 'done' | 'all'): Promise<ModReport[]>;
+  /** Kennzahlen der Admin-Übersicht (mod_overview); fehlt die Funktion noch, nur die offenen Meldungen */
+  modOverview(): Promise<ModOverview>;
   modContent(kind: 'post' | 'comment' | 'spot', id: string): Promise<ModContent | undefined>;
   modUser(userId: string): Promise<ModUser | undefined>;
   modUserContent(userId: string): Promise<ModUserItem[]>;

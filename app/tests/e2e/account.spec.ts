@@ -428,6 +428,17 @@ async function fakeSupabase(
           mod.reports.filter((r) => state === 'all' || r.status === state),
         );
       }
+      case 'POST /rest/v1/rpc/mod_overview': {
+        if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
+        return json(route, [
+          {
+            open_reports: mod.reports.filter((r) => r.status === 'open').length,
+            done_today: mod.log.filter((l) => l.action === 'resolve').length,
+            banned_now: [...mod.users.values()].filter((u) => u.banned).length,
+            new_users_7d: 2,
+          },
+        ]);
+      }
       case 'POST /rest/v1/rpc/mod_content': {
         const { target } = req.postDataJSON() as { target: string };
         const c = mod.content.get(target);
@@ -1776,8 +1787,27 @@ test('MODA-2: Moderationsbereich – Meldung ansehen, Inhalt löschen, sperren (
   await page.goto('/mehr');
   await waitForApp(page);
   await page.getByRole('link', { name: /^Moderation/ }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Moderation' })).toBeVisible();
+  // eigener Admin-Bereich: Übersicht mit echten Zahlen, eigene Leiste statt der normalen (nie beide)
+  await expect(page).toHaveURL(/\/moderation$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Übersicht' })).toBeVisible();
+  const adminNav = page.getByRole('navigation', { name: 'Admin-Navigation' });
+  await expect(adminNav.getByRole('link')).toHaveText(['Übersicht', 'Meldungen1', 'Nutzer', 'Verwaltung']);
+  await expect(page.getByRole('navigation', { name: 'Hauptnavigation' })).toHaveCount(0);
+  const kpis = page.getByRole('group', { name: 'Kennzahlen' });
+  await expect(kpis.getByText('Offene Meldungen')).toBeVisible();
+  await expect(kpis.getByText('In Bearbeitung (folgt)')).toBeVisible();
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await adminNav.getByRole('link', { name: /Meldungen/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Meldungen' })).toBeVisible();
   await page.getByRole('link', { name: /Kommentar: Beleidigung/ }).click();
+  await expect(page).toHaveURL(/\/moderation\/meldungen\/r-1$/);
+  await expect(adminNav.getByRole('link', { name: /Meldungen/ })).toHaveClass(/active/);
   await expect(page.getByText('Du bist ein schlechter Angler')).toBeVisible();
   await expect(page.getByText('Beleidigt andere')).toBeVisible();
   await expect(page.getByText('Unter dem Beitrag: „Zander am Abend“')).toBeVisible();
@@ -1832,9 +1862,21 @@ test('MODA-2: Moderationsbereich – Meldung ansehen, Inhalt löschen, sperren (
     .getByRole('button', { name: 'Bestätigen' })
     .click();
   await expect(page.getByText('Meldung als erledigt markiert.')).toBeVisible();
+  // alter Link (z. B. aus einer Meldungs-Mail) landet im Admin-Bereich
   await page.goto('/mehr/moderation');
+  await expect(page).toHaveURL(/\/moderation$/);
   await expect(page.getByText('Keine offenen Meldungen – alles erledigt.')).toBeVisible();
   expect(calls.mod.log.map((l) => l.action)).toEqual(['delete_comment', 'ban', 'unban', 'resolve']);
+  // Verwaltung → Systemnachrichten (Hinweis-Mail ist dorthin umgezogen)
+  await adminNav.getByRole('link', { name: 'Verwaltung' }).click();
+  await page.getByRole('link', { name: /Systemnachrichten/ }).click();
+  await expect(page.getByRole('heading', { name: 'Hinweis-Mail: Anmeldung mit Passwort' })).toBeVisible();
+  // „Zur App“: zurück, normale Leiste wieder da, weiter angemeldet
+  await page.getByRole('link', { name: 'Admin-Bereich verlassen, zurück zur App' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Mehr' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Hauptnavigation' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Admin-Navigation' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /^Konto.*Angemeldet/ })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -1846,6 +1888,9 @@ test('MODA-3: ohne Moderatoren-Recht kein Eintrag unter Mehr und kein Zugriff', 
   await expect(page.getByRole('link', { name: /^Konto/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /^Moderation/ })).toHaveCount(0);
   await page.goto('/mehr/moderation');
+  await expect(page.getByText('Diesen Bereich sehen nur Moderatoren.')).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Admin-Navigation' })).toHaveCount(0);
+  await page.goto('/moderation/meldungen/r-1');
   await expect(page.getByText('Diesen Bereich sehen nur Moderatoren.')).toBeVisible();
 });
 
@@ -1967,7 +2012,7 @@ test('MODA-4: Moderator entfernt ein unpassendes Profilbild – mit Bestätigung
   calls.storage.set(`avatars/${path}`, 1000);
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
-  await page.goto('/mehr/moderation/nutzer/u-anna');
+  await page.goto('/moderation/nutzer/u-anna');
   await waitForApp(page);
   await expect(page.getByRole('main').getByRole('img', { name: 'Profilbild' })).toHaveJSProperty(
     'naturalWidth',

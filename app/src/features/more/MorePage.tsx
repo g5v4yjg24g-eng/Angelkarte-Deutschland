@@ -38,7 +38,7 @@ export function MorePage() {
       {moderator && (
         <div className={styles.card}>
           <ListLink
-            to="/mehr/moderation"
+            to="/moderation"
             icon={<ShieldIcon />}
             title={de.modAdmin.title}
             hint={de.modAdmin.moreHint}
