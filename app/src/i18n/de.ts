@@ -3228,6 +3228,10 @@ export const de = {
     emptyTitle: 'Keine Beiträge',
     emptyText: 'Hier ist noch nichts, das du sehen kannst.',
     ownProfile: 'Zu deinem Profil',
+    gridLabel: 'Beiträge',
+    more: 'Weitere Beiträge laden',
+    noCount: '–',
+    postsPageTitle: 'Beiträge',
   },
   badges: {
     founder: 'FOUNDER',

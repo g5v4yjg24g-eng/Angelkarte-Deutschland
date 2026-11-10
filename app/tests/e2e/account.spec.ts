@@ -1061,12 +1061,20 @@ async function fakeSupabase(
         return json(route, p ? [p] : []);
       }
       case 'POST /rest/v1/rpc/user_posts': {
-        const { author, only_ids } = req.postDataJSON() as { author: string; only_ids: string[] | null };
+        const { author, only_ids, before } = req.postDataJSON() as {
+          author: string;
+          only_ids: string[] | null;
+          before: string | null;
+        };
         return json(
           route,
           feed.filter((p) => {
-            const x = p as { author_id?: string; id?: string };
-            return x.author_id === author && (!only_ids || only_ids.includes(x.id ?? ''));
+            const x = p as { author_id?: string; id?: string; created_at?: string };
+            return (
+              x.author_id === author &&
+              (!only_ids || only_ids.includes(x.id ?? '')) &&
+              (!before || Date.parse(x.created_at ?? '') < Date.parse(before))
+            );
           }),
         );
       }
@@ -1701,6 +1709,16 @@ test('FEED-2: Feed in der Leiste – Beiträge von Freunden mit Fotos, Name, Abz
   const own = page.getByRole('article', { name: /^Beitrag von Kevin/ });
   await expect(own.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
   await expect(page.getByText('Das waren alle Beiträge.')).toBeVisible();
+  // alle Beiträge gleich groß (4:5), egal wie das Foto ist; senkrechtes Wischen bleibt beim Seiten-Scrollen
+  // (Fehler Nutzer 2026-11-10: beim Scrollen verschoben sich die Fotos mit)
+  for (const card of [anna, own]) {
+    const photos = card.getByRole('list', { name: /^Fotos von/ });
+    const box = await photos.boundingBox();
+    expect(box && Math.abs(box.height / box.width - 1.25)).toBeLessThan(0.02);
+    expect(await photos.evaluate((el) => getComputedStyle(el).touchAction)).toBe('pan-y pinch-zoom');
+  }
+  // Profilbild ist rund und füllt den Kreis; es führt wie der Name zum Profil
+  await expect(anna.locator('a[href$="/profil/nutzer/anna"]')).toHaveCount(2);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
@@ -3355,11 +3373,15 @@ test('SOC-1: Nutzer suchen, Profil eines Freundes mit Angaben, Highlights und Be
   await expect(facts).toContainText('Hecht · Zander');
   await expect(facts).toContainText('Spinnfischen');
   await expect(facts).toContainText('Nordrhein-Westfalen');
+  // aufgebaut wie das eigene Profil: Zahlen, Highlights und Beiträge als Kacheln (Wunsch Nutzer 2026-11-10)
+  await expect(page.getByText('2Beiträge', { exact: false })).toBeVisible();
+  await expect(page.getByText('4Freunde', { exact: false })).toBeVisible();
   const highlights = page.getByRole('region', { name: 'Highlights' });
-  await expect(highlights.getByText('Hecht im Schilf')).toBeVisible();
-  await expect(highlights.getByText('Zander am Abend')).toHaveCount(0);
-  const postsSection = page.getByRole('region', { name: 'Beiträge' });
-  await expect(postsSection.getByText('Zander am Abend')).toBeVisible();
+  await expect(highlights.getByRole('link')).toHaveCount(1);
+  await expect(highlights.getByRole('link', { name: /Hecht im Schilf/ })).toBeVisible();
+  const grid = page.getByRole('list', { name: 'Beiträge' });
+  await expect(grid.getByRole('link')).toHaveCount(2);
+  await expect(grid.getByRole('link', { name: 'Beitrag 1: Zander am Abend' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
@@ -3368,6 +3390,17 @@ test('SOC-1: Nutzer suchen, Profil eines Freundes mit Angaben, Highlights und Be
       r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
     ).toEqual([]);
   }
+
+  // Kachel antippen: Beiträge ab dieser Stelle zum Durchscrollen, darunter die älteren
+  await grid.getByRole('link', { name: 'Beitrag 1: Zander am Abend' }).click();
+  await expect(page).toHaveURL(/\/profil\/nutzer\/anna\/beitraege\?ab=/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Beiträge' })).toBeVisible();
+  await expect(page.getByRole('article')).toHaveCount(2);
+  await expect(page.getByRole('article').first()).toContainText('Zander am Abend');
+  await page.goBack();
+  await grid.getByRole('link', { name: 'Beitrag 2: Hecht im Schilf' }).click();
+  await expect(page.getByRole('article')).toHaveCount(1);
+  await expect(page.getByRole('article')).toContainText('Hecht im Schilf');
 
   // Fremder: keine Angaben, Anfrage möglich
   await page.goto('/profil/nutzer/fremd');

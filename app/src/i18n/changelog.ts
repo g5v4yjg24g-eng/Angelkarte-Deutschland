@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-06',
+    title: 'Feed und Profile',
+    items: [
+      'Feed: Alle Beiträge haben jetzt dieselbe Größe (Hochformat). Beim Scrollen verschieben sich die Fotos nicht mehr – zum nächsten Foto wischst du zur Seite.',
+      'Profilbild: Das kleine runde Bild ist nicht mehr verzerrt. Ein Tipp darauf öffnet – wie der Name – das Profil.',
+      'Profile anderer: Sehen jetzt aus wie dein eigenes, mit Zahlen oben und den Beiträgen als Kacheln. Ein Tipp auf eine Kachel öffnet die Beiträge zum Durchscrollen.',
+    ],
+  },
+  {
     id: '2026-12-05',
     title: 'Anmeldung mit Passwort',
     items: [
