@@ -15,6 +15,7 @@ import {
   removeComment,
   restoreComment,
   postReactions,
+  toggleProfileHighlight,
 } from './profileService';
 import { exportBackup } from './backupService';
 
@@ -144,5 +145,41 @@ describe('Profil (PRF-1)', () => {
     await addComment(post.id, 'Petri!', 'me', db);
     const { backup } = await exportBackup({ withPhotos: false }, db);
     expect(backup.counts).toMatchObject({ posts: 1, postLikes: 1, postComments: 1 });
+  });
+});
+
+describe('Profil erweitern (Paket 11, PRF-12)', () => {
+  it('freiwillige Angaben speichern, unverändert lassen und entfernen; landen in der Sicherung', async () => {
+    const db = freshDb();
+    const p = await saveProfile(
+      { name: 'Kevin', extras: { targetSpecies: ['pike', 'zander'], methods: ['spinning'], region: 'NW' } },
+      undefined,
+      db,
+    );
+    expect(p).toMatchObject({ targetSpecies: ['pike', 'zander'], methods: ['spinning'], region: 'NW' });
+    // ohne extras bleibt alles
+    expect(await saveProfile({ name: 'Kevin F.' }, undefined, db)).toMatchObject({ region: 'NW' });
+    const { backup } = await exportBackup({ withPhotos: false }, db);
+    expect(JSON.stringify(backup)).toContain('zander');
+    // leere Listen und fehlende Region entfernen
+    const cleared = await saveProfile(
+      { name: 'Kevin F.', extras: { targetSpecies: [], methods: [] } },
+      undefined,
+      db,
+    );
+    expect(cleared.targetSpecies).toBeUndefined();
+    expect(cleared.methods).toBeUndefined();
+    expect(cleared.region).toBeUndefined();
+  });
+
+  it('Beiträge anheften: höchstens drei, lösen gibt Platz frei', async () => {
+    const db = freshDb();
+    await saveProfile({ name: 'Kevin' }, undefined, db);
+    for (const id of ['a', 'b', 'c']) expect(await toggleProfileHighlight(id, db)).toBe(true);
+    expect(await toggleProfileHighlight('d', db)).toBe(false);
+    expect((await getProfile(db))?.highlightPostIds).toEqual(['a', 'b', 'c']);
+    expect(await toggleProfileHighlight('b', db)).toBe(true);
+    expect(await toggleProfileHighlight('d', db)).toBe(true);
+    expect((await getProfile(db))?.highlightPostIds).toEqual(['a', 'c', 'd']);
   });
 });

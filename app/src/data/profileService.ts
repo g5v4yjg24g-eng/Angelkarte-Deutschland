@@ -1,6 +1,7 @@
 // Profilseite (Wunsch Nutzer 2026-10-27): eigenes Profil und Beiträge. Bleibt auf dem Gerät, ist Teil der Sicherung.
 // Fotos werden wie beim Fang in derselben Transaktion gespeichert. Ein Beitrag aus einem Fang bekommt Kopien der
 // gewählten Fangfotos – so bleibt der Beitrag erhalten, auch wenn der Fang gelöscht wird.
+import { toggleHighlight } from '../domain/profile';
 import {
   LOCAL_AUTHOR,
   PhotoSchema,
@@ -44,7 +45,12 @@ export async function getProfile(db: FangpunktDB = getDb()): Promise<Profile | u
 
 /** Name und Text speichern; `avatar`: neues Bild, `null` entfernt das Bild, fehlt = unverändert. */
 export async function saveProfile(
-  fields: { name: string; bio?: string | undefined },
+  fields: {
+    name: string;
+    bio?: string | undefined;
+    /** Paket 11 – fehlt = unverändert, leere Liste/undefined in `extras` = entfernen */
+    extras?: Pick<Profile, 'targetSpecies' | 'methods' | 'region'>;
+  },
   avatar?: NewPhoto | null,
   db: FangpunktDB = getDb(),
 ): Promise<Profile> {
@@ -63,10 +69,30 @@ export async function saveProfile(
         }
       }
     }
-    const data = { name: fields.name, bio: fields.bio || undefined, avatarPhotoId };
+    const extras = fields.extras
+      ? {
+          targetSpecies: fields.extras.targetSpecies?.length ? fields.extras.targetSpecies : undefined,
+          methods: fields.extras.methods?.length ? fields.extras.methods : undefined,
+          region: fields.extras.region,
+        }
+      : {};
+    const data = { name: fields.name, bio: fields.bio || undefined, avatarPhotoId, ...extras };
     if (!cur) return r.create({ id: PROFILE_ID, ...data });
     if (cur.deletedAt) await r.restore(PROFILE_ID);
     return r.update(PROFILE_ID, data);
+  });
+}
+
+/** Beitrag im Profil anheften/lösen (Paket 11); liefert false, wenn schon drei angeheftet sind */
+export async function toggleProfileHighlight(postId: string, db: FangpunktDB = getDb()): Promise<boolean> {
+  return db.transaction('rw', db.profiles, async () => {
+    const cur = await db.profiles.get(PROFILE_ID);
+    const next = toggleHighlight(cur?.highlightPostIds, postId);
+    if (next.full) return false;
+    const highlightPostIds = next.ids.length ? next.ids : undefined;
+    if (!cur) await repo('profiles', db).create({ id: PROFILE_ID, name: '', highlightPostIds });
+    else await repo('profiles', db).update(PROFILE_ID, { highlightPostIds });
+    return true;
   });
 }
 

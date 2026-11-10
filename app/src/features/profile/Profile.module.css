@@ -359,3 +359,75 @@
   display: grid;
   gap: var(--space-1);
 }
+
+/* Paket 11: freiwillige Angaben */
+.extras {
+  display: grid;
+  gap: var(--space-3);
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.extras legend {
+  padding: 0;
+  font-weight: 650;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--touch);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.chip[aria-pressed='true'] {
+  border: 2px solid var(--color-primary);
+  font-weight: 600;
+}
+.facts {
+  display: grid;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+}
+.facts div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.facts dt {
+  color: var(--color-text-muted);
+}
+.facts dd {
+  margin: 0;
+}
+.highlights {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.highlights h2 {
+  margin: 0;
+  font-size: var(--text-base);
+}
+.highlightRow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+.highlightRow .tile {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}

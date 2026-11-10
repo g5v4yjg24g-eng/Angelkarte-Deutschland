@@ -260,6 +260,16 @@ export const ProfileSchema = MetaSchema.extend({
   name: text(40),
   bio: text(300).optional(),
   avatarPhotoId: id.optional(),
+  /** Freiwillige Angaben (Paket 11, Masterprompt 6.1) – nur auf dem Gerät, bis es eine Profilansicht für Freunde gibt */
+  targetSpecies: z
+    .array(z.string().regex(/^[a-z][a-z0-9_]{1,39}$/))
+    .max(5)
+    .optional(),
+  methods: z.array(MethodSchema).max(5).optional(),
+  /** Region als Bundesland – nie eine genaue Position */
+  region: z.enum(STATE_CODES).optional(),
+  /** angeheftete eigene Beiträge (höchstens 3, Reihenfolge = Anzeige) */
+  highlightPostIds: z.array(id).max(3).optional(),
 });
 
 /** Beitrag im Profil: ein oder mehrere Fotos, Text, optional verknüpft mit einem Fang aus dem Fangbuch. */
