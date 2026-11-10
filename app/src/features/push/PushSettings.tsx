@@ -5,7 +5,14 @@ import { de } from '../../i18n/de';
 import { Section } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
 import { Notice } from '../../design/components/Notice';
-import { PUSH_KINDS, type PushPermission, type PushPrefs } from '../../domain/push';
+import {
+  PUSH_KINDS,
+  pushTestState,
+  type PushPermission,
+  type PushPrefs,
+  type PushStatus,
+} from '../../domain/push';
+import { AccountError } from '../../ports/account';
 import { useProviders } from '../../ports/providersContext';
 import { storedUserId } from '../badges/badgeStore';
 import { registerDevice } from './pushDevice';
@@ -19,16 +26,24 @@ export function PushSettings() {
   const [permission, setPermission] = useState<PushPermission>();
   const [prefs, setPrefs] = useState<PushPrefs>();
   const [error, setError] = useState<string>();
+  const [status, setStatus] = useState<PushStatus>();
+  const [testMsg, setTestMsg] = useState<string>();
+  const [testing, setTesting] = useState(false);
 
   useEffect(() => {
     if (!push.available) return;
     let live = true;
     void push.permission().then((p) => live && setPermission(p));
-    if (signedIn)
+    if (signedIn) {
       account
         .pushPrefs()
         .then((p) => live && setPrefs(p))
         .catch(() => live && setError(t.loadError));
+      account
+        .pushStatus()
+        .then((s) => live && setStatus(s))
+        .catch(() => undefined);
+    }
     return () => {
       live = false;
     };
@@ -41,6 +56,36 @@ export function PushSettings() {
     const p = await push.requestPermission();
     setPermission(p);
     if (p === 'granted') await registerDevice(push, account).catch(() => setError(t.registerError));
+  };
+
+  // Test an sich selbst: zeigt, ob das iPhone angemeldet ist und ob Apple die Mitteilung annimmt
+  const sendTest = async () => {
+    setTesting(true);
+    setTestMsg(undefined);
+    try {
+      let n = await account.sendTestPush();
+      if (n === 0 && permission === 'granted') {
+        await registerDevice(push, account);
+        n = await account.sendTestPush();
+      }
+      if (n === 0) {
+        setStatus({ devices: 0 });
+        setTestMsg(t.deviceMissing);
+        return;
+      }
+      setTestMsg(t.testWaiting);
+      await new Promise((r) => setTimeout(r, 4000));
+      const s = await account.pushStatus();
+      setStatus(s);
+      const state = pushTestState(s);
+      setTestMsg(
+        state === 'sent' ? t.testSent : state === 'error' ? t.testError(s.test?.error ?? '') : t.testStuck,
+      );
+    } catch (e) {
+      setTestMsg(e instanceof AccountError && /too_many_tests/.test(e.message) ? t.testLimit : t.saveError);
+    } finally {
+      setTesting(false);
+    }
   };
 
   const toggle = (kind: (typeof PUSH_KINDS)[number], on: boolean) => {
@@ -79,6 +124,17 @@ export function PushSettings() {
             </fieldset>
           )}
           {error && <Notice tone="error">{error}</Notice>}
+          {permission === 'granted' && (
+            <div className={styles.test}>
+              {status && <p className="muted">{status.devices > 0 ? t.deviceOk : t.deviceMissing}</p>}
+              <div>
+                <Button variant="secondary" disabled={testing} onClick={() => void sendTest()}>
+                  {t.test}
+                </Button>
+              </div>
+              {testMsg && <p role="status">{testMsg}</p>}
+            </div>
+          )}
           <p className="muted">{t.note}</p>
         </>
       )}

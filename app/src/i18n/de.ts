@@ -2587,12 +2587,24 @@ export const de = {
     saveError: 'Konnte nicht gespeichert werden. Prüfe die Verbindung.',
     kinds: {
       friends: 'Freundschaftsanfragen und angenommene Anfragen',
+      posts: 'Neue Beiträge von Freunden',
       likes: '„Gefällt mir“ an deinen Beiträgen',
-      comments: 'Kommentare unter deinen Beiträgen',
+      comments: 'Kommentare unter deinen Beiträgen und unter Beiträgen, die du kommentiert hast',
       spots: 'Spots, die Freunde mit dir teilen',
-      sessions: 'Einladungen zu gemeinsamen Sessions',
+      sessions: 'Gemeinsame Sessions: Einladungen, Zusagen und Highlights',
     },
-    note: 'Mitteilungen laufen über Apple. Sie enthalten den Namen der Person, bei Kommentaren den Anfang des Textes und bei Einladungen den Titel der Session.',
+    note: 'Mitteilungen laufen über Apple. Sie enthalten den Namen der Person, bei Beiträgen und Kommentaren den Anfang des Textes und bei Sessions deren Titel.',
+    deviceOk: 'Dieses iPhone ist für Mitteilungen angemeldet.',
+    deviceMissing:
+      'Dieses iPhone ist noch nicht für Mitteilungen angemeldet. Erlaube Mitteilungen oder starte die App neu.',
+    test: 'Test-Mitteilung senden',
+    testWaiting: 'Test wurde angefragt – die Mitteilung sollte gleich erscheinen …',
+    testSent:
+      'Apple hat die Test-Mitteilung angenommen. Kommt sie nicht an, prüfe „Fokus“ und die Mitteilungs-Einstellungen des iPhones.',
+    testError: (e: string) => `Apple hat die Test-Mitteilung abgelehnt: ${e}`,
+    testStuck:
+      'Die Test-Mitteilung wurde nicht verschickt – die Server-Funktion „send-push“ hat nicht geantwortet.',
+    testLimit: 'Zu viele Tests in der letzten Stunde. Versuch es später noch einmal.',
   },
   reactions: {
     errors: {
@@ -2846,7 +2858,7 @@ export const de = {
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',
-        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), dein Profiltext und freiwillige Angaben (Lieblingsfische, Methoden, Region als Bundesland, angeheftete Beiträge – sichtbar nur für deine Freunde; „Profil teilen“ verschickt nur einen Link mit deinem Nutzernamen), deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto, auch für Fremde unter Feed → Entdecken –, Beiträge, die du speicherst (nur für dich sichtbar), wie oft du am Tag nach Personen suchst (gegen massenhaftes Durchsuchen; die Suchbegriffe selbst werden nicht gespeichert), gemeinsame Sessions (Titel, auf Wunsch der Gewässername ohne Position, Beginn und Ende, wer eingeladen ist und wer dabei ist – sichtbar für die Teilnehmer; keine Positionen, Routen oder Fänge) und Highlights, die du dort teilst (Beiträge wie oben, sichtbar nur für die Teilnehmer) sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte, Profilbilder und Profiltexte löschen und Konten befristet oder dauerhaft sperren; Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt eine Mail an ihre Konto-Adresse. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person, bei Kommentaren dem Anfang des Textes und bei Einladungen dem Titel der Session). Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Freundschaften, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, gespeicherte Beiträge, gemeinsame Sessions, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
+        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse (für den Anmeldecode), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), dein Profiltext und freiwillige Angaben (Lieblingsfische, Methoden, Region als Bundesland, angeheftete Beiträge – sichtbar nur für deine Freunde; „Profil teilen“ verschickt nur einen Link mit deinem Nutzernamen), deine Freundschaften und Freundschaftsanfragen, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine Freunde bzw. bei „Alle“ für alle mit Fangpunkt-Konto, auch für Fremde unter Feed → Entdecken –, Beiträge, die du speicherst (nur für dich sichtbar), wie oft du am Tag nach Personen suchst (gegen massenhaftes Durchsuchen; die Suchbegriffe selbst werden nicht gespeichert), gemeinsame Sessions (Titel, auf Wunsch der Gewässername ohne Position, Beginn und Ende, wer eingeladen ist und wer dabei ist – sichtbar für die Teilnehmer; keine Positionen, Routen oder Fänge) und Highlights, die du dort teilst (Beiträge wie oben, sichtbar nur für die Teilnehmer) sowie Orte, die du selbst mit Freunden teilst (Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte, Profilbilder und Profiltexte löschen und Konten befristet oder dauerhaft sperren; Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt eine Mail an ihre Konto-Adresse. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person, bei Beiträgen und Kommentaren dem Anfang des Textes und bei gemeinsamen Sessions deren Titel); für „Test-Mitteilung senden“ wird nur vermerkt, ob Apple sie angenommen hat. Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, wenn du nicht angemeldet bist oder „Nicht mehr teilen“ wählst. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Freundschaften, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, gespeicherte Beiträge, gemeinsame Sessions, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
       },
       {
         name: 'GoatCounter (goatcounter.com)',

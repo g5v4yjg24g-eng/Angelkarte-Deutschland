@@ -8,7 +8,7 @@ import type { ProfileExtrasPayload, PublicProfile, UserHit } from '../domain/use
 import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
 import type { BlockedUser, ReportInput } from '../domain/moderation';
 import type { ServerComment, ServerReactions } from '../domain/reactions';
-import type { PushPrefs } from '../domain/push';
+import type { PushPrefs, PushStatus } from '../domain/push';
 import type {
   BanDuration,
   ModContent,
@@ -135,6 +135,10 @@ export interface AccountProvider {
   unregisterPushDevice(token: string): Promise<void>;
   pushPrefs(): Promise<PushPrefs>;
   setPushPrefs(prefs: PushPrefs): Promise<void>;
+  /** Test-Mitteilung an sich selbst; liefert die Zahl angemeldeter Geräte (0 = nichts verschickt) */
+  sendTestPush(): Promise<number>;
+  /** Geräte und Ergebnis des letzten Tests (my_push_status) */
+  pushStatus(): Promise<PushStatus>;
   /** Moderationsbereich (nur Moderatoren; der Server prüft jede Anfrage selbst) */
   isModerator(): Promise<boolean>;
   modReports(state: 'open' | 'done' | 'all'): Promise<ModReport[]>;

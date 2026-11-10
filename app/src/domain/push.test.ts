@@ -9,6 +9,7 @@ describe('Push-Mitteilungen (PUSH-1)', () => {
       comments: true,
       spots: false,
       sessions: true, // älterer Server ohne Spalte
+      posts: true,
     });
     expect(
       parsePushPrefs([{ friends: true, likes: true, comments: true, spots: true, sessions: false }]).sessions,
@@ -37,5 +38,27 @@ describe('Push-Mitteilungen (PUSH-1)', () => {
     expect(validPushToken('A1'.repeat(32))).toBe(true);
     expect(validPushToken('xyz')).toBe(false);
     expect(validPushToken(`${'a'.repeat(64)};drop`)).toBe(false);
+  });
+});
+
+describe('Stand der Mitteilungen (PUSH-4)', () => {
+  it('parsePushStatus und pushTestState', async () => {
+    const { parsePushStatus, pushTestState } = await import('./push');
+    expect(parsePushStatus([])).toEqual({ devices: 0 });
+    const none = parsePushStatus([{ devices: 1, test_at: null }]);
+    expect(none).toEqual({ devices: 1, test: undefined });
+    expect(pushTestState(none)).toBe('none');
+    const waiting = parsePushStatus([{ devices: 1, test_at: 'x', test_sent_at: null, test_error: null }]);
+    expect(pushTestState(waiting)).toBe('waiting');
+    expect(pushTestState(parsePushStatus([{ devices: 1, test_at: 'x', test_sent_at: 'y' }]))).toBe('sent');
+    expect(
+      pushTestState(
+        parsePushStatus([{ devices: 1, test_at: 'x', test_sent_at: 'y', test_error: 'BadDeviceToken' }]),
+      ),
+    ).toBe('error');
+  });
+  it('ältere Server-Antwort ohne „posts“ → an', async () => {
+    const { parsePushPrefs } = await import('./push');
+    expect(parsePushPrefs([{ friends: true, likes: false, comments: true, spots: true }]).posts).toBe(true);
   });
 });

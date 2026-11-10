@@ -1,12 +1,17 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ACCOUNT_STORAGE_KEY, type AccountProvider } from '../../ports/account';
 import type { PushProvider } from '../../ports/push';
 import { ProvidersContext, type Providers } from '../../ports/providersContext';
 import type { PushPrefs } from '../../domain/push';
 import { PushSettings } from './PushSettings';
 
-function setup(available: boolean, permission: 'granted' | 'denied' | 'prompt', saved: PushPrefs[] = []) {
+function setup(
+  available: boolean,
+  permission: 'granted' | 'denied' | 'prompt',
+  saved: PushPrefs[] = [],
+  status: object[] = [],
+) {
   const push: PushProvider = {
     available,
     permission: () => Promise.resolve(permission),
@@ -17,7 +22,21 @@ function setup(available: boolean, permission: 'granted' | 'denied' | 'prompt', 
   const account = {
     enabled: true,
     pushPrefs: () =>
-      Promise.resolve({ friends: true, likes: true, comments: true, spots: true, sessions: true }),
+      Promise.resolve({
+        friends: true,
+        likes: true,
+        comments: true,
+        spots: true,
+        sessions: true,
+        posts: true,
+      }),
+    pushStatus: () =>
+      Promise.resolve(
+        status.length
+          ? { devices: 1, test: { at: '2026-11-10T10:00:00Z', ...(status.shift() as object) } }
+          : { devices: 1 },
+      ),
+    sendTestPush: () => Promise.resolve(1),
     setPushPrefs: (p: PushPrefs) => {
       saved.push(p);
       return Promise.resolve();
@@ -49,7 +68,9 @@ describe('Einstellungen → Mitteilungen (PUSH-3)', () => {
     expect(likes).toBeChecked();
     fireEvent.click(likes);
     expect(likes).not.toBeChecked();
-    expect(saved).toEqual([{ friends: true, likes: false, comments: true, spots: true, sessions: true }]);
+    expect(saved).toEqual([
+      { friends: true, likes: false, comments: true, spots: true, sessions: true, posts: true },
+    ]);
   });
 
   it('noch nicht gefragt: Knopf zum Erlauben; im iPhone abgeschaltet: Hinweis', async () => {
@@ -60,5 +81,23 @@ describe('Einstellungen → Mitteilungen (PUSH-3)', () => {
   it('abgeschaltet: Hinweis auf die iPhone-Einstellungen', async () => {
     setup(true, 'denied');
     await waitFor(() => expect(screen.getByText(/iPhone-Einstellungen → Fangpunkt/)).toBeInTheDocument());
+  });
+
+  it('Test-Mitteilung: zeigt, ob das iPhone angemeldet ist und was Apple sagt (PUSH-4)', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    setup(true, 'granted', [], [{}, { sentAt: '2026-11-10T10:00:01Z', error: '403 InvalidProviderToken' }]);
+    expect(await screen.findByText('Dieses iPhone ist für Mitteilungen angemeldet.')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Test-Mitteilung senden' }));
+    expect(await screen.findByText(/Test wurde angefragt/)).toBeInTheDocument();
+    await vi.advanceTimersByTimeAsync(4000);
+    expect(
+      await screen.findByText('Apple hat die Test-Mitteilung abgelehnt: 403 InvalidProviderToken'),
+    ).toBeInTheDocument();
+    vi.useRealTimers();
+  });
+
+  it('neue Art „Neue Beiträge von Freunden“ ist dabei', async () => {
+    setup(true, 'granted');
+    expect(await screen.findByRole('checkbox', { name: 'Neue Beiträge von Freunden' })).toBeChecked();
   });
 });

@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-03',
+    title: 'Mehr Mitteilungen',
+    items: [
+      'Mitteilungen: Neu auch bei neuen Beiträgen von Freunden, weiteren Kommentaren unter Beiträgen, die du kommentiert hast, sowie Zusagen und Highlights in gemeinsamen Sessions.',
+      'Einstellungen: Unter Mitteilungen siehst du, ob dein iPhone angemeldet ist, und kannst eine Test-Mitteilung senden.',
+    ],
+  },
+  {
     id: '2026-12-02-3',
     title: 'Beiträge wie bei Instagram',
     items: [

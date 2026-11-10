@@ -13,7 +13,7 @@ import { parseUserHits, parseUserProfile } from '../domain/userProfile';
 import { parseSharedSpotRows } from '../domain/sharedSpots';
 import { parseBlockRows } from '../domain/moderation';
 import { parseCommentRows, parseReactionRows } from '../domain/reactions';
-import { parsePushPrefs } from '../domain/push';
+import { parsePushPrefs, parsePushStatus } from '../domain/push';
 import { avatarPath, parseAvatarRows } from '../domain/avatarSync';
 import { newId } from '../domain/id';
 import {
@@ -458,6 +458,16 @@ export function supabaseAccount(
     async setPushPrefs(prefs) {
       const { error } = await (await get()).rpc('set_push_prefs', prefs);
       if (error) fail(error);
+    },
+    async sendTestPush() {
+      const { data, error } = await (await get()).rpc('send_test_push');
+      if (error) fail(error);
+      return typeof data === 'number' ? data : 0;
+    },
+    async pushStatus() {
+      const { data, error } = await (await get()).rpc('my_push_status');
+      if (error) fail(error);
+      return parsePushStatus(data as unknown[] | null);
     },
     async isModerator() {
       const { data, error } = await (await get()).rpc('is_moderator');
