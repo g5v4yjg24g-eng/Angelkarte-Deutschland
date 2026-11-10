@@ -259,6 +259,9 @@
 .actionRow3 {
   grid-template-columns: 1fr 1fr auto;
 }
+.actionRow4 {
+  grid-template-columns: 1fr 1fr auto auto;
+}
 /* Lesezeichen als Symbol am rechten Rand (wie Instagram), Name nur für Screenreader */
 .saveAction {
   min-width: var(--touch);

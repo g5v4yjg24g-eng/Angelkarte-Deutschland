@@ -461,3 +461,59 @@ test('PRF-10: Doppeltipp bei reduzierter Bewegung – kein Hecht, „Gefällt mi
   await expect(like).toHaveAttribute('aria-pressed', 'true', { timeout: 300 });
   expect(await pikeVisible(page)).toBe(false);
 });
+
+test('SHR-1: eigenen Beitrag teilen – Foto und Text gehen ans Teilen-Menü, ohne Fangort', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  // Am Computer gibt es kein Teilen-Menü: Ersatz, der festhält, was geteilt würde
+  await page.addInitScript(() => {
+    const w = window as unknown as { __shared?: unknown };
+    Object.defineProperty(navigator, 'canShare', { value: () => true, configurable: true });
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: (d: { title: string; text: string; files?: File[] }) => {
+        w.__shared = { title: d.title, text: d.text, files: (d.files ?? []).map((f) => [f.name, f.type]) };
+        return Promise.resolve();
+      },
+    });
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page, '#2d9cdb'));
+  await expect(page.getByRole('img', { name: 'Foto 1' })).toBeVisible();
+  await page.getByLabel('Text').fill('Abendbiss am Steg');
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+
+  await page.getByRole('button', { name: 'Teilen' }).click();
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { __shared?: unknown }).__shared))
+    .toEqual({
+      title: 'Beitrag',
+      text: 'Abendbiss am Steg\n\nGeteilt aus Fangpunkt – fangpunkt.com',
+      files: [
+        [
+          expect.stringMatching(/^fangpunkt-\d{4}-\d{2}-\d{2}-1\.(jpg|webp)$/),
+          expect.stringMatching(/^image\//),
+        ],
+      ],
+    });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test('SHR-1: ohne Teilen-Funktion des Geräts gibt es keinen Teilen-Knopf', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'share', { value: undefined, configurable: true });
+  });
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page, '#27ae60'));
+  await expect(page.getByRole('img', { name: 'Foto 1' })).toBeVisible();
+  await page.getByRole('button', { name: 'Posten' }).click();
+  await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
+  await expect(page.getByRole('button', { name: 'Gefällt mir' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Teilen' })).toHaveCount(0);
+});

@@ -2,7 +2,7 @@
 // 2026-10-27) – gemeinsam für Beitragsseite (Gerät oder Server) und Feed.
 import { useState, type Ref } from 'react';
 import { de } from '../../i18n/de';
-import { BookmarkIcon, CommentIcon, ThumbsUpIcon } from '../../design/icons';
+import { BookmarkIcon, CommentIcon, ShareIcon, ThumbsUpIcon } from '../../design/icons';
 import { useHaptics } from '../haptics/useHaptics';
 import styles from '../profile/Profile.module.css';
 
@@ -18,6 +18,7 @@ export function ReactionBar({
   pulse = 0,
   saved,
   onSave,
+  onShare,
 }: {
   likeCount: number;
   commentCount: number;
@@ -31,6 +32,8 @@ export function ReactionBar({
   /** Lesezeichen (Paket 7b; nur bei Beiträgen vom Server) */
   saved?: boolean;
   onSave?: () => void;
+  /** Teilen über das Teilen-Menü des Geräts (Paket 10; nur eigene Beiträge) */
+  onShare?: (() => void) | undefined;
 }) {
   const haptics = useHaptics();
   const [taps, setTaps] = useState(0);
@@ -56,7 +59,12 @@ export function ReactionBar({
           )}
         </div>
       )}
-      <div className={[styles.actionRow, onSave ? styles.actionRow3 : ''].join(' ')}>
+      <div
+        className={[
+          styles.actionRow,
+          onSave && onShare ? styles.actionRow4 : onSave || onShare ? styles.actionRow3 : '',
+        ].join(' ')}
+      >
         <button
           type="button"
           className={[styles.action, liked ? styles.liked : ''].join(' ')}
@@ -83,6 +91,12 @@ export function ReactionBar({
           <CommentIcon size={22} />
           <span>{t.commentAction}</span>
         </button>
+        {onShare && (
+          <button type="button" className={[styles.action, styles.saveAction].join(' ')} onClick={onShare}>
+            <ShareIcon size={22} />
+            <span className="visually-hidden">{de.profile.sharePost}</span>
+          </button>
+        )}
         {onSave && (
           <button
             type="button"
