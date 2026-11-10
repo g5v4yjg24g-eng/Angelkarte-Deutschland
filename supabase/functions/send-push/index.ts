@@ -61,6 +61,9 @@ function message(kind: Kind, name: string, ref: string | null, excerpt: string |
       return { title: 'Neues Highlight', body: excerpt ? `${name} hat ein Highlight aus „${excerpt}“ geteilt.` : `${name} hat ein Highlight aus eurer Session geteilt.`, path: '/fangbuch/sessions' };
     case 'test':
       return { title: 'Fangpunkt', body: 'Test-Mitteilung: Mitteilungen kommen auf diesem iPhone an. 🎣', path: '/feed' };
+    default:
+      // unbekannte Art (z. B. Datenbank neuer als diese Funktion): lieber allgemein als gar nicht
+      return { title: 'Fangpunkt', body: 'Es gibt Neuigkeiten für dich.', path: '/feed' };
   }
 }
 
@@ -106,47 +109,57 @@ Deno.serve(async (req) => {
   if (error) return new Response('Datenbankfehler', { status: 500 });
   if (!row) return new Response('schon verschickt oder unbekannt', { status: 200 });
 
-  const { data: actor } = await db.from('profiles').select('display_name').eq('id', row.actor).maybeSingle();
-  const { data: devices } = await db.from('push_devices').select('token').eq('user_id', row.user_id);
-  const msg = message(row.kind as Kind, actor?.display_name ?? 'Jemand', row.ref, row.excerpt);
-  const host = Deno.env.get('APNS_HOST') || 'api.push.apple.com';
-
-  let jwt: string;
+  // Alles Weitere: Fehler immer an der Zeile vermerken – sonst sieht die App „verschickt“, obwohl nichts ankam
+  const markError = (text: string) =>
+    db.from('push_outbox').update({ error: text.slice(0, 500) }).eq('id', row.id);
   try {
-    jwt = await apnsJwt();
+    const { data: actor } = await db.from('profiles').select('display_name').eq('id', row.actor).maybeSingle();
+    const { data: devices } = await db.from('push_devices').select('token').eq('user_id', row.user_id);
+    const msg = message(row.kind as Kind, actor?.display_name ?? 'Jemand', row.ref, row.excerpt);
+    const host = Deno.env.get('APNS_HOST') || 'api.push.apple.com';
+
+    let jwt: string;
+    try {
+      jwt = await apnsJwt();
+    } catch (e) {
+      const text = e instanceof Error ? e.message : String(e);
+      await markError(`Schlüssel: ${text}`);
+      console.error('APNs-Schlüssel unbrauchbar', text);
+      return new Response('Schlüssel unbrauchbar', { status: 500 });
+    }
+
+    const problems: string[] = [];
+    for (const d of devices ?? []) {
+      const res = await fetch(`https://${host}/3/device/${d.token}`, {
+        method: 'POST',
+        headers: {
+          authorization: `bearer ${jwt}`,
+          'apns-topic': TOPIC,
+          'apns-push-type': 'alert',
+          'apns-priority': '10',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          aps: { alert: { title: msg.title, body: msg.body }, sound: 'default', 'thread-id': row.kind },
+          path: msg.path,
+        }),
+      });
+      if (res.ok) continue;
+      const reason = ((await res.json().catch(() => ({}))) as { reason?: string }).reason ?? String(res.status);
+      // Gerät gibt es nicht mehr (App gelöscht) → Token entfernen
+      if (res.status === 410 || reason === 'BadDeviceToken' || reason === 'Unregistered')
+        await db.from('push_devices').delete().eq('token', d.token);
+      problems.push(`${res.status} ${reason}`);
+    }
+    if (problems.length) {
+      await markError(problems.join('; '));
+      console.error('APNs-Fehler', problems.join('; '));
+    }
+    return new Response(problems.length ? `teilweise: ${problems.join('; ')}` : 'ok', { status: 200 });
   } catch (e) {
     const text = e instanceof Error ? e.message : String(e);
-    await db.from('push_outbox').update({ error: `Schlüssel: ${text}`.slice(0, 500) }).eq('id', row.id);
-    console.error('APNs-Schlüssel unbrauchbar', text);
-    return new Response('Schlüssel unbrauchbar', { status: 500 });
+    await markError(`Funktion: ${text}`);
+    console.error('send-push', text);
+    return new Response('Fehler', { status: 500 });
   }
-
-  const problems: string[] = [];
-  for (const d of devices ?? []) {
-    const res = await fetch(`https://${host}/3/device/${d.token}`, {
-      method: 'POST',
-      headers: {
-        authorization: `bearer ${jwt}`,
-        'apns-topic': TOPIC,
-        'apns-push-type': 'alert',
-        'apns-priority': '10',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        aps: { alert: { title: msg.title, body: msg.body }, sound: 'default', 'thread-id': row.kind },
-        path: msg.path,
-      }),
-    });
-    if (res.ok) continue;
-    const reason = ((await res.json().catch(() => ({}))) as { reason?: string }).reason ?? String(res.status);
-    // Gerät gibt es nicht mehr (App gelöscht) → Token entfernen
-    if (res.status === 410 || reason === 'BadDeviceToken' || reason === 'Unregistered')
-      await db.from('push_devices').delete().eq('token', d.token);
-    problems.push(`${res.status} ${reason}`);
-  }
-  if (problems.length) {
-    await db.from('push_outbox').update({ error: problems.join('; ').slice(0, 500) }).eq('id', row.id);
-    console.error('APNs-Fehler', problems.join('; '));
-  }
-  return new Response(problems.length ? `teilweise: ${problems.join('; ')}` : 'ok', { status: 200 });
 });
