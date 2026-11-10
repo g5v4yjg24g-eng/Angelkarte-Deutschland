@@ -11,6 +11,7 @@ import { useProviders } from '../../../ports/providersContext';
 import { ModActionSheet, type ModAction } from './ModActions';
 import { modDate, modErrorText } from './modErrors';
 import { useIsModerator } from './useIsModerator';
+import { ADMIN_BASE, adminUser } from './adminPaths';
 import styles from './ModAdmin.module.css';
 
 const t = de.modAdmin;
@@ -62,19 +63,19 @@ export function ModReportPage() {
     );
   if (error)
     return (
-      <Page title={t.reportTitle} back="/mehr/moderation">
+      <Page title={t.reportTitle} back={`${ADMIN_BASE}/meldungen`}>
         <Notice tone="error">{error}</Notice>
       </Page>
     );
   if (report === undefined)
     return (
-      <Page title={t.reportTitle} back="/mehr/moderation">
+      <Page title={t.reportTitle} back={`${ADMIN_BASE}/meldungen`}>
         <p className="muted">{t.loading}</p>
       </Page>
     );
   if (report === null)
     return (
-      <Page title={t.reportTitle} back="/mehr/moderation">
+      <Page title={t.reportTitle} back={`${ADMIN_BASE}/meldungen`}>
         <Notice>{t.errors.notFound}</Notice>
       </Page>
     );
@@ -109,7 +110,7 @@ export function ModReportPage() {
   };
 
   return (
-    <Page title={t.reportTitle} back="/mehr/moderation">
+    <Page title={t.reportTitle} back={`${ADMIN_BASE}/meldungen`}>
       <dl className={styles.facts}>
         <dt>{t.kinds[report.kind]}</dt>
         <dd>
@@ -163,7 +164,7 @@ export function ModReportPage() {
 
       {report.targetUserId && (
         <p>
-          <Link to={`/mehr/moderation/nutzer/${report.targetUserId}`}>{t.openUser}</Link>
+          <Link to={adminUser(report.targetUserId)}>{t.openUser}</Link>
         </p>
       )}
 

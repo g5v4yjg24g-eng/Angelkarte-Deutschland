@@ -4,6 +4,10 @@ import {
   banRemaining,
   modErrorKind,
   parseModContent,
+  parseModOverview,
+  reportedUsers,
+  reportPriority,
+  type ModReport,
   parseModLog,
   parseModReports,
   parseModUser,
@@ -104,5 +108,62 @@ describe('Moderationsbereich (MODA-1)', () => {
     expect(modErrorKind(new Error('not_banned'))).toBe('notFound');
     expect(modErrorKind(new Error('no_reason'))).toBe('noReason');
     expect(modErrorKind(undefined)).toBe('unknown');
+  });
+});
+
+describe('Admin-Bereich, Übersicht (ADM-1)', () => {
+  const rep = (o: Partial<ModReport>): ModReport => ({
+    id: 'r',
+    kind: 'post',
+    targetId: 't',
+    reason: 'spam',
+    status: 'open',
+    createdAt: '2026-11-10T10:00:00Z',
+    reporterId: 'x',
+    targetBanned: false,
+    openAgainst: 1,
+    ...o,
+  });
+
+  it('Kennzahlen nur aus echten Werten; fehlende bleiben leer', () => {
+    expect(parseModOverview([{ open_reports: 3, done_today: 2, banned_now: 1, new_users_7d: 7 }])).toEqual({
+      openReports: 3,
+      doneToday: 2,
+      bannedNow: 1,
+      newUsers7d: 7,
+    });
+    const o = parseModOverview([{ open_reports: 0 }]);
+    expect(o).toEqual({ openReports: 0, doneToday: undefined, bannedNow: undefined, newUsers7d: undefined });
+    expect(o?.inProgress).toBeUndefined();
+    expect(o?.openAppeals).toBeUndefined();
+    expect(parseModOverview([{ open_reports: -1 }])).toBeUndefined();
+    expect(parseModOverview([])).toBeUndefined();
+    expect(parseModOverview(null)).toBeUndefined();
+  });
+
+  it('Priorität nur als Hinweis: schwerer Grund oder mehrere offene Meldungen', () => {
+    expect(reportPriority(rep({ reason: 'abuse' }))).toBe('high');
+    expect(reportPriority(rep({ reason: 'spam', openAgainst: 3 }))).toBe('high');
+    expect(reportPriority(rep({ reason: 'privacy' }))).toBe('mid');
+    expect(reportPriority(rep({ reason: 'spam', openAgainst: 2 }))).toBe('mid');
+    expect(reportPriority(rep({ reason: 'spam' }))).toBe('low');
+    expect(reportPriority(rep({ reason: 'violence', status: 'done' }))).toBe('low');
+  });
+
+  it('gemeldete Konten: je Person zusammengefasst, offene zuerst, dann neueste', () => {
+    const list = reportedUsers([
+      rep({ id: '1', targetUserId: 'a', targetName: 'Anna', status: 'done', createdAt: '2026-11-09T10:00:00Z' }),
+      rep({ id: '2', targetUserId: 'b', targetName: 'Bert', createdAt: '2026-11-08T10:00:00Z' }),
+      rep({ id: '3', targetUserId: 'a', targetName: 'Anna', status: 'done', createdAt: '2026-11-10T10:00:00Z' }),
+      rep({ id: '4' }), // ohne Person (z. B. gelöschtes Konto)
+      rep({ id: '5', targetUserId: 'c', targetBanned: true, createdAt: '2026-11-07T10:00:00Z' }),
+    ]);
+    expect(list.map((u) => [u.userId, u.reports, u.open])).toEqual([
+      ['b', 1, 1],
+      ['c', 1, 1],
+      ['a', 2, 0],
+    ]);
+    expect(list[1]?.banned).toBe(true);
+    expect(list[2]?.last).toBe('2026-11-10T10:00:00Z');
   });
 });

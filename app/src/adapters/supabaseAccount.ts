@@ -18,6 +18,7 @@ import { avatarPath, parseAvatarRows } from '../domain/avatarSync';
 import { newId } from '../domain/id';
 import {
   parseModContent,
+  parseModOverview,
   parseModLog,
   parseModReports,
   parseModUser,
@@ -571,6 +572,17 @@ export function supabaseAccount(
       const { data, error } = await (await get()).rpc('mod_reports', { state });
       if (error) fail(error);
       return parseModReports(data as unknown[] | null);
+    },
+    async modOverview() {
+      const c = await get();
+      const { data, error } = await c.rpc('mod_overview');
+      const parsed = error ? undefined : parseModOverview(data as unknown[] | null);
+      if (parsed) return parsed;
+      // Funktion (noch) nicht eingespielt: nur zählen, was sicher bekannt ist
+      if (error && !/mod_overview|PGRST202|does not exist/i.test(`${error.code ?? ''} ${error.message}`)) fail(error);
+      const { data: open, error: e } = await c.rpc('mod_reports', { state: 'open' });
+      if (e) fail(e);
+      return { openReports: parseModReports(open as unknown[] | null).length };
     },
     async modContent(kind, id) {
       const { data, error } = await (await get()).rpc('mod_content', { kind, target: id });

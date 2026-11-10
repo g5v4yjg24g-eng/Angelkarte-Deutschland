@@ -20,6 +20,7 @@ import { modDate, modErrorText } from './modErrors';
 import { useIsModerator } from './useIsModerator';
 import { Avatar } from '../../profile/Avatar';
 import { invalidateAvatar, useAvatarUrl } from '../../profile/avatarUrls';
+import { ADMIN_BASE } from './adminPaths';
 import styles from './ModAdmin.module.css';
 
 const t = de.modAdmin;
@@ -72,13 +73,13 @@ export function ModUserPage() {
     );
   if (error || user === null)
     return (
-      <Page title={t.userTitle} back="/mehr/moderation">
+      <Page title={t.userTitle} back={`${ADMIN_BASE}/nutzer`}>
         <Notice tone="error">{error ?? t.errors.notFound}</Notice>
       </Page>
     );
   if (!user)
     return (
-      <Page title={t.userTitle} back="/mehr/moderation">
+      <Page title={t.userTitle} back={`${ADMIN_BASE}/nutzer`}>
         <p className="muted">{t.loading}</p>
       </Page>
     );
@@ -111,7 +112,7 @@ export function ModUserPage() {
   };
 
   return (
-    <Page title={user.displayName} back="/mehr/moderation">
+    <Page title={user.displayName} back={`${ADMIN_BASE}/nutzer`}>
       <div className={styles.item}>
         <span className={styles.row}>
           <Avatar url={avatarUrl} size={56} />

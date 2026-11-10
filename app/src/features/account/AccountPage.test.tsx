@@ -140,6 +140,7 @@ function fakeAccount(badges: Badge[] = []): FakeAccount {
     pushStatus: () => Promise.resolve({ devices: 1 }),
     isModerator: () => Promise.resolve(false),
     modReports: () => Promise.resolve([]),
+    modOverview: () => Promise.resolve({ openReports: 0 }),
     modContent: () => Promise.resolve(undefined),
     modUser: () => Promise.resolve(undefined),
     modUserContent: () => Promise.resolve([]),
