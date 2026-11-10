@@ -13,6 +13,7 @@ import { AvatarSync } from '../features/profile/AvatarSync';
 import { ProfileExtrasSync } from '../features/profile/ProfileExtrasSync';
 import { AppLinkHandler } from '../features/links/AppLinkHandler';
 import { AchievementSync } from '../features/achievements/AchievementSync';
+import { AchievementUpload } from '../features/achievements/AchievementUpload';
 import { PushSetup } from '../features/push/PushSetup';
 import { WhatsNew } from '../features/whatsNew/WhatsNew';
 import { UsageTracker } from '../features/usage/UsageTracker';
@@ -61,6 +62,7 @@ export function RootLayout() {
       <ProfileExtrasSync />
       <AppLinkHandler />
       <AchievementSync />
+      <AchievementUpload />
       <PushSetup />
       <WhatsNew />
       <UsageTracker />

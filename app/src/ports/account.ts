@@ -5,6 +5,7 @@ import type { FriendEntry, FriendRequestResult } from '../domain/friends';
 import type { GroupMember, GroupSession } from '../domain/groupSessions';
 import type { FeedPost } from '../domain/feed';
 import type { ProfileExtrasPayload, PublicProfile, UserHit } from '../domain/userProfile';
+import type { AchVisibility, RemoteAchievements } from '../domain/sharedAchievements';
 import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
 import type { BlockedUser, ReportInput } from '../domain/moderation';
 import type { ServerComment, ServerReactions } from '../domain/reactions';
@@ -157,6 +158,13 @@ export interface AccountProvider {
   userProfile(username: string): Promise<PublicProfile | null>;
   /** Beiträge einer Person, die man sehen darf, neueste zuerst; `before` = createdAt; `onlyIds` = nur diese */
   userPosts(userId: string, before?: string, onlyIds?: string[]): Promise<FeedPost[]>;
+  /** Erfolge (Paket B): eigene Stufen hochladen – der Server nimmt nur dazu */
+  setMyAchievements(entries: Record<string, string>): Promise<void>;
+  /** Wer die eigenen Erfolge sieht (Standard Freunde) */
+  myAchievementsVisibility(): Promise<AchVisibility>;
+  setMyAchievementsVisibility(v: AchVisibility): Promise<void>;
+  /** Erfolge einer Person, soweit deren Einstellung es erlaubt */
+  userAchievements(userId: string): Promise<RemoteAchievements>;
   /** Nutzer suchen (ab 3 Zeichen, höchstens 20 Treffer) */
   searchUsers(term: string): Promise<UserHit[]>;
   /** Entdecken (Paket 7c): Beiträge mit „Alle“ von anderen Konten, zuletzt geteilt zuerst; `before` = sharedAt */

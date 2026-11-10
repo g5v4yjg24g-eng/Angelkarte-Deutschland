@@ -119,6 +119,10 @@ async function fakeSupabase(
     profiles: new Map<string, Record<string, unknown>>(),
     extras: [] as Record<string, unknown>[],
     searches: [] as string[],
+    /** Erfolge (Paket B): Zeilen von user_achievements je Konto, Uploads und eigene Sichtbarkeit */
+    achievements: new Map<string, Record<string, unknown>[]>(),
+    achUploads: [] as Record<string, string>[],
+    achVisibility: 'friends',
   };
   const posts = new Map<
     string,
@@ -1077,6 +1081,21 @@ async function fakeSupabase(
             );
           }),
         );
+      }
+      case 'POST /rest/v1/rpc/set_my_achievements': {
+        const { entries } = req.postDataJSON() as { entries: Record<string, string> };
+        people.achUploads.push(entries);
+        return json(route, Object.keys(entries).length);
+      }
+      case 'POST /rest/v1/rpc/my_achievements_visibility':
+        return json(route, people.achVisibility);
+      case 'POST /rest/v1/rpc/set_my_achievements_visibility': {
+        people.achVisibility = (req.postDataJSON() as { v: string }).v;
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/user_achievements': {
+        const { author } = req.postDataJSON() as { author: string };
+        return json(route, people.achievements.get(author) ?? [{ visible: false, key: null, unlocked_at: null }]);
       }
       case 'POST /rest/v1/rpc/search_users': {
         const { q } = req.postDataJSON() as { q: string };
@@ -3441,6 +3460,98 @@ test('SOC-2: eigene Angaben gehen angemeldet genau einmal an den Server', async 
   await waitForApp(page);
   await page.waitForTimeout(500);
   expect(calls.people.extras.length).toBe(sent);
+});
+
+test('SOC-3: Erfolge – Stufen gehen einmal an den Server, Sichtbarkeit wählbar, im Profil anderer nur wenn freigegeben', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  calls.people.profiles.set('anna', {
+    user_id: 'u-anna',
+    username: 'anna',
+    display_name: 'Anna Hecht',
+    badges: [],
+    relation: 'friend',
+    friend_count: 1,
+  });
+  calls.people.profiles.set('fremd', {
+    user_id: 'u-fremd',
+    username: 'fremd',
+    display_name: 'Fremder Angler',
+    badges: [],
+    relation: 'none',
+    friend_count: 0,
+  });
+  calls.people.achievements.set('u-anna', [
+    { visible: true, key: 'first', unlocked_at: '2026-10-01T10:00:00+00:00' },
+    { visible: true, key: 'pike:silver', unlocked_at: '2026-10-20T10:00:00+00:00' },
+  ]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+
+  // ein Fang, älter als ein Tag → „Erster Fang“ wird erreicht und hochgeladen (nur Stufe und Datum)
+  await page.evaluate(async () => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const r = indexedDB.open('fangpunkt');
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+    const created = new Date(Date.now() - 3 * 86_400_000).toISOString();
+    const tx = db.transaction('catches', 'readwrite');
+    tx.objectStore('catches').put({
+      id: 'erf-soc3',
+      createdAt: created,
+      updatedAt: created,
+      rev: 1,
+      at: created,
+      tz: 'Europe/Berlin',
+      outcome: 'caught',
+      speciesId: 'perch',
+      speciesCertainty: 'certain',
+    });
+    await new Promise((resolve) => (tx.oncomplete = resolve));
+    db.close();
+  });
+  await page.goto('/profil/erfolge');
+  await waitForApp(page);
+  await expect.poll(() => calls.people.achUploads.length).toBe(1);
+  expect(Object.keys(calls.people.achUploads[0] ?? {})).toEqual(['first']);
+  await page.reload();
+  await waitForApp(page);
+  await page.waitForTimeout(500);
+  expect(calls.people.achUploads.length).toBe(1);
+
+  // Sichtbarkeit: Standard Freunde, „Niemand“ wird sofort gespeichert
+  const choice = page.getByRole('group', { name: 'Wer sieht deine Erfolge?' });
+  await expect(choice.getByRole('radio', { name: 'Freunde' })).toBeChecked();
+  // ganz unten auf der Seite: erst in die Mitte holen, sonst liegt die schwebende Leiste darüber
+  await choice.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await choice.getByRole('radio', { name: 'Niemand' }).click();
+  await expect(choice.getByRole('radio', { name: 'Niemand' })).toBeChecked();
+  await expect.poll(() => calls.people.achVisibility).toBe('private');
+  await expect(page.getByText('Nur du siehst deine Erfolge.')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+  // Profil anderer: Erfolge nur, wenn freigegeben
+  await page.goto('/profil/nutzer/anna');
+  await waitForApp(page);
+  const card = page.getByRole('region', { name: /^Erfolge/ });
+  await expect(card).toContainText('2 von 22 Stufen');
+  await expect(card.getByRole('img', { name: 'Hecht: Silber' })).toBeVisible();
+  await animationsDone(page.locator('body'));
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.goto('/profil/nutzer/fremd');
+  await expect(page.getByRole('heading', { level: 1, name: 'Fremder Angler' })).toBeVisible();
+  await page.waitForTimeout(300);
+  await expect(page.getByRole('region', { name: /^Erfolge/ })).toHaveCount(0);
+  expect(errors).toEqual([]);
 });
 
 test('SHR-2: Profil teilen – Link mit Nutzernamen ans Teilen-Menü, ohne Teilen-Funktion in die Zwischenablage', async ({
