@@ -5,6 +5,9 @@ import {
   modErrorKind,
   parseModContent,
   parseModOverview,
+  parseModPostState,
+  parseModReporter,
+  filterReports,
   reportedUsers,
   reportPriority,
   type ModReport,
@@ -152,9 +155,21 @@ describe('Admin-Bereich, Übersicht (ADM-1)', () => {
 
   it('gemeldete Konten: je Person zusammengefasst, offene zuerst, dann neueste', () => {
     const list = reportedUsers([
-      rep({ id: '1', targetUserId: 'a', targetName: 'Anna', status: 'done', createdAt: '2026-11-09T10:00:00Z' }),
+      rep({
+        id: '1',
+        targetUserId: 'a',
+        targetName: 'Anna',
+        status: 'done',
+        createdAt: '2026-11-09T10:00:00Z',
+      }),
       rep({ id: '2', targetUserId: 'b', targetName: 'Bert', createdAt: '2026-11-08T10:00:00Z' }),
-      rep({ id: '3', targetUserId: 'a', targetName: 'Anna', status: 'done', createdAt: '2026-11-10T10:00:00Z' }),
+      rep({
+        id: '3',
+        targetUserId: 'a',
+        targetName: 'Anna',
+        status: 'done',
+        createdAt: '2026-11-10T10:00:00Z',
+      }),
       rep({ id: '4' }), // ohne Person (z. B. gelöschtes Konto)
       rep({ id: '5', targetUserId: 'c', targetBanned: true, createdAt: '2026-11-07T10:00:00Z' }),
     ]);
@@ -165,5 +180,72 @@ describe('Admin-Bereich, Übersicht (ADM-1)', () => {
     ]);
     expect(list[1]?.banned).toBe(true);
     expect(list[2]?.last).toBe('2026-11-10T10:00:00Z');
+  });
+});
+
+describe('Meldungsverwaltung (ADM-2)', () => {
+  const row = (o: Record<string, unknown>) => ({
+    id: 'r1',
+    target_type: 'post',
+    target_id: 'p1',
+    reason: 'abuse',
+    status: 'open',
+    created_at: '2026-11-10T10:00:00Z',
+    target_user: 'u1',
+    open_against: 1,
+    ...o,
+  });
+
+  it('neue Liste ohne meldende Person, mit Stand, Zahl zum selben Inhalt, Bearbeitung und Ausblendung', () => {
+    const [a, b] = parseModReports([
+      row({ status: 'in_progress', same_target: 3, handled_by_name: 'Anna', target_hidden: true }),
+      row({
+        id: 'r2',
+        status: 'done',
+        handled_at: '2026-11-10T12:00:00Z',
+        reporter: 'x',
+        reporter_name: 'Bert',
+      }),
+    ]);
+    expect(a).toMatchObject({
+      status: 'in_progress',
+      sameTarget: 3,
+      handledByName: 'Anna',
+      targetHidden: true,
+    });
+    expect(a?.reporterId).toBeUndefined();
+    expect(b).toMatchObject({ status: 'done', handledAt: '2026-11-10T12:00:00Z', reporterName: 'Bert' });
+    expect(parseModReports([row({ status: 'gelöscht' })])).toEqual([]);
+  });
+
+  it('in Bearbeitung zählt als offen (Priorität, gemeldete Konten), Filter nach Art und Grund', () => {
+    const list = parseModReports([
+      row({ id: '1', status: 'in_progress' }),
+      row({ id: '2', target_type: 'comment', reason: 'spam' }),
+      row({ id: '3', reason: 'spam', status: 'done' }),
+    ]);
+    const first = list[0];
+    if (!first) throw new Error('leer');
+    expect(reportPriority(first)).toBe('high');
+    expect(reportedUsers(list)[0]).toMatchObject({ reports: 3, open: 2 });
+    expect(filterReports(list, { kind: 'post' }).map((x) => x.id)).toEqual(['1', '3']);
+    expect(filterReports(list, { reason: 'spam' }).map((x) => x.id)).toEqual(['2', '3']);
+    expect(filterReports(list, { kind: 'post', reason: 'spam' }).map((x) => x.id)).toEqual(['3']);
+    expect(filterReports(list, {})).toHaveLength(3);
+  });
+
+  it('Stand eines Beitrags, meldende Person, Kennzahl „in Bearbeitung“, Fehler bei zu vielen Eingriffen', () => {
+    expect(parseModPostState([{ hidden_at: '2026-11-10T10:00:00Z', hidden_reason: 'Hass' }])).toEqual({
+      hiddenAt: '2026-11-10T10:00:00Z',
+      hiddenReason: 'Hass',
+    });
+    expect(parseModPostState([{ hidden_at: null, hidden_reason: null }])).toEqual({});
+    expect(parseModPostState([])).toBeUndefined();
+    expect(parseModReporter([{ display_name: 'Bert', username: 'bert' }])).toEqual({
+      displayName: 'Bert',
+      username: 'bert',
+    });
+    expect(parseModOverview([{ open_reports: 2, in_progress: 1 }])?.inProgress).toBe(1);
+    expect(modErrorKind(new Error('too_many_actions'))).toBe('tooMany');
   });
 });

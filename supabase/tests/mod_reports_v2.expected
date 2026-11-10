@@ -1,0 +1,25 @@
+Liste ohne Meldenden|abuse:open:2:false,spam:open:2:false
+In Bearbeitung|
+Übersicht|1 1
+Falscher Stand|FEHLER: bad_status
+Meldenden ansehen|Bert
+Ausblenden ohne Grund|FEHLER: no_reason
+Ausblenden|
+Doppelt ausblenden|FEHLER: not_found
+B sieht ausgeblendeten|0
+B Entdecken|0
+B Feed (Freund)|0
+B blendet selbst aus|FEHLER: not_moderator
+B liest Meldenden|FEHLER: not_moderator
+C sieht eigenen|private
+C macht wieder öffentlich|private
+C über publish_post|updated
+Danach noch ausgeblendet|private
+Wiederherstellen|
+Sichtbarkeit danach|public -
+Erledigt (alt)|
+Stand|done true Anna
+Verlauf|in_progress:-:Anna > view_reporter:-:Anna > hide_post:Beleidigung:Anna > restore_post:doch ok:Anna > resolve:kein Verstoß:Anna
+Entfernen ohne Grund|FEHLER: no_reason
+Nach 50 Eingriffen|FEHLER: too_many_actions
+Lesen geht weiter|2

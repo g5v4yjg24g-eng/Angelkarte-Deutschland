@@ -15,7 +15,10 @@ import type {
   ModContent,
   ModLogEntry,
   ModOverview,
+  ModPostState,
   ModReport,
+  ModReporter,
+  ModReportStatus,
   ModUser,
   ModUserItem,
 } from '../domain/modAdmin';
@@ -173,7 +176,19 @@ export interface AccountProvider {
   pushStatus(): Promise<PushStatus>;
   /** Moderationsbereich (nur Moderatoren; der Server prüft jede Anfrage selbst) */
   isModerator(): Promise<boolean>;
-  modReports(state: 'open' | 'done' | 'all'): Promise<ModReport[]>;
+  /** Meldungen nach Stand (mod_reports2; ohne die meldende Person) */
+  modReports(state: ModReportStatus | 'all'): Promise<ModReport[]>;
+  /** Stand einer Meldung setzen (in Bearbeitung, wieder offen, erledigt) – wird protokolliert */
+  modSetReportStatus(reportId: string, status: ModReportStatus, note?: string): Promise<void>;
+  /** Meldende Person einer Meldung – nur auf Anfrage, die Anfrage wird protokolliert */
+  modReportReporter(reportId: string): Promise<ModReporter | undefined>;
+  /** Verlauf einer Meldung (Protokoll), älteste zuerst */
+  modReportLog(reportId: string): Promise<ModLogEntry[]>;
+  /** Beitrag ausblenden (Grund Pflicht) bzw. wiederherstellen; ausgeblendet sieht ihn nur noch der Verfasser */
+  modHidePost(postId: string, reportId: string | undefined, reason: string): Promise<void>;
+  modRestorePost(postId: string, reportId: string | undefined, note?: string): Promise<void>;
+  /** Stand eines Beitrags (ausgeblendet?); undefined = Beitrag gibt es nicht (mehr) */
+  modPostState(postId: string): Promise<ModPostState | undefined>;
   /** Kennzahlen der Admin-Übersicht (mod_overview); fehlt die Funktion noch, nur die offenen Meldungen */
   modOverview(): Promise<ModOverview>;
   modContent(kind: 'post' | 'comment' | 'spot', id: string): Promise<ModContent | undefined>;
