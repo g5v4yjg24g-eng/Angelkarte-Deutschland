@@ -14,7 +14,8 @@ Eingereicht wird nur durch den Nutzer; TestFlight-Bauten nur auf ausdrücklichen
 | Regeln der Community vor der Anmeldung bestätigen (Nutzungsbedingungen für Inhalte) | ✅ (`/mehr/regeln`) |
 | Bearbeitung von Meldungen binnen 24 h, Moderationsbereich, Sperren mit Mail | ✅ (`MODERATION_PLAN.md`) |
 | Kontaktadresse für Meldungen | ✅ moderation@fangpunkt.com |
-| „Mit Apple anmelden“ | nicht nötig – keine Anmeldung über Dritte (nur E-Mail-Code) [A] |
+| „Mit Apple anmelden“ | nicht nötig – keine Anmeldung über Dritte (nur E-Mail und Passwort, seit 2026-11-10) [A] |
+| **Anmeldung mit Passwort**: Supabase-Einstellungen und Mailvorlagen nach `supabase/AUTH_EINRICHTUNG.md` (Bestätigung an, 10 min, Mindestlänge 10, Sicherheits-Mails), Function `password-notice` einspielen, danach Hinweis-Mail aus der Moderation; Website-AASA mit `webcredentials` | Nutzer, Claude | 🔲 vor dem nächsten Bau |
 
 ## B. Technik
 
@@ -44,7 +45,7 @@ Eingereicht wird nur durch den Nutzer; TestFlight-Bauten nur auf ausdrücklichen
 | Altersfreigabe: Fragebogen mit „Inhalte von Nutzern“ (Beiträge, Kommentare) → voraussichtlich höhere Stufe [A] | Nutzer | 🔲 |
 | Beschreibung, Untertitel, Stichworte (nur vorhandene Funktionen, keine Tiefen-/Offline-Karten) | Claude Entwurf, Nutzer prüft | 🔲 |
 | Screenshots (vom iPhone des Nutzers, mit Beispieldaten) | Nutzer | 🔲 |
-| Prüfhinweis an Apple: Zweck, Konto freiwillig, Test-Zugang für den Prüfer (E-Mail-Code!), Standort/Kamera, Moderation, „keine Rechtsauskunft“ | Claude Entwurf | 🔲 **Test-Zugang klären**: Der Prüfer braucht einen Weg, sich anzumelden (eigene Test-Adresse mit Zugriff für dich) |
+| Prüfhinweis an Apple: Zweck, Konto freiwillig, Test-Zugang für den Prüfer (E-Mail + Passwort eines Testkontos), Standort/Kamera, Moderation, „keine Rechtsauskunft“ | Claude Entwurf | 🔲 **Test-Zugang**: Testkonto mit Passwort anlegen und im Prüfhinweis angeben |
 | Händlerstatus (EU/DSA): kostenlos, ohne Werbung → „kein Händler“ | Nutzer | 🔲 [A] |
 | Name „Fangpunkt“ im App Store frei / Markenlage | Nutzer | 🔲 [O] |
 

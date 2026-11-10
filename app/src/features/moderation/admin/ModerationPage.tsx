@@ -9,6 +9,7 @@ import type { ModReport } from '../../../domain/modAdmin';
 import { useProviders } from '../../../ports/providersContext';
 import { modDate, modErrorText } from './modErrors';
 import { useIsModerator } from './useIsModerator';
+import { PasswordNotice } from './PasswordNotice';
 import styles from './ModAdmin.module.css';
 
 const t = de.modAdmin;
@@ -80,6 +81,7 @@ export function ModerationPage() {
           ))}
         </ul>
       )}
+      {moderator && <PasswordNotice />}
     </Page>
   );
 }

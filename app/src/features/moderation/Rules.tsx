@@ -1,4 +1,4 @@
-// Regeln der Community: als Liste (Seite /mehr/regeln) und als Fenster vor dem Versand des Anmeldecodes.
+// Regeln der Community: als Liste (Seite /mehr/regeln) und als Fenster vor dem Registrieren.
 import { de } from '../../i18n/de';
 import { Button } from '../../design/components/Button';
 import { Page } from '../../design/components/Page';

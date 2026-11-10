@@ -38,3 +38,79 @@
   padding-top: var(--space-4);
   border-top: 1px solid var(--color-border);
 }
+
+/* Passwortfeld: Eingabe und „anzeigen“ in einer Zeile */
+.passwordRow {
+  display: flex;
+  gap: var(--space-2);
+  align-items: stretch;
+}
+.passwordRow input {
+  flex: 1;
+  min-width: 0;
+}
+.reveal {
+  flex: none;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.reveal:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.strength {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.strengthBar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  width: 120px;
+}
+.strengthBar span {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-border);
+}
+.strength[data-level='0'] .strengthBar span:nth-child(1),
+.strength[data-level='1'] .strengthBar span:nth-child(1) {
+  background: var(--color-danger);
+}
+.strength[data-level='2'] .strengthBar span:nth-child(-n + 2) {
+  background: var(--color-accent);
+}
+.strength[data-level='3'] .strengthBar span {
+  background: var(--color-success);
+}
+.tabs {
+  margin-bottom: var(--space-1);
+}
+.linkButton {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  min-height: 44px;
+}
+.linkButton:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.sectionCard {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}

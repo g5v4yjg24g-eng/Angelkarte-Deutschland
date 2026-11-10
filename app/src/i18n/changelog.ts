@@ -4,6 +4,16 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-05',
+    title: 'Anmeldung mit Passwort',
+    items: [
+      'Konto: Du meldest dich jetzt mit E-Mail-Adresse und Passwort an. Neue Konten bestätigst du per Link oder Code aus der E-Mail.',
+      'Bisheriges Konto: Lege unter Mehr → Konto ein Passwort fest – oder nutze „Passwort vergessen?“. Profil, Beiträge und Freunde bleiben.',
+      'Sicherheit: Passwort ändern, E-Mail-Adresse ändern und „Auf allen anderen Geräten abmelden“ findest du unter Mehr → Konto.',
+      'iPhone: Dein Passwort kann im Schlüsselbund gespeichert und per Face ID ausgefüllt werden.',
+    ],
+  },
+  {
     id: '2026-12-04',
     title: 'Beiträge sicher auf dem Server',
     items: [

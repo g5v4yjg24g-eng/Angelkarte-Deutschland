@@ -4,6 +4,8 @@ import {
   authLinkInHash,
   displayNameValid,
   normalizeCode,
+  passwordIssue,
+  passwordStrength,
   resendIn,
   usernameIssue,
   validCode,
@@ -18,6 +20,20 @@ describe('Konto-Regeln (ACC-1)', () => {
     expect(validCode('123-456')).toBe(true);
     expect(validCode('12345')).toBe(false);
     expect(validCode('abcdef')).toBe(false);
+  });
+
+  it('Passwort: Länge, leicht zu erraten, nicht die E-Mail; Stärke (ACC-4)', () => {
+    expect(passwordIssue('kurz')).toBe('short');
+    expect(passwordIssue('x'.repeat(73))).toBe('long');
+    for (const weak of ['passwort123', 'Fangpunkt2026', '1234567890', 'aaaaaaaaaaaa', 'HechtZander99'])
+      expect(passwordIssue(weak), weak).toBe('common');
+    expect(passwordIssue('max.mustermann!!', 'max.mustermann@example.de')).toBe('email');
+    expect(passwordIssue('Zander am Abend 7')).toBeUndefined();
+    expect(passwordStrength('passwort123')).toBe(0);
+    expect(passwordStrength('blauerkahn')).toBe(1);
+    expect(passwordStrength('Blauer Kahn 7')).toBe(3);
+    expect(passwordStrength('blauer kahn am see')).toBe(3);
+    expect(passwordStrength('blauerkahn7x')).toBe(2);
   });
 
   it('Nutzername wie in der Datenbank-Regel', () => {
@@ -48,6 +64,15 @@ describe('Konto-Regeln (ACC-1)', () => {
     expect(accountErrorKind({ message: 'Failed to fetch' })).toBe('offline');
     expect(accountErrorKind({ message: 'not signed in', status: 401 })).toBe('notSignedIn');
     expect(accountErrorKind({ message: 'irgendwas' })).toBe('unknown');
+    expect(accountErrorKind({ message: 'Invalid login credentials', code: 'invalid_credentials' })).toBe(
+      'wrongPassword',
+    );
+    expect(accountErrorKind({ message: 'Email not confirmed' })).toBe('notConfirmed');
+    expect(accountErrorKind({ message: 'x', code: 'weak_password' })).toBe('weakPassword');
+    expect(accountErrorKind({ message: 'New password should be different from the old password.' })).toBe(
+      'samePassword',
+    );
+    expect(accountErrorKind({ message: 'x', code: 'email_exists' })).toBe('emailTaken');
   });
 
   it('Wartezeit bis zum nächsten Code', () => {
@@ -58,7 +83,18 @@ describe('Konto-Regeln (ACC-1)', () => {
   });
 
   it('Anmelde-Link im #-Teil der Adresse erkennen', () => {
-    expect(authLinkInHash('#access_token=a&refresh_token=r&type=magiclink')).toEqual({ kind: 'session' });
+    expect(authLinkInHash('#access_token=a&refresh_token=r&type=magiclink')).toEqual({
+      kind: 'session',
+      type: 'other',
+    });
+    expect(authLinkInHash('#access_token=a&refresh_token=r&type=recovery')).toEqual({
+      kind: 'session',
+      type: 'recovery',
+    });
+    expect(authLinkInHash('#access_token=a&refresh_token=r&type=signup')).toEqual({
+      kind: 'session',
+      type: 'signup',
+    });
     expect(
       authLinkInHash(
         '#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired',
