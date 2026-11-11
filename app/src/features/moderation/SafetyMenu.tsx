@@ -26,12 +26,15 @@ export function SafetyMenu({
   targetId,
   owner,
   onDone,
+  extra,
 }: {
   kind: ReportTarget;
   targetId: string;
   owner: { id: string; name: string };
   /** Meldung gesendet oder blockiert – Text für einen Hinweis */
   onDone: (message: string, action: 'reported' | 'blocked') => void;
+  /** weitere Einträge vor „Melden“ (z. B. „Als Follower entfernen“); das Blatt schließt, dann läuft die Aktion */
+  extra?: readonly { label: string; onSelect: () => void }[];
 }) {
   const { account } = useProviders();
   const [step, setStep] = useState<'closed' | 'menu' | 'report' | 'block'>('closed');
@@ -87,6 +90,18 @@ export function SafetyMenu({
       <Sheet open={step !== 'closed'} title={title} onClose={close}>
         {step === 'menu' && (
           <div className={styles.menu}>
+            {extra?.map((e) => (
+              <Button
+                key={e.label}
+                variant="secondary"
+                onClick={() => {
+                  close();
+                  e.onSelect();
+                }}
+              >
+                {e.label}
+              </Button>
+            ))}
             <Button variant="secondary" onClick={() => setStep('report')}>
               {t.report}
             </Button>

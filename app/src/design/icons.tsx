@@ -332,3 +332,18 @@ export const DevicesIcon = (p: IconProps) => (
     <rect x="14" y="10.5" width="7" height="10" rx="1.5" />
   </Icon>
 );
+
+/** Lupe (Suche) */
+export const SearchIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="10.5" cy="10.5" r="6.5" />
+    <path d="m15.5 15.5 5 5" />
+  </Icon>
+);
+
+/** Haken */
+export const CheckIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="m5 12.5 4.5 4.5L19 7.5" />
+  </Icon>
+);

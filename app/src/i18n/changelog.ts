@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-09',
+    title: 'Follower übersichtlicher',
+    items: [
+      'Follower: Oben wechselst du zwischen „Follower“ und „Gefolgt“. Darunter suchst du in deiner Liste und – ab 3 Zeichen – nach weiteren Nutzern.',
+      'Zeilen: Name mit Profilbild, rechts „Entfernen“ bzw. „Gefolgt“ und „…“ zum Melden oder Blockieren. Anfragen stehen oben bei „Follower“.',
+    ],
+  },
+  {
     id: '2026-12-08',
     title: 'Kontodetails neu',
     items: [

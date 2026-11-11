@@ -52,10 +52,6 @@ export function PrivateAccountSwitch({ onChange }: { onChange?: () => void }) {
         />
         <span>{t.privateLabel}</span>
       </label>
-      <p className="muted">
-        {value ? t.privateOn : t.privateOff}
-        {value && ` ${t.privateOffNote}`}
-      </p>
       {error && <Notice tone="error">{error}</Notice>}
     </Section>
   );

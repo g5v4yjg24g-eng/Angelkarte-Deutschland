@@ -22,14 +22,14 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   padding: var(--space-3);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
 }
 .who {
-  flex: 1 1 8rem;
+  flex: 1 1 0;
   display: grid;
   min-width: 0;
   overflow-wrap: anywhere;
@@ -38,6 +38,17 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  flex: none;
+}
+/* Anfragen: Bestätigen, Ablehnen und „…“ passen nicht neben den Namen – sie rutschen darunter */
+.personWrap {
+  flex-wrap: wrap;
+}
+.personWrap .who {
+  flex-basis: 8rem;
+}
+.personWrap .buttons {
+  flex: 1 1 auto;
   flex-wrap: wrap;
 }
 .confirm {
@@ -75,4 +86,100 @@
   width: 22px;
   height: 22px;
   accent-color: var(--color-primary);
+}
+
+/* Ansicht nach Vorlage (Wunsch Nutzer 2026-11-11): Umschalter, Suchfeld, Zeilen */
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin: var(--space-2) 0 var(--space-3);
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+}
+.tab {
+  display: grid;
+  place-items: center;
+  min-height: var(--touch);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+.tab[aria-current='page'] {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-primary) 78%, white),
+    var(--color-primary)
+  );
+  color: var(--color-on-primary);
+  box-shadow: 0 1px 6px color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+.tab:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 1px;
+}
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 48px;
+  margin-bottom: var(--space-3);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+}
+.searchBox:focus-within {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 1px;
+}
+.searchBox svg {
+  flex: none;
+}
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-md);
+  outline: none;
+}
+.searchInput::placeholder {
+  color: var(--color-text-muted);
+}
+.rowButton {
+  min-height: 40px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+.block {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.blockTitle {
+  margin: 0;
+  font-size: var(--text-md);
+}
+.confirmBox {
+  display: grid;
+  gap: var(--space-4);
+}
+.confirmBox p {
+  margin: 0;
+}
+.confirmActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
 }
