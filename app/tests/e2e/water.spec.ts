@@ -355,3 +355,68 @@ test('WAT-8: Suche in der Leiste – die Karte behält ihre Größe, wenn die Ta
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(async () => (await size()).h).toBeGreaterThan(0);
 });
+
+test('WAT-9: Detailsuche – Umkreis, Gewässerart als Mehrfachauswahl, Liste nach Entfernung, Tipp öffnet das Profil', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openMapAt(page, 6.27, 51.31, 11);
+  await page.getByRole('button', { name: 'Detailsuche öffnen' }).click();
+  const screen = page.getByRole('dialog', { name: 'Gewässer suchen' });
+  await expect(screen).toBeVisible();
+  // Daten laden, dann ist „Suchen“ bedienbar; ohne gewählte Art zeigt die Liste alle Gewässer im Umkreis
+  const go = screen.getByRole('button', { name: 'Suchen', exact: true });
+  await expect(go).toBeEnabled({ timeout: 30_000 });
+  await expect(screen.getByText('Alle Gewässerarten')).toBeVisible();
+  await screen.getByRole('slider', { name: 'Umkreis' }).fill('25');
+  await go.click();
+  const list = screen.getByRole('region', { name: 'Ergebnisse' });
+  await expect(list).toContainText(/Gewässer gefunden/);
+  await expect(list).toContainText('De Wittsee');
+  await expect(list).toContainText('Nette');
+  const all = await list.getByRole('listitem').count();
+  expect(all).toBeGreaterThan(2);
+  // Barrierefreiheit in beiden Farbschemata
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
+    const r = await new AxeBuilder({ page }).include('[data-testid="detail-search"]').withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations
+        .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+        .map((v) => v.id + ': ' + v.nodes.map((n) => n.html.slice(0, 100)).join(' || ')),
+    ).toEqual([]);
+  }
+  await page.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
+  // erste Art anhaken → nur noch diese Art
+  await screen.getByRole('button', { name: /Gewässerart/ }).click();
+  await screen.getByRole('checkbox', { name: 'See', exact: true }).check();
+  await screen.getByRole('button', { name: 'Fertig' }).click();
+  await expect(screen.getByRole('button', { name: /Gewässerart/ })).toContainText('See');
+  await go.click();
+  const lakes = await list.getByRole('listitem').count();
+  expect(lakes).toBeLessThan(all);
+  await expect(list).toContainText('De Wittsee');
+  await expect(list).not.toContainText('Fluss ·');
+  // Mehrfachauswahl: Fluss dazu
+  await screen.getByRole('button', { name: /Gewässerart/ }).click();
+  await screen.getByRole('checkbox', { name: 'Fluss', exact: true }).check();
+  await screen.getByRole('button', { name: 'Fertig' }).click();
+  await expect(screen.getByRole('button', { name: /Gewässerart/ })).toContainText('See, Fluss');
+  await go.click();
+  await expect(list).toContainText('Nette');
+  expect(await list.getByRole('listitem').count()).toBeGreaterThan(lakes);
+  // Zurücksetzen: wieder alle
+  await screen.getByRole('button', { name: /Gewässerart/ }).click();
+  await screen.getByRole('button', { name: 'Zurücksetzen' }).click();
+  await screen.getByRole('button', { name: 'Fertig' }).click();
+  await expect(screen.getByText('Alle Gewässerarten')).toBeVisible();
+  // Namensfilter + Tipp öffnet das Gewässerprofil
+  await screen.getByRole('searchbox', { name: 'Gewässername oder Ort' }).fill('wittsee');
+  await go.click();
+  await list.getByRole('button', { name: /De Wittsee/ }).first().click();
+  await expect(page.getByRole('dialog', { name: 'Gewässer suchen' })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: 'De Wittsee' })).toBeVisible({ timeout: 20_000 });
+  expect(errors).toEqual([]);
+});

@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-16-2',
+    title: 'Detailsuche',
+    items: [
+      'Filter: In der Suchleiste öffnet das Filter-Symbol die Detailsuche über den ganzen Bildschirm.',
+      'Umkreis: Alle Gewässer im gewählten Umkreis um deinen Standort, nach Entfernung sortiert.',
+      'Gewässerart: Ohne Auswahl siehst du alle Gewässer, mit Auswahl nur die angehakten Arten (See, Teich, Fluss …).',
+    ],
+  },
+  {
     id: '2026-12-16',
     title: 'Schnellere Suche',
     items: [
