@@ -3522,6 +3522,17 @@ test('SOC-1: Nutzer suchen, Profil mit Follower/Gefolgt, Angaben, Highlights und
   await expect(page.getByText('4Follower', { exact: false })).toBeVisible();
   await expect(page.getByText('7Gefolgt', { exact: false })).toBeVisible();
   await expect(page.getByText('Folgt dir', { exact: true })).toBeVisible();
+  // Beiträge · Follower · Gefolgt stehen nebeneinander, „Folgt dir“ darunter (Wunsch Nutzer 2026-11-11)
+  const tops = await Promise.all(
+    ['Beiträge', 'Follower', 'Gefolgt', 'Folgt dir'].map(async (label) =>
+      Math.round(
+        (await page.getByRole('region', { name: 'Profil' }).getByText(label, { exact: true }).boundingBox())?.y ?? -1,
+      ),
+    ),
+  );
+  expect(tops[1]).toBe(tops[0]);
+  expect(tops[2]).toBe(tops[0]);
+  expect(tops[3]).toBeGreaterThan(tops[0] ?? 0);
   const highlights = page.getByRole('region', { name: 'Highlights' });
   await expect(highlights.getByRole('link')).toHaveCount(1);
   await expect(highlights.getByRole('link', { name: /Hecht im Schilf/ })).toBeVisible();
