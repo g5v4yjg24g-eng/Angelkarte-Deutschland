@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-11-2',
+    title: 'Privatsphäre unter Konto',
+    items: [
+      'Privatsphäre: Unter Mehr → Konto → Privatsphäre stellst du an einem Ort ein, wer dir folgen darf (Privates Konto) und wer deine Erfolge sieht.',
+    ],
+  },
+  {
     id: '2026-12-10',
     title: 'Session neu gestaltet',
     items: [
