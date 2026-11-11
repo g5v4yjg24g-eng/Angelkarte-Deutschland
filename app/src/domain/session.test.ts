@@ -7,6 +7,7 @@ import {
   looksForgotten,
   runningSession,
   sessionCatches,
+  sessionTally,
   suggestedEnd,
 } from './session';
 
@@ -76,5 +77,20 @@ describe('Sessions', () => {
     expect(suggestedEnd(s, [entry('c', '2026-10-21T09:15:00+02:00')])).toBe(
       Date.parse('2026-10-21T09:15:00+02:00'),
     );
+  });
+});
+
+describe('sessionTally', () => {
+  it('zählt gelandete Fische als Fänge und Fänge, Kontakte und Fehlbisse als Bisse', () => {
+    expect(sessionTally([])).toEqual({ caught: 0, bites: 0 });
+    expect(
+      sessionTally([
+        { outcome: 'caught' },
+        { outcome: 'caught' },
+        { outcome: 'contact' },
+        { outcome: 'missed_bite' },
+        { outcome: 'observation' },
+      ]),
+    ).toEqual({ caught: 2, bites: 4 });
   });
 });

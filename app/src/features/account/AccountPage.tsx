@@ -9,6 +9,7 @@ import { Button } from '../../design/components/Button';
 import { Notice } from '../../design/components/Notice';
 import { TextField } from '../../design/components/Field';
 import { ListLink } from '../../design/components/ListLink';
+import { VisitCard } from '../../design/components/VisitCard';
 import { ExitIcon, FeedIcon, MailIcon, PencilIcon, TrashIcon } from '../../design/icons';
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
@@ -30,7 +31,6 @@ import { NewPasswordForm, SignedOut } from './AuthForms';
 import { SecuritySection } from './SecuritySection';
 import { PasswordField } from './PasswordField';
 import { RowButton } from './RowButton';
-import { SunsetScene } from './SunsetScene';
 import { Avatar } from '../profile/Avatar';
 import { useProfile } from '../profile/usePhoto';
 import { clearRecovery, markRecovery, useRecovery } from './recoveryState';
@@ -194,29 +194,26 @@ function ProfileView({
 
   return (
     <div className={styles.stack}>
-      <section className={styles.hero} aria-label={t.detailsTitle}>
-        <SunsetScene />
-        <span className={styles.heroAvatar}>
-          <Avatar photoId={localProfile?.avatarPhotoId} size={76} />
+      <VisitCard
+        label={t.detailsTitle}
+        avatar={<Avatar photoId={localProfile?.avatarPhotoId} size={76} />}
+        avatarAction={
           <Link to="/profil/bearbeiten" className={styles.heroEdit} aria-label={t.editProfile}>
             <PencilIcon size={16} />
           </Link>
-        </span>
-        <div className={styles.profile}>
-          <strong className={styles.displayName}>{profile.displayName}</strong>
-          {founder && <FounderBadge variant="full" />}
-          <span className="muted">{t.usernameShown(profile.username)}</span>
+        }
+        name={profile.displayName}
+        badge={founder ? <FounderBadge variant="full" /> : undefined}
+        handle={t.usernameShown(profile.username)}
+        detail={
           <span className={`muted ${styles.small} ${styles.mailLine}`}>
             <MailIcon size={16} />
             <span className="visually-hidden">{t.emailLabel}: </span>
             {user.email}
           </span>
-          <span className={styles.status}>
-            <span className={styles.statusDot} aria-hidden="true" />
-            {t.statusActive}
-          </span>
-        </div>
-      </section>
+        }
+        status={{ label: t.statusActive, tone: 'success' }}
+      />
       {editing ? (
         <form
           className={styles.form}

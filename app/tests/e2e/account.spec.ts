@@ -3225,21 +3225,27 @@ const BEN: FakeFriend = {
   since: '2026-11-05T09:00:00Z',
 };
 
-test('GRP-1: Freunde zur Session einladen – gemeinsame Session wird angelegt, Teilnehmer erscheinen', async ({
+test('GRP-1: Freunde zur Session einladen – Visitenkarten mit Stand und Erfolgen, Zusage erscheint', async ({
   page,
 }) => {
   const errors = collectErrors(page);
   const calls = await fakeSupabase(page, [], [{ ...ANNA }, { ...BEN }]);
+  // Annas Erfolge sind für Freunde freigegeben; Ben hat nichts erreicht bzw. nichts freigegeben
+  calls.people.achievements.set('u-anna', [
+    { visible: true, key: 'first', unlocked_at: '2026-10-01T10:00:00+00:00' },
+    { visible: true, key: 'pike:silver', unlocked_at: '2026-10-20T10:00:00+00:00' },
+  ]);
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
 
   await page.goto('/fangbuch/sessions');
   await waitForApp(page);
   await page.getByRole('button', { name: 'Session starten' }).first().click();
-  await expect(page.getByRole('heading', { name: 'Gemeinsam angeln' })).toBeVisible();
-  await page.getByRole('button', { name: 'Freunde einladen' }).click();
+  const together = page.getByRole('link', { name: /Gemeinsam angeln/ });
+  await expect(together).toContainText('Lade Freunde zu dieser Session ein.');
+  await together.click();
 
-  await expect(page.getByRole('heading', { level: 1, name: 'Freunde einladen' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Gemeinsam angeln' })).toBeVisible();
   await expect(page.getByText('Noch 9 Plätze frei.')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   for (const scheme of ['light', 'dark'] as const) {
@@ -3254,15 +3260,47 @@ test('GRP-1: Freunde zur Session einladen – gemeinsame Session wird angelegt, 
   await expect(page.getByText('Noch 8 Plätze frei.')).toBeVisible();
   await page.getByRole('button', { name: '1 Person einladen' }).click();
 
-  // zurück in der Session: Gastgeber und Eingeladene
+  // Visitenkarten: Gastgeber und Eingeladene, ohne E-Mail-Adresse
+  await expect(page.getByText('1 Person eingeladen.')).toBeVisible();
   const members = page.getByRole('list', { name: 'Dabei' });
-  await expect(members.getByText('Kevin (du)')).toBeVisible();
-  await expect(members.getByText('@anna · eingeladen')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Weitere einladen' })).toBeVisible();
+  const kevin = members.getByRole('region', { name: 'Kevin' });
+  await expect(kevin.getByText('@kevin · du')).toBeVisible();
+  await expect(kevin.getByText('Gastgeber')).toBeVisible();
+  const anna = members.getByRole('region', { name: 'Anna' });
+  await expect(anna.getByText('@anna', { exact: true })).toBeVisible();
+  await expect(anna.getByText('Eingeladen', { exact: true })).toBeVisible();
+  // an der Stelle der E-Mail stehen die erreichten Erfolge, klein
+  await expect(anna.getByRole('group', { name: 'Erfolge' }).getByRole('img')).toHaveCount(2);
+  await expect(anna.getByRole('img', { name: 'Erster Fang' })).toBeVisible();
+  await expect(anna.getByRole('img', { name: 'Hecht: Silber' })).toBeVisible();
+  await expect(members).not.toContainText('@example');
   expect(calls.group.sessions).toHaveLength(1);
   expect(calls.group.members.get('g-1')?.map((m) => m.user_id)).toEqual(['u-1', 'u-anna']);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.emulateMedia({ colorScheme: 'light' });
 
-  // Beenden der eigenen Session beendet als Gastgeber auch die gemeinsame
+  // Anna sagt zu: beim nächsten Laden steht sie als „Dabei“ da, Ben (nicht eingeladen) fehlt
+  const server = calls.group.members.get('g-1');
+  const entry = server?.find((m) => m.user_id === 'u-anna');
+  if (entry) entry.status = 'joined';
+  await page.reload();
+  await waitForApp(page);
+  await expect(
+    page
+      .getByRole('list', { name: 'Dabei' })
+      .getByRole('region', { name: 'Anna' })
+      .getByText('Dabei', { exact: true }),
+  ).toBeVisible();
+
+  // zurück in der Session: Stand in der Zeile; Beenden beendet als Gastgeber auch die gemeinsame Session
+  await page.goBack();
+  await expect(page.getByRole('link', { name: /Gemeinsam angeln.*2 dabei/ })).toBeVisible();
   await page.getByRole('button', { name: 'Session beenden' }).click();
   await expect.poll(() => [...calls.group.ended]).toEqual(['g-1']);
   expect(errors).toEqual([]);
@@ -3305,11 +3343,14 @@ test('GRP-2: Einladung annehmen startet eine eigene Session, Verlassen löst nur
   await page.emulateMedia({ colorScheme: 'light' });
   await page.getByRole('button', { name: 'Zusagen' }).click();
 
-  await expect(page.getByRole('heading', { level: 1, name: 'Abendansitz' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Abendansitz' })).toBeVisible();
   await expect(page.getByText('Session läuft').first()).toBeVisible();
+  await page.getByRole('link', { name: /Gemeinsam angeln/ }).click();
   const members = page.getByRole('list', { name: 'Dabei' });
-  await expect(members.getByText('@anna · lädt ein')).toBeVisible();
-  await expect(members.getByText('@kevin · dabei')).toBeVisible();
+  await expect(members.getByRole('region', { name: 'Anna' }).getByText('Gastgeber')).toBeVisible();
+  const kevin = members.getByRole('region', { name: 'Kevin' });
+  await expect(kevin.getByText('@kevin · du')).toBeVisible();
+  await expect(kevin.getByText('Dabei', { exact: true })).toBeVisible();
   expect(calls.group.responses).toEqual([{ session: 'g-anna', accept: true }]);
   // nur der Gastgeber lädt ein
   await expect(page.getByRole('button', { name: /einladen/ })).toHaveCount(0);
@@ -3317,6 +3358,7 @@ test('GRP-2: Einladung annehmen startet eine eigene Session, Verlassen löst nur
   await page.getByRole('button', { name: 'Gemeinsame Session verlassen' }).click();
   await expect(page.getByText('Du hast die gemeinsame Session verlassen.')).toBeVisible();
   expect(calls.group.left).toEqual(['g-anna']);
+  await page.goBack();
   await expect(page.getByText('Session läuft').first()).toBeVisible();
   expect(errors).toEqual([]);
 });
@@ -3385,13 +3427,14 @@ test('GRP-3: Highlights – sichtbar in der Session und im Feed, eigener Fang al
   await page.goto('/fangbuch/sessions');
   await waitForApp(page);
   await page.getByRole('button', { name: 'Zusagen' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Abendansitz' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Abendansitz' })).toBeVisible();
   const sessionId = new URL(page.url()).pathname.split('/').pop() ?? '';
 
-  // Annas Highlight in der Session-Zusammenfassung
+  // Annas Highlight auf der Seite „Gemeinsam angeln“
+  await page.getByRole('link', { name: /Gemeinsam angeln/ }).click();
   const highlights = page.getByRole('region', { name: 'Highlights' });
   await expect(highlights.getByText('Erster Zander des Abends')).toBeVisible();
-  await expect(page.getByText(/2 Personen dabei/)).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Dabei' }).getByRole('region')).toHaveCount(2);
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();

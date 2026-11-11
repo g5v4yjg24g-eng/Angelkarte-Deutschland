@@ -20,47 +20,6 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
-/* Kontodetails (Vorlage Nutzer 2026-11-11): Kopfkarte mit Profilbild, Name, Abzeichen, Adresse, Stand */
-.hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-}
-/* Sonnenuntergang rechts, nach links ausgeblendet – der Text links bleibt auf der Kartenfläche */
-.sunset {
-  position: absolute;
-  z-index: -1;
-  inset: 0 0 0 auto;
-  width: 62%;
-  height: 100%;
-  /* Silhouetten (Ufer, Schilf) */
-  color: #6f8a92;
-  opacity: 0.75;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 70%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 70%);
-}
-:global([data-theme='dark']) .sunset {
-  color: #07181d;
-  opacity: 0.9;
-}
-@media (prefers-color-scheme: dark) {
-  :global(:root:not([data-theme='light'])) .sunset {
-    color: #07181d;
-    opacity: 0.9;
-  }
-}
-.heroAvatar {
-  position: relative;
-  flex: none;
-  display: grid;
-}
 .heroEdit {
   position: absolute;
   right: -4px;
@@ -84,12 +43,6 @@
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
-.profile {
-  display: grid;
-  justify-items: start;
-  gap: 3px;
-  min-width: 0;
-}
 .mailLine {
   display: flex;
   align-items: center;
@@ -98,19 +51,6 @@
 }
 .mailLine svg {
   flex: none;
-}
-.status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  font-weight: 600;
-}
-.statusDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--color-success);
 }
 .twoButtons {
   display: grid;

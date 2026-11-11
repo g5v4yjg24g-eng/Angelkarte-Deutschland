@@ -167,13 +167,14 @@ test('REV-1: Route während der Session aufzeichnen, Neustart der App, Ende öff
   await waitForApp(page);
   await page.getByRole('button', { name: 'Session starten' }).click();
   const status = page.getByRole('region', { name: 'Route' });
-  await expect(status).toContainText('GPS aktiv – warte auf ein genaues Signal');
+  await expect(status).toContainText('Warte auf ein genaues GPS-Signal');
   // genau ein Standort-Zuhörer
   await expect.poll(() => watchers(page)).toBe(1);
 
   for (let i = 0; i <= 5; i++) await emit(page, i * 50);
-  await expect(status).toContainText('GPS aktiv – Route wird aufgezeichnet.');
-  await expect(status).toContainText('6 Punkte · 0,25 km');
+  await expect(status).toContainText('Wird live aufgezeichnet');
+  await expect(status).toContainText('6 Punkte');
+  await expect(status).toContainText('0,25 km');
   await expect(page.getByRole('link', { name: /Laufende Session.*GPS aktiv/ })).toBeVisible();
   // ungenauer Fix und GPS-Sprung werden nicht gespeichert
   await emit(page, 300, 120);
@@ -184,11 +185,13 @@ test('REV-1: Route während der Session aufzeichnen, Neustart der App, Ende öff
   // App schließen und wieder öffnen: Route ist noch da, neuer Abschnitt beginnt
   await page.reload();
   await waitForApp(page);
-  await expect(status).toContainText('6 Punkte · 0,25 km');
+  await expect(status).toContainText('6 Punkte');
+  await expect(status).toContainText('0,25 km');
   await expect.poll(() => watchers(page)).toBe(1);
   await emit(page, 400);
   await emit(page, 450);
-  await expect(status).toContainText('8 Punkte · 0,3 km');
+  await expect(status).toContainText('8 Punkte');
+  await expect(status).toContainText('0,3 km');
 
   // Beenden: erst gespeichert, dann Rückblick; Zuhörer ist weg
   await page.getByRole('button', { name: 'Session beenden' }).click();
