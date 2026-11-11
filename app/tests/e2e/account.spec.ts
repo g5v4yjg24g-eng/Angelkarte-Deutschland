@@ -3450,6 +3450,52 @@ test('GRP-3: Highlights – sichtbar in der Session und im Feed, eigener Fang al
   expect(errors).toEqual([]);
 });
 
+test('PRIVSET-1: Privatsphäre unter Mehr → Konto – Privates Konto und Sichtbarkeit der Erfolge an einem Ort', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], []);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/mehr/konto');
+  await waitForApp(page);
+  await page.getByRole('link', { name: /Privatsphäre/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Privatsphäre' })).toBeVisible();
+
+  // Privates Konto: Standard an, ausschalten wird sofort gespeichert
+  const box = page.getByRole('checkbox', { name: 'Privates Konto' });
+  await expect(box).toBeChecked();
+  await box.click();
+  await expect(box).not.toBeChecked();
+  await page.reload();
+  await waitForApp(page);
+  await expect(page.getByRole('checkbox', { name: 'Privates Konto' })).not.toBeChecked();
+
+  // Erfolge: Standard Follower, „Niemand“ wird gespeichert
+  const choice = page.getByRole('group', { name: 'Wer sieht deine Erfolge?' });
+  await expect(choice.getByRole('radio', { name: 'Follower' })).toBeChecked();
+  await choice.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await choice.getByRole('radio', { name: 'Niemand' }).click();
+  await expect.poll(() => calls.people.achVisibility).toBe('private');
+
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await animationsDone(page.locator('body'));
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+
+  // ohne Anmeldung: Hinweis statt Schalter
+  await page.evaluate(() => localStorage.clear());
+  await page.goto('/mehr/konto/privatsphaere');
+  await waitForApp(page);
+  await expect(page.getByText('Melde dich an, um deine Privatsphäre-Einstellungen zu ändern.')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test('SAVE-1: Beitrag speichern – Lesezeichen im Feed, Liste „Gespeichert“ im Profil, wieder entfernen', async ({
   page,
 }) => {
