@@ -172,10 +172,18 @@ export const routes = [
                 ),
               },
               {
+                path: 'fangbuch/sessions/:id/gemeinsam',
+                lazy: page(
+                  () => import('../features/sessions/group/GroupPage'),
+                  (m) => m.GroupPage,
+                ),
+              },
+              {
+                // frühere Adresse (Einladen) – gleiche Seite
                 path: 'fangbuch/sessions/:id/einladen',
                 lazy: page(
-                  () => import('../features/sessions/group/InvitePage'),
-                  (m) => m.InvitePage,
+                  () => import('../features/sessions/group/GroupPage'),
+                  (m) => m.GroupPage,
                 ),
               },
               {

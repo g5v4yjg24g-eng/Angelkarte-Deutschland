@@ -11,6 +11,14 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     ],
   },
   {
+    id: '2026-12-10',
+    title: 'Session neu gestaltet',
+    items: [
+      'Session: Neues Kopfbild mit Titel, übersichtliche Angaben, Pause und Beenden nebeneinander, Route (GPS) mit Schalter, Fänge und Bisse als Kacheln und Pausen als eigene Karte. Titel und Notizen änderst du über den Stift.',
+      'Gemeinsam angeln: Tippe in der Session auf „Gemeinsam angeln“, um Freunde hinzuzufügen. Wer dabei ist, steht mit Visitenkarte da – mit Stand (Eingeladen, Dabei …) und, ganz klein, den bereits erreichten Erfolgen.',
+    ],
+  },
+  {
     id: '2026-12-09',
     title: 'Follower übersichtlicher',
     items: [

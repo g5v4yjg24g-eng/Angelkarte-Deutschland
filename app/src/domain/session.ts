@@ -121,3 +121,14 @@ export function formatDuration(ms: number): string {
   const h = Math.floor(min / 60);
   return h ? `${h} h ${String(min % 60).padStart(2, '0')} min` : `${min} min`;
 }
+
+/** Fänge und Bisse einer Session für die Kacheln: Bisse zählen wie in der Bissanalyse gelandete Fische, Kontakte und Fehlbisse. */
+export function sessionTally(catches: readonly { outcome: string }[]): { caught: number; bites: number } {
+  let caught = 0;
+  let bites = 0;
+  for (const c of catches) {
+    if (c.outcome === 'caught') caught++;
+    if (c.outcome === 'caught' || c.outcome === 'contact' || c.outcome === 'missed_bite') bites++;
+  }
+  return { caught, bites };
+}

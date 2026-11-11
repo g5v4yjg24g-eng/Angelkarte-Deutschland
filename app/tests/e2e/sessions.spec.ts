@@ -50,7 +50,8 @@ test('SES-1/SES-2: Session starten, Einträge zuordnen, beenden; keine zweite gl
   await page.getByRole('button', { name: 'Rückblick schließen' }).click();
   await expect(page.getByRole('link', { name: /Laufende Session/ })).toHaveCount(0);
 
-  // Titel vergeben; Liste zeigt 3 Einträge
+  // Titel vergeben (Stift am Kopfbild); Liste zeigt 3 Einträge
+  await page.getByRole('button', { name: 'Session bearbeiten' }).click();
   await page.getByLabel('Titel (optional)').fill('Abendansitz');
   await page.getByRole('button', { name: 'Speichern' }).click();
   await expect(page.getByText('Session gespeichert.')).toBeVisible();
@@ -114,7 +115,7 @@ test('SES-4: Pause und Weiter, Pause nachtragen; Angelzeit ohne Pausen', async (
   await waitForApp(page);
   await page.getByRole('button', { name: 'Session starten' }).click();
   await page.getByRole('link', { name: /Laufende Session/ }).click();
-  await page.getByRole('button', { name: 'Pause' }).click();
+  await page.getByRole('button', { name: 'Pause', exact: true }).click();
   await expect(page.getByText(/^Pause seit \d\d:\d\d Uhr$/)).toBeVisible();
   await expect(page.getByRole('link', { name: /Laufende Session in Pause/ })).toBeVisible();
   await page.getByRole('button', { name: 'Weiter angeln' }).click();
@@ -147,23 +148,25 @@ test('SES-4: Pause und Weiter, Pause nachtragen; Angelzeit ohne Pausen', async (
   await page.goto('/fangbuch/sessions/ses-4');
   await waitForApp(page);
   await expect(page.getByText('Keine Pausen erfasst.')).toBeVisible();
-  await page.getByText('Pause nachtragen', { exact: true }).first().click();
+  await page.getByRole('button', { name: 'Pause nachtragen' }).click();
   await page.getByLabel('Pause von').fill('2026-10-20T07:00');
   await page.getByLabel('Pause bis').fill('2026-10-20T07:30');
-  await page.getByRole('button', { name: 'Pause nachtragen' }).click();
+  await page.getByRole('button', { name: 'Pause speichern' }).click();
   await expect(page.getByText('07:00–07:30 (30 min)')).toBeVisible();
   await expect(page.getByText('1 Pause (30 min)')).toBeVisible();
   await expect(page.locator('dd', { hasText: '3 h 30 min' })).toBeVisible();
 
-  // Überschneidung und Lage außerhalb werden abgelehnt
+  // Überschneidung und Lage außerhalb werden abgelehnt (das Blatt bleibt offen)
+  await page.getByRole('button', { name: 'Pause nachtragen' }).click();
   await page.getByLabel('Pause von').fill('2026-10-20T07:15');
   await page.getByLabel('Pause bis').fill('2026-10-20T07:45');
-  await page.getByRole('button', { name: 'Pause nachtragen' }).click();
+  await page.getByRole('button', { name: 'Pause speichern' }).click();
   await expect(page.getByRole('alert')).toHaveText('Die Pause überschneidet sich mit einer anderen.');
   await page.getByLabel('Pause von').fill('2026-10-20T09:45');
   await page.getByLabel('Pause bis').fill('2026-10-20T10:30');
-  await page.getByRole('button', { name: 'Pause nachtragen' }).click();
+  await page.getByRole('button', { name: 'Pause speichern' }).click();
   await expect(page.getByRole('alert')).toHaveText('Die Pause muss innerhalb der Session liegen.');
+  await page.keyboard.press('Escape');
 
   // Entfernen
   await page.getByRole('button', { name: 'Pause entfernen 07:00' }).click();
