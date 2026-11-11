@@ -31,7 +31,8 @@ export function PasswordField({
   const [shown, setShown] = useState(false);
   const strength = isNew && value ? passwordStrength(value, email) : 0;
   const desc =
-    [hint && `${id}-h`, error && `${id}-e`, isNew && value && `${id}-s`].filter(Boolean).join(' ') || undefined;
+    [hint && `${id}-h`, error && `${id}-e`, isNew && value && `${id}-s`].filter(Boolean).join(' ') ||
+    undefined;
   return (
     <div className={fieldStyles.field}>
       <label htmlFor={id}>{label}</label>

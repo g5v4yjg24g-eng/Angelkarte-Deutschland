@@ -3,7 +3,7 @@
 //   Session. Nach 2 Minuten (oder wenn alle abgelehnt haben) kommt „Ohne … starten“, „Abbrechen“ gibt es immer.
 // - Eingeladene: Fenster „Session starten?“ mit „Dabei sein“ – egal in welchem Bereich, nur nicht beim Hochladen
 //   von Profilbild und Beiträgen (promptBlock). Gefunden wird die Anfrage über die Mitteilung und durch Nachfragen
-//   alle 10 Sekunden, solange die App sichtbar ist.
+//   alle 30 Sekunden und beim Zurückkehren in die App, solange sie sichtbar ist.
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import { de } from '../../i18n/de';
@@ -29,7 +29,8 @@ import { usePromptsBlocked } from './promptBlock';
 import styles from './TripStart.module.css';
 
 const t = de.tripStart;
-const POLL_MS = 10_000;
+// Nachfragen alle 30 s (und sofort beim Öffnen/Zurückkehren in die App, auch nach dem Antippen der Mitteilung)
+const POLL_MS = 30_000;
 const WAIT_POLL_MS = 3_000;
 
 /** „A“, „A und B“, „A, B und C“ */

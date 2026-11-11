@@ -49,15 +49,31 @@ export type PasswordIssue = 'short' | 'long' | 'common' | 'email';
 
 /** Häufige, leicht zu erratende Bestandteile (klein geschrieben) – ein Passwort nur aus diesen ist zu schwach */
 const COMMON = [
-  'passwort', 'password', 'fangpunkt', 'angeln', 'angler', 'petriheil', 'qwertz', 'qwerty', 'hallo',
-  'geheim', 'abcdef', '123456', '654321', 'hecht', 'zander', 'karpfen', 'forelle', 'barsch',
+  'passwort',
+  'password',
+  'fangpunkt',
+  'angeln',
+  'angler',
+  'petriheil',
+  'qwertz',
+  'qwerty',
+  'hallo',
+  'geheim',
+  'abcdef',
+  '123456',
+  '654321',
+  'hecht',
+  'zander',
+  'karpfen',
+  'forelle',
+  'barsch',
 ];
 
 export function passwordIssue(pw: string, email?: string): PasswordIssue | undefined {
   if (pw.length < PASSWORD_MIN) return 'short';
   if (pw.length > PASSWORD_MAX) return 'long';
   const low = pw.toLowerCase();
-  const local = email ? normalizeEmail(email).split('@')[0] ?? '' : '';
+  const local = email ? (normalizeEmail(email).split('@')[0] ?? '') : '';
   if (local.length >= 4 && low.includes(local)) return 'email';
   // nur aus häufigen Wörtern, Ziffern und Wiederholungen
   let rest = low;
@@ -101,7 +117,8 @@ export function accountErrorKind(
   const msg = (e?.message ?? '').toLowerCase();
   const code = e?.code ?? '';
   // vergeben oder gesperrt (gesperrte Nutzernamen, Admin-Bereich) – gleiche Rückmeldung
-  if (code === '23505' || msg.includes('duplicate key') || msg.includes('username_blocked')) return 'usernameTaken';
+  if (code === '23505' || msg.includes('duplicate key') || msg.includes('username_blocked'))
+    return 'usernameTaken';
   if (code === 'invalid_credentials' || msg.includes('invalid login credentials')) return 'wrongPassword';
   if (code === 'email_not_confirmed' || msg.includes('email not confirmed')) return 'notConfirmed';
   if (code === 'same_password' || msg.includes('should be different')) return 'samePassword';

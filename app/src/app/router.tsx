@@ -1,5 +1,6 @@
 // Seiten werden erst geladen, wenn man sie öffnet (Phase 5, Freigabe Nutzer 2026-11-06): kleinerer Start.
 // Der Router wartet auf den Code, bevor er wechselt – kein leerer Zwischenzustand. Die Karte (Startseite) ist sofort da.
+import { RulesPage } from '../features/moderation/Rules';
 import type { ComponentType } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router';
 import { AppShell, RootLayout } from './AppShell';
@@ -390,13 +391,8 @@ export const routes = [
                   (m) => m.AppealPage,
                 ),
               },
-              {
-                path: 'mehr/regeln',
-                lazy: page(
-                  () => import('../features/moderation/Rules'),
-                  (m) => m.RulesPage,
-                ),
-              },
+              // fest eingebunden: Registrieren und RulesSync laden dieselbe Datei ohnehin im Hauptpaket
+              { path: 'mehr/regeln', element: <RulesPage /> },
               // früherer Ort des Moderationsbereichs (auch Links in den Meldungs-Mails): weiter in den Admin-Bereich
               { path: 'mehr/moderation', element: <Navigate to={ADMIN_BASE} replace /> },
               { path: 'mehr/moderation/nutzer/:uid', element: <LegacyModRedirect to="nutzer" /> },

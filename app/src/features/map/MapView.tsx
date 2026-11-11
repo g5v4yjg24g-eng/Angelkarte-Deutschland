@@ -1,5 +1,6 @@
 // Deutschlandkarte: Basiskarte (BasemapProvider), Gewässer (WaterDataProvider, M4), eigene Orte und Fänge,
 // Tipp-Aktion, Suche, Standort.
+import { useCatches } from '../../data/useCatches';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { addProtocol, AttributionControl, Map as MlMap, setWorkerUrl, type MapMouseEvent } from 'maplibre-gl';
 import { Protocol } from 'pmtiles';
@@ -256,7 +257,7 @@ export default function MapView() {
   }, [theme]);
 
   const places = useLiveQuery(() => getDb().places.toArray(), []);
-  const catches = useLiveQuery(() => getDb().catches.toArray(), []);
+  const catches = useCatches();
   // Von Freunden geteilte Spots (Etappe 4) – nur angemeldet, sonst leer und ohne Netz
   const { state: sharedState } = useSharedSpots();
   const hidden = useHidden();

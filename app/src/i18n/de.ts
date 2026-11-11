@@ -3,7 +3,6 @@ export const de = {
   app: {
     name: 'Fangpunkt',
     tagline: 'Gewässer finden. Stellen merken. Fänge festhalten.',
-    skipIntro: 'Intro überspringen',
   },
   nav: {
     label: 'Hauptnavigation',
@@ -34,7 +33,6 @@ export const de = {
   common: {
     close: 'Schließen',
     back: 'Zurück',
-    comingIn: (milestone: string) => `In Arbeit · Meilenstein ${milestone}`,
     inProgress: 'In Arbeit',
   },
   map: {
@@ -261,7 +259,6 @@ export const de = {
     baitRecent: 'Zuletzt benutzt',
     baitFavorites: 'Köder-Favoriten',
     saveFavorite: 'Als Favorit merken',
-    manageFavorites: 'Favoriten verwalten',
     baitDetails: (p: {
       sizeCm?: number | undefined;
       weightG?: number | undefined;
@@ -478,7 +475,6 @@ export const de = {
     weak: 'Schwaches GPS-Signal: ungenaue Punkte werden nicht gespeichert.',
     progress: (points: number, km: string) => `${points} Punkte · ${km} km`,
     retry: 'Standort erneut anfragen',
-    enable: 'In den Einstellungen einschalten',
     foreground:
       'Hinweis: Im Browser bzw. als Homescreen-App wird die Route nur aufgezeichnet, solange Fangpunkt geöffnet und der Bildschirm an ist. Lücken werden im Rückblick nicht überbrückt.',
     background:
@@ -769,7 +765,6 @@ export const de = {
     displayNameHint: 'So sehen dich andere, z. B. dein Vorname. Höchstens 40 Zeichen.',
     displayNameInvalid: 'Bitte einen Anzeigenamen mit 1 bis 40 Zeichen eingeben.',
     create: 'Profil speichern',
-    signedInAs: (email: string) => `Angemeldet als ${email}`,
     // Kontodetails (Wunsch Nutzer 2026-11-11, Vorlage als Bild)
     detailsTitle: 'Kontodetails',
     statusActive: 'Aktiv',
@@ -1817,8 +1812,6 @@ export const de = {
       SH: 'Schleswig-Holstein',
       TH: 'Thüringen',
     },
-    notAvailable:
-      'Gewässerdaten sind gerade nicht verfügbar. Deine eigenen Markierungen funktionieren weiter.',
   },
   search: {
     open: 'Gewässer oder Ort suchen',
@@ -2098,14 +2091,12 @@ export const de = {
     nowMarker: 'jetzt',
     days: 'Die nächsten Tage',
     today: 'Heute',
-    tomorrow: 'Morgen',
     tempRange: (min: number, max: number) =>
       `${min.toLocaleString('de-DE', { maximumFractionDigits: 0 })}–${max.toLocaleString('de-DE', { maximumFractionDigits: 0 })} °C`,
     precip: (mm: number) => `${mm.toLocaleString('de-DE', { maximumFractionDigits: 1 })} mm`,
     wind: (ms: number, gust?: number) =>
       `Wind bis ${ms.toLocaleString('de-DE', { maximumFractionDigits: 0 })} m/s` +
       (gust === undefined ? '' : `, Böen ${gust.toLocaleString('de-DE', { maximumFractionDigits: 0 })} m/s`),
-    pressureRange: (min: number, max: number) => `${Math.round(min)}–${Math.round(max)} hPa`,
     sun: (rise: string, set: string) => `Sonne ${rise}–${set} Uhr`,
     tableDay: 'Tag',
     tableMin: 'Tiefster Druck',
@@ -2188,7 +2179,6 @@ export const de = {
     flow: 'Abfluss',
     temp: 'Wassertemperatur',
     measuredAt: (time: string) => `gemessen ${time}`,
-    unnamedWater: 'Gewässer',
     source:
       'Quelle: PEGELONLINE, Wasserstraßen- und Schifffahrtsverwaltung des Bundes (DL-DE->Zero-2.0) – ungeprüfte Rohdaten.',
     sourceNrw:
@@ -2239,7 +2229,6 @@ export const de = {
     cancel: 'Abbrechen',
     startWithout: (names: string) => `Ohne ${names} starten`,
     startWithoutAny: 'Ohne die Eingeladenen starten',
-    starting: 'Session wird gestartet …',
     errorStart: 'Das Starten hat nicht geklappt. Prüfe die Verbindung und versuch es noch einmal.',
     busy: 'Es läuft schon eine Session. Beende sie zuerst.',
     offline: 'Zum gemeinsamen Start brauchst du eine Verbindung.',
@@ -2250,7 +2239,6 @@ export const de = {
         : `${host} möchte jetzt eine gemeinsame Session starten.`,
     confirm: 'Dabei sein',
     decline: 'Ablehnen',
-    promptError: 'Das hat nicht geklappt. Prüfe die Verbindung und versuch es noch einmal.',
     promptBusy: 'Es läuft schon eine andere gemeinsame Session. Beende sie zuerst.',
   },
   calendar: {
@@ -2625,7 +2613,6 @@ export const de = {
       revoked: 'zurückgenommen',
       until: (d: string) => `gilt bis ${d}`,
       revokedNote: (note: string) => `Zurückgenommen: ${note}`,
-      fromReport: 'zu einer Meldung',
       openReport: 'Meldung ansehen',
       revoke: 'Zurücknehmen',
       revokeTitle: 'Verwarnung zurücknehmen?',
@@ -2655,7 +2642,6 @@ export const de = {
       statsHint: 'Meldungen, Eingriffe, neue Konten',
       rolesHint: 'Founder und Moderatoren',
       appealsHint: 'Einsprüche gegen Sperren entscheiden',
-      soon: 'folgt',
       leave: 'Admin-Bereich verlassen',
     },
     // Verwaltung (Wunsch Nutzer 2026-11-10)
@@ -2825,7 +2811,6 @@ export const de = {
     reportTitle: 'Meldung',
     reason: 'Grund',
     details: 'Hinweis der meldenden Person',
-    reportedBy: 'Gemeldet von',
     against: 'Betrifft',
     reportedAt: 'Gemeldet am',
     content: 'Gemeldeter Inhalt',
@@ -2999,10 +2984,7 @@ export const de = {
     intro:
       'Lade Freunde zu dieser Session ein. Jeder behält seine eigene Session – geteilt wird nur, wer dabei ist. Positionen, Routen und Fänge bleiben auf dem Gerät.',
     invite: 'Freunde einladen',
-    inviteMore: 'Weitere einladen',
     inviteTitle: 'Freunde einladen',
-    inviteIntro: (max: number) =>
-      `Wähle Freunde aus. Höchstens ${max} Personen sind gemeinsam dabei, du eingeschlossen. Wer eingeladen ist, bekommt eine Einladung und kann zusagen oder ablehnen.`,
     slotsLeft: (n: number) => (n === 1 ? 'Noch 1 Platz frei.' : `Noch ${n} Plätze frei.`),
     full: 'Alle Plätze sind vergeben.',
     shareWater: (name: string) => `Gewässernamen mitteilen: ${name}`,
@@ -3013,7 +2995,6 @@ export const de = {
     noFriends: 'Du hast noch keine Freunde, die du einladen kannst – Freunde folgen sich gegenseitig.',
     toFriends: 'Leute finden',
     signedOut: 'Gemeinsame Sessions gibt es mit Konto. Melde dich unter Mehr → Konto an.',
-    notRunning: 'Einladen geht nur, solange die Session läuft.',
     invited: (n: number) => (n === 1 ? '1 Person eingeladen.' : `${n} Personen eingeladen.`),
     members: 'Dabei',
     status: { invited: 'eingeladen', joined: 'dabei', declined: 'abgelehnt', left: 'gegangen' },
@@ -3063,8 +3044,6 @@ export const de = {
     allow: 'Mitteilungen erlauben',
     denied:
       'Mitteilungen sind für Fangpunkt ausgeschaltet. Erlauben kannst du sie in den iPhone-Einstellungen → Fangpunkt → Mitteilungen.',
-    registerError:
-      'Das iPhone konnte nicht für Mitteilungen angemeldet werden. Versuch es später noch einmal.',
     loadError: 'Einstellungen konnten nicht geladen werden. Prüfe die Verbindung.',
     saveError: 'Konnte nicht gespeichert werden. Prüfe die Verbindung.',
     kinds: {
@@ -3359,7 +3338,6 @@ export const de = {
     postsTitle: 'Beiträge',
     emptyTitle: 'Keine Beiträge',
     emptyText: 'Hier ist noch nichts, das du sehen kannst.',
-    ownProfile: 'Zu deinem Profil',
     gridLabel: 'Beiträge',
     more: 'Weitere Beiträge laden',
     noCount: '–',

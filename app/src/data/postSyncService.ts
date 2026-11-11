@@ -2,12 +2,7 @@
 // Plan aus domain/postSync.ts, Übertragung über den Konto-Port. Der Teilen-Stand wird direkt gesetzt (ohne rev zu
 // ändern); `sharedRev` ≠ `rev` heißt: Änderung nachziehen. Lokale Fotos bleiben immer erhalten.
 import type { AccountProvider } from '../ports/account';
-import {
-  mimeOfPath,
-  planPostSync,
-  postsToAdopt,
-  retryAt,
-} from '../domain/postSync';
+import { mimeOfPath, planPostSync, postsToAdopt, retryAt } from '../domain/postSync';
 import type { FeedPost } from '../domain/feed';
 import { PhotoSchema, PostSchema, type Photo, type Post } from '../domain/schemas';
 import { newId } from '../domain/id';

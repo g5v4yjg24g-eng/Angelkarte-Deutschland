@@ -1,7 +1,6 @@
 // Ort der Vorhersage: Standort (Standard) oder ein Gewässer aus dem Fangbuch; Wahl pro Gerät gemerkt.
+import { useCatches } from '../../data/useCatches';
 import { useEffect, useMemo, useState } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { getDb } from '../../data/db';
 import { groupByWater } from '../../domain/waterGroups';
 import { de } from '../../i18n/de';
 
@@ -25,7 +24,7 @@ function readChoice(): string {
 
 /** Gewässer aus dem Fangbuch (mit Fangort), zuletzt befischt zuerst. */
 export function useWaterOptions(): PlaceOption[] | undefined {
-  const catches = useLiveQuery(() => getDb().catches.toArray(), []);
+  const catches = useCatches();
   return useMemo(() => {
     if (!catches) return undefined;
     const out: PlaceOption[] = [];
