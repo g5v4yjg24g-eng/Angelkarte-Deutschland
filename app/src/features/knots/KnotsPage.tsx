@@ -18,7 +18,6 @@ export function KnotsPage() {
   return (
     <Page title={t.title} back="/mehr">
       <KnotTabs />
-      <p className="muted">{t.intro}</p>
       <div className={styles.filters} role="group" aria-label={t.filterLabel}>
         <button type="button" className={styles.chip} aria-pressed={!use} onClick={() => setUse(undefined)}>
           {t.all}

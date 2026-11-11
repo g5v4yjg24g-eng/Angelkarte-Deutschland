@@ -1276,7 +1276,7 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/mehr');
   await waitForApp(page);
-  await expect(page.getByRole('link', { name: /^Konto.*Freiwillig/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /^Konto/ })).toBeVisible();
   await page.getByRole('link', { name: /^Konto/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Konto' })).toBeVisible();
   expect(calls).toEqual([]); // ohne Anmeldung kein Kontakt zu Supabase
@@ -1488,7 +1488,7 @@ test('ACC-5: Konto freigeschaltet – Mehr → Konto zeigt das Anmeldeformular, 
   });
   await page.goto('/mehr');
   await waitForApp(page);
-  await expect(page.getByRole('link', { name: /^Konto.*Freiwillig/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /^Konto/ })).toBeVisible();
   await page.getByRole('link', { name: /^Konto/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Konto' })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'E-Mail-Adresse' })).toBeVisible();
@@ -1770,7 +1770,6 @@ test('PST-3: Beitrag sichern – angemeldet geht er mit Foto und Vorschaubild au
 
   await page.goto('/profil/neu');
   await waitForApp(page);
-  await expect(page.getByText(/Wird mit deinem Konto gesichert/)).toBeVisible();
   await expect(page.getByRole('radio', { name: 'Nur ich' })).toBeVisible();
   await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
   await page.getByLabel('Text').fill('Hecht vom Steg');
@@ -1814,7 +1813,6 @@ test('PST-4: ohne Anmeldung bleibt ein neuer Beitrag auf dem Gerät', async ({ p
   const server = await fakeSupabase(page);
   await page.goto('/profil/neu');
   await waitForApp(page);
-  await expect(page.getByText(/Ohne Konto bleibt der Beitrag nur auf diesem Gerät/)).toBeVisible();
   await page.getByLabel('Fotos wählen').setInputFiles(await jpeg(page));
   await page.getByRole('button', { name: 'Posten' }).click();
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
@@ -2371,7 +2369,6 @@ test('REACT-3: eigener geteilter Beitrag – Gefällt mir und Kommentare kommen 
   await page.getByRole('list', { name: 'Beiträge' }).getByRole('link').first().click();
   await openPostMenu(page);
   await expect(page.getByRole('status').filter({ hasText: 'Auf dem Server gesichert' })).toBeVisible();
-  await expect(page.getByText(/sehen alle, die diesen Beitrag sehen dürfen/)).toBeVisible();
   await closePostMenu(page);
   const postId = [...calls.posts.keys()][0] ?? '';
   await page.getByRole('button', { name: 'Gefällt mir' }).click();

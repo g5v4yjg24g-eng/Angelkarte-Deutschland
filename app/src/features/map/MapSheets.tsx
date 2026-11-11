@@ -209,11 +209,9 @@ export function CatchDetails({
 }
 
 export function Legend({
-  clustersLabeled,
   shared = false,
   withCatches = true,
 }: {
-  clustersLabeled: boolean;
   shared?: boolean;
   /** false, wenn die Fang-Arten schon bei den Ebenen-Schaltern mit Symbol stehen */
   withCatches?: boolean;
@@ -248,7 +246,6 @@ export function Legend({
           </ul>
         </>
       )}
-      {clustersLabeled && <p className="muted">{de.map.legendClusterHint}</p>}
       <h3 className={styles.legendHead}>{de.map.legendHeat}</h3>
       <div className={styles.heatScale} aria-hidden="true" />
       <p className="muted">{de.map.legendHeatHint}</p>

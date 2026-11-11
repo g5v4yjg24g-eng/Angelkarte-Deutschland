@@ -259,7 +259,6 @@ export function ProfilePage() {
           ))}
         </ul>
       )}
-      <p className={`muted ${styles.note}`}>{t.localNote}</p>
 
       {notice && <Toast onDismiss={() => setNotice(undefined)}>{notice}</Toast>}
       {(undoId || restored) && (

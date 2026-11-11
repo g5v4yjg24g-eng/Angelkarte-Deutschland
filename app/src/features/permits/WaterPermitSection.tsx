@@ -55,7 +55,6 @@ function OwnLink({ waterId }: { waterId: string }) {
         <Button variant="ghost" onClick={start}>
           {t.addOwn}
         </Button>
-        <p className={`muted ${styles.small}`}>{t.ownHint}</p>
       </div>
     );
   if (editing)
@@ -79,7 +78,6 @@ function OwnLink({ waterId }: { waterId: string }) {
           value={label}
           onChange={(e) => setLabel(e.target.value)}
         />
-        <p className="muted">{t.ownHint}</p>
         <div className={styles.actions}>
           <Button type="button" variant="ghost" onClick={() => setEditing(false)}>
             {t.cancel}

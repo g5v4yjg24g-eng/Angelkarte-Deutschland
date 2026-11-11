@@ -237,7 +237,6 @@ export function NewPostPage() {
         </fieldset>
         <TextArea
           label={t.caption}
-          hint={t.captionHint}
           value={caption}
           rows={4}
           maxLength={POST_CAPTION_MAX}
@@ -253,10 +252,7 @@ export function NewPostPage() {
         {groupId && storedUserId() && (
           <label className={styles.highlightPick}>
             <input type="checkbox" checked={asHighlight} onChange={(e) => setAsHighlight(e.target.checked)} />
-            <span>
-              {t.asHighlight}
-              <small className="muted">{t.asHighlightHint}</small>
-            </span>
+            <span>{t.asHighlight}</span>
           </label>
         )}
         {!highlight && <VisibilityField value={visibility} onChange={setVisibility} />}
@@ -296,13 +292,7 @@ export function VisibilityField({
           { value: 'public', label: t.visibility.public },
         ]}
       />
-      <small className="muted">
-        {!storedUserId()
-          ? t.visibilityHint
-          : value === 'public'
-            ? t.visibilityHintPublic
-            : t.visibilityHintShared}
-      </small>
+      {storedUserId() && value === 'public' && <small className="muted">{t.visibilityHintPublic}</small>}
     </div>
   );
 }

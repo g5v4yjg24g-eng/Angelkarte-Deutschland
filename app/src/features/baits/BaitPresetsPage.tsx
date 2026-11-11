@@ -194,7 +194,6 @@ export function BaitPresetsPage() {
 
   return (
     <Page title={t.title} back="/mehr">
-      <p className="muted">{t.intro}</p>
       {editing === 'new' ? form : <Button onClick={() => setEditing('new')}>{t.add}</Button>}
       {presets.length === 0 && editing !== 'new' ? (
         <EmptyState icon={<HookIcon size={32} />} title={t.emptyTitle}>

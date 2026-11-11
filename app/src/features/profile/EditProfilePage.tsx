@@ -95,7 +95,6 @@ function Form({ initial }: { initial: Profile | null }) {
       />
       <TextArea
         label={t.bioLabel}
-        hint={t.bioHint}
         value={bio}
         rows={4}
         maxLength={PROFILE_BIO_MAX}

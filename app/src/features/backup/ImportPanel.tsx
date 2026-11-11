@@ -54,7 +54,6 @@ export function ImportPanel() {
 
   return (
     <div className={styles.stack}>
-      <p className="muted">{de.backup.importHint}</p>
       <div>
         <input
           ref={input}
