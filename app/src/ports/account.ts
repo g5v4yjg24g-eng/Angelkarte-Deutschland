@@ -5,6 +5,7 @@ import type { FriendEntry } from '../domain/friends';
 import type { FollowCounts, FollowEntry, FollowResult } from '../domain/follows';
 import type { GroupMember, GroupSession } from '../domain/groupSessions';
 import type { GroupStats, GroupStatsEntry } from '../domain/groupStats';
+import type { StartRequest } from '../domain/tripStart';
 import type { FeedPost } from '../domain/feed';
 import type { ProfileExtrasPayload, PublicProfile, UserHit } from '../domain/userProfile';
 import type { AchVisibility, RemoteAchievements } from '../domain/sharedAchievements';
@@ -162,6 +163,16 @@ export interface AccountProvider {
   endGroupSession(groupId: string): Promise<void>;
   myGroupSessions(): Promise<GroupSession[]>;
   groupSessionMembers(groupId: string): Promise<GroupMember[]>;
+  /** Angeltermin: Freunde zum Termin einladen (nur eine Mitteilung); `trip` = ID des Termins; liefert die Zahl Eingeladener */
+  inviteToTrip(input: { trip: string; userIds: string[]; label?: string | undefined; day?: string | undefined }): Promise<number>;
+  /** Termin starten: legt die gemeinsame Session an, die Eingeladenen bekommen die Start-Anfrage; liefert ihre ID */
+  startTripSession(input: {
+    title?: string | undefined;
+    waterName?: string | undefined;
+    userIds: string[];
+  }): Promise<string>;
+  /** Offene Start-Anfragen an mich (Fenster in der App) */
+  startRequests(): Promise<StartRequest[]>;
   /** Rückblick: eigene Kennzahlen der Session hochladen (nur Zahlen; nur wer dabei ist oder war) */
   setGroupStats(groupId: string, stats: GroupStats): Promise<void>;
   /** Kennzahlen aller Teilnehmer, die welche hochgeladen haben */

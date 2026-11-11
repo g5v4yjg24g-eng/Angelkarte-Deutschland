@@ -1,6 +1,7 @@
 // Neuer Beitrag: Fotos wählen (neu kodiert, ohne EXIF), Text, optional mit einem Fang verknüpfen. Ist ein Fang
 // gewählt, lassen sich seine Fotos übernehmen (als Kopie). Aufruf aus einem Fang: /profil/neu?fang=<id>.
 // Aus einer Session (Paket 12): /profil/neu?session=<id> – fügt ein Bild der Zusammenfassung (ohne Ort) ein.
+import { usePromptBlock } from '../trips/promptBlock';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -36,6 +37,8 @@ import styles from './Profile.module.css';
 const t = de.profile;
 
 export function NewPostPage() {
+  // beim Beitrag-Erstellen kein Fenster „Session startet“ dazwischen (Wunsch Nutzer 2026-11-11)
+  usePromptBlock();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [catchId, setCatchId] = useState(params.get('fang') ?? '');

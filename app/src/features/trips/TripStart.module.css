@@ -1,0 +1,53 @@
+.dialog {
+  width: min(92vw, 26rem);
+  max-height: 90dvh;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-2);
+}
+.dialog::backdrop {
+  background: var(--color-scrim);
+}
+.body {
+  display: grid;
+  gap: var(--space-4);
+}
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+}
+.text {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.actions {
+  display: grid;
+  gap: var(--space-2);
+}
+.waitRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.spinner {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-full);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

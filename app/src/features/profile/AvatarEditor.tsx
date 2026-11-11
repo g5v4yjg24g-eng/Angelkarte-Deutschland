@@ -1,6 +1,7 @@
 // Profilbild zuschneiden (Wunsch Nutzer 2026-11-06, „wie bei Instagram“): Bild im festen Kreis verschieben
 // (Finger/Maus/Pfeiltasten), mit zwei Fingern, Mausrad oder Regler zoomen, zurücksetzen, übernehmen. Gespeichert
 // wird das Quadrat; rund ist es nur in der Anzeige. Rechnung rein in domain/avatarCrop.ts.
+import { usePromptBlock } from '../trips/promptBlock';
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type WheelEvent } from 'react';
 import { de } from '../../i18n/de';
 import { Button } from '../../design/components/Button';
@@ -64,6 +65,8 @@ export function AvatarEditor({
   onCancel: () => void;
   onDone: (photo: ProcessedPhoto) => void;
 }) {
+  // beim Zuschneiden kein Fenster „Session startet“ dazwischen (Wunsch Nutzer 2026-11-11)
+  usePromptBlock();
   const dialog = useRef<HTMLDialogElement>(null);
   const frame = useRef<HTMLDivElement>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());

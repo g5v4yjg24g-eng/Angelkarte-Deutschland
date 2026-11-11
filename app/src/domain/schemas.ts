@@ -204,6 +204,11 @@ export const TripSchema = MetaSchema.extend({
   ...WaterRefSchema,
   title: text(120).optional(),
   notes: text(2000).optional(),
+  /** Eingeladene Freunde (Wunsch Nutzer 2026-11-11): nur zur Anzeige und zum Start; Konto-IDs bleiben auf dem Gerät */
+  invited: z
+    .array(z.object({ userId: z.string().min(1).max(64), name: text(60) }))
+    .max(9)
+    .optional(),
   legacy: LegacySchema.optional(),
 }).refine((t) => !t.from || !t.to || t.to > t.from, {
   message: 'Das Ende liegt vor dem Beginn.',

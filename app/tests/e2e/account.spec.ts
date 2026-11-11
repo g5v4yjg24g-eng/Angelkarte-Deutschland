@@ -134,6 +134,10 @@ async function fakeSupabase(
     /** Rückblick: Kennzahlen je Session (Zeilen wie group_session_stats_list) und die Uploads von Kevin */
     stats: new Map<string, Record<string, unknown>[]>(),
     statUploads: [] as { session: string; stats: Record<string, unknown> }[],
+    /** Angeltermin (2026-11-11): Einladungen, Starts und offene Start-Anfragen an Kevin */
+    tripInvites: [] as { trip: string; users: string[]; label: string | null; day: string | null }[],
+    tripStarts: [] as { title: string | null; water_name: string | null; users: string[]; id: string }[],
+    startRequests: [] as Record<string, unknown>[],
   };
   // Paket 12: Profile anderer (per Nutzername), Suchtreffer, eigene Angaben auf dem Server
   const people = {
@@ -1070,6 +1074,33 @@ async function fakeSupabase(
         group.members.set(session, list);
         return json(route, users.length);
       }
+      case 'POST /rest/v1/rpc/invite_to_trip': {
+        const body = req.postDataJSON() as { trip: string; users: string[]; label: string | null; day: string | null };
+        group.tripInvites.push(body);
+        return json(route, body.users.length);
+      }
+      case 'POST /rest/v1/rpc/start_trip_session': {
+        const body = req.postDataJSON() as { title: string | null; water_name: string | null; users: string[] };
+        const id = `g-trip-${group.tripStarts.length + 1}`;
+        group.sessions.push({ id, host_id: 'u-1', title: body.title, water_name: body.water_name, my_status: 'joined' });
+        group.members.set(id, [
+          { user_id: 'u-1', username: 'kevin', display_name: 'Kevin', status: 'joined', is_host: true },
+          ...body.users.map((u) => {
+            const f = friends.find((x) => x.user_id === u);
+            return {
+              user_id: u,
+              username: f?.username ?? u,
+              display_name: f?.display_name ?? u,
+              status: 'invited',
+              is_host: false,
+            };
+          }),
+        ]);
+        group.tripStarts.push({ ...body, id });
+        return json(route, id);
+      }
+      case 'POST /rest/v1/rpc/my_start_requests':
+        return json(route, group.startRequests);
       case 'POST /rest/v1/rpc/set_my_group_stats': {
         const body = req.postDataJSON() as { session: string; stats: Record<string, unknown> };
         group.statUploads.push(body);
@@ -3627,6 +3658,167 @@ test('REV-5: Rückblick einer gemeinsamen Session – Vergleich aus geteilten Ke
       r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
     ).toEqual([]);
   }
+  expect(errors).toEqual([]);
+});
+
+test('TRIP-1: Termin mit Einladung – Start wartet auf die Bestätigung, dann startet die Session', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/wetter/kalender');
+  await waitForApp(page);
+
+  // Termin mit Anna anlegen → Einladung geht raus
+  await page.getByRole('button', { name: 'Termin eintragen' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Neuer Angeltermin' });
+  await sheet.getByLabel('Titel (optional)').fill('Abendansitz');
+  await sheet.getByRole('checkbox', { name: 'Anna' }).check();
+  await sheet.getByRole('button', { name: 'Speichern' }).click();
+  await expect.poll(() => calls.group.tripInvites.length).toBe(1);
+  expect(calls.group.tripInvites[0]?.users).toEqual(['u-anna']);
+  const card = page.getByRole('listitem').filter({ hasText: 'Abendansitz' }).first();
+  await expect(card).toContainText('Eingeladen: Anna');
+
+  // Start: die Session beginnt noch nicht
+  await card.getByRole('button', { name: /Session starten/ }).click();
+  const wait = page.getByRole('dialog', { name: 'Session startet' });
+  await expect(wait).toContainText('Warte auf Anna');
+  expect(calls.group.tripStarts).toHaveLength(1);
+  expect(calls.group.tripStarts[0]?.users).toEqual(['u-anna']);
+  const sessionCount = () =>
+    page.evaluate(
+      () =>
+        new Promise<number>((resolve, reject) => {
+          const r = indexedDB.open('fangpunkt');
+          r.onsuccess = () => {
+            const q = r.result.transaction('sessions').objectStore('sessions').count();
+            q.onsuccess = () => resolve(q.result);
+            q.onerror = () => reject(q.error);
+          };
+          r.onerror = () => reject(r.error);
+        }),
+  );
+  expect(await sessionCount()).toBe(0);
+  // kurz nach dem Start gibt es noch kein „Ohne Anna starten“
+  await expect(wait.getByRole('button', { name: /Ohne Anna starten/ })).toHaveCount(0);
+  await expect(wait.getByRole('button', { name: 'Abbrechen' })).toBeVisible();
+
+  // Anna bestätigt → die Session startet
+  const members = calls.group.members.get('g-trip-1');
+  members?.forEach((m) => {
+    if (m.user_id === 'u-anna') m.status = 'joined';
+  });
+  await expect(page.getByRole('heading', { level: 2, name: 'Abendansitz' })).toBeVisible({ timeout: 15000 });
+  await expect(page.getByRole('dialog', { name: 'Session startet' })).toHaveCount(0);
+  expect(await sessionCount()).toBe(1);
+  expect(errors).toEqual([]);
+});
+
+test('TRIP-2: Ohne Bestätigung – „Ohne Anna starten“ nach 2 Minuten, Abbrechen jederzeit', async ({ page }) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  const members = [
+    { user_id: 'u-1', username: 'kevin', display_name: 'Kevin', status: 'joined', is_host: true },
+    { user_id: 'u-anna', username: 'anna', display_name: 'Anna', status: 'invited', is_host: false },
+  ];
+  calls.group.members.set('g-w1', members);
+  calls.group.members.set('g-w2', members);
+  calls.group.sessions.push({ id: 'g-w1', host_id: 'u-1', title: 'Morgens', my_status: 'joined' });
+  calls.group.sessions.push({ id: 'g-w2', host_id: 'u-1', title: 'Abends', my_status: 'joined' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+
+  // frisch gestartet: Abbrechen beendet die gemeinsame Session, es gibt keine eigene
+  await page.evaluate(() =>
+    localStorage.setItem(
+      'fangpunkt.tripStart',
+      JSON.stringify({ groupId: 'g-w1', title: 'Morgens', names: ['Anna'], since: Date.now() }),
+    ),
+  );
+  await page.goto('/');
+  await waitForApp(page);
+  const wait = page.getByRole('dialog', { name: 'Session startet' });
+  await expect(wait).toContainText('Warte auf Anna');
+  await expect(wait.getByRole('button', { name: /Ohne Anna starten/ })).toHaveCount(0);
+  await wait.getByRole('button', { name: 'Abbrechen' }).click();
+  await expect(wait).toHaveCount(0);
+  await expect.poll(() => calls.group.ended).toContain('g-w1');
+  expect(await page.evaluate(() => localStorage.getItem('fangpunkt.tripStart'))).toBeNull();
+
+  // seit 3 Minuten ohne Antwort: „Ohne Anna starten“ → Session startet, Anna kann später noch zusagen
+  await page.evaluate(() =>
+    localStorage.setItem(
+      'fangpunkt.tripStart',
+      JSON.stringify({ groupId: 'g-w2', title: 'Abends', names: ['Anna'], since: Date.now() - 180_000 }),
+    ),
+  );
+  await page.goto('/');
+  await waitForApp(page);
+  await page.getByRole('dialog', { name: 'Session startet' }).getByRole('button', { name: 'Ohne Anna starten' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Abends' })).toBeVisible();
+  expect(calls.group.ended).not.toContain('g-w2');
+  expect(errors).toEqual([]);
+});
+
+test('TRIP-3: Eingeladene sehen das Fenster überall – außer beim Beitrag-Erstellen; Bestätigen startet die Session', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  calls.group.sessions.push({
+    id: 'g-anna',
+    host_id: 'u-anna',
+    host_username: 'anna',
+    host_display_name: 'Anna',
+    title: 'Abendansitz',
+    water_name: null,
+    started_at: '2026-11-11T16:00:00Z',
+    ended_at: null,
+    my_status: 'invited',
+    joined_count: 1,
+  });
+  calls.group.members.set('g-anna', [
+    { user_id: 'u-anna', username: 'anna', display_name: 'Anna', status: 'joined', is_host: true },
+    { user_id: 'u-1', username: 'kevin', display_name: 'Kevin', status: 'invited', is_host: false },
+  ]);
+  calls.group.startRequests.push({
+    id: 'g-anna',
+    host_id: 'u-anna',
+    host_username: 'anna',
+    host_display_name: 'Anna',
+    title: 'Abendansitz',
+    water_name: null,
+    started_at: new Date().toISOString(),
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+
+  // beim Beitrag-Erstellen: kein Fenster
+  await page.goto('/profil/neu');
+  await waitForApp(page);
+  await page.waitForTimeout(800);
+  await expect(page.getByRole('dialog', { name: 'Session starten?' })).toHaveCount(0);
+
+  // in einem anderen Bereich (Mehr) erscheint es
+  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Mehr' }).click();
+  const prompt = page.getByRole('dialog', { name: 'Session starten?' });
+  await expect(prompt).toContainText('Anna möchte „Abendansitz“ jetzt starten.');
+  await animationsDone(prompt);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.emulateMedia({ colorScheme: 'light' });
+  await prompt.getByRole('button', { name: 'Dabei sein' }).click();
+  await expect.poll(() => calls.group.responses).toEqual([{ session: 'g-anna', accept: true }]);
+  await expect(page.getByRole('heading', { level: 2, name: 'Abendansitz' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Session starten?' })).toHaveCount(0);
   expect(errors).toEqual([]);
 });
 
