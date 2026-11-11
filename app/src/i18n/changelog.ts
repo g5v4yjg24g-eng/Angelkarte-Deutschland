@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-08',
+    title: 'Kontodetails neu',
+    items: [
+      'Konto: Die Seite unter Mehr → Konto ist neu aufgebaut – oben dein Profilbild, Name und E-Mail-Adresse, darunter Sicherheit, Follower und „Konto löschen“ als übersichtliche Zeilen.',
+      'Profil: Beiträge, Follower und Gefolgt stehen jetzt nebeneinander.',
+    ],
+  },
+  {
     id: '2026-12-07',
     title: 'Folgen statt Freundschaft',
     items: [

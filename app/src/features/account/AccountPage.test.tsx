@@ -290,7 +290,8 @@ describe('Mehr → Konto (ACC-2)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Profil speichern' }));
 
     expect(await screen.findByText('@zander.max')).toBeInTheDocument();
-    expect(screen.getByText('Angemeldet als max@example.de')).toBeInTheDocument();
+    expect(screen.getByText('max@example.de')).toBeInTheDocument();
+    expect(screen.getByText('Aktiv')).toBeInTheDocument();
     // neues Konto hat ein Passwort: kein Hinweis
     expect(screen.queryByText('Lege ein Passwort fest')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Anzeigename ändern' }));
@@ -343,6 +344,7 @@ describe('Mehr → Konto (ACC-2)', () => {
     renderWith(acc);
     expect(await screen.findByText('Lege ein Passwort fest')).toBeInTheDocument();
     // E-Mail ändern und Löschen brauchen erst ein Passwort
+    fireEvent.click(screen.getByRole('button', { name: /^Konto löschen/ }));
     expect(screen.getByRole('button', { name: 'Konto endgültig löschen' })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'Passwort festlegen' }));
     fireEvent.change(screen.getByLabelText('Neues Passwort'), { target: { value: PW } });
@@ -395,7 +397,9 @@ describe('Mehr → Konto (ACC-2)', () => {
     acc.login('max@example.de');
     await acc.createProfile('zander', 'Max');
     renderWith(acc);
-    const del = await screen.findByRole('button', { name: 'Konto endgültig löschen' });
+    // Löschen ist eingeklappt, bis die Zeile „Konto löschen“ angetippt wird
+    fireEvent.click(await screen.findByRole('button', { name: /^Konto löschen/ }));
+    const del = screen.getByRole('button', { name: 'Konto endgültig löschen' });
     expect(del).toBeDisabled();
     fireEvent.change(screen.getByRole('textbox', { name: /deinen Nutzernamen „zander“ eingeben/ }), {
       target: { value: 'Zander' },

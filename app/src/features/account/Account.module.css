@@ -20,10 +20,181 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+/* Kontodetails (Vorlage Nutzer 2026-11-11): Kopfkarte mit Profilbild, Name, Abzeichen, Adresse, Stand */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(
+      120deg,
+      transparent 40%,
+      color-mix(in srgb, var(--color-primary) 16%, transparent) 100%
+    ),
+    var(--color-surface);
+}
+.heroAvatar {
+  position: relative;
+  flex: none;
+  display: grid;
+}
+.heroEdit {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+/* größere Tippfläche als der sichtbare Kreis */
+.heroEdit::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+}
+.heroEdit:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
 .profile {
   display: grid;
-  gap: 2px;
-  padding: var(--space-4);
+  justify-items: start;
+  gap: 3px;
+  min-width: 0;
+}
+.mailLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.mailLine svg {
+  flex: none;
+}
+.status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+}
+.twoButtons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+.twoButtons > button {
+  min-width: 0;
+  padding: 0 var(--space-2);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+.twoButtons > button svg {
+  flex: none;
+}
+.group {
+  display: grid;
+  gap: var(--space-3);
+}
+.groupTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.groupTitle svg {
+  color: var(--color-primary);
+  flex: none;
+}
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+.note svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--color-primary);
+}
+/* Zeile als Knopf (wie ListLink) */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 56px;
+  padding: var(--space-2) var(--space-4);
+  border: 0;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.row + .row {
+  border-top: 1px solid var(--color-border);
+}
+.row:hover:not(:disabled) {
+  background: var(--color-surface-2);
+}
+.row:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.row:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -3px;
+}
+.rowIcon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  color: var(--color-primary);
+}
+.rowDanger .rowIcon {
+  color: var(--color-danger);
+}
+.rowText {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.rowTitle {
+  font-weight: 600;
+}
+.rowHint {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.rowChevron {
+  flex: none;
+  color: var(--color-text-muted);
+  transition: transform 0.15s;
+}
+.row[aria-expanded='true'] .rowChevron {
+  transform: rotate(90deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .rowChevron {
+    transition: none;
+  }
 }
 .displayName {
   font-size: var(--text-lg);
