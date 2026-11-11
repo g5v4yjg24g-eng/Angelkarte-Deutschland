@@ -9,7 +9,7 @@ import { Button } from '../../design/components/Button';
 import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
 import { FeedIcon, ImagesIcon } from '../../design/icons';
-import { friendErrorKind } from '../../domain/friends';
+import { followErrorKind } from '../../domain/follows';
 import type { PublicProfile } from '../../domain/userProfile';
 import { FEED_PAGE, type FeedPost } from '../../domain/feed';
 import { AccountError } from '../../ports/account';
@@ -22,6 +22,7 @@ import { SafetyMenu } from '../moderation/SafetyMenu';
 import { Avatar } from './Avatar';
 import { useAvatarUrl } from './avatarUrls';
 import { userPostsLink } from './userPostsLink';
+import { followMessage } from '../friends/followMessage';
 import { ProfileFacts } from './ProfilePage';
 import styles from './Profile.module.css';
 
@@ -43,6 +44,7 @@ export function UserProfilePage() {
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [tick, setTick] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [confirm, setConfirm] = useState(false);
   const [message, setMessage] = useState<string>();
   const [error, setError] = useState<string>();
   const signedIn = !!storedUserId();
@@ -139,7 +141,7 @@ export function UserProfilePage() {
 
   const p = state.profile;
   if (p.relation === 'self') return <Navigate to="/profil" replace />;
-  const isFriend = p.relation === 'friend';
+  const isFollowing = p.relation === 'following';
 
   const act = async (fn: () => Promise<string | undefined>) => {
     setBusy(true);
@@ -149,7 +151,7 @@ export function UserProfilePage() {
       setTick((n) => n + 1);
     } catch (e) {
       setError(
-        de.friends.errors[friendErrorKind(e instanceof AccountError || e instanceof Error ? e : undefined)],
+        de.friends.errors[followErrorKind(e instanceof AccountError || e instanceof Error ? e : undefined)],
       );
     } finally {
       setBusy(false);
@@ -177,51 +179,70 @@ export function UserProfilePage() {
                 <span>{t.postsTitle}</span>
               </span>
               <span className={styles.count}>
-                <strong>{p.friendCount.toLocaleString('de-DE')}</strong>
-                <span>{t.friends}</span>
+                <strong>{p.followerCount.toLocaleString('de-DE')}</strong>
+                <span>{t.followers}</span>
+              </span>
+              <span className={styles.count}>
+                <strong>{p.followingCount.toLocaleString('de-DE')}</strong>
+                <span>{t.following}</span>
               </span>
             </div>
+            {p.followsMe && <p className="muted">{t.followsYou}</p>}
           </div>
         </section>
         {p.bio && <p className={styles.bio}>{p.bio}</p>}
-        {isFriend && <ProfileFacts profile={p} />}
+        {isFollowing && <ProfileFacts profile={p} />}
         <div className={styles.buttons}>
           {p.relation === 'none' && (
             <Button
               disabled={busy}
               onClick={() =>
-                void act(async () => {
-                  const r = await account.sendFriendRequest(p.username);
-                  return r === 'accepted' ? de.friends.nowFriends(p.username) : de.friends.sent(p.username);
-                })
+                void act(async () => followMessage(await account.follow(p.username), p.username))
               }
             >
-              {t.addFriend}
+              {p.followsMe ? t.followBack : t.follow}
             </Button>
           )}
-          {p.relation === 'incoming' && (
+          {p.relation === 'requested' && (
             <Button
+              variant="secondary"
               disabled={busy}
               onClick={() =>
                 void act(async () => {
-                  await account.sendFriendRequest(p.username);
-                  return de.friends.nowFriends(p.username);
+                  await account.unfollow(p.userId);
+                  return undefined;
                 })
               }
             >
-              {t.accept}
+              {t.requested} · {t.withdraw}
             </Button>
           )}
-          {p.relation === 'outgoing' && (
-            <Button variant="secondary" disabled>
-              {t.requested}
-            </Button>
-          )}
-          {isFriend && (
-            <Button variant="secondary" disabled>
-              {t.isFriend}
-            </Button>
-          )}
+          {isFollowing &&
+            (confirm ? (
+              <>
+                <span className={styles.confirmText}>{t.confirmUnfollow(p.displayName)}</span>
+                <Button
+                  variant="danger"
+                  disabled={busy}
+                  onClick={() =>
+                    void act(async () => {
+                      await account.unfollow(p.userId);
+                      setConfirm(false);
+                      return undefined;
+                    })
+                  }
+                >
+                  {t.yesUnfollow}
+                </Button>
+                <Button variant="ghost" onClick={() => setConfirm(false)}>
+                  {t.cancel}
+                </Button>
+              </>
+            ) : (
+              <Button variant="secondary" disabled={busy} onClick={() => setConfirm(true)}>
+                {t.isFollowing} ✓
+              </Button>
+            ))}
           <SafetyMenu
             kind="user"
             targetId={p.userId}
@@ -236,11 +257,13 @@ export function UserProfilePage() {
           {message}
         </p>
         {error && <Notice tone="error">{error}</Notice>}
-        {!isFriend && <p className="muted">{t.friendsOnly}</p>}
+        {!isFollowing && (
+          <p className="muted">{p.isPrivate ? t.privateNote(p.username) : t.followersOnly(p.username)}</p>
+        )}
       </div>
 
       {achievements?.visible && <AchievementCard id="user-achievements" unlocked={achievements.unlocked} />}
-      {isFriend && highlights.length > 0 && (
+      {isFollowing && highlights.length > 0 && (
         <section className={styles.highlights} aria-labelledby="user-highlights">
           <h2 id="user-highlights">{t.highlightsTitle}</h2>
           <ul className={styles.highlightRow}>

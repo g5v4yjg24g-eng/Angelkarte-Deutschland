@@ -1,5 +1,5 @@
 // Profilseite (Wunsch Nutzer 2026-10-27, Vorbild Instagram ohne Story-Highlights und Reiterzeile): Profilbild, Name,
-// Zahlen, Text, Knöpfe und Raster der Beiträge. Freunde (Etappe 1) über /profil/freunde; „Profil teilen“ folgt.
+// Zahlen (Beiträge · Follower · Gefolgt, Paket C), Text, Knöpfe und Raster der Beiträge; Follower über /profil/freunde.
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { de } from '../../i18n/de';
@@ -15,7 +15,7 @@ import type { Post, Profile } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useMyBadges } from '../badges/badgeStore';
-import { useFriends } from '../friends/useFriends';
+import { useFollowCounts } from '../friends/useFollowCounts';
 import { Avatar } from './Avatar';
 import { usePhotos, usePosts, useProfile } from './usePhoto';
 import { ProfileAchievements } from '../achievements/ProfileAchievements';
@@ -55,12 +55,19 @@ function Tile({ post, n }: { post: Post; n: number }) {
   );
 }
 
-function Count({ value, label }: { value: string; label: string }) {
-  return (
-    <span className={styles.count}>
+function Count({ value, label, to }: { value: string; label: string; to?: string | undefined }) {
+  const inner = (
+    <>
       <strong>{value}</strong>
       <span>{label}</span>
-    </span>
+    </>
+  );
+  return to ? (
+    <Link to={to} className={`${styles.count} ${styles.countLink}`}>
+      {inner}
+    </Link>
+  ) : (
+    <span className={styles.count}>{inner}</span>
   );
 }
 
@@ -146,11 +153,8 @@ export function ProfilePage() {
   const profile = useProfile();
   const posts = usePosts();
   const founder = useMyBadges().includes('founder');
-  const { state: friends } = useFriends();
-  const friendCount =
-    friends.kind === 'ready'
-      ? friends.list.filter((f) => f.status === 'accepted').length.toLocaleString('de-DE')
-      : t.noCount;
+  const counts = useFollowCounts();
+  const num = (n: number | undefined) => (n === undefined ? t.noCount : n.toLocaleString('de-DE'));
   const navigate = useNavigate();
   const location = useLocation();
   const [notice, setNotice] = useState<string>();
@@ -185,8 +189,22 @@ export function ProfilePage() {
             )}
             <div className={styles.counts}>
               <Count value={posts.length.toLocaleString('de-DE')} label={t.posts} />
-              <Count value={friendCount} label={t.friendsCount} />
+              <Count
+                value={num(counts?.followers)}
+                label={t.followersCount}
+                to={counts ? '/profil/freunde#follower' : undefined}
+              />
+              <Count
+                value={num(counts?.following)}
+                label={t.followingCount}
+                to={counts ? '/profil/freunde#gefolgt' : undefined}
+              />
             </div>
+            {!!counts?.requests && (
+              <Link to="/profil/freunde" className={styles.requestsLink}>
+                {t.followRequests(counts.requests)}
+              </Link>
+            )}
           </div>
         </section>
         {profile?.bio && <p className={styles.bio}>{profile.bio}</p>}

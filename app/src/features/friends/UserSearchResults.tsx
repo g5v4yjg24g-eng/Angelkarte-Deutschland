@@ -92,12 +92,13 @@ export function UserSearchResults({
                 <span className="muted">
                   {t.handle(h.username)}
                   {t.relation[h.relation] && ` · ${t.relation[h.relation]}`}
+                  {h.followsMe && ` · ${t.followsYou}`}
                 </span>
               </span>
               {h.relation === 'none' && (
                 <span className={styles.buttons}>
                   <Button variant="secondary" disabled={busy} onClick={() => onRequest(h.username)}>
-                    {t.send}
+                    {h.followsMe ? t.followBack : t.send}
                   </Button>
                 </span>
               )}

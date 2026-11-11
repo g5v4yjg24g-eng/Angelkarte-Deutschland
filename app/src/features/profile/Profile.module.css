@@ -489,3 +489,24 @@
   margin: 0;
   font-size: var(--text-xs);
 }
+
+/* Paket C: Rückfrage „nicht mehr folgen“ im Profil anderer */
+.confirmText {
+  flex-basis: 100%;
+  font-weight: 600;
+}
+.countLink {
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+}
+.countLink:hover span,
+.countLink:focus-visible span {
+  text-decoration: underline;
+}
+.requestsLink {
+  display: inline-block;
+  margin-top: var(--space-1);
+  color: var(--color-primary);
+  font-weight: 600;
+}

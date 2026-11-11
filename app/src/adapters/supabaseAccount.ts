@@ -6,7 +6,8 @@ import { parseGroupMembers, parseGroupSessions } from '../domain/groupSessions';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
-import { FriendRequestResultSchema, parseFriendRows } from '../domain/friends';
+import { parseFriendRows } from '../domain/friends';
+import { FollowResultSchema, parseFollowCounts, parseFollowRows } from '../domain/follows';
 import { photoPath, thumbPath } from '../domain/postSync';
 import { FEED_PAGE, parseFeedRows, type FeedPost } from '../domain/feed';
 import { parseUserHits, parseUserProfile } from '../domain/userProfile';
@@ -264,19 +265,42 @@ export function supabaseAccount(
       if (error) fail(error);
       return parseFriendRows(data as unknown[] | null);
     },
-    async sendFriendRequest(username) {
-      const { data, error } = await (await get()).rpc('send_friend_request', { name: username });
+    async follows() {
+      const { data, error } = await (await get()).rpc('my_follows');
       if (error) fail(error);
-      const r = FriendRequestResultSchema.safeParse(data);
+      return parseFollowRows(data as unknown[] | null);
+    },
+    async follow(username) {
+      const { data, error } = await (await get()).rpc('follow_user', { name: username });
+      if (error) fail(error);
+      const r = FollowResultSchema.safeParse(data);
       if (!r.success) throw new AccountError('Unerwartete Antwort');
       return r.data;
     },
-    async respondFriendRequest(requestId, accept) {
-      const { error } = await (await get()).rpc('respond_friend_request', { request: requestId, accept });
+    async unfollow(userId) {
+      const { error } = await (await get()).rpc('unfollow_user', { other: userId });
       if (error) fail(error);
     },
-    async removeFriend(userId) {
-      const { error } = await (await get()).rpc('remove_friend', { other: userId });
+    async removeFollower(userId) {
+      const { error } = await (await get()).rpc('remove_follower', { other: userId });
+      if (error) fail(error);
+    },
+    async respondFollowRequest(userId, accept) {
+      const { error } = await (await get()).rpc('respond_follow_request', { other: userId, accept });
+      if (error) fail(error);
+    },
+    async followCounts() {
+      const { data, error } = await (await get()).rpc('my_follow_counts');
+      if (error) fail(error);
+      return parseFollowCounts(data as unknown[] | null);
+    },
+    async accountPrivate() {
+      const { data, error } = await (await get()).rpc('my_account_private');
+      if (error) fail(error);
+      return data !== false;
+    },
+    async setAccountPrivate(value) {
+      const { error } = await (await get()).rpc('set_account_private', { v: value });
       if (error) fail(error);
     },
     async publishPost(post) {
@@ -452,7 +476,7 @@ export function supabaseAccount(
       if (error) fail(error);
     },
     async userProfile(username) {
-      const { data, error } = await (await get()).rpc('user_profile', { name: username });
+      const { data, error } = await (await get()).rpc('user_profile_v2', { name: username });
       if (error) fail(error);
       return parseUserProfile(data as unknown[] | null);
     },
@@ -486,7 +510,7 @@ export function supabaseAccount(
       return parseRemoteAchievements(data as unknown[] | null);
     },
     async searchUsers(term) {
-      const { data, error } = await (await get()).rpc('search_users', { q: term });
+      const { data, error } = await (await get()).rpc('search_users_v2', { q: term });
       if (error) fail(error);
       return parseUserHits(data as unknown[] | null);
     },

@@ -2,8 +2,9 @@
 \pset format unaligned
 insert into auth.users(id) values ('00000000-0000-0000-0000-0000000000a1'),('00000000-0000-0000-0000-0000000000b1'),('00000000-0000-0000-0000-0000000000c1');
 insert into public.profiles(id, username, display_name) values ('00000000-0000-0000-0000-0000000000a1','anna','Anna'),('00000000-0000-0000-0000-0000000000b1','bert','Bert'),('00000000-0000-0000-0000-0000000000c1','carl','Carl');
+-- befreundet = folgen sich gegenseitig (seit *_follows.sql)
+insert into public.follows(follower, followee, status, accepted_at) values ('00000000-0000-0000-0000-0000000000a1','00000000-0000-0000-0000-0000000000b1','accepted',now()),('00000000-0000-0000-0000-0000000000b1','00000000-0000-0000-0000-0000000000a1','accepted',now());
 insert into public.push_devices(token, user_id) values (repeat('b',64),'00000000-0000-0000-0000-0000000000b1');
-insert into public.friendships(requester, addressee, status, accepted_at) values ('00000000-0000-0000-0000-0000000000a1','00000000-0000-0000-0000-0000000000b1','accepted',now());
 -- Fotos, wie sie die App vorher hochlädt (A: Beiträge 1–4, C: Beitrag 9)
 insert into storage.objects(bucket_id, name) select 'post-photos', '00000000-0000-0000-0000-0000000000a1/10000000-0000-0000-0000-00000000000'||n||'/1.jpg' from generate_series(1,4) n;
 insert into storage.objects(bucket_id, name) values ('post-photos','00000000-0000-0000-0000-0000000000c1/10000000-0000-0000-0000-000000000009/1.jpg');

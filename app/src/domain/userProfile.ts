@@ -1,13 +1,14 @@
 // Profile anderer Personen und Nutzersuche (Paket 12, Masterprompt 5.1/6.1). Rein, ohne Netz.
-// Der Server liefert die freiwilligen Angaben nur unter Freunden (Funktion user_profile); hier wird nur geprüft
-// und umgeformt – Sichtbarkeit entscheidet allein der Server.
+// Der Server liefert die freiwilligen Angaben nur an bestätigte Follower (Funktion user_profile_v2, Paket C);
+// hier wird nur geprüft und umgeformt – Sichtbarkeit entscheidet allein der Server.
 import { z } from 'zod';
 import { parseBadges, type Badge } from './badges';
 import { MethodSchema, type Post, type Profile } from './schemas';
 import { STATE_CODES, type StateCode } from './water';
 
-export type Relation = 'self' | 'friend' | 'outgoing' | 'incoming' | 'none';
-const RelationSchema = z.enum(['self', 'friend', 'outgoing', 'incoming', 'none']);
+/** Eigene Beziehung zur Person: ich folge (bestätigt), habe angefragt oder nichts */
+export type Relation = 'self' | 'following' | 'requested' | 'none';
+const RelationSchema = z.enum(['self', 'following', 'requested', 'none']);
 
 export interface PublicProfile {
   userId: string;
@@ -15,7 +16,11 @@ export interface PublicProfile {
   displayName: string;
   badges: Badge[];
   relation: Relation;
-  friendCount: number;
+  /** folgt mir (bestätigt) */
+  followsMe: boolean;
+  isPrivate: boolean;
+  followerCount: number;
+  followingCount: number;
   bio?: string | undefined;
   targetSpecies: string[];
   methods: z.infer<typeof MethodSchema>[];
@@ -29,6 +34,7 @@ export interface UserHit {
   displayName: string;
   badges: Badge[];
   relation: Relation;
+  followsMe: boolean;
 }
 
 /** Mindestlänge der Suche (gleich wie auf dem Server) */
@@ -53,7 +59,10 @@ const ProfileRow = z.object({
   display_name: z.string(),
   badges: z.array(z.unknown()).nullable().optional(),
   relation: RelationSchema,
-  friend_count: z.number().int().nonnegative().nullable().optional(),
+  follows_me: z.boolean().nullable().optional(),
+  is_private: z.boolean().nullable().optional(),
+  follower_count: z.number().int().nonnegative().nullable().optional(),
+  following_count: z.number().int().nonnegative().nullable().optional(),
   bio: z.string().nullable().optional(),
   target_species: list(z.string().regex(/^[a-z][a-z0-9_]{1,39}$/)),
   methods: list(MethodSchema),
@@ -72,7 +81,10 @@ export function parseUserProfile(rows: readonly unknown[] | null | undefined): P
     displayName: d.display_name,
     badges: parseBadges((d.badges ?? []).map((badge) => ({ badge }))),
     relation: d.relation,
-    friendCount: d.friend_count ?? 0,
+    followsMe: d.follows_me === true,
+    isPrivate: d.is_private !== false,
+    followerCount: d.follower_count ?? 0,
+    followingCount: d.following_count ?? 0,
     bio: d.bio || undefined,
     targetSpecies: d.target_species.slice(0, 5),
     methods: d.methods.slice(0, 5),
@@ -87,6 +99,7 @@ const HitRow = z.object({
   display_name: z.string(),
   badges: z.array(z.unknown()).nullable().optional(),
   relation: RelationSchema,
+  follows_me: z.boolean().nullable().optional(),
 });
 
 export function parseUserHits(rows: readonly unknown[] | null | undefined): UserHit[] {
@@ -100,6 +113,7 @@ export function parseUserHits(rows: readonly unknown[] | null | undefined): User
       displayName: p.data.display_name,
       badges: parseBadges((p.data.badges ?? []).map((badge) => ({ badge }))),
       relation: p.data.relation,
+      followsMe: p.data.follows_me === true,
     });
   }
   return out;

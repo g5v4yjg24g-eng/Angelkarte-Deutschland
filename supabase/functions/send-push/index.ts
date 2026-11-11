@@ -16,6 +16,7 @@ const TOPIC = 'com.fangpunkt.app';
 type Kind =
   | 'friend_request'
   | 'friend_accepted'
+  | 'new_follower'
   | 'like'
   | 'comment'
   | 'spot'
@@ -40,9 +41,12 @@ function secretKey(): string {
 function message(kind: Kind, name: string, ref: string | null, excerpt: string | null) {
   switch (kind) {
     case 'friend_request':
-      return { title: 'Neue Freundschaftsanfrage', body: `${name} möchte mit dir befreundet sein.`, path: '/profil/freunde' };
+      // seit Paket C (Folgen): Anfrage an ein privates Konto
+      return { title: 'Neue Folge-Anfrage', body: `${name} möchte dir folgen.`, path: '/profil/freunde' };
     case 'friend_accepted':
-      return { title: 'Anfrage angenommen', body: `${name} hat deine Freundschaftsanfrage angenommen.`, path: '/profil/freunde' };
+      return { title: 'Anfrage bestätigt', body: `${name} hat deine Anfrage bestätigt – du folgst jetzt.`, path: '/profil/freunde' };
+    case 'new_follower':
+      return { title: 'Neuer Follower', body: `${name} folgt dir jetzt.`, path: '/profil/freunde' };
     case 'like':
       return { title: 'Gefällt mir', body: `${name} gefällt dein Beitrag.`, path: `/profil/beitrag/${ref ?? ''}` };
     case 'comment':
