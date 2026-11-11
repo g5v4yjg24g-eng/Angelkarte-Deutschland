@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-16',
+    title: 'Schnellere Suche',
+    items: [
+      'Suche: Ein Tipp auf die Suchleiste öffnet gleich die Tastatur. Die Treffer erscheinen direkt darunter, ohne Zwischenfenster.',
+      'Ruhiger: Die Karte bleibt beim Tippen stehen und wird nicht mehr neu gezeichnet.',
+    ],
+  },
+  {
     id: '2026-12-15',
     title: 'Mitteilungen aufräumen und Einladungen beantworten',
     items: [
