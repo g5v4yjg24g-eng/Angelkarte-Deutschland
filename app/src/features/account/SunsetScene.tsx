@@ -19,9 +19,10 @@ export function SunsetScene() {
     >
       <defs>
         <linearGradient id={sky} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#12303a" />
-          <stop offset="0.45" stopColor="#3b4a4e" />
-          <stop offset="0.78" stopColor="#b9703a" />
+          {/* oben durchsichtig: die Kartenfläche bleibt der Abendhimmel (hell wie dunkel) */}
+          <stop offset="0" stopColor="#b9703a" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#b9703a" stopOpacity="0.25" />
+          <stop offset="0.82" stopColor="#d98444" stopOpacity="0.8" />
           <stop offset="1" stopColor="#f2a24a" />
         </linearGradient>
         <radialGradient id={glow} cx="0.5" cy="0.5" r="0.5">
@@ -31,9 +32,9 @@ export function SunsetScene() {
           <stop offset="1" stopColor="#f59a3c" stopOpacity="0" />
         </radialGradient>
         <linearGradient id={water} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#a8632f" />
-          <stop offset="0.35" stopColor="#4a4638" />
-          <stop offset="1" stopColor="#0f2a33" />
+          <stop offset="0" stopColor="#c9783a" />
+          <stop offset="0.4" stopColor="#8a5a36" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#8a5a36" stopOpacity="0" />
         </linearGradient>
         <linearGradient id={streak} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#ffe2a0" stopOpacity="0.9" />
@@ -54,14 +55,14 @@ export function SunsetScene() {
       <path d="M150 84h46M158 92h34M163 101h24" stroke="#ffd58c" strokeWidth="1" opacity="0.45" />
       {/* fernes Ufer: Baumreihe als Silhouette */}
       <path
-        d="M0 73V63c5-1 7-5 12-5 4 0 5 3 9 3 3-4 6-8 11-8 5 0 6 5 10 6 4-2 7-3 11-2 4-5 8-9 13-8 5 1 5 6 9 8 5-1 8-3 12-1 4-3 7-6 12-5 4 1 5 4 8 6 5-1 9-2 13 0 3-2 6-4 10-3 4 1 5 4 9 5 5-2 9-2 13 0 4-3 8-5 12-4 4 1 5 4 9 5 5-1 9-1 12 1 4-2 8-3 12-2 3 1 5 3 8 4 5-1 8 0 11 1v5Z"
-        fill="#0b1f26"
+        d="M0 73V63c5-1 7-5 12-5 4 0 5 3 9 3 3-4 6-8 11-8 5 0 6 5 10 6 4-2 7-3 11-2 4-5 8-9 13-8 5 1 5 6 9 8 5-1 8-3 12-1 4-3 7-6 12-5 4 1 5 4 8 6 5-1 9-2 13 0 3-2 6-4 10-3 4 1 5 4 9 5 5-2 9-2 13 0 4-3 8-5 12-4 4 1 5 4 9 5 5-1 9-1 12 1 4-2 8-3 12-2 3 1 5 3 8 4 5-1 8 0 11 1 4-2 8-3 12-2 3 1 5 2 9 2 4 0 7-1 12-1v8Z"
+        fill="currentColor"
       />
       {/* Schilf im Vordergrund rechts */}
-      <g stroke="#081a20" strokeWidth="1.6" strokeLinecap="round" fill="none">
+      <g stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" fill="none">
         <path d="M214 120c0-16 2-28 6-38M221 120c0-13 1-24 4-33M228 120c0-18-1-30-4-41M234 120c0-12 1-22 3-30M207 120c1-10 3-18 7-25" />
       </g>
-      <g fill="#081a20">
+      <g fill="currentColor">
         <ellipse cx="220" cy="80" rx="1.8" ry="5" transform="rotate(14 220 80)" />
         <ellipse cx="224" cy="77" rx="1.8" ry="5" transform="rotate(-10 224 77)" />
         <ellipse cx="237" cy="88" rx="1.6" ry="4.5" transform="rotate(10 237 88)" />

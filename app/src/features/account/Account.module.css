@@ -38,18 +38,22 @@
   position: absolute;
   z-index: -1;
   inset: 0 0 0 auto;
-  width: 72%;
+  width: 62%;
   height: 100%;
-  opacity: 0.5;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 78%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 78%);
+  /* Silhouetten (Ufer, Schilf) */
+  color: #6f8a92;
+  opacity: 0.75;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 70%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 70%);
 }
 :global([data-theme='dark']) .sunset {
-  opacity: 0.85;
+  color: #07181d;
+  opacity: 0.9;
 }
 @media (prefers-color-scheme: dark) {
   :global(:root:not([data-theme='light'])) .sunset {
-    opacity: 0.85;
+    color: #07181d;
+    opacity: 0.9;
   }
 }
 .heroAvatar {
