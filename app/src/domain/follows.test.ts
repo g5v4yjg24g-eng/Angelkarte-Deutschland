@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { followErrorKind, groupFollows, parseFollowCounts, parseFollowRows } from './follows';
+import { followErrorKind, groupFollows, matchesQuery, parseFollowCounts, parseFollowRows } from './follows';
 
 const row = (u: string, direction: string, status: string) => ({
   user_id: `id-${u}`,
@@ -50,5 +50,15 @@ describe('follows', () => {
     expect(followErrorKind({ message: 'not_found' })).toBe('notFound');
     expect(followErrorKind({ message: 'Failed to fetch' })).toBe('offline');
     expect(followErrorKind(undefined)).toBe('unknown');
+  });
+
+  it('Suche in der Liste: Name oder Nutzername, ohne Groß-/Kleinschreibung und ohne „@“', () => {
+    const f = { username: 'danielwitt', displayName: 'Daniel Witt' };
+    expect(matchesQuery(f, '')).toBe(true);
+    expect(matchesQuery(f, '  ')).toBe(true);
+    expect(matchesQuery(f, 'DAN')).toBe(true);
+    expect(matchesQuery(f, '@witt')).toBe(true);
+    expect(matchesQuery(f, 'l w')).toBe(true);
+    expect(matchesQuery(f, 'anna')).toBe(false);
   });
 });

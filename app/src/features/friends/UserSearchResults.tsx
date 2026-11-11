@@ -26,12 +26,18 @@ export function UserSearchResults({
   busy,
   reloadKey,
   onRequest,
+  exclude,
+  localCount = 0,
 }: {
   query: string;
   busy: boolean;
   /** neu suchen, wenn sich die Freundesliste ändert (Beziehung aktualisieren) */
   reloadKey: number;
   onRequest: (username: string) => void;
+  /** Personen, die in der Liste darüber schon stehen */
+  exclude?: ReadonlySet<string> | undefined;
+  /** Treffer in der Liste darüber (dann kein „Niemand gefunden“) */
+  localCount?: number;
 }) {
   const { account } = useProviders();
   const term = searchTerm(query.replace(/^@/, ''));
@@ -67,15 +73,20 @@ export function UserSearchResults({
   }, [account, term, key]);
 
   if (state.kind === 'idle') return null;
+  const hits = state.kind === 'ready' ? state.hits.filter((h) => !exclude?.has(h.userId)) : [];
+  // alle Treffer stehen schon oben in der Liste
+  if (state.kind === 'ready' && state.hits.length > 0 && hits.length === 0) return null;
   return (
     <div className={styles.search} aria-live="polite">
       <h3 className={styles.searchTitle}>{t.searchTitle}</h3>
       {state.kind === 'loading' && <p className="muted">{t.searching}</p>}
       {state.kind === 'error' && <p className="muted">{state.limit ? t.searchLimit : t.searchError}</p>}
-      {state.kind === 'ready' && state.hits.length === 0 && <p className="muted">{t.searchNone}</p>}
-      {state.kind === 'ready' && state.hits.length > 0 && (
+      {state.kind === 'ready' && hits.length === 0 && localCount === 0 && (
+        <p className="muted">{t.searchNone}</p>
+      )}
+      {state.kind === 'ready' && hits.length > 0 && (
         <ul className={styles.list} aria-label={t.searchTitle}>
-          {state.hits.map((h) => (
+          {hits.map((h) => (
             <li key={h.userId} className={styles.person}>
               <Avatar url={avatars.get(h.userId)} size={40} />
               <span className={styles.who}>

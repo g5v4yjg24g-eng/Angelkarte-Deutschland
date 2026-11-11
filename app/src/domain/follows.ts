@@ -73,6 +73,13 @@ export function groupFollows(list: readonly FollowEntry[]): FollowGroups {
   };
 }
 
+/** Suche in der Liste: Name oder Nutzername, ohne Groß-/Kleinschreibung und ohne führendes „@“; leer = alle */
+export function matchesQuery(f: Pick<FollowEntry, 'username' | 'displayName'>, query: string): boolean {
+  const q = query.trim().replace(/^@/, '').toLowerCase();
+  if (!q) return true;
+  return f.username.toLowerCase().includes(q) || f.displayName.toLowerCase().includes(q);
+}
+
 export type FollowResult = 'requested' | 'following' | 'already';
 export const FollowResultSchema = z.enum(['requested', 'following', 'already']);
 

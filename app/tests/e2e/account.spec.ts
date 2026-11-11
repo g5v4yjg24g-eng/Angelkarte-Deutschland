@@ -1570,7 +1570,7 @@ test('BADGE-4: normales Konto ohne Abzeichen – auch ein manipulierter Speicher
   expect(await page.evaluate(() => localStorage.getItem('fangpunkt.badges'))).toBeNull();
 });
 
-test('FRD-2: Folgen – Anfrage bestätigen, folgen, zurückziehen, privates Konto, Follower entfernen; Zahlen im Profil', async ({
+test('FRD-2: Follower – Reiter, Suche, Anfrage bestätigen, folgen, zurückziehen, Follower entfernen; Zahlen im Profil', async ({
   page,
 }) => {
   const errors = collectErrors(page);
@@ -1590,8 +1590,15 @@ test('FRD-2: Folgen – Anfrage bestätigen, folgen, zurückziehen, privates Kon
       },
     ],
   );
-  // Annas Konto ist öffentlich: Zurückfolgen gilt sofort
+  // Annas Konto ist öffentlich: Zurückfolgen gilt sofort; Zander ist privat (Standard)
   server.people.profiles.set('anna', { user_id: 'u-anna', username: 'anna', display_name: 'Anna', is_private: false });
+  server.people.profiles.set('zander', {
+    user_id: 'u-zander',
+    username: 'zander',
+    display_name: 'Zander Tom',
+    badges: [],
+    relation: 'none',
+  });
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
   await page.goto('/profil');
@@ -1600,22 +1607,33 @@ test('FRD-2: Folgen – Anfrage bestätigen, folgen, zurückziehen, privates Kon
   await page.getByRole('button', { name: 'Leute finden' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Follower' })).toBeVisible();
   await expect(page.getByText('Dein Nutzername: @kevin')).toBeVisible();
+  const tabs = page.getByRole('navigation', { name: 'Follower und Gefolgt' });
+  await expect(tabs.getByRole('link', { name: 'Follower (0)' })).toHaveAttribute('aria-current', 'page');
+  await expect(tabs.getByRole('link', { name: 'Gefolgt (0)' })).not.toHaveAttribute('aria-current', 'page');
 
   const requests = page.getByRole('region', { name: 'Anfragen (1)' });
   await expect(requests.getByText('Anna', { exact: true })).toBeVisible();
   await expect(requests.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
   await requests.getByRole('button', { name: 'Bestätigen' }).click();
   await expect(page.getByText('@anna folgt dir jetzt.')).toBeVisible();
-  const followers = page.getByRole('region', { name: 'Follower (1)' });
+  const followers = page.getByRole('list', { name: 'Follower (1)' });
   await expect(followers.getByText('@anna')).toBeVisible();
   await expect(followers.getByRole('button', { name: 'Zurück folgen' })).toBeVisible();
 
-  await page.getByRole('textbox', { name: 'Nutzername' }).fill('gibtsnicht');
-  await page.getByRole('button', { name: 'Folgen', exact: true }).click();
-  await expect(page.getByText('Diesen Nutzernamen gibt es nicht.', { exact: false })).toBeVisible();
-  await page.getByRole('textbox', { name: 'Nutzername' }).fill('@Zander');
-  await page.getByRole('button', { name: 'Folgen', exact: true }).click();
+  // Suche: filtert die Liste; ab 3 Zeichen kommen weitere Nutzer vom Server dazu
+  const search = page.getByRole('searchbox', { name: 'Nutzer suchen' });
+  await search.fill('ann');
+  await expect(followers.getByText('@anna')).toBeVisible();
+  await search.fill('xyz');
+  await expect(page.getByText('Niemand gefunden.')).toBeVisible();
+  await search.fill('zander');
+  const hits = page.getByRole('list', { name: 'Treffer' });
+  await hits.getByRole('button', { name: 'Folgen', exact: true }).click();
   await expect(page.getByText('Anfrage an @zander gesendet – @zander muss sie bestätigen.')).toBeVisible();
+  await search.fill('');
+  await tabs.getByRole('link', { name: 'Gefolgt (0)' }).click();
+  await expect(page).toHaveURL(/#gefolgt$/);
+  await expect(tabs.getByRole('link', { name: 'Gefolgt (0)' })).toHaveAttribute('aria-current', 'page');
   const requested = page.getByRole('region', { name: 'Von dir angefragt' });
   await expect(requested.getByText('@zander')).toBeVisible();
   // privates Konto: Standard an
@@ -1632,8 +1650,12 @@ test('FRD-2: Folgen – Anfrage bestätigen, folgen, zurückziehen, privates Kon
   await expect(page.getByRole('region', { name: 'Von dir angefragt' })).toHaveCount(0);
 
   // zurück folgen → Freunde (folgen sich gegenseitig)
+  await tabs.getByRole('link', { name: 'Follower (1)' }).click();
   await followers.getByRole('button', { name: 'Zurück folgen' }).click();
-  await expect(page.getByRole('region', { name: 'Gefolgt (1)' }).getByText('@anna · Freunde')).toBeVisible();
+  await expect(tabs.getByRole('link', { name: 'Gefolgt (1)' })).toBeVisible();
+  await expect(followers.getByText('@anna · Freund')).toBeVisible();
+  await tabs.getByRole('link', { name: 'Gefolgt (1)' }).click();
+  await expect(page.getByRole('list', { name: 'Gefolgt (1)' }).getByText('@anna · Freund')).toBeVisible();
 
   await page.goto('/profil');
   const counts = page.getByRole('region', { name: 'Profil' });
@@ -1641,12 +1663,15 @@ test('FRD-2: Folgen – Anfrage bestätigen, folgen, zurückziehen, privates Kon
   await expect(counts.getByRole('link', { name: /^1\s*Gefolgt$/ })).toBeVisible();
   await counts.getByRole('link', { name: /Follower$/ }).click();
   await expect(page).toHaveURL(/\/profil\/freunde#follower$/);
-  const list = page.getByRole('region', { name: 'Follower (1)' });
-  await list.getByRole('button', { name: 'Entfernen' }).click();
-  await list.getByRole('button', { name: 'Ja, entfernen' }).click();
-  await expect(page.getByRole('region', { name: 'Follower (0)' })).toBeVisible();
-  // erwartet: die Antwort 400 auf den unbekannten Nutzernamen
-  expect(errors.filter((e) => !e.includes('status of 400'))).toEqual([]);
+  // Follower entfernen: erst nachfragen
+  await page.getByRole('list', { name: 'Follower (1)' }).getByRole('button', { name: 'Entfernen' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Follower entfernen?' });
+  await expect(sheet.getByText('Anna als Follower entfernen?')).toBeVisible();
+  await sheet.getByRole('button', { name: 'Ja, entfernen' }).click();
+  await expect(tabs.getByRole('link', { name: 'Follower (0)' })).toBeVisible();
+  await expect(page.getByText('Noch keine Follower.', { exact: false })).toBeVisible();
+  // erwartet: keine Fehler (kein unbekannter Nutzername mehr, die Suche meldet „Niemand gefunden“)
+  expect(errors).toEqual([]);
 });
 
 test('FRD-4: Privates Konto ausschalten bestätigt offene Anfragen', async ({ page }) => {
@@ -1677,7 +1702,7 @@ test('FRD-4: Privates Konto ausschalten bestätigt offene Anfragen', async ({ pa
   await page.reload();
   await waitForApp(page);
   await expect(page.getByRole('checkbox', { name: 'Privates Konto' })).not.toBeChecked();
-  await expect(page.getByRole('region', { name: 'Follower (1)' }).getByText('@bert')).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Follower (1)' }).getByText('@bert')).toBeVisible();
   await expect(page.getByRole('region', { name: /^Anfragen/ })).toHaveCount(0);
 });
 
@@ -2166,7 +2191,7 @@ test('MOD-3: Freund blockieren und wieder freigeben – Folgen endet in beide Ri
   await signInWithProfile(page, 'kevin');
   await page.goto('/profil/freunde');
   await waitForApp(page);
-  const list = page.getByRole('region', { name: 'Follower (1)' });
+  const list = page.getByRole('list', { name: 'Follower (1)' });
   await list.getByRole('button', { name: 'Optionen zu Anna' }).click();
   await page
     .getByRole('dialog', { name: 'Optionen' })
@@ -2176,8 +2201,8 @@ test('MOD-3: Freund blockieren und wieder freigeben – Folgen endet in beide Ri
   await expect(confirm.getByText(/folgt euch dann nicht mehr/)).toBeVisible();
   await confirm.getByRole('button', { name: 'Blockieren' }).click();
   await expect(page.getByText('Anna ist blockiert.')).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Follower (0)' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Gefolgt (0)' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Follower (0)' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Gefolgt (0)' })).toBeVisible();
   const blocked = page.getByRole('region', { name: 'Blockiert' });
   await expect(blocked.getByText('@anna')).toBeVisible();
   expect(calls.blocks.map((b) => b.user_id)).toEqual(['u-anna']);
@@ -3520,7 +3545,7 @@ test('SOC-1: Nutzer suchen, Profil mit Follower/Gefolgt, Angaben, Highlights und
   await waitForApp(page);
 
   // Suche ab 3 Zeichen
-  const field = page.getByRole('textbox', { name: 'Nutzername' });
+  const field = page.getByRole('searchbox', { name: 'Nutzer suchen' });
   await field.fill('an');
   await expect(page.getByRole('heading', { name: 'Treffer' })).toHaveCount(0);
   await field.fill('angler');

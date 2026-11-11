@@ -1,15 +1,19 @@
-// Follower (Paket C, Wunsch Nutzer 2026-11-10: Folgen statt Freundschaft): Leute finden und folgen, Anfragen
-// bestätigen, Follower entfernen, nicht mehr folgen, „Privates Konto“ und Blockierte. Adresse bleibt /profil/freunde.
+// Follower (Paket C, Wunsch Nutzer 2026-11-10: Folgen statt Freundschaft), Ansicht nach Vorlage (2026-11-11):
+// Umschalter Follower | Gefolgt, Suchfeld, Zeilen mit „Entfernen“ und „…“. Anfragen stehen oben im Reiter Follower,
+// „Angefragt“ unten bei Gefolgt; „Privates Konto“ und Blockierte ganz unten. Adresse bleibt /profil/freunde,
+// der Reiter steht im #-Teil (#follower, #gefolgt – so führen die Zahlen im Profil hierher).
 // Alles läuft über Server-Funktionen (supabase/migrations/*_follows.sql); die App schreibt nie direkt.
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page, Section } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
-import { TextField } from '../../design/components/Field';
 import { Notice } from '../../design/components/Notice';
-import { normalizeUsername, type Profile } from '../../domain/account';
-import { followErrorKind, groupFollows, type FollowEntry } from '../../domain/follows';
+import { Sheet } from '../../design/components/Sheet';
+import { CheckIcon, SearchIcon } from '../../design/icons';
+import type { Profile } from '../../domain/account';
+import { followErrorKind, groupFollows, matchesQuery, type FollowEntry } from '../../domain/follows';
+import { SEARCH_MIN } from '../../domain/userProfile';
 import { followMessage } from './followMessage';
 import { AccountError } from '../../ports/account';
 import { useProviders } from '../../ports/providersContext';
@@ -29,21 +33,28 @@ const t = de.friends;
 const errorText = (e: unknown) =>
   t.errors[followErrorKind(e instanceof AccountError || e instanceof Error ? e : undefined)];
 
+type Tab = 'follower' | 'gefolgt';
+
 function Person({
   f,
   mutual,
   children,
   onSafety,
+  extra,
+  wrap,
 }: {
   f: FollowEntry;
   mutual?: boolean;
-  children?: React.ReactNode;
+  /** zwei Knöpfe (Anfragen): dürfen unter den Namen rutschen */
+  wrap?: boolean;
+  children?: ReactNode;
   onSafety?: (message: string) => void;
+  extra?: readonly { label: string; onSelect: () => void }[];
 }) {
   const avatarUrl = useAvatarUrl(f.userId);
   return (
-    <li className={styles.person}>
-      <Avatar url={avatarUrl} size={40} />
+    <li className={wrap ? `${styles.person} ${styles.personWrap}` : styles.person}>
+      <Avatar url={avatarUrl} size={48} />
       <span className={styles.who}>
         <strong>
           <Link to={`/profil/nutzer/${f.username}`} className={styles.nameLink}>
@@ -64,6 +75,7 @@ function Person({
             targetId={f.userId}
             owner={{ id: f.userId, name: f.displayName }}
             onDone={onSafety}
+            {...(extra ? { extra } : {})}
           />
         )}
       </span>
@@ -75,21 +87,16 @@ export function FriendsPage() {
   const { account } = useProviders();
   const { state, reload } = useFollows();
   const [me, setMe] = useState<Profile | null>();
-  const [name, setName] = useState('');
+  const [query, setQuery] = useState('');
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string>();
   const [error, setError] = useState<string>();
-  const [confirm, setConfirm] = useState<{ id: string; kind: 'unfollow' | 'remove' }>();
+  const [confirm, setConfirm] = useState<{ kind: 'unfollow' | 'remove'; f: FollowEntry }>();
   const [blocked, setBlocked] = useState<BlockedUser[]>();
   const [blockTick, setBlockTick] = useState(0);
   const hidden = useHidden();
   const { hash } = useLocation();
-  // aus dem Profil: zu Follower bzw. Gefolgt springen, sobald die Liste da ist
-  const ready = state.kind === 'ready';
-  useEffect(() => {
-    if (!ready || !hash) return;
-    document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' });
-  }, [ready, hash]);
+  const tab: Tab = hash === '#gefolgt' ? 'gefolgt' : 'follower';
 
   useEffect(() => {
     if (state.kind === 'signedOut') return;
@@ -138,17 +145,6 @@ export function FriendsPage() {
     }
   };
 
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    const u = normalizeUsername(name.replace(/^@/, ''));
-    if (!u) return setError(t.errors.empty);
-    void run(async () => {
-      const r = await account.follow(u);
-      setName('');
-      return followMessage(r, u);
-    });
-  };
-
   if (state.kind === 'signedOut')
     return (
       <Page title={t.title} back="/profil">
@@ -172,55 +168,61 @@ export function FriendsPage() {
       : undefined;
   const followingIds = new Set(groups?.following.map((f) => f.userId));
   const requestedIds = new Set(groups?.requested.map((f) => f.userId));
+  const find = (list: readonly FollowEntry[]) => list.filter((f) => matchesQuery(f, query));
+  const requests = find(groups?.requests ?? []);
+  const followers = find(groups?.followers ?? []);
+  const following = find(groups?.following ?? []);
+  const requested = find(groups?.requested ?? []);
+  const shown = tab === 'follower' ? [...requests, ...followers] : [...following, ...requested];
+
+  const tabLink = (id: Tab, label: string) => (
+    <Link
+      to={id === 'follower' ? '#follower' : '#gefolgt'}
+      replace
+      className={styles.tab}
+      {...(tab === id ? { 'aria-current': 'page' as const } : {})}
+    >
+      {label}
+    </Link>
+  );
 
   return (
     <Page title={t.title} back="/profil">
-      {me && <p className="muted">{t.yourName(me.username)}</p>}
-      <Section title={t.addTitle}>
-        <form className={styles.form} onSubmit={submit} noValidate>
-          <TextField
-            label={t.usernameLabel}
-            hint={t.usernameHint}
-            autoCapitalize="none"
-            autoCorrect="off"
-            spellCheck={false}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <div>
-            <Button type="submit" disabled={busy}>
-              {busy ? t.sending : t.send}
-            </Button>
-          </div>
-        </form>
-        <p role="status" className={styles.status}>
-          {status}
-        </p>
-        {error && <Notice tone="error">{error}</Notice>}
-        <UserSearchResults
-          query={name}
-          busy={busy}
-          reloadKey={state.kind === 'ready' ? state.list.length : 0}
-          onRequest={(u) =>
-            void run(async () => {
-              const r = await account.follow(u);
-              return followMessage(r, u);
-            })
-          }
+      <nav className={styles.tabs} aria-label={t.tabsLabel}>
+        {tabLink('follower', t.followersTitle(groups?.followers.length ?? 0))}
+        {tabLink('gefolgt', t.followingTitle(groups?.following.length ?? 0))}
+      </nav>
+      <label className={styles.searchBox}>
+        <SearchIcon size={20} />
+        <input
+          type="search"
+          className={styles.searchInput}
+          placeholder={t.searchPlaceholder}
+          aria-label={t.searchLabel}
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
         />
-      </Section>
-      <PrivateAccountSwitch onChange={reload} />
-
+      </label>
+      <p role="status" className={styles.status}>
+        {status}
+      </p>
+      {error && <Notice tone="error">{error}</Notice>}
       {state.kind === 'loading' && <p className="muted">{t.loading}</p>}
       {state.kind === 'error' && <Notice tone="error">{errorText(state.error)}</Notice>}
-      {groups && (
+
+      {groups && tab === 'follower' && (
         <>
-          {groups.requests.length > 0 && (
-            <Section title={t.requestsTitle(groups.requests.length)}>
+          {requests.length > 0 && (
+            <section aria-label={t.requestsTitle(requests.length)} className={styles.block}>
+              <h2 className={styles.blockTitle}>{t.requestsTitle(requests.length)}</h2>
               <ul className={styles.list}>
-                {groups.requests.map((f) => (
-                  <Person key={f.userId} f={f} onSafety={safetyDone}>
+                {requests.map((f) => (
+                  <Person key={f.userId} f={f} onSafety={safetyDone} wrap>
                     <Button
+                      className={styles.rowButton ?? ''}
                       disabled={busy}
                       onClick={() =>
                         void run(async () => {
@@ -232,6 +234,7 @@ export function FriendsPage() {
                       {t.accept}
                     </Button>
                     <Button
+                      className={styles.rowButton ?? ''}
                       variant="secondary"
                       disabled={busy}
                       onClick={() =>
@@ -246,111 +249,85 @@ export function FriendsPage() {
                   </Person>
                 ))}
               </ul>
-            </Section>
+            </section>
           )}
-          <Section title={t.followersTitle(groups.followers.length)}>
-            <span id="follower" />
-            {groups.followers.length === 0 ? (
-              <p className="muted">{t.noFollowers}</p>
-            ) : (
-              <ul className={styles.list} aria-label={t.followersTitle(groups.followers.length)}>
-                {groups.followers.map((f) => (
-                  <Person key={f.userId} f={f} mutual={groups.mutual.has(f.userId)} onSafety={safetyDone}>
-                    {confirm?.id === f.userId && confirm.kind === 'remove' ? (
-                      <>
-                        <span className={styles.confirm}>{t.confirmRemoveFollower(f.displayName)}</span>
-                        <Button
-                          variant="danger"
-                          disabled={busy}
-                          onClick={() =>
-                            void run(async () => {
-                              await account.removeFollower(f.userId);
-                              return undefined;
-                            })
-                          }
-                        >
-                          {t.yesRemove}
-                        </Button>
-                        <Button variant="ghost" onClick={() => setConfirm(undefined)}>
-                          {t.cancel}
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        {!followingIds.has(f.userId) && !requestedIds.has(f.userId) && (
-                          <Button
-                            variant="secondary"
-                            disabled={busy}
-                            onClick={() =>
-                              void run(async () =>
-                                followMessage(await account.follow(f.username), f.username),
-                              )
-                            }
-                          >
-                            {t.followBack}
-                          </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          disabled={busy}
-                          onClick={() => setConfirm({ id: f.userId, kind: 'remove' })}
-                        >
-                          {t.removeFollower}
-                        </Button>
-                      </>
-                    )}
-                  </Person>
-                ))}
-              </ul>
-            )}
-          </Section>
-          <Section title={t.followingTitle(groups.following.length)}>
-            <span id="gefolgt" />
-            {groups.following.length === 0 ? (
-              <p className="muted">{t.noFollowing}</p>
-            ) : (
-              <ul className={styles.list} aria-label={t.followingTitle(groups.following.length)}>
-                {groups.following.map((f) => (
-                  <Person key={f.userId} f={f} mutual={groups.mutual.has(f.userId)} onSafety={safetyDone}>
-                    {confirm?.id === f.userId && confirm.kind === 'unfollow' ? (
-                      <>
-                        <span className={styles.confirm}>{t.confirmUnfollow(f.displayName)}</span>
-                        <Button
-                          variant="danger"
-                          disabled={busy}
-                          onClick={() =>
-                            void run(async () => {
-                              await account.unfollow(f.userId);
-                              return undefined;
-                            })
-                          }
-                        >
-                          {t.yesUnfollow}
-                        </Button>
-                        <Button variant="ghost" onClick={() => setConfirm(undefined)}>
-                          {t.cancel}
-                        </Button>
-                      </>
-                    ) : (
+          {groups.followers.length === 0 && requests.length === 0 && !query.trim() ? (
+            <p className="muted">{t.noFollowers}</p>
+          ) : (
+            <ul className={styles.list} aria-label={t.followersTitle(followers.length)}>
+              {followers.map((f) => {
+                const back = followingIds.has(f.userId);
+                const askedBack = requestedIds.has(f.userId);
+                const remove = () => setConfirm({ kind: 'remove', f });
+                return (
+                  <Person
+                    key={f.userId}
+                    f={f}
+                    mutual={groups.mutual.has(f.userId)}
+                    onSafety={safetyDone}
+                    {...(back ? {} : { extra: [{ label: t.removeFollowerMenu, onSelect: remove }] })}
+                  >
+                    {back ? (
                       <Button
-                        variant="ghost"
+                        className={styles.rowButton ?? ''}
+                        variant="secondary"
                         disabled={busy}
-                        onClick={() => setConfirm({ id: f.userId, kind: 'unfollow' })}
+                        onClick={remove}
                       >
-                        {t.unfollow}
+                        {t.removeFollower}
                       </Button>
+                    ) : (
+                      !askedBack && (
+                        <Button
+                          className={styles.rowButton ?? ''}
+                          variant="secondary"
+                          disabled={busy}
+                          onClick={() =>
+                            void run(async () => followMessage(await account.follow(f.username), f.username))
+                          }
+                        >
+                          {t.followBack}
+                        </Button>
+                      )
                     )}
                   </Person>
-                ))}
-              </ul>
-            )}
-          </Section>
-          {groups.requested.length > 0 && (
-            <Section title={t.requestedTitle}>
+                );
+              })}
+            </ul>
+          )}
+        </>
+      )}
+
+      {groups && tab === 'gefolgt' && (
+        <>
+          {groups.following.length === 0 && requested.length === 0 && !query.trim() ? (
+            <p className="muted">{t.noFollowing}</p>
+          ) : (
+            <ul className={styles.list} aria-label={t.followingTitle(following.length)}>
+              {following.map((f) => (
+                <Person key={f.userId} f={f} mutual={groups.mutual.has(f.userId)} onSafety={safetyDone}>
+                  <Button
+                    className={styles.rowButton ?? ''}
+                    variant="secondary"
+                    disabled={busy}
+                    aria-label={t.unfollowAria(f.displayName)}
+                    onClick={() => setConfirm({ kind: 'unfollow', f })}
+                  >
+                    {t.following2}
+                    <CheckIcon size={16} />
+                  </Button>
+                </Person>
+              ))}
+            </ul>
+          )}
+          {requested.length > 0 && (
+            <section aria-label={t.requestedTitle} className={styles.block}>
+              <h2 className={styles.blockTitle}>{t.requestedTitle}</h2>
               <ul className={styles.list}>
-                {groups.requested.map((f) => (
+                {requested.map((f) => (
                   <Person key={f.userId} f={f}>
                     <Button
+                      className={styles.rowButton ?? ''}
                       variant="secondary"
                       disabled={busy}
                       onClick={() =>
@@ -365,11 +342,36 @@ export function FriendsPage() {
                   </Person>
                 ))}
               </ul>
-            </Section>
+            </section>
           )}
+        </>
+      )}
+      {/* ab 3 Zeichen meldet die Suche darunter selbst „Niemand gefunden“ */}
+      {groups && query.trim() && shown.length === 0 && query.trim().replace(/^@/, '').length < SEARCH_MIN && (
+        <p className="muted">{t.noMatches}</p>
+      )}
+
+      <UserSearchResults
+        query={query}
+        busy={busy}
+        reloadKey={state.kind === 'ready' ? state.list.length : 0}
+        exclude={new Set(shown.map((f) => f.userId))}
+        localCount={shown.length}
+        onRequest={(u) =>
+          void run(async () => {
+            const r = await account.follow(u);
+            return followMessage(r, u);
+          })
+        }
+      />
+
+      {groups && (
+        <>
+          <PrivateAccountSwitch onChange={reload} />
           <p className="muted">{t.friendsHint}</p>
         </>
       )}
+      {me && <p className="muted">{t.yourName(me.username)}</p>}
       {blocked && blocked.length > 0 && (
         <Section title={de.moderation.blockedTitle}>
           <ul className={styles.list}>
@@ -381,6 +383,7 @@ export function FriendsPage() {
                 </span>
                 <span className={styles.buttons}>
                   <Button
+                    className={styles.rowButton ?? ''}
                     variant="secondary"
                     disabled={busy}
                     onClick={() =>
@@ -400,6 +403,40 @@ export function FriendsPage() {
           </ul>
         </Section>
       )}
+
+      <Sheet
+        open={!!confirm}
+        title={confirm?.kind === 'remove' ? t.removeFollowerTitle : t.unfollowTitle}
+        onClose={() => setConfirm(undefined)}
+      >
+        {confirm && (
+          <div className={styles.confirmBox}>
+            <p>
+              {confirm.kind === 'remove'
+                ? t.confirmRemoveFollower(confirm.f.displayName)
+                : t.confirmUnfollow(confirm.f.displayName)}
+            </p>
+            <div className={styles.confirmActions}>
+              <Button variant="secondary" onClick={() => setConfirm(undefined)}>
+                {t.cancel}
+              </Button>
+              <Button
+                variant="danger"
+                disabled={busy}
+                onClick={() =>
+                  void run(async () => {
+                    if (confirm.kind === 'remove') await account.removeFollower(confirm.f.userId);
+                    else await account.unfollow(confirm.f.userId);
+                    return undefined;
+                  })
+                }
+              >
+                {confirm.kind === 'remove' ? t.yesRemove : t.yesUnfollow}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Sheet>
     </Page>
   );
 }
