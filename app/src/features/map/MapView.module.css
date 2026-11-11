@@ -298,42 +298,68 @@
   align-items: center;
   gap: var(--space-2);
 }
-.searchPill {
+.searchWrap {
   position: absolute;
   top: var(--space-3);
   left: var(--space-3);
   right: calc(var(--touch) + var(--space-5));
   max-width: 26rem;
-  z-index: 2;
+  z-index: 3;
+}
+.searchPill {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   min-height: var(--touch);
-  padding: 0 var(--space-4);
+  padding: 0 var(--space-2) 0 var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   background: var(--color-surface);
   color: var(--color-text-muted);
   box-shadow: var(--shadow-2);
-  font-size: var(--text-md);
-  cursor: pointer;
-  text-align: left;
 }
-.searchField {
-  display: grid;
-  gap: var(--space-1);
+.searchPill:focus-within {
+  border-color: var(--color-primary);
 }
-.searchField label {
-  font-weight: 600;
-  font-size: var(--text-sm);
-}
-.searchField input {
+.searchPill input {
+  flex: 1;
+  min-width: 0;
   min-height: var(--touch);
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: max(16px, var(--text-md)); /* unter 16 px zoomt iOS beim Fokus */
+}
+.searchPill input::-webkit-search-cancel-button,
+.searchPill input::-webkit-search-decoration {
+  appearance: none; /* eigener Löschen-Knopf statt des Browser-Kreuzes */
+}
+.searchPill input::placeholder {
+  color: var(--color-text-muted);
+}
+.searchClear {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.searchResults {
+  margin-top: var(--space-2);
+  max-height: calc(100dvh - var(--nav-clearance) - var(--touch) - var(--space-8, 64px));
+  overflow-y: auto;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-bg);
-  font-size: var(--text-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-2);
 }
 .results {
   list-style: none;

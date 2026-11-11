@@ -1767,15 +1767,12 @@ export const de = {
   },
   search: {
     open: 'Gewässer oder Ort suchen',
-    title: 'Suchen',
-    label: 'Gewässer oder Ort',
-    placeholder: 'z. B. Möhnesee, Rhein, Nettetal',
-    hint: 'Sucht in Gewässer- und Ortsnamen aus OpenStreetMap. Unbenannte Teiche findest du über die Karte.',
+    results: 'Suchergebnisse',
+    clear: 'Suchtext löschen',
     loading: 'Suche …',
     none: 'Nichts gefunden. Prüfe die Schreibweise oder suche nach einem Ort in der Nähe.',
     offline: 'Die Suche braucht beim ersten Mal eine Internetverbindung.',
     unavailable: 'Die Suche ist gerade nicht verfügbar.',
-    coverage: (states: string) => `Abgedeckt: ${states}`,
     places: {
       'place:city': 'Stadt',
       'place:town': 'Stadt',

@@ -103,17 +103,23 @@ test('WAT-1/2: Suche findet den De Wittsee; das Profil zeigt nur belegte Angaben
   // „Bewegung reduzieren“: die Karte springt zum Treffer statt zu fliegen (prüft das und hält den Test unabhängig vom Tempo)
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await openMapAt(page, 6.28, 51.31, 11);
-  await page.getByRole('button', { name: 'Gewässer oder Ort suchen' }).click();
-  const sheet = page.getByRole('dialog', { name: 'Suchen' });
-  await expect(sheet.getByText(/Abgedeckt: Nordrhein-Westfalen/)).toBeVisible();
-  await sheet.getByLabel('Gewässer oder Ort').fill('de witt');
-  await expect(sheet.getByRole('list', { name: 'Suchen' })).toContainText('De Wittsee');
-  await sheet.getByLabel('Gewässer oder Ort').fill('wittsee');
-  const first = sheet.getByRole('listitem').first();
+  // Suche direkt in der Leiste: kein Zwischenfenster, kein Hinweistext
+  const box = page.getByRole('searchbox', { name: 'Gewässer oder Ort suchen' });
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await box.fill('de witt');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByText(/Abgedeckt:|Sucht in Gewässer/)).toHaveCount(0);
+  const results = page.getByRole('list', { name: 'Suchergebnisse' });
+  await expect(results).toContainText('De Wittsee');
+  await box.fill('wittsee');
+  const first = results.getByRole('listitem').first();
   await expect(first).toContainText('De Wittsee');
   await expect(first).toContainText('See · Nettetal');
-  await expect(sheet.getByRole('listitem')).toHaveCount(2);
+  await expect(results.getByRole('listitem')).toHaveCount(2);
   await first.getByRole('button').click();
+  // Nach der Auswahl ist die Leiste leer und die Liste zu
+  await expect(box).toHaveValue('');
+  await expect(results).toHaveCount(0);
 
   const profile = page.getByRole('dialog', { name: 'De Wittsee' });
   await expect(profile).toBeVisible({ timeout: 20_000 });
@@ -210,11 +216,10 @@ test('MRK-3: Am Gewässer markieren ordnet den Ort dem Gewässer zu', async ({ p
 test('Ohne Gewässerdaten bleibt die Karte nutzbar; Suche erklärt den Zustand', async ({ page }) => {
   await openMapAt(page, 6.2425, 51.3245, 14.3, { missing: true });
   expect(await page.evaluate(() => !!window.__fangpunktMap?.getLayer('fp-water-fill'))).toBe(false);
-  await page.getByRole('button', { name: 'Gewässer oder Ort suchen' }).click();
-  await expect(
-    page.getByRole('dialog', { name: 'Suchen' }).getByText('Die Suche ist gerade nicht verfügbar.'),
-  ).toBeVisible();
+  await page.getByRole('searchbox', { name: 'Gewässer oder Ort suchen' }).click();
+  await expect(page.getByText('Die Suche ist gerade nicht verfügbar.')).toBeVisible();
   await page.keyboard.press('Escape');
+  await expect(page.getByText('Die Suche ist gerade nicht verfügbar.')).toHaveCount(0);
   // Tipp ins Wasser legt dann direkt einen Ort an (keine Gewässerinfo vorhanden)
   const pt = await page.evaluate(() => {
     const map = window.__fangpunktMap;
@@ -231,13 +236,12 @@ test('Suchergebnisse für Orte und Flüsse sind sinnvoll sortiert', async ({ pag
   const nette = waterFixtureSearch('ne').filter((e) => e[0] === 'Nette');
   expect(nette.length).toBeGreaterThanOrEqual(2);
   await openMapAt(page, 6.27, 51.29, 12);
-  await page.getByRole('button', { name: 'Gewässer oder Ort suchen' }).click();
-  const sheet = page.getByRole('dialog', { name: 'Suchen' });
-  await sheet.getByLabel('Gewässer oder Ort').fill('nette');
-  const items = sheet.getByRole('listitem');
+  await page.getByRole('searchbox', { name: 'Gewässer oder Ort suchen' }).fill('nette');
+  const results = page.getByRole('list', { name: 'Suchergebnisse' });
+  const items = results.getByRole('listitem');
   await expect(items.first()).toContainText('Nette');
-  await expect(sheet.getByText('Nettetal', { exact: true })).toBeVisible();
-  await expect(sheet.getByText(/Gemeinde · Kreis Viersen/)).toBeVisible();
+  await expect(results.getByText('Nettetal', { exact: true })).toBeVisible();
+  await expect(results.getByText(/Gemeinde · Kreis Viersen/)).toBeVisible();
 });
 
 test('PRM-5: Gewässerkarte – Landesverbände in NRW, eigener Link wird gespeichert und bleibt', async ({
@@ -325,4 +329,29 @@ test('LAW-8: eigene Gewässerregeln im Gewässerprofil eintragen, bleiben, entfe
       .getByRole('dialog', { name: 'De Wittsee' })
       .getByRole('button', { name: 'Eigene Gewässerregeln eintragen' }),
   ).toBeVisible();
+});
+
+test('WAT-8: Suche in der Leiste – die Karte behält ihre Größe, wenn die Tastatur die Ansicht verkleinert', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openMapAt(page, 6.28, 51.31, 11);
+  const size = () =>
+    page.evaluate(() => {
+      const c = window.__fangpunktMap?.getContainer();
+      return { w: c?.offsetWidth ?? 0, h: c?.offsetHeight ?? 0 };
+    });
+  const before = await size();
+  const box = page.getByRole('searchbox', { name: 'Gewässer oder Ort suchen' });
+  await box.click();
+  await box.fill('wittsee');
+  // Tastatur: die Ansicht wird niedriger (Capacitor resize: native)
+  await page.setViewportSize({ width: 390, height: 520 });
+  await expect(page.getByRole('list', { name: 'Suchergebnisse' })).toContainText('De Wittsee');
+  expect(await size()).toEqual(before);
+  // Tipp auf die Karte schließt die Liste und gibt die Größe wieder frei
+  await page.mouse.click(300, 400);
+  await expect(page.getByRole('list', { name: 'Suchergebnisse' })).toHaveCount(0);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(async () => (await size()).h).toBeGreaterThan(0);
 });

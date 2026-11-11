@@ -6,7 +6,7 @@ import { addProtocol, AttributionControl, Map as MlMap, setWorkerUrl, type MapMo
 import { Protocol } from 'pmtiles';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { de } from '../../i18n/de';
 import { useProviders } from '../../ports/providersContext';
@@ -43,7 +43,7 @@ import {
   WATER,
 } from './mapLayers';
 import { WaterProfile } from './WaterProfile';
-import { SearchSheet } from './SearchSheet';
+import { SearchBox } from './SearchBox';
 import { CatchDetails, LayerSwitches, Legend, NewHere, PlaceDetails, PlaceForm } from './MapSheets';
 import { adoptedPlace, incomingSpots } from '../../domain/sharedSpots';
 import { adoptSharedSpot } from '../../data/sharedSpotService';
@@ -69,7 +69,6 @@ type SheetState =
   | { kind: 'new'; lat: number; lng: number; water?: WaterRef }
   | { kind: 'placeForm'; type: PlaceType; lat: number; lng: number; id?: string; water?: WaterRef }
   | { kind: 'water'; info: WaterInfo; lat: number; lng: number }
-  | { kind: 'search'; near: { lat: number; lng: number } }
   | { kind: 'place'; id: string }
   | { kind: 'shared'; id: string }
   | { kind: 'catch'; id: string }
@@ -542,6 +541,19 @@ export default function MapView() {
     return () => ids.forEach((f) => map.getSource(WATER.source) && map.setFeatureState(f, { sel: false }));
   }, [highlightWid, ready]);
 
+  // Kartenmitte für die Sortierung der Treffer nach Nähe
+  const getSearchNear = useCallback(() => {
+    const c = mapRef.current?.getCenter();
+    return { lat: c?.lat ?? 51.2, lng: c?.lng ?? 10.4 };
+  }, []);
+  // Während die Tastatur offen ist, bleibt die Karte so groß wie vorher: die Ansicht schrumpft mit der Tastatur
+  // (Capacitor `resize: 'native'`), sonst würde die ganze Karte bei jedem Bild der Tastatur-Animation neu gezeichnet
+  const [frozen, setFrozen] = useState<{ w: number; h: number } | undefined>();
+  const setSearchActive = useCallback((active: boolean) => {
+    const el = container.current;
+    setFrozen(active && el ? { w: el.offsetWidth, h: el.offsetHeight } : undefined);
+  }, []);
+
   function onSearchPick(r: SearchResult) {
     const map = mapRef.current;
     setSheet(null);
@@ -944,11 +956,6 @@ export default function MapView() {
         }
       />
     );
-  } else if (sheet?.kind === 'search') {
-    sheetTitle = de.search.title;
-    sheetBody = (
-      <SearchSheet water={water} manifest={waterManifest} near={sheet.near} onPick={onSearchPick} />
-    );
   } else if (sheet?.kind === 'legend') {
     sheetTitle = de.map.legendTitle;
     sheetBody = (
@@ -991,18 +998,20 @@ export default function MapView() {
 
   return (
     <div className={styles.wrap}>
-      <div ref={container} className={styles.map} role="region" aria-label={de.map.label} />
-      <button
-        type="button"
-        className={styles.searchPill}
-        onClick={() => {
-          const c = mapRef.current?.getCenter();
-          setSheet({ kind: 'search', near: { lat: c?.lat ?? 51.2, lng: c?.lng ?? 10.4 } });
-        }}
-      >
-        <SearchIcon />
-        <span>{de.search.open}</span>
-      </button>
+      <div
+        ref={container}
+        className={styles.map}
+        style={frozen ? { inset: 'auto', top: 0, left: 0, width: frozen.w, height: frozen.h } : undefined}
+        role="region"
+        aria-label={de.map.label}
+      />
+      <SearchBox
+        water={water}
+        manifest={waterManifest}
+        getNear={getSearchNear}
+        onPick={onSearchPick}
+        onActiveChange={setSearchActive}
+      />
       <div className={styles.status}>
         {!ready && <Notice>{de.map.loading}</Notice>}
         {ready && usingFallback && (
@@ -1153,24 +1162,6 @@ function PlusIcon() {
       aria-hidden="true"
     >
       <path d="M12 5v14M5 12h14" />
-    </svg>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg
-      width={20}
-      height={20}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <circle cx="10.5" cy="10.5" r="6.5" />
-      <path d="m15.5 15.5 5 5" />
     </svg>
   );
 }
