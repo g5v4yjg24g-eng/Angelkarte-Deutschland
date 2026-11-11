@@ -11,6 +11,14 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     ],
   },
   {
+    id: '2026-12-11',
+    title: 'Neuer Session-Rückblick',
+    items: [
+      'Rückblick: Neues Kopfbild, Datum und Uhrzeit als Zeilen, Strecke, Dauer und Angelzeit in einer Reihe, Highlights mit Zählern und eine übersichtliche Chronik. Die Karte zeigt weiter deinen Laufweg mit Wiedergabe und deine Einträge.',
+      'Gemeinsame Session: Der Rückblick vergleicht dich mit den anderen – größter Fisch, Fänge, Bisse und Zeit am Wasser, dazu Session gesamt und Session-Highlights. Geteilt werden nur diese Kennzahlen, nie deine Route, Orte oder Fotos.',
+    ],
+  },
+  {
     id: '2026-12-10',
     title: 'Session neu gestaltet',
     items: [

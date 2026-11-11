@@ -6,14 +6,18 @@ import { useNavigate, useParams } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../../i18n/de';
 import { Notice } from '../../../design/components/Notice';
-import { CloseIcon } from '../../../design/icons';
+import { SunsetScene } from '../../../design/components/SunsetScene';
+import { CalendarIcon, ClockIcon, CloseIcon } from '../../../design/icons';
 import { getDb } from '../../../data/db';
 import { getTrack } from '../../../data/trackService';
 import type { Photo } from '../../../domain/schemas';
 import { buildReview, reviewEvents, sessionWaterName } from '../../../domain/sessionReview';
 import { displaySegments, trackRange } from '../../../domain/track';
 import { useNow } from '../../../lib/useNow';
+import { statsFromReview } from '../../../domain/groupStats';
 import { ReviewHighlights } from './ReviewHighlights';
+import { ReviewTogether } from './ReviewTogether';
+import { useGroupStats } from './useGroupStats';
 import { ReviewTimeline } from './ReviewTimeline';
 import styles from './Review.module.css';
 
@@ -21,6 +25,10 @@ import type { ReviewMapApi } from './ReviewMap';
 
 const ReviewMap = lazy(() => import('./ReviewMap'));
 const t = de.review;
+
+/** „A“, „A und B“, „A, B und C“ */
+const joinNames = (names: string[]) =>
+  names.length < 2 ? (names[0] ?? '') : `${names.slice(0, -1).join(', ')} und ${names.at(-1)}`;
 
 const dateOf = (iso: string) =>
   new Date(iso).toLocaleDateString('de-DE', {
@@ -89,7 +97,8 @@ export function SessionReviewPage() {
     [view, data, now],
   );
 
-  const heading = view?.water ?? view?.session.title ?? t.title;
+  const mine = useMemo(() => (review ? statsFromReview(review) : undefined), [review]);
+  const together = useGroupStats(view?.session.groupId, !!view?.session.endAt, mine);
 
   return (
     <dialog
@@ -104,27 +113,39 @@ export function SessionReviewPage() {
     >
       <div className={styles.scroller}>
         <header className={styles.header}>
+          <SunsetScene variant="full" />
           <div className={styles.headText}>
-            {heading !== t.title && <p className={styles.kicker}>{t.title}</p>}
-            <h1 id="rv-title" className={styles.title}>
-              {heading}
-            </h1>
-            {view && (
-              <p className={styles.meta}>
-                <span>{dateOf(view.session.startAt)}</span>
-                <span className="tabular">
-                  {t.times(
-                    view.session.startAt.slice(11, 16),
-                    view.session.endAt?.slice(11, 16) ?? t.running,
-                  )}
-                </span>
-              </p>
+            {view && (view.water ?? view.session.title) && (
+              <p className={styles.kicker}>{view.water ?? view.session.title}</p>
             )}
+            <h1 id="rv-title" className={styles.title}>
+              {t.title}
+            </h1>
           </div>
           <button type="button" className={styles.close} aria-label={t.close} onClick={close}>
             <CloseIcon />
           </button>
         </header>
+        {view && (
+          <dl className={styles.when}>
+            <div>
+              <dt>
+                <CalendarIcon size={20} />
+                <span className="visually-hidden">{t.whenDate}</span>
+              </dt>
+              <dd>{dateOf(view.session.startAt)}</dd>
+            </div>
+            <div>
+              <dt>
+                <ClockIcon size={20} />
+                <span className="visually-hidden">{t.whenTime}</span>
+              </dt>
+              <dd className="tabular">
+                {t.times(view.session.startAt.slice(11, 16), view.session.endAt?.slice(11, 16) ?? t.running)}
+              </dd>
+            </div>
+          </dl>
+        )}
 
         {!data ? (
           <Notice>{t.loading}</Notice>
@@ -154,9 +175,15 @@ export function SessionReviewPage() {
               <Notice>{data.track ? t.noMap : `${t.noRoute} ${t.noMap}`}</Notice>
             )}
             <ReviewHighlights review={review} />
+            {together && <ReviewTogether state={together} durationMs={review.durationMs} />}
             <ReviewTimeline
               events={view.events}
               photos={view.photos}
+              startNote={
+                together && together.members.length > 1
+                  ? de.review.together.started(joinNames(together.members.map((m) => m.displayName)))
+                  : undefined
+              }
               selectedId={selectedId}
               scrollToSelected={selection?.from === 'map'}
               onShow={(eid) => {
