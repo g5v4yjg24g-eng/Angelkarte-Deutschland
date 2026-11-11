@@ -1,0 +1,38 @@
+.sunset {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 0 auto;
+  width: 62%;
+  height: 100%;
+  /* Silhouetten (Ufer, Schilf) */
+  color: #6f8a92;
+  opacity: 0.75;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 70%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 70%);
+}
+:global([data-theme='dark']) .sunset {
+  color: #07181d;
+  opacity: 0.9;
+}
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .sunset {
+    color: #07181d;
+    opacity: 0.9;
+  }
+}
+/* ganze Karte: undurchsichtig, ohne Maske, Silhouetten immer dunkel */
+.sunset.full,
+:global([data-theme='dark']) .sunset.full {
+  inset: 0;
+  width: 100%;
+  opacity: 1;
+  color: #07181d;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .sunset.full {
+    opacity: 1;
+    color: #07181d;
+  }
+}

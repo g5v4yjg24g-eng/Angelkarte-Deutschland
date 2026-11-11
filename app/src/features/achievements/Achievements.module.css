@@ -125,3 +125,11 @@
 .freshLine .newTag {
   margin-left: 0;
 }
+
+/* Erfolge ganz klein in einer Reihe (AchievementMedals) */
+.medals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  line-height: 0;
+}

@@ -347,3 +347,54 @@ export const CheckIcon = (p: IconProps) => (
     <path d="m5 12.5 4.5 4.5L19 7.5" />
   </Icon>
 );
+
+/** Stopp (Quadrat) */
+export const StopIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="6" y="6" width="12" height="12" rx="1.5" fill="currentColor" />
+  </Icon>
+);
+/** Standortnadel */
+export const PinIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 21s6.5-5.6 6.5-11a6.5 6.5 0 0 0-13 0c0 5.4 6.5 11 6.5 11Z" />
+    <circle cx="12" cy="10" r="2.3" />
+  </Icon>
+);
+/** Strecke mit zwei Punkten (Routenpunkte) */
+export const PathIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="5.5" cy="6.5" r="2" />
+    <circle cx="18.5" cy="17.5" r="2" />
+    <path d="M7.5 6.5h5.5a3 3 0 0 1 0 6h-2a3 3 0 0 0 0 6h5.5" />
+  </Icon>
+);
+/** Strecke zwischen zwei Nadeln (Kilometer) */
+export const DistanceIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="6" cy="6" r="2.2" />
+    <circle cx="18" cy="18" r="2.2" />
+    <path d="M8 7.5c4 .5 1.5 4.5 4 6.5s4 1.2 4 2" strokeDasharray="2 2.5" />
+  </Icon>
+);
+/** Tasse (Pausen) */
+export const CupIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4.5 9h12v5a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5V9Z" />
+    <path d="M16.5 10.500h1.5a2.5 2.5 0 0 1 0 5h-1.5M8 3.5c0 1.5 1.5 1.5 1.5 3M12 3.5c0 1.5 1.5 1.5 1.5 3" />
+  </Icon>
+);
+/** Fisch (Umriss) */
+export const FishIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 12c3-5 8-6.5 12-4.5l3.5-2.5v14L15 16.5C11 18.5 6 17 3 12Z" />
+    <circle cx="8.5" cy="11" r="0.9" fill="currentColor" />
+  </Icon>
+);
+/** Biss: Wellen mit Pfeil nach unten */
+export const BiteIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3v8m0 0-3-3m3 3 3-3" />
+    <path d="M4 15c2.5 2.5 5.5 2.5 8 0s5.5-2.5 8 0M6.5 19c1.700 1.300 3.5 1.300 5.5 0s3.800-1.300 5.5 0" />
+  </Icon>
+);

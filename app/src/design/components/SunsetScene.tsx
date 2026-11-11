@@ -1,17 +1,19 @@
-// Sonnenuntergang am See für die Kopfkarte der Kontodetails (Wunsch Nutzer 2026-11-11, angelehnt an die Vorlage).
-// Eigene Zeichnung, rein dekorativ; sitzt rechts und läuft nach links aus (Maske im CSS), damit der Text lesbar bleibt.
+// Sonnenuntergang am See (Wunsch Nutzer 2026-11-11, angelehnt an die Vorlagen). Eigene Zeichnung, rein dekorativ.
+// `corner`: Visitenkarte (Kontodetails, Gemeinsam angeln) – sitzt rechts und läuft nach links aus (Maske im CSS).
+// `full`: Kopfbild der Session – deckt die ganze Karte, Himmel und Wasser sind undurchsichtig.
 import { useId } from 'react';
-import styles from './Account.module.css';
+import styles from './SunsetScene.module.css';
 
-export function SunsetScene() {
+export function SunsetScene({ variant = 'corner' }: { variant?: 'corner' | 'full' }) {
   const id = useId();
   const sky = `${id}-sky`;
   const glow = `${id}-glow`;
   const water = `${id}-water`;
   const streak = `${id}-streak`;
+  const full = variant === 'full';
   return (
     <svg
-      className={styles.sunset}
+      className={full ? `${styles.sunset} ${styles.full}` : styles.sunset}
       viewBox="0 0 240 120"
       preserveAspectRatio="xMaxYMid slice"
       aria-hidden="true"
@@ -42,6 +44,8 @@ export function SunsetScene() {
         </linearGradient>
       </defs>
       {/* Himmel mit Sonne */}
+      {full && <rect width="240" height="120" fill="#10272f" />}
+      {full && <rect width="240" height="72" fill="#1d4650" />}
       <rect width="240" height="72" fill={`url(#${sky})`} />
       <circle cx="176" cy="62" r="46" fill={`url(#${glow})`} />
       <circle cx="176" cy="62" r="7.5" fill="#fff3cf" />
@@ -50,6 +54,7 @@ export function SunsetScene() {
       <path d="M150 22c18-5 44-5 70 1-26 3-50 3-70-1Z" fill="#f0a868" opacity="0.3" />
       <path d="M40 44c16-3 34-3 52 0-18 2-36 2-52 0Z" fill="#c98250" opacity="0.25" />
       {/* Wasser mit Spiegelung */}
+      {full && <rect y="72" width="240" height="48" fill="#0d252d" />}
       <rect y="72" width="240" height="48" fill={`url(#${water})`} />
       <path d="M170 72h12l5 40h-22Z" fill={`url(#${streak})`} />
       <path d="M150 84h46M158 92h34M163 101h24" stroke="#ffd58c" strokeWidth="1" opacity="0.45" />

@@ -1,15 +1,30 @@
-// Eine Session: Zeiten, Dauer, Einträge (außerhalb der Zeit markiert), beenden, korrigieren (SES-3), bearbeiten.
-import { useState } from 'react';
+// Eine Session (Vorlage Nutzer 2026-11-11): Kopfbild, Fakten, Pause/Beenden, Route (GPS), Gemeinsam angeln, Fänge und
+// Bisse, Pausen; darunter die Einträge (außerhalb der Zeit markiert), beenden, korrigieren (SES-3), bearbeiten.
+import { useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
 import { Page, Section } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
+import { ListLink } from '../../design/components/ListLink';
 import { Notice } from '../../design/components/Notice';
+import { Sheet } from '../../design/components/Sheet';
 import { TextArea, TextField } from '../../design/components/Field';
+import {
+  BiteIcon,
+  CalendarIcon,
+  ClockIcon,
+  CupIcon,
+  FeedIcon,
+  FishIcon,
+  FlagIcon,
+  PauseIcon,
+  PlayIcon,
+  StopIcon,
+} from '../../design/icons';
 import { getDb } from '../../data/db';
 import { repo } from '../../data/repository';
-import { addPause, endSession, pauseSession, removePause, resumeSession } from '../../data/sessionService';
+import { endSession, pauseSession, resumeSession } from '../../data/sessionService';
 import { userMessage } from '../../data/errors';
 import type { Session } from '../../domain/schemas';
 import {
@@ -19,19 +34,21 @@ import {
   isRunning,
   looksForgotten,
   openPause,
-  pauseIssue,
-  pauseMs,
   sessionCatches,
+  sessionTally,
   suggestedEnd,
-  withPause,
 } from '../../domain/session';
 import { localToZonedIso, toZonedIso } from '../../domain/time';
 import { formatDateTime } from '../../lib/storage';
 import { useNow } from '../../lib/useNow';
 import { catchTitle } from '../catches/catchText';
-import { TrackingStatus } from './tracking/TrackingStatus';
-import { GroupSection } from './group/GroupSection';
+import { SessionHero } from './SessionHero';
+import { RouteCard } from './RouteCard';
+import { PausesCard } from './PausesCard';
+import { useGroupMembers } from './group/useGroupMembers';
+import { storedUserId } from '../badges/badgeStore';
 import { useProviders } from '../../ports/providersContext';
+import pageStyles from '../../design/components/Page.module.css';
 import styles from './Sessions.module.css';
 
 const t = de.sessions;
@@ -89,98 +106,36 @@ function CorrectEnd({
 
 const clock = (iso: string) => iso.slice(11, 16);
 
-/** Pausen ansehen, entfernen und nachtragen (aktive Angelzeit). */
-function Pauses({ session, now }: { session: Session; now: number }) {
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
-  const [error, setError] = useState<string>();
-  const pauses = session.pauses ?? [];
-
-  async function add(e: React.FormEvent) {
-    e.preventDefault();
-    setError(undefined);
-    let fromMs: number, toMs: number;
-    try {
-      fromMs = Date.parse(localToZonedIso(from.slice(0, 10), from.slice(11, 16), session.tz));
-      toMs = Date.parse(localToZonedIso(to.slice(0, 10), to.slice(11, 16), session.tz));
-    } catch {
-      return setError(t.pauseIssues.date);
-    }
-    const candidate = {
-      ...session,
-      pauses: withPause(pauses, {
-        from: toZonedIso(fromMs, session.tz),
-        to: toZonedIso(toMs, session.tz),
-      }),
-    };
-    // Laufende Session: Pause darf nicht in der Zukunft enden
-    const issue = pauseIssue(candidate) ?? (!session.endAt && toMs > now ? 'outside' : undefined);
-    if (issue) return setError(t.pauseIssues[issue]);
-    try {
-      await addPause(session.id, fromMs, toMs);
-      setFrom('');
-      setTo('');
-    } catch (err) {
-      setError(userMessage(err));
-    }
-  }
-
+/** Zeile „Gemeinsam angeln“: Stand der Teilnehmer, Antippen öffnet die Seite zum Einladen (nur mit Konto). */
+function TogetherRow({ session }: { session: Session }) {
+  const { account } = useProviders();
+  const signedIn = account.enabled && !!storedUserId();
+  const groupId = session.groupId;
+  const { members } = useGroupMembers(groupId);
+  if (!signedIn || (!groupId && !isRunning(session))) return null;
+  const joined = members?.filter((m) => m.status === 'joined').length ?? 0;
+  const invited = members?.filter((m) => m.status === 'invited').length ?? 0;
   return (
-    <Section title={t.pauses}>
-      {pauses.length === 0 ? (
-        <p className="muted">{t.pausesNone}</p>
-      ) : (
-        <ul className={styles.pauseList}>
-          {pauses.map((p, i) => (
-            <li key={p.from} className={styles.pauseRow}>
-              <span className="tabular">
-                {p.to
-                  ? t.pauseRow(
-                      clock(p.from),
-                      clock(p.to),
-                      formatDuration(pauseMs({ startAt: session.startAt, pauses: [p] }, now)),
-                    )
-                  : t.pauseOpen(clock(p.from))}
-              </span>
-              <Button
-                variant="ghost"
-                aria-label={`${t.removePause} ${clock(p.from)}`}
-                onClick={() =>
-                  void removePause(session.id, i).catch((err: unknown) => setError(userMessage(err)))
-                }
-              >
-                {t.removePause}
-              </Button>
-            </li>
-          ))}
-        </ul>
-      )}
-      <details className={styles.addPause}>
-        <summary>{t.addPause}</summary>
-        <form className={styles.stack} onSubmit={(e) => void add(e)} noValidate>
-          <div className={styles.stack}>
-            <TextField
-              label={t.pauseFrom}
-              type="datetime-local"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
-            />
-            <TextField
-              label={t.pauseTo}
-              type="datetime-local"
-              value={to}
-              onChange={(e) => setTo(e.target.value)}
-            />
-          </div>
-          {error && <p role="alert">{error}</p>}
-          <div className={styles.actions}>
-            <Button type="submit" variant="secondary">
-              {t.addPause}
-            </Button>
-          </div>
-        </form>
-      </details>
-    </Section>
+    <div className={pageStyles.card}>
+      <ListLink
+        to={`/fangbuch/sessions/${session.id}/gemeinsam`}
+        icon={<FeedIcon />}
+        title={de.groupSessions.title}
+        hint={groupId && members ? t.togetherCount(joined, invited) : t.togetherHint}
+      />
+    </div>
+  );
+}
+
+function Tile({ icon, label, value }: { icon: ReactNode; label: string; value: number }) {
+  return (
+    <div className={styles.tile}>
+      <span className={styles.tileIcon}>{icon}</span>
+      <span className={styles.tileText}>
+        <span className="muted">{label}</span>
+        <strong className="tabular">{value}</strong>
+      </span>
+    </div>
   );
 }
 
@@ -193,6 +148,7 @@ export function SessionDetailPage() {
     const s = await db.sessions.get(id);
     return { session: s ?? null, catches: s ? await db.catches.where('sessionId').equals(id).toArray() : [] };
   }, [id]);
+  const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState<string>();
   const [notes, setNotes] = useState<string>();
   const [message, setMessage] = useState<string>();
@@ -215,11 +171,18 @@ export function SessionDetailPage() {
     );
 
   const entries = sessionCatches(s, data.catches);
+  const tally = sessionTally(entries.map((e) => e.item));
   const running = isRunning(s);
   const forgotten = looksForgotten(s, now) && !keepRunning;
   const duration = formatDuration(durationMs(s, now));
   const paused = openPause(s);
   const hasPauses = !!s.pauses?.length;
+  const day = new Date(s.startAt).toLocaleDateString('de-DE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: s.tz,
+  });
 
   async function saveMeta(session: Session) {
     setError(undefined);
@@ -229,13 +192,14 @@ export function SessionDetailPage() {
         notes: (notes ?? session.notes ?? '').trim() || undefined,
       });
       setMessage(t.saved);
+      setEditing(false);
     } catch (err) {
       setError(userMessage(err));
     }
   }
 
   return (
-    <Page title={s.title ?? t.detailTitle} back="/fangbuch/sessions">
+    <Page title={t.detailTitle} back="/fangbuch/sessions">
       <div className={styles.stack}>
         {forgotten && (
           <>
@@ -255,40 +219,59 @@ export function SessionDetailPage() {
             </div>
           </>
         )}
+        <SessionHero running={running} title={s.title ?? t.untitled(day)} onEdit={() => setEditing(true)} />
         <dl className={styles.facts}>
           <div>
-            <dt>{t.from}</dt>
+            <dt>
+              <CalendarIcon size={20} />
+              {t.from}
+            </dt>
             <dd className="tabular">{formatDateTime(s.startAt)}</dd>
           </div>
+          {s.endAt && (
+            <div>
+              <dt>
+                <FlagIcon size={20} />
+                {t.to}
+              </dt>
+              <dd className="tabular">{formatDateTime(s.endAt)}</dd>
+            </div>
+          )}
           <div>
-            <dt>{t.to}</dt>
-            <dd className="tabular">{s.endAt ? formatDateTime(s.endAt) : t.running}</dd>
-          </div>
-          <div>
-            <dt>{t.duration}</dt>
+            <dt>
+              <ClockIcon size={20} />
+              {t.duration}
+            </dt>
             <dd className="tabular">{duration}</dd>
           </div>
           {hasPauses && (
-            <>
-              <div>
-                <dt>{t.pauses}</dt>
-                <dd className="tabular">
-                  {t.pausesSum(s.pauses?.length ?? 0, formatDuration(pauseMs(s, now)))}
-                </dd>
-              </div>
-              <div>
-                <dt>{t.activeTime}</dt>
-                <dd className="tabular">{formatDuration(activeMs(s, now))}</dd>
-              </div>
-            </>
+            <div>
+              <dt>
+                <CupIcon size={20} />
+                {t.activeTime}
+              </dt>
+              <dd className="tabular">{formatDuration(activeMs(s, now))}</dd>
+            </div>
           )}
+          <div>
+            <dt>
+              <FlagIcon size={20} />
+              {t.status}
+            </dt>
+            <dd className={styles.statusValue}>
+              <span
+                className={`${styles.dot} ${running && !paused ? '' : styles.dotIdle}`}
+                aria-hidden="true"
+              />
+              {!running ? t.statusEnded : paused ? t.pausedSince(clock(paused.from)) : t.running}
+            </dd>
+          </div>
         </dl>
-        {hasPauses && <p className="muted">{t.activeHint}</p>}
-        {running && paused && <Notice>{t.pausedSince(clock(paused.from))}</Notice>}
         {running && !forgotten && (
-          <div className={styles.actions}>
+          <div className={styles.twoButtons}>
             <Button
               variant="secondary"
+              icon={paused ? <PlayIcon size={18} /> : <PauseIcon size={18} />}
               onClick={() =>
                 void (paused ? resumeSession(s.id) : pauseSession(s.id)).catch((err: unknown) =>
                   setError(userMessage(err)),
@@ -298,6 +281,7 @@ export function SessionDetailPage() {
               {paused ? t.resume : t.pause}
             </Button>
             <Button
+              icon={<StopIcon size={18} />}
               onClick={() =>
                 // Erst speichern, dann den Rückblick öffnen (er liest nur gespeicherte Daten)
                 void endSession(s.id)
@@ -315,8 +299,13 @@ export function SessionDetailPage() {
             </Button>
           </div>
         )}
-        {running && <TrackingStatus sessionId={s.id} />}
-        <GroupSection session={s} />
+        <RouteCard session={s} />
+        <TogetherRow session={s} />
+        <div className={styles.tiles}>
+          <Tile icon={<FishIcon size={26} />} label={t.caught} value={tally.caught} />
+          <Tile icon={<BiteIcon size={26} />} label={t.bites} value={tally.bites} />
+        </div>
+        <PausesCard session={s} now={now} />
         {!running && (
           <div className={styles.actions}>
             <Button onClick={() => navigate(`/fangbuch/sessions/${s.id}/rueckblick`)}>{t.reviewOpen}</Button>
@@ -327,8 +316,6 @@ export function SessionDetailPage() {
         )}
         {message && <Notice tone="success">{message}</Notice>}
         {error && <Notice tone="error">{error}</Notice>}
-
-        <Pauses session={s} now={now} />
 
         <Section title={`${t.entries} (${entries.length})`}>
           {entries.length === 0 ? (
@@ -350,43 +337,55 @@ export function SessionDetailPage() {
           )}
         </Section>
 
-        <Section>
-          <form
-            className={styles.stack}
-            onSubmit={(e) => {
-              e.preventDefault();
-              void saveMeta(s);
-            }}
+        {s.notes && (
+          <Section title={t.notes}>
+            <p className={styles.notes}>{s.notes}</p>
+          </Section>
+        )}
+
+        <div>
+          <Button
+            variant="danger"
+            onClick={() =>
+              void repo('sessions')
+                .remove(s.id)
+                .then(() => navigate('/fangbuch/sessions'))
+            }
           >
-            <TextField
-              label={t.title_}
-              placeholder={t.titlePlaceholder}
-              maxLength={120}
-              value={title ?? s.title ?? ''}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <TextArea
-              label={t.notes}
-              maxLength={4000}
-              value={notes ?? s.notes ?? ''}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-            <div className={styles.actions}>
-              <Button type="submit">{t.save}</Button>
-              <Button
-                variant="danger"
-                onClick={() =>
-                  void repo('sessions')
-                    .remove(s.id)
-                    .then(() => navigate('/fangbuch/sessions'))
-                }
-              >
-                {t.delete}
-              </Button>
-            </div>
-          </form>
-        </Section>
+            {t.delete}
+          </Button>
+        </div>
       </div>
+
+      <Sheet open={editing} title={t.editTitle} onClose={() => setEditing(false)}>
+        <form
+          className={styles.stack}
+          onSubmit={(e) => {
+            e.preventDefault();
+            void saveMeta(s);
+          }}
+        >
+          <TextField
+            label={t.title_}
+            placeholder={t.titlePlaceholder}
+            maxLength={120}
+            value={title ?? s.title ?? ''}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <TextArea
+            label={t.notes}
+            maxLength={4000}
+            value={notes ?? s.notes ?? ''}
+            onChange={(e) => setNotes(e.target.value)}
+          />
+          <div className={styles.actions}>
+            <Button type="submit">{t.save}</Button>
+            <Button type="button" variant="ghost" onClick={() => setEditing(false)}>
+              {de.account.cancel}
+            </Button>
+          </div>
+        </form>
+      </Sheet>
     </Page>
   );
 }
