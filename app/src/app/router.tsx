@@ -416,6 +416,13 @@ export const routes = [
                 ),
               },
               {
+                path: 'mehr/konto/privatsphaere',
+                lazy: page(
+                  () => import('../features/account/PrivacySettingsPage'),
+                  (m) => m.PrivacySettingsPage,
+                ),
+              },
+              {
                 path: 'mehr/recht',
                 lazy: page(
                   () => import('../features/law/LawPage'),

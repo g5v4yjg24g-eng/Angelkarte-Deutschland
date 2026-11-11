@@ -10,7 +10,7 @@ import { Notice } from '../../design/components/Notice';
 import { TextField } from '../../design/components/Field';
 import { ListLink } from '../../design/components/ListLink';
 import { VisitCard } from '../../design/components/VisitCard';
-import { ExitIcon, FeedIcon, MailIcon, PencilIcon, TrashIcon } from '../../design/icons';
+import { ExitIcon, FeedIcon, LockIcon, MailIcon, PencilIcon, TrashIcon } from '../../design/icons';
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
 import { clearBadges, refreshBadges, useMyBadges } from '../badges/badgeStore';
@@ -280,6 +280,21 @@ function ProfileView({
       {error && <Notice tone="error">{error}</Notice>}
 
       <SecuritySection account={account} user={user} />
+
+      <section className={styles.group} aria-labelledby="acc-privacy">
+        <h2 id="acc-privacy" className={styles.groupTitle}>
+          <LockIcon size={22} />
+          {t.privacyTitle}
+        </h2>
+        <div className={pageStyles.card}>
+          <ListLink
+            to="/mehr/konto/privatsphaere"
+            icon={<LockIcon />}
+            title={t.privacyTitle}
+            hint={t.privacyRowHint}
+          />
+        </div>
+      </section>
 
       <section className={styles.group} aria-labelledby="acc-follow">
         <h2 id="acc-follow" className={styles.groupTitle}>

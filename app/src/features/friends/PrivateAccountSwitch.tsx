@@ -9,7 +9,7 @@ import styles from './Friends.module.css';
 
 const t = de.friends;
 
-export function PrivateAccountSwitch({ onChange }: { onChange?: () => void }) {
+export function PrivateAccountSwitch({ onChange, title }: { onChange?: () => void; title?: string }) {
   const { account } = useProviders();
   const [value, setValue] = useState<boolean>();
   const [error, setError] = useState<string>();
@@ -42,7 +42,7 @@ export function PrivateAccountSwitch({ onChange }: { onChange?: () => void }) {
     }
   };
   return (
-    <Section title={t.privateTitle}>
+    <Section title={title ?? t.privateTitle}>
       <label className={styles.switchRow}>
         <input
           type="checkbox"
