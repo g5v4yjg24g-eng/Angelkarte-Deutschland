@@ -140,7 +140,6 @@ export function PushSettings() {
         <p className="muted">{t.signedOut}</p>
       ) : (
         <>
-          <p className="muted">{t.intro}</p>
           {permissionError && <Notice tone="error">{permissionError}</Notice>}
           {(permission === 'prompt' || unknownPermission) && (
             <div>
@@ -174,7 +173,6 @@ export function PushSettings() {
               {testMsg && <p role="status">{testMsg}</p>}
             </div>
           )}
-          <p className="muted">{t.note}</p>
         </>
       )}
     </Section>

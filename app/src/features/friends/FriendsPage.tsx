@@ -19,7 +19,6 @@ import { AccountError } from '../../ports/account';
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useFollows } from './useFollows';
-import { PrivateAccountSwitch } from './PrivateAccountSwitch';
 import { UserSearchResults } from './UserSearchResults';
 import { hiddenKey, type BlockedUser } from '../../domain/moderation';
 import { SafetyMenu } from '../moderation/SafetyMenu';
@@ -365,7 +364,6 @@ export function FriendsPage() {
         }
       />
 
-      {groups && <PrivateAccountSwitch onChange={reload} />}
       {blocked && blocked.length > 0 && (
         <Section title={de.moderation.blockedTitle}>
           <ul className={styles.list}>
