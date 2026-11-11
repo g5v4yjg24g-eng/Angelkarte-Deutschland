@@ -2,12 +2,14 @@
 // abmelden, Konto löschen. Fangdaten bleiben auf dem Gerät. Seit 2026-11-10 Anmeldung mit E-Mail und Passwort
 // (AuthForms.tsx) und Abschnitt „Sicherheit“ (SecuritySection.tsx).
 import { useEffect, useState, type FormEvent } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
 import { Notice } from '../../design/components/Notice';
 import { TextField } from '../../design/components/Field';
+import { ListLink } from '../../design/components/ListLink';
+import { ExitIcon, FeedIcon, MailIcon, PencilIcon, TrashIcon } from '../../design/icons';
 import { useProviders } from '../../ports/providersContext';
 import { FounderBadge } from '../badges/FounderBadge';
 import { clearBadges, refreshBadges, useMyBadges } from '../badges/badgeStore';
@@ -27,6 +29,10 @@ import {
 import { NewPasswordForm, SignedOut } from './AuthForms';
 import { SecuritySection } from './SecuritySection';
 import { PasswordField } from './PasswordField';
+import { RowButton } from './RowButton';
+import { SunsetScene } from './SunsetScene';
+import { Avatar } from '../profile/Avatar';
+import { useProfile } from '../profile/usePhoto';
 import { clearRecovery, markRecovery, useRecovery } from './recoveryState';
 import pageStyles from '../../design/components/Page.module.css';
 import styles from './Account.module.css';
@@ -169,6 +175,9 @@ function ProfileView({
   const [error, setError] = useState<string>();
   const [status, setStatus] = useState<string>();
   const founder = useMyBadges(user.id).includes('founder');
+  const [deleting, setDeleting] = useState(false);
+  // Profilbild liegt auf dem Gerät (eigenes Profil)
+  const localProfile = useProfile();
 
   const run = async (fn: () => Promise<void>) => {
     setBusy(true);
@@ -185,14 +194,29 @@ function ProfileView({
 
   return (
     <div className={styles.stack}>
-      <div className={pageStyles.card}>
+      <section className={styles.hero} aria-label={t.detailsTitle}>
+        <SunsetScene />
+        <span className={styles.heroAvatar}>
+          <Avatar photoId={localProfile?.avatarPhotoId} size={76} />
+          <Link to="/profil/bearbeiten" className={styles.heroEdit} aria-label={t.editProfile}>
+            <PencilIcon size={16} />
+          </Link>
+        </span>
         <div className={styles.profile}>
           <strong className={styles.displayName}>{profile.displayName}</strong>
           {founder && <FounderBadge variant="full" />}
           <span className="muted">{t.usernameShown(profile.username)}</span>
-          <span className={`muted ${styles.small}`}>{t.signedInAs(user.email)}</span>
+          <span className={`muted ${styles.small} ${styles.mailLine}`}>
+            <MailIcon size={16} />
+            <span className="visually-hidden">{t.emailLabel}: </span>
+            {user.email}
+          </span>
+          <span className={styles.status}>
+            <span className={styles.statusDot} aria-hidden="true" />
+            {t.statusActive}
+          </span>
         </div>
-      </div>
+      </section>
       {editing ? (
         <form
           className={styles.form}
@@ -224,9 +248,10 @@ function ProfileView({
           </div>
         </form>
       ) : (
-        <div className={styles.actions}>
+        <div className={styles.twoButtons}>
           <Button
             variant="secondary"
+            icon={<PencilIcon size={18} />}
             onClick={() => {
               setName(profile.displayName);
               setEditing(true);
@@ -236,6 +261,7 @@ function ProfileView({
           </Button>
           <Button
             variant="secondary"
+            icon={<ExitIcon size={18} />}
             disabled={busy}
             onClick={() =>
               void run(async () => {
@@ -255,53 +281,84 @@ function ProfileView({
         </p>
       )}
       {error && <Notice tone="error">{error}</Notice>}
-      <Notice>{t.friendsSoon}</Notice>
 
       <SecuritySection account={account} user={user} />
 
+      <section className={styles.group} aria-labelledby="acc-follow">
+        <h2 id="acc-follow" className={styles.groupTitle}>
+          <FeedIcon size={22} />
+          {t.followTitle}
+        </h2>
+        <div className={pageStyles.card}>
+          <ListLink
+            to="/profil/freunde"
+            icon={<FeedIcon />}
+            title={t.followManage}
+            hint={t.followManageHint}
+          />
+        </div>
+      </section>
+
       <section className={styles.danger} aria-labelledby="acc-delete">
-        <h2 id="acc-delete" className={styles.h2}>
+        <h2 id="acc-delete" className="visually-hidden">
           {t.deleteTitle}
         </h2>
-        <p className="muted">{t.deleteText}</p>
-        <TextField
-          label={t.deleteConfirmLabel(profile.username)}
-          autoCapitalize="none"
-          autoCorrect="off"
-          spellCheck={false}
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-        />
-        {user.hasPassword ? (
-          <PasswordField
-            label={t.deletePasswordLabel}
-            value={deletePassword}
-            onValue={setDeletePassword}
-            error={deleteError}
+        <div className={pageStyles.card}>
+          <RowButton
+            danger
+            icon={<TrashIcon />}
+            title={t.deleteTitle}
+            hint={t.deleteRowHint}
+            expanded={deleting}
+            onClick={() => setDeleting((v) => !v)}
           />
-        ) : (
-          <p className="muted">{t.security.needsPassword}</p>
-        )}
-        <div>
-          <Button
-            variant="danger"
-            disabled={
-              busy || normalizeUsername(confirm) !== profile.username || !user.hasPassword || !deletePassword
-            }
-            onClick={() =>
-              void run(async () => {
-                setDeleteError(undefined);
-                // vor dem endgültigen Löschen das Passwort erneut prüfen
-                if (!(await account.verifyPassword(deletePassword)))
-                  return setDeleteError(t.security.wrongCurrent);
-                onDeleted();
-                await account.deleteAccount();
-              })
-            }
-          >
-            {t.deleteButton}
-          </Button>
         </div>
+        {deleting && (
+          <div className={styles.form}>
+            <p className="muted">{t.deleteText}</p>
+            <TextField
+              label={t.deleteConfirmLabel(profile.username)}
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+            />
+            {user.hasPassword ? (
+              <PasswordField
+                label={t.deletePasswordLabel}
+                value={deletePassword}
+                onValue={setDeletePassword}
+                error={deleteError}
+              />
+            ) : (
+              <p className="muted">{t.security.needsPassword}</p>
+            )}
+            <div>
+              <Button
+                variant="danger"
+                disabled={
+                  busy ||
+                  normalizeUsername(confirm) !== profile.username ||
+                  !user.hasPassword ||
+                  !deletePassword
+                }
+                onClick={() =>
+                  void run(async () => {
+                    setDeleteError(undefined);
+                    // vor dem endgültigen Löschen das Passwort erneut prüfen
+                    if (!(await account.verifyPassword(deletePassword)))
+                      return setDeleteError(t.security.wrongCurrent);
+                    onDeleted();
+                    await account.deleteAccount();
+                  })
+                }
+              >
+                {t.deleteButton}
+              </Button>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );
@@ -374,8 +431,8 @@ export function AccountPage() {
   const setProfile = (p: Profile) => uid && setLoaded({ uid, profile: p });
 
   return (
-    <Page title={t.title} back="/mehr">
-      <p className="muted">{t.intro}</p>
+    <Page title={user && profile && !recovering ? t.detailsTitle : t.title} back="/mehr">
+      {!(user && profile) && <p className="muted">{t.intro}</p>}
       {!account.enabled ? (
         <Notice>{t.disabled}</Notice>
       ) : (

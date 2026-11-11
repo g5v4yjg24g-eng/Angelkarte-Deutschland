@@ -310,3 +310,25 @@ export const CalendarIcon = (p: IconProps) => (
     <path d="M3.5 9.5h17M8 3v4M16 3v4" />
   </Icon>
 );
+
+/** Stift (bearbeiten) */
+export const PencilIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 20l1-4.5L16.5 4a2.1 2.1 0 0 1 3 3L8 18.5 4 20Z" />
+    <path d="m14.5 6 3.5 3.5" />
+  </Icon>
+);
+/** Papierkorb */
+export const TrashIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 7h16M10 4h4a1 1 0 0 1 1 1v2H9V5a1 1 0 0 1 1-1Z" />
+    <path d="M6 7l1 12a1.5 1.5 0 0 0 1.5 1.5h7A1.5 1.5 0 0 0 17 19l1-12M10 11v5.5M14 11v5.5" />
+  </Icon>
+);
+/** Geräte (Bildschirm und Handy) */
+export const DevicesIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M10 17H4.5A1.5 1.5 0 0 1 3 15.5v-9A1.5 1.5 0 0 1 4.5 5h12A1.5 1.5 0 0 1 18 6.5V8M7 20h3" />
+    <rect x="14" y="10.5" width="7" height="10" rx="1.5" />
+  </Icon>
+);

@@ -9,6 +9,8 @@ import type { AccountProvider, AccountUser } from '../../ports/account';
 import { accountErrorKind, normalizeEmail, passwordIssue, validEmail } from '../../domain/account';
 import { NewPasswordForm } from './AuthForms';
 import { PasswordField } from './PasswordField';
+import { RowButton } from './RowButton';
+import { DevicesIcon, LockIcon, MailIcon, ShieldIcon } from '../../design/icons';
 import pageStyles from '../../design/components/Page.module.css';
 import styles from './Account.module.css';
 
@@ -31,8 +33,9 @@ export function SecuritySection({ account, user }: { account: AccountProvider; u
   };
 
   return (
-    <section className={styles.stack} aria-labelledby="acc-security">
-      <h2 id="acc-security" className={styles.h2}>
+    <section className={styles.group} aria-labelledby="acc-security">
+      <h2 id="acc-security" className={styles.groupTitle}>
+        <ShieldIcon size={22} />
         {ts.title}
       </h2>
       {!user.hasPassword && open !== 'password' && (
@@ -75,27 +78,26 @@ export function SecuritySection({ account, user }: { account: AccountProvider; u
           </div>
         </div>
       ) : (
-        <div className={styles.actions}>
-          <Button
-            variant={user.hasPassword ? 'secondary' : 'primary'}
+        <div className={pageStyles.card}>
+          <RowButton
+            icon={<LockIcon />}
+            title={user.hasPassword ? ts.changePassword : ts.setPassword}
             onClick={() => {
               setStatus(undefined);
               setOpen('password');
             }}
-          >
-            {user.hasPassword ? ts.changePassword : ts.setPassword}
-          </Button>
-          <Button
-            variant="secondary"
+          />
+          <RowButton
+            icon={<MailIcon />}
+            title={ts.changeEmail}
             onClick={() => {
               setStatus(undefined);
               setOpen('email');
             }}
-          >
-            {ts.changeEmail}
-          </Button>
-          <Button
-            variant="secondary"
+          />
+          <RowButton
+            icon={<DevicesIcon />}
+            title={ts.signOutOthers}
             disabled={busy}
             onClick={() => {
               setBusy(true);
@@ -107,9 +109,7 @@ export function SecuritySection({ account, user }: { account: AccountProvider; u
                 .catch((e: unknown) => setError(errorText(e)))
                 .finally(() => setBusy(false));
             }}
-          >
-            {ts.signOutOthers}
-          </Button>
+          />
         </div>
       )}
       {status && (
@@ -118,7 +118,10 @@ export function SecuritySection({ account, user }: { account: AccountProvider; u
         </p>
       )}
       {error && <Notice tone="error">{error}</Notice>}
-      <p className={`muted ${styles.small}`}>{ts.notifyNote}</p>
+      <p className={`muted ${styles.small} ${styles.note}`}>
+        <ShieldIcon size={16} />
+        {ts.notifyNote}
+      </p>
     </section>
   );
 }

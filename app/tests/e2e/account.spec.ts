@@ -1307,6 +1307,28 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
   await page.getByRole('button', { name: 'Anmelden', exact: true }).click();
   await expect(page.getByText('@zander.max')).toBeVisible();
 
+  // Kontodetails (Vorlage Nutzer 2026-11-11): Kopfkarte, Sicherheit als Zeilen, Follower, Löschen eingeklappt
+  await expect(page.getByRole('heading', { level: 1, name: 'Kontodetails' })).toBeVisible();
+  const hero = page.getByRole('region', { name: 'Kontodetails' });
+  await expect(hero.getByText('max@example.de')).toBeVisible();
+  await expect(hero.getByText('Aktiv')).toBeVisible();
+  await expect(hero.getByRole('link', { name: 'Profil und Profilbild bearbeiten' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Sicherheit' }).getByRole('button')).toHaveText([
+    'Passwort ändern',
+    'E-Mail-Adresse ändern',
+    'Auf allen anderen Geräten abmelden',
+  ]);
+  await expect(page.getByRole('link', { name: /^Follower verwalten/ })).toHaveAttribute('href', /\/profil\/freunde$/);
+  await expect(page.getByRole('button', { name: 'Konto endgültig löschen' })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.getByRole('button', { name: /^Konto löschen/ }).click();
   await page.getByRole('textbox', { name: /deinen Nutzernamen „zander.max“ eingeben/ }).fill('zander.max');
   await page.getByLabel('Zum Bestätigen dein Passwort eingeben').fill(PASSWORD);
   await page.getByRole('button', { name: 'Konto endgültig löschen' }).click();
