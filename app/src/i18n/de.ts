@@ -56,7 +56,6 @@ export const de = {
     },
     legendPlaces: 'Arten von Orten',
     legendCatches: 'Fangbuch',
-    legendClusterHint: 'Zahlen in Kreisen fassen mehrere Fänge zusammen. Antippen zoomt hinein.',
     heatmapOn: 'Heatmap der Fänge zeigen',
     heatmapOff: 'Heatmap ausblenden',
     heatmapEmpty: 'Noch keine gelandeten Fische mit Fangort – die Heatmap bleibt leer.',
@@ -179,8 +178,6 @@ export const de = {
     renameLabel: 'Eigener Name (gilt nur im Fangbuch)',
     renameSave: 'Speichern',
     renameCancel: 'Abbrechen',
-    renameHint:
-      'Fänge im Umkreis von 200 m ohne bekanntes Gewässer sind hier zusammengefasst. Leer lassen setzt „Unbekanntes Gewässer“ zurück.',
     knownName: 'Name aus den Gewässerdaten (© OpenStreetMap-Mitwirkende) – nicht änderbar.',
     customNameValue: (name: string) => `${name} (eigener Name)`,
   },
@@ -289,7 +286,6 @@ export const de = {
     photoProcessing: 'Foto wird verkleinert …',
     photoUnreadable: 'Dieses Bild lässt sich nicht lesen. Bitte ein JPEG-, PNG- oder HEIC-Foto wählen.',
     photoLimit: (n: number) => `Höchstens ${n} Fotos pro Eintrag.`,
-    photoHint: 'Fotos werden verkleinert und ohne Standort- und Kameradaten gespeichert.',
     removePhoto: (n: number) => `Foto ${n} entfernen`,
     photoAlt: (n: number) => `Foto ${n}`,
     openPhoto: (n: number) => `Foto ${n} groß anzeigen`,
@@ -641,31 +637,19 @@ export const de = {
     groupAccount: 'Konto & Daten',
     groupApp: 'App',
     calendar: 'Angelkalender',
-    calendarHint: 'Angeltermine planen, mit Wetter und Warnungen',
     communityRules: 'Regeln der Community',
-    communityRulesHint: 'Was beim Teilen und Kommentieren gilt',
     regulations: 'Angelrecht der Länder',
-    regulationsHint: 'Schonzeiten, Mindestmaße, Erlaubnisse',
     backup: 'Daten & Sicherung',
-    backupHint: 'Export, Import, Speicher',
     baits: 'Köder-Favoriten',
-    baitsHint: 'Köder mit einem Tipp übernehmen',
     knots: 'Knoten, Montagen & Köderführung',
-    knotsHint: 'Schritt für Schritt, mit Einsatzzweck',
     account: 'Konto',
     accountHintSignedIn: 'Angemeldet',
-    accountHint: 'Freiwillig – zum Folgen und Teilen',
     settings: 'Einstellungen',
-    settingsHint: 'Darstellung, Standort, Wetter',
     privacy: 'Datenschutz',
-    privacyHint: 'Was auf dem Gerät bleibt, was übertragen wird',
     about: 'Über Fangpunkt & Quellen',
-    aboutHint: 'Version, Datenquellen, Lizenzen',
   },
   account: {
     title: 'Konto',
-    intro:
-      'Freiwillig: Mit einem Konto kannst du anderen folgen und Beiträge teilen. Fangbuch und Angelstellen bleiben weiter nur auf diesem Gerät.',
     loading: 'Wird geladen …',
     disabled: 'Das Konto ist in dieser Version nicht eingerichtet.',
     offline: 'Keine Verbindung – das Konto braucht Internet. Alles andere in Fangpunkt funktioniert weiter.',
@@ -690,7 +674,6 @@ export const de = {
     tabs: { signIn: 'Anmelden', signUp: 'Registrieren' },
     signIn: 'Anmelden',
     signUp: 'Konto erstellen',
-    signUpIntro: 'Nach dem Registrieren bekommst du eine E-Mail mit Bestätigungslink und Code. Erst dann ist dein Konto aktiv.',
     forgot: 'Passwort vergessen?',
     noPasswordYet:
       'Du hattest dich bisher mit einem Code angemeldet? Tippe auf „Passwort vergessen?“ und lege dein Passwort fest.',
@@ -698,7 +681,6 @@ export const de = {
     confirmSent: (email: string) =>
       `Wir haben dir eine E-Mail an ${email} geschickt. Tippe auf den Link darin oder gib hier den Code ein. Beides gilt 10 Minuten. Keine E-Mail da? Schau auch im Spam-Ordner nach.`,
     resetTitle: 'Passwort vergessen?',
-    resetIntro: 'Gib deine E-Mail-Adresse ein. Wir schicken dir einen Link und einen Code, mit dem du ein neues Passwort festlegst.',
     resetSend: 'Link senden',
     resetSent: (email: string) =>
       `Falls es ein Konto mit ${email} gibt, ist jetzt eine E-Mail unterwegs. Tippe auf den Link darin oder gib hier den Code ein. Beides gilt 10 Minuten.`,
@@ -745,10 +727,8 @@ export const de = {
       needsPassword: 'Lege zuerst ein Passwort fest.',
       signOutOthers: 'Auf allen anderen Geräten abmelden',
       signedOutOthers: 'Auf allen anderen Geräten abgemeldet.',
-      notifyNote: 'Ändert sich dein Passwort oder deine E-Mail-Adresse, bekommst du zur Sicherheit eine E-Mail.',
     },
     createTitle: 'Profil anlegen',
-    createIntro: 'Wähle deinen Nutzernamen. Damit finden dich andere.',
     usernameLabel: 'Nutzername',
     usernameHint:
       '3–20 Zeichen: a–z, 0–9, _ und Punkt; beginnt mit einem Buchstaben. Lässt sich später nicht ändern.',
@@ -762,7 +742,6 @@ export const de = {
     usernameChecking: 'Wird geprüft …',
     usernameFree: 'Frei.',
     displayNameLabel: 'Anzeigename',
-    displayNameHint: 'So sehen dich andere, z. B. dein Vorname. Höchstens 40 Zeichen.',
     displayNameInvalid: 'Bitte einen Anzeigenamen mit 1 bis 40 Zeichen eingeben.',
     create: 'Profil speichern',
     // Kontodetails (Wunsch Nutzer 2026-11-11, Vorlage als Bild)
@@ -771,13 +750,10 @@ export const de = {
     editProfile: 'Profil und Profilbild bearbeiten',
     privacyTitle: 'Privatsphäre',
     privacyFollowTitle: 'Wer darf dir folgen?',
-    privacyRowHint: 'Privates Konto und Sichtbarkeit deiner Erfolge',
     privacySignedOut: 'Melde dich an, um deine Privatsphäre-Einstellungen zu ändern.',
     privacyToAccount: 'Zum Konto',
     followTitle: 'Follower',
     followManage: 'Follower verwalten',
-    followManageHint: 'Anfragen, Follower und Blockierungen',
-    deleteRowHint: 'Dein Konto und Profil dauerhaft entfernen',
     usernameShown: (u: string) => `@${u}`,
     editDisplayName: 'Anzeigename ändern',
     save: 'Speichern',
@@ -810,8 +786,6 @@ export const de = {
       `${name} (@${username}) auf Fangpunkt – folg mir!`,
     linkCopied: 'Link zu deinem Profil kopiert.',
     placeholderName: 'Dein Name',
-    localNote:
-      'Dein Profil und deine Beiträge bleiben vorerst nur auf diesem Gerät und sind Teil der Sicherung. Beiträge mit Freunden teilen folgt im nächsten Schritt.',
     avatarAlt: 'Profilbild',
     catchInfo: {
       title: 'Angaben zum Fang (freiwillig)',
@@ -846,7 +820,6 @@ export const de = {
     nameLabel: 'Name',
     nameRequired: 'Bitte einen Namen eingeben.',
     bioLabel: 'Über dich',
-    bioHint: 'z. B. Lieblingsgewässer, Zielfische, Verein – bis 300 Zeichen.',
     chooseAvatar: 'Profilbild wählen',
     removeAvatar: 'Bild entfernen',
     save: 'Speichern',
@@ -862,7 +835,6 @@ export const de = {
     photoAlt: (n: number) => `Foto ${n}`,
     needPhoto: 'Wähle mindestens ein Foto.',
     caption: 'Text',
-    captionHint: 'Was ist passiert? Köder, Wetter, Gewässer …',
     linkCatch: 'Mit Fang verknüpfen',
     noCatch: 'Ohne Fang',
     catchPhotos: 'Fotos aus dem Fang',
@@ -870,7 +842,6 @@ export const de = {
     publish: 'Posten',
     postTitle: 'Beitrag',
     extrasTitle: 'Über dich als Angler',
-    extrasHint: 'Alles freiwillig. Mit Konto sehen Text und Angaben nur deine Follower.',
     targetSpecies: 'Lieblingsfische',
     targetSpeciesAdd: 'Fischart hinzufügen',
     targetSpeciesPick: '– Fischart wählen –',
@@ -879,7 +850,6 @@ export const de = {
     methodsLabel: 'Bevorzugte Methoden',
     regionLabel: 'Region',
     regionNone: '– keine Angabe –',
-    regionHint: 'Nur das Bundesland, nie eine genaue Position.',
     factSpecies: 'Lieblingsfische',
     factMethods: 'Methoden',
     factRegion: 'Region',
@@ -923,18 +893,9 @@ export const de = {
     deleteComment: 'Kommentar löschen',
     commentDeleted: 'Kommentar gelöscht.',
     commentRestored: 'Kommentar wiederhergestellt.',
-    reactionsNote:
-      'Dieser Beitrag ist nur auf deinem Gerät: Gefällt mir und Kommentare sind nur deine eigenen. Teilst du ihn mit deinem Konto, können deine Follower mitmachen.',
-    reactionsNoteSignedIn:
-      'Wird gerade gesichert: Danach erscheint der Beitrag im Feed (außer bei „Nur ich“) und deine Follower können mitmachen.',
     visibilityLabel: 'Sichtbar für',
     visibility: { private: 'Nur ich', friends: 'Follower', public: 'Alle' },
-    visibilityHint:
-      'Ohne Konto bleibt der Beitrag nur auf diesem Gerät. Melde dich unter Mehr → Konto an, dann wird er automatisch gesichert.',
-    visibilityHintShared:
-      'Wird mit deinem Konto gesichert – „Nur ich“: nur du (auf all deinen Geräten), „Follower“: deine bestätigten Follower, „Alle“: alle mit Fangpunkt-Konto.',
     asHighlight: 'Als Highlight der gemeinsamen Session teilen',
-    asHighlightHint: 'Sehen nur die Teilnehmer der Session – im Feed und in der Session. Ohne Fangort.',
     visibleForGroup: 'Sichtbar für: Teilnehmer der gemeinsamen Session',
     visibilityHintPublic:
       'Für alle mit Fangpunkt-Konto sichtbar – auch für Fremde unter Feed → Entdecken. Höchstens 20 neue Beiträge in 24 Stunden.',
@@ -964,8 +925,6 @@ export const de = {
   },
   knots: {
     title: 'Knoten',
-    intro:
-      'Die wichtigsten Angelknoten mit Einsatzzweck. Eine Zeichnung zeigt Schritt für Schritt, wie die Schnur läuft.',
     filterLabel: 'Nach Einsatz filtern',
     all: 'Alle',
     uses: {
@@ -1114,8 +1073,6 @@ export const de = {
   },
   retrieves: {
     title: 'Köderführung',
-    intro:
-      'So führst du deinen Köder: Die Zeichnung zeigt die Bahn unter Wasser, der Köder läuft sie Schritt für Schritt ab.',
     filterLabel: 'Nach Wassertiefe filtern',
     all: 'Alle',
     zones: { bottom: 'Am Grund', midwater: 'Im Mittelwasser' },
@@ -1341,8 +1298,6 @@ export const de = {
   },
   rigs: {
     title: 'Montagen',
-    intro:
-      'Bewährte Montagen mit Einsatzzweck: wofür sie gut sind, was du brauchst und wie sie Schritt für Schritt aufgebaut werden.',
     filterLabel: 'Nach Angelart filtern',
     all: 'Alle',
     methods: { spin: 'Spinnfischen', bottom: 'Grundangeln', float: 'Posenangeln' },
@@ -1603,8 +1558,6 @@ export const de = {
   },
   baits: {
     title: 'Köder-Favoriten',
-    intro:
-      'Gespeicherte Köder erscheinen im Fangformular unter „Köder und Methode“ und werden mit einem Tipp übernommen – samt Farbe, Größe, Gewicht, Haken und Methode.',
     loading: 'Favoriten werden geladen …',
     emptyTitle: 'Noch keine Favoriten',
     emptyText: 'Lege deine Lieblingsköder an oder speichere einen Köder direkt im Fangformular als Favorit.',
@@ -1742,7 +1695,6 @@ export const de = {
     noState: 'Bundesland des Gewässers unbekannt.',
     addOwn: 'Eigenen Link speichern',
     ownTitle: 'Dein Link',
-    ownHint: 'Bleibt nur auf diesem Gerät (und in deiner Sicherung).',
     urlLabel: 'Link zur Seite mit der Angelkarte',
     urlInvalid: 'Bitte eine Internetadresse eingeben, z. B. https://verein.de/gastkarten',
     labelLabel: 'Bezeichnung (optional)',
@@ -1854,12 +1806,8 @@ export const de = {
       n === 1 ? '1 Änderung seit der letzten Sicherung' : `${n} Änderungen seit der letzten Sicherung`,
     exportJson: 'Sicherung ohne Fotos (.json)',
     exportZip: 'Sicherung mit Fotos (.zip)',
-    exportHint:
-      'Speichere die Datei an einem sicheren Ort, z. B. in deiner Cloud oder per Mail an dich selbst.',
     exportDone: (name: string) => `Sicherung „${name}" wurde erstellt.`,
     csvTitle: 'Fangbuch als Tabelle',
-    csvHint:
-      'Alle Einträge als CSV-Datei für Excel, Numbers oder LibreOffice. Keine Sicherung: Fotos fehlen, und die Datei lässt sich nicht wieder einlesen.',
     csvAction: 'Fangbuch exportieren (.csv)',
     csvDone: (name: string, n: number) =>
       `„${name}" mit ${n === 1 ? '1 Eintrag' : `${n} Einträgen`} wurde erstellt.`,
@@ -1901,7 +1849,6 @@ export const de = {
       calculated: 'berechnet',
     },
     importTitle: 'Sicherung wiederherstellen',
-    importHint: 'Fangpunkt-Sicherungen (.json, .zip) und Sicherungen der bisherigen Angelkarte-App (.json).',
     chooseFile: 'Datei auswählen',
     reading: 'Datei wird geprüft …',
     previewTitle: 'Was würde importiert?',
@@ -2124,11 +2071,9 @@ export const de = {
     feels: 'Gefühlt',
     seriesLabel: 'Darstellung',
     actualText: 'Die tatsächliche Temperatur.',
-    feelsText: 'Die gefühlte Temperatur – sie bezieht Wind, Luftfeuchtigkeit und Sonne mit ein.',
     precipChart: 'Niederschlagswahrscheinlichkeit',
     precipDay: (p: number, today: boolean) =>
       `Wahrscheinlichkeit ${today ? 'heute' : 'an diesem Tag'}: ${Math.round(p)} %`,
-    precipNote: 'Die Wahrscheinlichkeit für den ganzen Tag ist meist höher als die einer einzelnen Stunde.',
     precipSum: (mm: number) => `Niederschlag: ${mm.toLocaleString('de-DE', { maximumFractionDigits: 1 })} mm`,
     windChart: 'Wind',
     windSub: (ms: number, gust?: number) =>
@@ -2244,6 +2189,13 @@ export const de = {
   calendar: {
     title: 'Angelkalender',
     inviteTitle: 'Freunde einladen',
+    invitesTitle: 'Einladungen',
+    inviteFrom: (name: string) => `Von ${name} eingeladen`,
+    accept: 'Zusagen',
+    decline: 'Ablehnen',
+    inviteAnswerError: 'Das hat nicht geklappt. Prüfe die Verbindung und versuch es noch einmal.',
+    replyAccepted: 'zugesagt',
+    replyDeclined: 'abgesagt',
     inviteNone: 'Noch keine Freunde zum Einladen.',
     invitedLine: (names: string) => `Eingeladen: ${names}`,
     startSession: 'Session starten',
@@ -2253,8 +2205,6 @@ export const de = {
     tabForecast: 'Vorhersage',
     tabCalendar: 'Angelkalender',
     tabsLabel: 'Wetter-Ansicht',
-    intro:
-      'Trag ein, wann du angeln gehst. Für die nächsten 10 Tage siehst du das Wetter am gewählten Gewässer.',
     loading: 'Kalender wird geladen …',
     prevMonth: 'Voriger Monat',
     nextMonth: 'Nächster Monat',
@@ -2280,8 +2230,6 @@ export const de = {
     toCalendar: 'In Kalender',
     toCalendarLabel: (head: string) => `${head}: in den Kalender des Handys übernehmen`,
     allToCalendar: 'Alle anstehenden in den Kalender',
-    toCalendarHint:
-      'Lädt eine Kalenderdatei (.ics). Öffnen oder antippen übernimmt die Termine in den Kalender des Handys – mit Erinnerung 1 Stunde vorher (ganztägig: am Vorabend um 18 Uhr). Spätere Änderungen hier musst du dort erneut übernehmen.',
     icsDefaultTitle: 'Angeln',
     icsReminder: 'Angeltermin',
     weekTrips: 'Termine in dieser Woche',
@@ -2316,7 +2264,6 @@ export const de = {
     to: 'Bis',
     water: 'Gewässer',
     noWater: 'Ohne Gewässer (kein Wetter)',
-    waterHint: 'Gewässer aus deinem Fangbuch. Das Wetter gilt für den ersten Fangort dort.',
     name: 'Titel (optional)',
     namePlaceholder: 'z. B. Hecht vom Boot',
     notes: 'Notiz (optional)',
@@ -2344,8 +2291,6 @@ export const de = {
   },
   bite: {
     title: 'Beißfenster',
-    intro:
-      'Was deine eigenen Einträge zeigen. Die Solunar-Zeiten (Theorie) findest du im Tagesdetail – tippe dazu auf einen Tag.',
     ownTitle: 'Aus deinem Fangbuch',
     ownLoading: 'Fangbuch wird ausgewertet …',
     ownIntro: (n: number) =>
@@ -2518,7 +2463,6 @@ export const de = {
     tabsLabel: 'Feed-Ansicht',
     tabFriends: 'Gefolgt',
     tabDiscover: 'Entdecken',
-    discoverIntro: 'Beiträge, die andere mit „Alle“ teilen – zuletzt geteilt zuerst.',
     discoverEmptyTitle: 'Noch nichts zu entdecken',
     discoverEmptyText:
       'Hier erscheinen Beiträge, die andere für alle sichtbar teilen. Du kannst auch selbst beim Posten „Alle“ wählen.',
@@ -2969,8 +2913,6 @@ export const de = {
     title: 'Deine Regeln für dieses Gewässer',
     unchecked: 'Deine Notiz – nicht von Fangpunkt geprüft',
     add: 'Eigene Gewässerregeln eintragen',
-    addHint:
-      'Zum Beispiel vom Erlaubnisschein: Mindestmaße, Fangbegrenzung, Nachtangeln. Bleibt auf deinem Gerät und erscheint beim Erfassen eines Fangs hier.',
     label: 'Regeln (vom Erlaubnisschein oder Verein)',
     placeholder: 'z. B. Hecht ab 60 cm, höchstens 2 am Tag, kein Nachtangeln',
     edit: 'Bearbeiten',
@@ -2981,8 +2923,6 @@ export const de = {
   },
   groupSessions: {
     title: 'Gemeinsam angeln',
-    intro:
-      'Lade Freunde zu dieser Session ein. Jeder behält seine eigene Session – geteilt wird nur, wer dabei ist. Positionen, Routen und Fänge bleiben auf dem Gerät.',
     invite: 'Freunde einladen',
     inviteTitle: 'Freunde einladen',
     slotsLeft: (n: number) => (n === 1 ? 'Noch 1 Platz frei.' : `Noch ${n} Plätze frei.`),
@@ -3080,7 +3020,6 @@ export const de = {
       unknown: 'Das hat nicht geklappt. Versuch es noch einmal.',
     },
     loadError: 'Kommentare konnten nicht geladen werden. Prüfe die Verbindung.',
-    sharedNote: 'Gefällt mir und Kommentare sehen alle, die diesen Beitrag sehen dürfen.',
     reportedComment:
       'Danke! Wir prüfen die Meldung innerhalb von 24 Stunden. Der Kommentar ist für dich ausgeblendet.',
   },
@@ -3210,7 +3149,6 @@ export const de = {
     what: 'Art, Name, Notiz und die genaue Position des Orts. Fotos und Fänge bleiben auf deinem Gerät. Änderst du den Ort später, teile ihn noch einmal, damit deine Freunde den neuen Stand sehen.',
     withTitle: 'Teilen mit',
     allFriends: 'Alle Freunde',
-    allFriendsHint: 'auch mit Freunden, die du später hinzufügst',
     noFriends: 'Du hast noch keine Freunde – das sind Leute, denen du folgst und die dir auch folgen.',
     share: 'Teilen',
     sharing: 'Wird geteilt …',
@@ -3387,7 +3325,7 @@ export const de = {
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',
-        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse und dein Passwort (gespeichert wird nur ein nicht umkehrbarer Hash; Bestätigungs-, Passwort- und Sicherheits-Mails kommen von noreply@fangpunkt.com), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), dein Profiltext und freiwillige Angaben (Lieblingsfische, Methoden, Region als Bundesland, angeheftete Beiträge – sichtbar nur für deine bestätigten Follower; „Profil teilen“ verschickt nur einen Link mit deinem Nutzernamen), deine erreichten Erfolge (nur Stufe und Datum, keine Fänge; sichtbar je nach deiner Wahl für Follower, alle mit Fangpunkt-Konto oder niemanden), wem du folgst, wer dir folgt, offene Folge-Anfragen, die Zahlen dazu (sichtbar für alle mit Fangpunkt-Konto) und ob dein Konto privat ist, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine bestätigten Follower bzw. bei „Alle“ für alle mit Fangpunkt-Konto, auch für Fremde unter Feed → Entdecken –, Beiträge, die du speicherst (nur für dich sichtbar), wie oft du am Tag nach Personen suchst (gegen massenhaftes Durchsuchen; die Suchbegriffe selbst werden nicht gespeichert), gemeinsame Sessions (Titel, auf Wunsch der Gewässername ohne Position, Beginn und Ende, wer eingeladen ist und wer dabei ist – sichtbar für die Teilnehmer; keine Positionen, Routen oder Fänge) Angeltermine bleiben auf deinem Gerät; lädst du Freunde dazu ein, geht nur eine Mitteilung an sie (Titel oder Gewässername und Tag), und beim gemeinsamen Start wird eine gemeinsame Session angelegt (wie oben), samt den Kennzahlen, die du nach dem Ende einer gemeinsamen Session für den Rückblick teilst (Fänge, Bisse, Einträge, größter Fisch mit Art und Länge, Zeit am Wasser, Strecke – nur diese Zahlen, sichtbar nur für die Teilnehmer, ohne Route, Orte, Fotos und einzelne Einträge) und Highlights, die du dort teilst (Beiträge wie oben, sichtbar nur für die Teilnehmer) sowie Orte, die du selbst mit Freunden teilst (Freunde = ihr folgt euch gegenseitig; Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst, welcher Fassung der Regeln der Community du wann zugestimmt hast, einen Einspruch gegen eine Sperre (Text und Zeitpunkt; nur Moderatoren lesen ihn), sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte, Profilbilder und Profiltexte löschen, Konten verwarnen (90 Tage aktiv, zurücknehmbar) und befristet oder dauerhaft sperren; Verwarnungen, Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt bei Verwarnung, Sperre und Aufhebung eine Mail an ihre Konto-Adresse. Gesperrte Konten können nichts mehr veröffentlichen oder ändern. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person, bei Beiträgen und Kommentaren dem Anfang des Textes und bei gemeinsamen Sessions deren Titel); für „Test-Mitteilung senden“ wird nur vermerkt, ob Apple sie angenommen hat. Einzelne Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, solange du nicht angemeldet bist; mit Konto werden Beiträge auf dem Server gesichert, „Nur ich“ sieht nur du. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Follower und Gefolgte, Erfolge, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, gespeicherte Beiträge, gemeinsame Sessions, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
+        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse und dein Passwort (gespeichert wird nur ein nicht umkehrbarer Hash; Bestätigungs-, Passwort- und Sicherheits-Mails kommen von noreply@fangpunkt.com), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), dein Profiltext und freiwillige Angaben (Lieblingsfische, Methoden, Region als Bundesland, angeheftete Beiträge – sichtbar nur für deine bestätigten Follower; „Profil teilen“ verschickt nur einen Link mit deinem Nutzernamen), deine erreichten Erfolge (nur Stufe und Datum, keine Fänge; sichtbar je nach deiner Wahl für Follower, alle mit Fangpunkt-Konto oder niemanden), wem du folgst, wer dir folgt, offene Folge-Anfragen, die Zahlen dazu (sichtbar für alle mit Fangpunkt-Konto) und ob dein Konto privat ist, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine bestätigten Follower bzw. bei „Alle“ für alle mit Fangpunkt-Konto, auch für Fremde unter Feed → Entdecken –, Beiträge, die du speicherst (nur für dich sichtbar), wie oft du am Tag nach Personen suchst (gegen massenhaftes Durchsuchen; die Suchbegriffe selbst werden nicht gespeichert), gemeinsame Sessions (Titel, auf Wunsch der Gewässername ohne Position, Beginn und Ende, wer eingeladen ist und wer dabei ist – sichtbar für die Teilnehmer; keine Positionen, Routen oder Fänge) Angeltermine bleiben auf deinem Gerät; lädst du Freunde dazu ein, speichert der Server für sie Titel, Gewässername (nur Text), Tag und Uhrzeit des Termins (sichtbar nur für die Eingeladenen, ohne Position und Notizen) und ob sie zu- oder abgesagt haben – löschst du den Termin, wird das zurückgezogen –, und beim gemeinsamen Start wird eine gemeinsame Session angelegt (wie oben), samt den Kennzahlen, die du nach dem Ende einer gemeinsamen Session für den Rückblick teilst (Fänge, Bisse, Einträge, größter Fisch mit Art und Länge, Zeit am Wasser, Strecke – nur diese Zahlen, sichtbar nur für die Teilnehmer, ohne Route, Orte, Fotos und einzelne Einträge) und Highlights, die du dort teilst (Beiträge wie oben, sichtbar nur für die Teilnehmer) sowie Orte, die du selbst mit Freunden teilst (Freunde = ihr folgt euch gegenseitig; Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst, welcher Fassung der Regeln der Community du wann zugestimmt hast, einen Einspruch gegen eine Sperre (Text und Zeitpunkt; nur Moderatoren lesen ihn), sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte, Profilbilder und Profiltexte löschen, Konten verwarnen (90 Tage aktiv, zurücknehmbar) und befristet oder dauerhaft sperren; Verwarnungen, Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt bei Verwarnung, Sperre und Aufhebung eine Mail an ihre Konto-Adresse. Gesperrte Konten können nichts mehr veröffentlichen oder ändern. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person, bei Beiträgen und Kommentaren dem Anfang des Textes und bei gemeinsamen Sessions deren Titel); für „Test-Mitteilung senden“ wird nur vermerkt, ob Apple sie angenommen hat. Einzelne Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, solange du nicht angemeldet bist; mit Konto werden Beiträge auf dem Server gesichert, „Nur ich“ sieht nur du. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Follower und Gefolgte, Erfolge, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, gespeicherte Beiträge, gemeinsame Sessions, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
       },
       {
         name: 'GoatCounter (goatcounter.com)',

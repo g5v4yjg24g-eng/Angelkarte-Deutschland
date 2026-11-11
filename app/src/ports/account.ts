@@ -6,6 +6,7 @@ import type { FollowCounts, FollowEntry, FollowResult } from '../domain/follows'
 import type { GroupMember, GroupSession } from '../domain/groupSessions';
 import type { GroupStats, GroupStatsEntry } from '../domain/groupStats';
 import type { StartRequest } from '../domain/tripStart';
+import type { TripInvite, TripReply } from '../domain/tripInvites';
 import type { FeedPost } from '../domain/feed';
 import type { ProfileExtrasPayload, PublicProfile, UserHit } from '../domain/userProfile';
 import type { AchVisibility, RemoteAchievements } from '../domain/sharedAchievements';
@@ -164,7 +165,24 @@ export interface AccountProvider {
   myGroupSessions(): Promise<GroupSession[]>;
   groupSessionMembers(groupId: string): Promise<GroupMember[]>;
   /** Angeltermin: Freunde zum Termin einladen (nur eine Mitteilung); `trip` = ID des Termins; liefert die Zahl Eingeladener */
-  inviteToTrip(input: { trip: string; userIds: string[]; label?: string | undefined; day?: string | undefined }): Promise<number>;
+  inviteToTrip(input: {
+    trip: string;
+    userIds: string[];
+    title?: string | undefined;
+    waterName?: string | undefined;
+    date: string;
+    from?: string | undefined;
+    to?: string | undefined;
+    tz: string;
+  }): Promise<number>;
+  /** Meine Einladungen zu Angelterminen (offen und zugesagt) */
+  myTripInvites(): Promise<TripInvite[]>;
+  /** Einladung zu- oder absagen */
+  respondTripInvite(trip: string, accept: boolean): Promise<void>;
+  /** Antworten auf meine eingeladenen Termine */
+  tripInviteStatuses(trips: string[]): Promise<TripReply[]>;
+  /** Termin gelöscht: Einladungen zurückziehen */
+  cancelTripInvites(trip: string): Promise<void>;
   /** Termin starten: legt die gemeinsame Session an, die Eingeladenen bekommen die Start-Anfrage; liefert ihre ID */
   startTripSession(input: {
     title?: string | undefined;

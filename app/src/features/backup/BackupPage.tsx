@@ -125,7 +125,6 @@ export function BackupPage() {
             {de.backup.exportJson}
           </Button>
         </div>
-        <p className="muted">{de.backup.exportHint}</p>
       </Section>
 
       <Section title={de.backup.csvTitle}>
@@ -134,7 +133,6 @@ export function BackupPage() {
             {de.backup.csvAction}
           </Button>
         </div>
-        <p className="muted">{de.backup.csvHint}</p>
         {csvMessage && <Notice tone={csvMessage.tone}>{csvMessage.text}</Notice>}
       </Section>
 

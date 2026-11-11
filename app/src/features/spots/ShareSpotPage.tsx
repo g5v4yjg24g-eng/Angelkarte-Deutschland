@@ -115,7 +115,6 @@ export function ShareSpotPage() {
               />
               <span>
                 <strong>{t.allFriends}</strong>
-                <span className="muted">{t.allFriendsHint}</span>
               </span>
             </label>
             {list.map((f) => (

@@ -47,25 +47,15 @@ export function MorePage() {
       )}
       <Section title={t.groupPlan}>
         <div className={styles.card}>
-          <ListLink to="/wetter/kalender" icon={<CalendarIcon />} title={t.calendar} hint={t.calendarHint} />
-          <ListLink to="/mehr/knoten" icon={<KnotIcon />} title={t.knots} hint={t.knotsHint} />
-          <ListLink to="/mehr/koeder" icon={<HookIcon />} title={t.baits} hint={t.baitsHint} />
+          <ListLink to="/wetter/kalender" icon={<CalendarIcon />} title={t.calendar} />
+          <ListLink to="/mehr/knoten" icon={<KnotIcon />} title={t.knots} />
+          <ListLink to="/mehr/koeder" icon={<HookIcon />} title={t.baits} />
         </div>
       </Section>
       <Section title={t.groupRules}>
         <div className={styles.card}>
-          <ListLink
-            to="/mehr/recht"
-            icon={<ParagraphIcon />}
-            title={t.regulations}
-            hint={t.regulationsHint}
-          />
-          <ListLink
-            to="/mehr/regeln"
-            icon={<FeedIcon />}
-            title={t.communityRules}
-            hint={t.communityRulesHint}
-          />
+          <ListLink to="/mehr/recht" icon={<ParagraphIcon />} title={t.regulations} />
+          <ListLink to="/mehr/regeln" icon={<FeedIcon />} title={t.communityRules} />
         </div>
       </Section>
       <Section title={t.groupAccount}>
@@ -74,21 +64,16 @@ export function MorePage() {
             to="/mehr/konto"
             icon={<UserIcon />}
             title={t.account}
-            hint={hasStoredSession() ? t.accountHintSignedIn : t.accountHint}
+            {...(hasStoredSession() ? { hint: t.accountHintSignedIn } : {})}
           />
-          <ListLink to="/mehr/daten" icon={<DatabaseIcon />} title={t.backup} hint={t.backupHint} />
+          <ListLink to="/mehr/daten" icon={<DatabaseIcon />} title={t.backup} />
         </div>
       </Section>
       <Section title={t.groupApp}>
         <div className={styles.card}>
-          <ListLink
-            to="/mehr/einstellungen"
-            icon={<SlidersIcon />}
-            title={t.settings}
-            hint={t.settingsHint}
-          />
-          <ListLink to="/mehr/datenschutz" icon={<LockIcon />} title={t.privacy} hint={t.privacyHint} />
-          <ListLink to="/mehr/info" icon={<InfoIcon />} title={t.about} hint={t.aboutHint} />
+          <ListLink to="/mehr/einstellungen" icon={<SlidersIcon />} title={t.settings} />
+          <ListLink to="/mehr/datenschutz" icon={<LockIcon />} title={t.privacy} />
+          <ListLink to="/mehr/info" icon={<InfoIcon />} title={t.about} />
         </div>
       </Section>
     </Page>

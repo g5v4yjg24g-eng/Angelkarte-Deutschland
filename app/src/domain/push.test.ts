@@ -22,6 +22,7 @@ describe('Push-Mitteilungen (PUSH-1)', () => {
   it('springt beim Antippen nur in bekannte Bereiche der App', () => {
     expect(pushTarget({ path: '/profil/freunde' })).toBe('/profil/freunde');
     expect(pushTarget({ path: '/profil/spots' })).toBe('/profil/spots');
+    expect(pushTarget({ path: '/wetter/kalender' })).toBe('/wetter/kalender');
     expect(pushTarget({ path: '/fangbuch/sessions' })).toBe('/fangbuch/sessions');
     expect(pushTarget({ path: '/profil/beitrag/2648da34-224f-4ce7-bcb3-e530f11d5b22' })).toBe(
       '/profil/beitrag/2648da34-224f-4ce7-bcb3-e530f11d5b22',

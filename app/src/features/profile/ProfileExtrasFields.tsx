@@ -30,7 +30,6 @@ export function ProfileExtrasFields({
   return (
     <fieldset className={styles.extras}>
       <legend>{t.extrasTitle}</legend>
-      <p className="muted">{t.extrasHint}</p>
 
       <div>
         <span className={styles.fieldLabel}>{t.targetSpecies}</span>
@@ -103,7 +102,6 @@ export function ProfileExtrasFields({
 
       <SelectField
         label={t.regionLabel}
-        hint={t.regionHint}
         value={value.region ?? ''}
         options={[
           { value: '', label: t.regionNone },

@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-13',
+    title: 'Termin-Einladungen beantworten',
+    items: [
+      'Einladungen: Wer zu einem Angeltermin eingeladen wird, sieht ihn im Angelkalender und kann zusagen oder ablehnen. Bei „Zusagen“ landet der Termin im eigenen Kalender.',
+      'Antworten: Am Termin steht, wer zugesagt oder abgesagt hat.',
+    ],
+  },
+  {
     id: '2026-12-12',
     title: 'Angeltermin mit Einladung',
     items: [

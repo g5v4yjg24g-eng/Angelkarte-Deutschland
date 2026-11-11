@@ -96,7 +96,6 @@ export function PhotoPicker({
       {processing && <p className="muted">{t.photoProcessing}</p>}
       {full && <p className="muted">{t.photoLimit(MAX_PHOTOS_PER_CATCH)}</p>}
       {error && <Notice tone="error">{error}</Notice>}
-      <p className="muted">{t.photoHint}</p>
     </fieldset>
   );
 }

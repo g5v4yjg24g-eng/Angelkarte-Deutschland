@@ -363,13 +363,6 @@ function PostCard({ post }: { post: Post }) {
             {post.groupId ? t.visibleForGroup : t.visibleFor(t.visibility[post.visibility ?? 'private'])}
           </p>
           <ShareRow post={post} />
-          <p className={`muted ${styles.note}`}>
-            {server
-              ? de.reactions.sharedNote
-              : storedUserId()
-                ? t.reactionsNoteSignedIn
-                : t.reactionsNote}
-          </p>
           {linked && !linked.deletedAt && (
             <Link to={`/fangbuch/${linked.id}`} className={styles.catchLink}>
               {t.linkedCatch}: {catchSummary(linked)}

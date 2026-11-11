@@ -51,7 +51,6 @@ export function WaterRulesSection({ waterId }: { waterId: string }) {
         <Button variant="ghost" onClick={start}>
           {t.add}
         </Button>
-        <p className={`muted ${styles.small}`}>{t.addHint}</p>
       </div>
     );
   return (

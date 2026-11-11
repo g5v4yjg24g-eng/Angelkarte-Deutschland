@@ -138,7 +138,6 @@ export function BiteWindows(props: {
 }) {
   return (
     <Section title={t.title}>
-      <p className="muted">{t.intro}</p>
       <section className={styles.biteBlock} aria-labelledby="bite-own">
         <h3 id="bite-own" className={styles.blockTitle}>
           {t.ownTitle}
