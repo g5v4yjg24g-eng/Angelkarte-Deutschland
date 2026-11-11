@@ -146,3 +146,151 @@
 .muted {
   color: var(--color-text-muted);
 }
+
+/* „Alle löschen“ im Kopf */
+.clearAll {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.clearAll:hover {
+  background: var(--color-surface-2);
+}
+.confirmBox {
+  display: grid;
+  gap: var(--space-4);
+}
+.confirmActions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+/* Zeile zum Wegwischen: „Löschen“ liegt dahinter, die Zeile gleitet darüber nach links */
+.swipe {
+  position: relative;
+  overflow: hidden;
+}
+.swipeFront {
+  position: relative;
+  background: var(--color-bg);
+  touch-action: pan-y;
+  transition: transform 180ms ease-out;
+}
+.swipeCard {
+  padding: var(--space-2) 0;
+}
+.swipeDelete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 96px;
+  border: 0;
+  background: var(--color-danger);
+  color: var(--color-on-danger);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+/* Tastatur: Fokus auf „Löschen“ schiebt die Zeile zur Seite */
+.swipeDelete:focus-visible ~ .swipeFront {
+  transform: translateX(-96px);
+}
+.swipeGone {
+  opacity: 0;
+  transition: opacity 180ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .swipeFront,
+  .swipeGone {
+    transition: none;
+  }
+}
+
+/* Einladung als Visitenkarte */
+.cardLink {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.facts {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px var(--space-3);
+  margin: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-md, 10px);
+  background: var(--color-surface-2);
+  font-size: var(--text-sm);
+  pointer-events: none;
+}
+.facts dt {
+  color: var(--color-text-muted);
+}
+.facts dd {
+  margin: 0;
+}
+.sessionTitle {
+  position: relative;
+  margin: 0;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+.answers {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+.accept,
+.declineBtn {
+  min-height: var(--touch);
+  border: 2px solid;
+  border-radius: var(--radius-md, 10px);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+/* Schrift mit etwas Textfarbe gemischt: dunkler im hellen, heller im dunklen Schema (Kontrast), Rand bleibt grün/rot */
+.accept {
+  border-color: var(--color-success);
+  color: color-mix(in srgb, var(--color-success) 60%, var(--color-text));
+  background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface));
+}
+.declineBtn {
+  border-color: var(--color-danger);
+  color: color-mix(in srgb, var(--color-danger) 60%, var(--color-text));
+  background: color-mix(in srgb, var(--color-danger) 9%, var(--color-surface));
+}
+.accept:disabled,
+.declineBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.answerError {
+  position: relative;
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+.cardTime {
+  position: relative;
+  justify-self: end;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  pointer-events: none;
+}

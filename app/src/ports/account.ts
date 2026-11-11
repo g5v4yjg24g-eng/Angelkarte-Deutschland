@@ -198,6 +198,10 @@ export interface AccountProvider {
   unreadNotificationCount(): Promise<number>;
   /** Alle Mitteilungen als gelesen markieren */
   markNotificationsRead(): Promise<void>;
+  /** Eine Mitteilung löschen */
+  deleteNotification(id: string): Promise<void>;
+  /** Alle löschen – außer offenen Einladungen und Folge-Anfragen; liefert die Zahl der gelöschten */
+  clearNotifications(): Promise<number>;
   /** Rückblick: eigene Kennzahlen der Session hochladen (nur Zahlen; nur wer dabei ist oder war) */
   setGroupStats(groupId: string, stats: GroupStats): Promise<void>;
   /** Kennzahlen aller Teilnehmer, die welche hochgeladen haben */

@@ -21,3 +21,17 @@ Cursor vor dem ältesten: leer|0
 Blockierte erscheinen nicht|0
 Ohne Anmeldung: Zahl|0
 Ohne Anmeldung: Markieren|FEHLER: not signed in
+Liste v2: Einladungen mit Angaben|trip_invite:invited:Abendansitz:2099-05-17:17:00:- | trip_start:invited:-:-:-:De Wittsee
+Liste v2: Beitrag wie vorher|1
+Alle löschen: offene bleiben|4
+Übrig nach Alle löschen|trip_invite,trip_start
+Bert löscht nicht Annas Mitteilung|
+Anna hat sie noch|1
+Anna löscht die Session-Mitteilung|
+Danach nur noch Termin-Einladung|trip_invite
+Zusagen|
+Stand nach Zusage|accepted
+Alle löschen nach Antwort|1
+Liste leer|0
+Ohne Anmeldung löschen|FEHLER: not signed in
+Ohne Anmeldung eine löschen|FEHLER: not signed in

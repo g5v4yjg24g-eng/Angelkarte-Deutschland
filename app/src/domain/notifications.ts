@@ -32,6 +32,21 @@ export interface AppNotification {
   read: boolean;
   /** nur bei Beitragsbezug und nur, wenn ich den Beitrag sehen darf */
   post?: { authorUsername: string; createdAt: string; mine: boolean } | undefined;
+  /** nur bei Einladungen (Termin, Session, Session-Start): Stand meiner Antwort */
+  inviteStatus?: 'invited' | 'accepted' | 'declined' | undefined;
+  /** nur bei Termin-Einladungen: Angaben zum Termin (ohne Position, ohne Notizen) */
+  trip?:
+    | {
+        title?: string | undefined;
+        waterName?: string | undefined;
+        date: string;
+        from?: string | undefined;
+        to?: string | undefined;
+        tz: string;
+      }
+    | undefined;
+  /** nur bei Session-Einladungen: Titel (oder Gewässername) der Session */
+  sessionTitle?: string | undefined;
 }
 
 /** So viele Mitteilungen je Seite */
@@ -50,6 +65,14 @@ const RowSchema = z.object({
   post_author_username: z.string().nullable().optional(),
   post_created_at: z.string().nullable().optional(),
   post_is_mine: z.boolean().nullable().optional(),
+  invite_status: z.enum(['invited', 'accepted', 'declined']).nullable().optional(),
+  trip_title: z.string().nullable().optional(),
+  trip_water_name: z.string().nullable().optional(),
+  trip_date: z.string().nullable().optional(),
+  trip_from: z.string().nullable().optional(),
+  trip_to: z.string().nullable().optional(),
+  trip_tz: z.string().nullable().optional(),
+  session_title: z.string().nullable().optional(),
 });
 
 /** Zeilen vom Server prüfen; unbekannte Arten (neuere Datenbank) und kaputte Zeilen werden übersprungen */
@@ -77,10 +100,35 @@ export function parseNotifications(rows: readonly unknown[] | null | undefined):
               mine: r.post_is_mine === true,
             }
           : undefined,
+      inviteStatus: r.invite_status ?? undefined,
+      trip:
+        r.kind === 'trip_invite' && r.trip_date
+          ? {
+              title: r.trip_title ?? undefined,
+              waterName: r.trip_water_name ?? undefined,
+              date: r.trip_date,
+              from: r.trip_from ?? undefined,
+              to: r.trip_to ?? undefined,
+              tz: r.trip_tz ?? 'Europe/Berlin',
+            }
+          : undefined,
+      sessionTitle: r.session_title ?? undefined,
     });
   }
   return out;
 }
+
+/** Einladung mit Karte (Termin oder Session) – mit Annehmen/Ablehnen, solange sie offen ist */
+export const isInvite = (n: Pick<AppNotification, 'kind'>) =>
+  n.kind === 'trip_invite' || n.kind === 'session_invite' || n.kind === 'trip_start';
+
+/** Offene Einladung: noch nicht beantwortet (Stand `invited`) – ohne Angabe gilt sie als offen */
+export const isOpenInvite = (n: AppNotification) =>
+  isInvite(n) && (n.inviteStatus ?? 'invited') === 'invited';
+
+/** Eine Mitteilung wegwischen/löschen: nur lokal aus der Liste nehmen */
+export const withoutNotification = (list: readonly AppNotification[], id: string) =>
+  list.filter((n) => n.id !== id);
 
 /** Zahl am Fisch: nichts bei 0, ab 10 „9+“ */
 export function badgeLabel(count: number): string | undefined {

@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   badgeLabel,
   hasMoreNotifications,
+  isInvite,
+  isOpenInvite,
+  withoutNotification,
   notificationPath,
   parseNotifications,
   parseUnreadCount,
@@ -159,5 +162,66 @@ describe('shouldDismissRight', () => {
   it('nach links oder ohne Breite nie', () => {
     expect(shouldDismissRight(-200, 100, 390)).toBe(false);
     expect(shouldDismissRight(200, 100, 0)).toBe(false);
+  });
+});
+
+describe('Einladungen und Löschen', () => {
+  it('liest die Angaben zur Termin- und Session-Einladung', () => {
+    const [t, s] = parseNotifications([
+      {
+        ...base,
+        kind: 'trip_invite',
+        ref: 'trip-1',
+        post_author_username: null,
+        post_created_at: null,
+        post_is_mine: null,
+        invite_status: 'invited',
+        trip_title: 'Abendansitz',
+        trip_water_name: 'De Wittsee',
+        trip_date: '2099-05-17',
+        trip_from: '17:00',
+        trip_to: '21:00',
+        trip_tz: 'Europe/Berlin',
+      },
+      {
+        ...base,
+        id: 'n2',
+        kind: 'trip_start',
+        ref: 'g1',
+        invite_status: 'accepted',
+        session_title: 'De Wittsee',
+      },
+    ]);
+    expect(t?.trip).toEqual({
+      title: 'Abendansitz',
+      waterName: 'De Wittsee',
+      date: '2099-05-17',
+      from: '17:00',
+      to: '21:00',
+      tz: 'Europe/Berlin',
+    });
+    expect(t?.inviteStatus).toBe('invited');
+    expect(s?.sessionTitle).toBe('De Wittsee');
+    expect(s?.trip).toBeUndefined();
+  });
+  it('Termin ohne Tag aus dem Server hat keine Angaben', () => {
+    const [t] = parseNotifications([{ ...base, kind: 'trip_invite', invite_status: 'invited' }]);
+    expect(t?.trip).toBeUndefined();
+  });
+  it('offen = Einladung, auf die noch nicht geantwortet wurde', () => {
+    expect(isInvite(n({ kind: 'trip_invite' }))).toBe(true);
+    expect(isInvite(n({ kind: 'session_invite' }))).toBe(true);
+    expect(isInvite(n({ kind: 'trip_start' }))).toBe(true);
+    expect(isInvite(n({ kind: 'like' }))).toBe(false);
+    expect(isOpenInvite(n({ kind: 'trip_invite', inviteStatus: 'invited' }))).toBe(true);
+    expect(isOpenInvite(n({ kind: 'trip_invite' }))).toBe(true);
+    expect(isOpenInvite(n({ kind: 'trip_invite', inviteStatus: 'accepted' }))).toBe(false);
+    expect(isOpenInvite(n({ kind: 'trip_start', inviteStatus: 'declined' }))).toBe(false);
+    expect(isOpenInvite(n({ kind: 'like' }))).toBe(false);
+  });
+  it('withoutNotification nimmt nur die gewählte heraus', () => {
+    const list = [n({ id: 'a' }), n({ id: 'b' }), n({ id: 'c' })];
+    expect(withoutNotification(list, 'b').map((x) => x.id)).toEqual(['a', 'c']);
+    expect(withoutNotification(list, 'x')).toHaveLength(3);
   });
 });

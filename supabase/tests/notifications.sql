@@ -67,3 +67,35 @@ select 'Blockierte erscheinen nicht', t($q$ select count(*)::text from public.my
 select as_user('') \g /dev/null
 select 'Ohne Anmeldung: Zahl', t($q$ select public.unread_notification_count()::text $q$);
 select 'Ohne Anmeldung: Markieren', t($q$ select public.mark_notifications_read()::text $q$);
+
+-- ---- Löschen und Einladungen (Wunsch Nutzer 2026-11-11) ----
+reset role;
+create function public.nid(k text) returns uuid language sql security definer as $$ select id from public.notifications where kind = k and user_id = '00000000-0000-0000-0000-0000000000a1' limit 1 $$;
+grant execute on function public.nid(text) to authenticated;
+-- Termin-Einladung (Bert → Anna) und Session-Start (Bert → Anna) als offene Einladungen
+insert into public.trip_invites(trip_id, host_id, user_id, title, water_name, trip_date, from_time, to_time)
+  values ('00000000-0000-0000-0000-0000000000f1','00000000-0000-0000-0000-0000000000b1','00000000-0000-0000-0000-0000000000a1','Abendansitz','De Wittsee', date '2099-05-17','17:00','21:00');
+insert into public.group_sessions(id, host_id, title) values ('00000000-0000-0000-0000-0000000000f2','00000000-0000-0000-0000-0000000000b1','De Wittsee');
+insert into public.group_session_members(session_id, user_id, status) values
+  ('00000000-0000-0000-0000-0000000000f2','00000000-0000-0000-0000-0000000000b1','joined'),
+  ('00000000-0000-0000-0000-0000000000f2','00000000-0000-0000-0000-0000000000a1','invited');
+set role authenticated;
+select as_user('a1') \g /dev/null
+select 'Liste v2: Einladungen mit Angaben', t($q$ select string_agg(kind||':'||coalesce(invite_status,'-')||':'||coalesce(trip_title,'-')||':'||coalesce(trip_date::text,'-')||':'||coalesce(trip_from,'-')||':'||coalesce(session_title,'-'), ' | ' order by kind) from public.my_notifications2() where kind in ('trip_invite','trip_start') $q$);
+select 'Liste v2: Beitrag wie vorher', t($q$ select count(*)::text from public.my_notifications2() where kind = 'like' and post_is_mine $q$);
+select 'Alle löschen: offene bleiben', t($q$ select public.clear_notifications()::text $q$);
+select 'Übrig nach Alle löschen', t($q$ select string_agg(kind, ',' order by kind) from public.my_notifications2() $q$);
+select as_user('b1') \g /dev/null
+select 'Bert löscht nicht Annas Mitteilung', t($q$ select public.delete_notification(public.nid('trip_start'))::text $q$);
+select as_user('a1') \g /dev/null
+select 'Anna hat sie noch', t($q$ select count(*)::text from public.my_notifications2() where kind = 'trip_start' $q$);
+select 'Anna löscht die Session-Mitteilung', t($q$ select public.delete_notification(public.nid('trip_start'))::text $q$);
+select 'Danach nur noch Termin-Einladung', t($q$ select string_agg(kind, ',') from public.my_notifications2() $q$);
+-- Antwort: nach der Zusage ist die Termin-Einladung nicht mehr offen und lässt sich löschen
+select 'Zusagen', t($q$ select public.respond_trip_invite('00000000-0000-0000-0000-0000000000f1', true)::text $q$);
+select 'Stand nach Zusage', t($q$ select invite_status from public.my_notifications2() where kind = 'trip_invite' $q$);
+select 'Alle löschen nach Antwort', t($q$ select public.clear_notifications()::text $q$);
+select 'Liste leer', t($q$ select count(*)::text from public.my_notifications2() $q$);
+select as_user('') \g /dev/null
+select 'Ohne Anmeldung löschen', t($q$ select public.clear_notifications()::text $q$);
+select 'Ohne Anmeldung eine löschen', t($q$ select public.delete_notification('00000000-0000-0000-0000-0000000000f9')::text $q$);

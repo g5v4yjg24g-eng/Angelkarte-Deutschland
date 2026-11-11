@@ -15,6 +15,7 @@ export function VisitCard({
   handle,
   detail,
   status,
+  footer,
 }: {
   /** Name des Bereichs für Screenreader */
   label: string;
@@ -27,26 +28,31 @@ export function VisitCard({
   /** kleine Zeile unter dem Namen (E-Mail, Erfolge …) */
   detail?: ReactNode;
   status?: { label: string; tone: VisitTone };
+  /** Inhalt unter der Karte (z. B. Angaben und Knöpfe einer Einladung), innerhalb des Rahmens */
+  footer?: ReactNode;
 }) {
   return (
     <section className={styles.card} aria-label={label}>
       <SunsetScene />
-      <span className={styles.avatar}>
-        {avatar}
-        {avatarAction}
-      </span>
-      <div className={styles.text}>
-        <strong className={styles.name}>{name}</strong>
-        {badge}
-        <span className="muted">{handle}</span>
-        {detail}
-        {status && (
-          <span className={styles.status}>
-            <span className={`${styles.dot} ${styles[status.tone] ?? ''}`} aria-hidden="true" />
-            {status.label}
-          </span>
-        )}
+      <div className={styles.top}>
+        <span className={styles.avatar}>
+          {avatar}
+          {avatarAction}
+        </span>
+        <div className={styles.text}>
+          <strong className={styles.name}>{name}</strong>
+          {badge}
+          <span className="muted">{handle}</span>
+          {detail}
+          {status && (
+            <span className={styles.status}>
+              <span className={`${styles.dot} ${styles[status.tone] ?? ''}`} aria-hidden="true" />
+              {status.label}
+            </span>
+          )}
+        </div>
       </div>
+      {footer && <div className={styles.footer}>{footer}</div>}
     </section>
   );
 }

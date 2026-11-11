@@ -504,7 +504,7 @@ export function supabaseAccount(
       return parseStartRequests(data as unknown[] | null);
     },
     async notifications(before) {
-      const { data, error } = await (await get()).rpc('my_notifications', {
+      const { data, error } = await (await get()).rpc('my_notifications2', {
         before: before ?? null,
         max_rows: NOTIFICATIONS_PAGE,
       });
@@ -519,6 +519,15 @@ export function supabaseAccount(
     async markNotificationsRead() {
       const { error } = await (await get()).rpc('mark_notifications_read');
       if (error) fail(error);
+    },
+    async deleteNotification(id) {
+      const { error } = await (await get()).rpc('delete_notification', { notification: id });
+      if (error) fail(error);
+    },
+    async clearNotifications() {
+      const { data, error } = await (await get()).rpc('clear_notifications');
+      if (error) fail(error);
+      return parseUnreadCount(data);
     },
     async setGroupStats(groupId, stats) {
       const { error } = await (await get()).rpc('set_my_group_stats', {

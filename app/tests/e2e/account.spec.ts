@@ -146,6 +146,8 @@ async function fakeSupabase(
     /** Mitteilungen (2026-11-11): Zeilen von my_notifications an Kevin, Zahl der Aufrufe zum Markieren */
     notifications: [] as Record<string, unknown>[],
     notificationsRead: 0,
+    notificationDeletes: [] as string[],
+    notificationClears: 0,
   };
   // Paket 12: Profile anderer (per Nutzername), Suchtreffer, eigene Angaben auf dem Server
   const people = {
@@ -1130,7 +1132,7 @@ async function fakeSupabase(
       }
       case 'POST /rest/v1/rpc/my_start_requests':
         return json(route, group.startRequests);
-      case 'POST /rest/v1/rpc/my_notifications': {
+      case 'POST /rest/v1/rpc/my_notifications2': {
         const body = req.postDataJSON() as { before: string | null; max_rows: number };
         const rows = group.notifications
           .filter((r) => !body.before || String(r.created_at) < body.before)
@@ -1139,6 +1141,19 @@ async function fakeSupabase(
       }
       case 'POST /rest/v1/rpc/unread_notification_count':
         return json(route, group.notifications.filter((r) => r.is_read === false).length);
+      case 'POST /rest/v1/rpc/delete_notification': {
+        const id = (req.postDataJSON() as { notification: string }).notification;
+        group.notificationDeletes.push(id);
+        group.notifications = group.notifications.filter((r) => r.id !== id);
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/clear_notifications': {
+        group.notificationClears += 1;
+        const open = (r: Record<string, unknown>) => r.invite_status === 'invited' || r.kind === 'friend_request';
+        const before = group.notifications.length;
+        group.notifications = group.notifications.filter(open);
+        return json(route, before - group.notifications.length);
+      }
       case 'POST /rest/v1/rpc/mark_notifications_read': {
         group.notificationsRead += 1;
         for (const r of group.notifications) r.is_read = true;
@@ -4382,12 +4397,20 @@ test('NOTIF-1: Fisch im Feed zeigt die Zahl, die Liste nennt Name und Ereignis, 
     notif('n3', {
       kind: 'trip_invite',
       actor_username: 'anna',
+      actor_display_name: 'Anna',
       ref: '22222222-2222-4222-8222-222222222222',
       excerpt: 'Abendansitz',
       created_at: '2026-11-11T08:00:00+00:00',
       post_author_username: null,
       post_created_at: null,
       post_is_mine: null,
+      invite_status: 'invited',
+      trip_title: 'Abendansitz',
+      trip_water_name: 'De Wittsee',
+      trip_date: '2099-05-17',
+      trip_from: '17:00',
+      trip_to: '21:00',
+      trip_tz: 'Europe/Berlin',
     }),
     notif('n4', {
       kind: 'new_follower',
@@ -4413,12 +4436,12 @@ test('NOTIF-1: Fisch im Feed zeigt die Zahl, die Liste nennt Name und Ereignis, 
   await expect(screen.getByRole('heading', { level: 1, name: 'Mitteilungen' })).toBeVisible();
   await expect(screen.getByText('bert gefällt dein Beitrag.')).toBeVisible();
   await expect(screen.getByText('carl hat kommentiert: Toller Fisch!')).toBeVisible();
-  await expect(screen.getByText(/anna lädt dich zum Angeltermin „Abendansitz“ ein\./)).toBeVisible();
+  await expect(screen.getByRole('region', { name: 'Einladung von Anna' })).toContainText('Abendansitz');
   await expect(screen.getByText('dora folgt dir jetzt.')).toBeVisible();
   await expect(screen.getByRole('heading', { level: 2, name: 'Neu' })).toBeVisible();
   await expect(screen.getByRole('heading', { level: 2, name: 'Früher' })).toBeVisible();
   // Ungelesene tragen die Marke, gelesene nicht
-  await expect(screen.getByRole('img', { name: 'Ungelesen' })).toHaveCount(3);
+  await expect(screen.getByRole('img', { name: 'Ungelesen' })).toHaveCount(2);
   // Beim Öffnen gelesen markiert
   await expect.poll(() => calls.group.notificationsRead).toBeGreaterThan(0);
 
@@ -4438,7 +4461,7 @@ test('NOTIF-1: Fisch im Feed zeigt die Zahl, die Liste nennt Name und Ereignis, 
   await expect(page).toHaveURL(/\/profil\/beitrag\/11111111-1111-4111-8111-111111111111$/);
   await page.goBack();
   // Einladung → Angelkalender
-  await page.getByTestId('notifications').getByRole('link', { name: /Abendansitz/ }).click();
+  await page.getByTestId('notifications').getByRole('link', { name: 'Einladung von Anna öffnen' }).click();
   await expect(page).toHaveURL(/\/wetter\/kalender$/);
   expect(errors).toEqual([]);
 });
@@ -4482,5 +4505,189 @@ test('NOTIF-2: ab 10 steht „9+“, Wischen nach rechts schließt das Fenster, 
   await expect(page.getByTestId('notifications')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page).toHaveURL(/\/feed$/);
+  expect(errors).toEqual([]);
+});
+
+
+test('NOTIF-3: Einladungen als Visitenkarte – Termin und Session mit Annehmen/Ablehnen, Antippen öffnet den Kalender', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  calls.group.notifications.push(
+    notif('t1', {
+      kind: 'trip_invite',
+      actor_id: 'u-anna',
+      actor_username: 'anna',
+      actor_display_name: 'Anna',
+      ref: '22222222-2222-4222-8222-222222222222',
+      excerpt: 'Abendansitz',
+      post_author_username: null,
+      post_created_at: null,
+      post_is_mine: null,
+      invite_status: 'invited',
+      trip_title: 'Abendansitz',
+      trip_water_name: 'De Wittsee',
+      trip_date: '2099-05-17',
+      trip_from: '17:00',
+      trip_to: '21:00',
+      trip_tz: 'Europe/Berlin',
+    }),
+    notif('s1', {
+      kind: 'trip_start',
+      actor_id: 'u-bert',
+      actor_username: 'bert',
+      actor_display_name: 'Bert',
+      ref: 'g-9',
+      excerpt: 'De Wittsee',
+      created_at: '2026-11-11T09:00:00+00:00',
+      post_author_username: null,
+      post_created_at: null,
+      post_is_mine: null,
+      invite_status: 'invited',
+      session_title: 'De Wittsee',
+    }),
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed/mitteilungen');
+  await waitForApp(page);
+
+  const termin = page.getByRole('region', { name: 'Einladung von Anna' });
+  await expect(termin).toContainText('@anna');
+  await expect(termin).toContainText('Zum Angeltermin eingeladen');
+  await expect(termin).toContainText('Abendansitz');
+  await expect(termin).toContainText('17:00');
+  await expect(termin).toContainText('De Wittsee');
+  const session = page.getByRole('region', { name: 'Einladung von Bert' });
+  await expect(session).toContainText('Zur Session eingeladen');
+  await expect(session.getByRole('button', { name: 'Annehmen' })).toBeVisible();
+  await expect(session.getByRole('button', { name: 'Ablehnen' })).toBeVisible();
+
+  await animationsDone(termin);
+  // Barrierefreiheit in beiden Farbschemata
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations
+        .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+        .map((v) => `${v.id}: ${v.nodes.map((n) => n.html.slice(0, 120)).join(' || ')}`),
+    ).toEqual([]);
+  }
+  await page.emulateMedia({ colorScheme: 'light' });
+
+  // Termin annehmen: Zusage geht raus, der Termin steht im eigenen Kalender
+  await termin.getByRole('button', { name: 'Annehmen' }).click();
+  await expect(termin).toContainText('Zugesagt');
+  await expect(termin.getByRole('button', { name: 'Annehmen' })).toHaveCount(0);
+  expect(calls.group.tripResponses).toContainEqual({ trip: '22222222-2222-4222-8222-222222222222', accept: true });
+
+  // Session ablehnen
+  await session.getByRole('button', { name: 'Ablehnen' }).click();
+  await expect(session).toContainText('Abgelehnt');
+
+  // Freie Stelle der Karte → Angelkalender
+  await termin.getByRole('link', { name: 'Einladung von Anna öffnen' }).click({ position: { x: 20, y: 20 } });
+  await expect(page).toHaveURL(/\/wetter\/kalender$/);
+  await expect(page.getByRole('listitem').filter({ hasText: 'Abendansitz' }).first()).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('NOTIF-4: Alle löschen lässt offene Einladungen stehen, Wischen löscht nur die gewählte Zeile', async ({ page }) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  calls.group.notifications.push(
+    notif('o1', {
+      kind: 'trip_start',
+      actor_username: 'bert',
+      ref: 'g-9',
+      excerpt: 'De Wittsee',
+      invite_status: 'invited',
+      session_title: 'De Wittsee',
+      post_author_username: null,
+      post_created_at: null,
+      post_is_mine: null,
+      created_at: '2026-11-11T12:00:00+00:00',
+    }),
+    notif('l1', { actor_username: 'carl', created_at: '2026-11-11T11:00:00+00:00' }),
+    notif('l2', { actor_username: 'dora', created_at: '2026-11-11T10:00:00+00:00' }),
+    notif('l3', { kind: 'new_follower', actor_username: 'emil', ref: null, created_at: '2026-11-11T09:00:00+00:00' }),
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed/mitteilungen');
+  await waitForApp(page);
+  const screen = page.getByTestId('notifications');
+  await expect(screen.getByText('carl gefällt dein Beitrag.')).toBeVisible();
+
+  // Wischen von rechts nach links auf „carl“: weit genug löscht nur diese Zeile
+  await screen.getByText('carl gefällt dein Beitrag.').evaluate((el) => {
+    const front = el.closest('[class*="swipeFront"]') as HTMLElement;
+    const fire = (type: string, x: number) =>
+      front.dispatchEvent(
+        new PointerEvent(type, { bubbles: true, pointerType: 'touch', pointerId: 5, clientX: x, clientY: 300 }),
+      );
+    fire('pointerdown', 360);
+    fire('pointermove', 300);
+    fire('pointermove', 100);
+    fire('pointerup', 40);
+  });
+  await expect(screen.getByText('carl gefällt dein Beitrag.')).toHaveCount(0);
+  await expect.poll(() => calls.group.notificationDeletes).toEqual(['l1']);
+  await expect(screen.getByText('dora gefällt dein Beitrag.')).toBeVisible();
+  await expect(page).toHaveURL(/\/feed\/mitteilungen$/);
+
+  // Tastatur/Screenreader: „Löschen“-Knopf der Zeile
+  const doraDelete = screen.getByRole('button', { name: 'Mitteilung von dora löschen' });
+  await doraDelete.focus();
+  await page.keyboard.press('Enter');
+  await expect(screen.getByText('dora gefällt dein Beitrag.')).toHaveCount(0);
+  await expect.poll(() => calls.group.notificationDeletes).toEqual(['l1', 'l2']);
+
+  // Alle löschen: erst nachfragen, offene Einladung bleibt
+  await screen.getByRole('button', { name: 'Alle löschen' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Alle Mitteilungen löschen?' });
+  await expect(sheet).toContainText('Offene Einladungen bleiben');
+  await sheet.getByRole('button', { name: 'Abbrechen' }).click();
+  await expect(screen.getByText('emil folgt dir jetzt.')).toBeVisible();
+  expect(calls.group.notificationClears).toBe(0);
+  await screen.getByRole('button', { name: 'Alle löschen' }).click();
+  await page.getByRole('dialog', { name: 'Alle Mitteilungen löschen?' }).getByRole('button', { name: 'Alle löschen' }).click();
+  await expect(screen.getByText('emil folgt dir jetzt.')).toHaveCount(0);
+  await expect(screen.getByRole('region', { name: 'Einladung von Bert' })).toBeVisible();
+  expect(calls.group.notificationClears).toBe(1);
+  // Nur noch offene Einladungen: der Knopf „Alle löschen“ verschwindet
+  await expect(screen.getByRole('button', { name: 'Alle löschen' })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('NOTIF-5: Session-Einladung in den Mitteilungen annehmen startet die Session auf diesem Gerät', async ({ page }) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  calls.group.notifications.push(
+    notif('s1', {
+      kind: 'trip_start',
+      actor_id: 'u-bert',
+      actor_username: 'bert',
+      actor_display_name: 'Bert',
+      ref: '33333333-3333-4333-8333-333333333333',
+      excerpt: 'De Wittsee',
+      post_author_username: null,
+      post_created_at: null,
+      post_is_mine: null,
+      invite_status: 'invited',
+      session_title: 'De Wittsee',
+    }),
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed/mitteilungen');
+  await waitForApp(page);
+  await page
+    .getByRole('region', { name: 'Einladung von Bert' })
+    .getByRole('button', { name: 'Annehmen' })
+    .click();
+  await expect(page).toHaveURL(/\/fangbuch\/sessions\/[0-9a-f-]+$/);
   expect(errors).toEqual([]);
 });
