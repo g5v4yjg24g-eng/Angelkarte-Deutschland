@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-14',
+    title: 'Mitteilungen im Feed',
+    items: [
+      'Fisch: Rechts oben im Feed zeigt ein kleiner Fisch, wie viele Mitteilungen neu sind – ab 10 steht dort „9+“.',
+      'Liste: Gefällt mir, Kommentare, neue Follower, Einladungen und der Beginn einer Session erscheinen mit Profilbild und Nutzername. Ein Tipp führt zum Bild, zum Termin oder zur Session.',
+      'Schließen: Von links nach rechts wischen schließt das Fenster wieder.',
+    ],
+  },
+  {
     id: '2026-12-13',
     title: 'Termin-Einladungen beantworten',
     items: [

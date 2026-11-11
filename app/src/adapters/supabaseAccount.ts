@@ -5,6 +5,7 @@
 import { parseGroupMembers, parseGroupSessions } from '../domain/groupSessions';
 import { parseGroupStats, statsPayload } from '../domain/groupStats';
 import { parseStartRequests } from '../domain/tripStart';
+import { NOTIFICATIONS_PAGE, parseNotifications, parseUnreadCount } from '../domain/notifications';
 import { parseTripInvites, parseTripReplies } from '../domain/tripInvites';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
@@ -501,6 +502,23 @@ export function supabaseAccount(
       const { data, error } = await (await get()).rpc('my_start_requests');
       if (error) fail(error);
       return parseStartRequests(data as unknown[] | null);
+    },
+    async notifications(before) {
+      const { data, error } = await (await get()).rpc('my_notifications', {
+        before: before ?? null,
+        max_rows: NOTIFICATIONS_PAGE,
+      });
+      if (error) fail(error);
+      return parseNotifications(data as unknown[] | null);
+    },
+    async unreadNotificationCount() {
+      const { data, error } = await (await get()).rpc('unread_notification_count');
+      if (error) fail(error);
+      return parseUnreadCount(data);
+    },
+    async markNotificationsRead() {
+      const { error } = await (await get()).rpc('mark_notifications_read');
+      if (error) fail(error);
     },
     async setGroupStats(groupId, stats) {
       const { error } = await (await get()).rpc('set_my_group_stats', {

@@ -1,0 +1,148 @@
+/* Fisch mit Zahl im Feed-Kopf: nur Umriss in der Textfarbe (im dunklen Schema weiß), Zahl als kleine Marke */
+.fishButton {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--touch);
+  height: var(--touch);
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+}
+.fishButton:hover {
+  background: var(--color-surface-2);
+}
+.count {
+  position: absolute;
+  top: 3px;
+  right: 1px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Eigenes Fenster über der Leiste: gleitet von rechts herein, folgt beim Wischen dem Finger */
+.screen {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  color: var(--color-text);
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  animation: slideIn 220ms ease-out;
+  transition: transform 200ms ease-in;
+}
+.leaving {
+  transform: translateX(100%);
+}
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .screen {
+    animation: none;
+    transition: none;
+  }
+}
+.head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: calc(var(--space-3) + env(safe-area-inset-top, 0px)) var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+.head h1 {
+  font-size: var(--text-lg, 1.125rem);
+}
+.back {
+  display: grid;
+  place-items: center;
+  width: var(--touch);
+  height: var(--touch);
+  margin-left: calc(-1 * var(--space-3));
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-text);
+  cursor: pointer;
+}
+.back:hover {
+  background: var(--color-surface-2);
+}
+.body {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4) calc(var(--space-7) + env(safe-area-inset-bottom, 0px));
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+.sectionTitle {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.item {
+  border-bottom: 1px solid var(--color-border);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch);
+  padding: var(--space-3) 0;
+  color: inherit;
+  text-decoration: none;
+}
+.avatar {
+  flex: none;
+  display: grid;
+}
+.text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+.name {
+  font-weight: 700;
+}
+.time {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+.muted {
+  color: var(--color-text-muted);
+}

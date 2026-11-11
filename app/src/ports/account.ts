@@ -6,6 +6,7 @@ import type { FollowCounts, FollowEntry, FollowResult } from '../domain/follows'
 import type { GroupMember, GroupSession } from '../domain/groupSessions';
 import type { GroupStats, GroupStatsEntry } from '../domain/groupStats';
 import type { StartRequest } from '../domain/tripStart';
+import type { AppNotification } from '../domain/notifications';
 import type { TripInvite, TripReply } from '../domain/tripInvites';
 import type { FeedPost } from '../domain/feed';
 import type { ProfileExtrasPayload, PublicProfile, UserHit } from '../domain/userProfile';
@@ -191,6 +192,12 @@ export interface AccountProvider {
   }): Promise<string>;
   /** Offene Start-Anfragen an mich (Fenster in der App) */
   startRequests(): Promise<StartRequest[]>;
+  /** Mitteilungen im Feed (Wunsch Nutzer 2026-11-11), neueste zuerst; `before` = createdAt der letzten Zeile */
+  notifications(before?: string): Promise<AppNotification[]>;
+  /** Zahl der ungelesenen Mitteilungen (höchstens 100) */
+  unreadNotificationCount(): Promise<number>;
+  /** Alle Mitteilungen als gelesen markieren */
+  markNotificationsRead(): Promise<void>;
   /** Rückblick: eigene Kennzahlen der Session hochladen (nur Zahlen; nur wer dabei ist oder war) */
   setGroupStats(groupId: string, stats: GroupStats): Promise<void>;
   /** Kennzahlen aller Teilnehmer, die welche hochgeladen haben */

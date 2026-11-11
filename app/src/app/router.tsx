@@ -300,6 +300,13 @@ export const routes = [
                 ),
               },
               {
+                path: 'feed/mitteilungen',
+                lazy: page(
+                  () => import('../features/notifications/NotificationsPage'),
+                  (m) => m.NotificationsPage,
+                ),
+              },
+              {
                 path: 'feed/entdecken',
                 lazy: async () => {
                   const { FeedPage } = await import('../features/feed/FeedPage');
