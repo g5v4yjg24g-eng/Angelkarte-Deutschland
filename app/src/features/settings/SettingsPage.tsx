@@ -62,7 +62,6 @@ export function SettingsPage() {
             applyTheme(v);
           }}
         />
-        <p className="muted">{de.settings.themeHint}</p>
       </Section>
       <Section title={de.settings.location}>
         {locateOnStart !== undefined && (
@@ -73,7 +72,6 @@ export function SettingsPage() {
             onChange={(v) => void setSetting('locateOnStart', v === 'on')}
           />
         )}
-        <p className="muted">{de.settings.locationHint}</p>
       </Section>
       <Section title={de.settings.tracking}>
         {trackSessions !== undefined && (
@@ -84,7 +82,6 @@ export function SettingsPage() {
             onChange={(v) => void setSetting('trackSessions', v === 'on')}
           />
         )}
-        <p className="muted">{de.settings.trackingHint}</p>
       </Section>
       <Section title={de.settings.usage}>
         {usageCount !== undefined && (
@@ -95,7 +92,6 @@ export function SettingsPage() {
             onChange={(v) => void setSetting('usageCount', v === 'on')}
           />
         )}
-        <p className="muted">{de.settings.usageHint}</p>
       </Section>
       <SyncStatusSection />
       <PushSettings />
@@ -109,7 +105,6 @@ export function SettingsPage() {
               onChange={(v) => void setSetting('haptics', v === 'on')}
             />
           )}
-          <p className="muted">{de.settings.hapticsHint}</p>
         </Section>
       )}
       <Section title={de.settings.weather}>
@@ -121,7 +116,6 @@ export function SettingsPage() {
             onChange={(v) => void setSetting('weatherEnabled', v === 'on')}
           />
         )}
-        <p className="muted">{de.settings.weatherHint}</p>
       </Section>
     </Page>
   );

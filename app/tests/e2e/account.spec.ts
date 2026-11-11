@@ -1680,8 +1680,8 @@ test('FRD-2: Follower – Reiter, Suche, Anfrage bestätigen, folgen, zurückzie
   await expect(tabs.getByRole('link', { name: 'Gefolgt (0)' })).toHaveAttribute('aria-current', 'page');
   const requested = page.getByRole('region', { name: 'Von dir angefragt' });
   await expect(requested.getByText('@zander')).toBeVisible();
-  // privates Konto: Standard an
-  await expect(page.getByRole('checkbox', { name: 'Privates Konto' })).toBeChecked();
+  // der Schalter „Privates Konto“ liegt nur noch unter Konto → Privatsphäre
+  await expect(page.getByRole('checkbox', { name: 'Privates Konto' })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
@@ -1739,12 +1739,14 @@ test('FRD-4: Privates Konto ausschalten bestätigt offene Anfragen', async ({ pa
   await page.goto('/profil/freunde');
   await waitForApp(page);
   await expect(page.getByRole('region', { name: 'Anfragen (1)' })).toBeVisible();
+  // ausgeschaltet wird es unter Konto → Privatsphäre
+  await page.goto('/mehr/konto/privatsphaere');
+  await waitForApp(page);
   const box = page.getByRole('checkbox', { name: 'Privates Konto' });
   await box.click();
   await expect(box).not.toBeChecked();
-  await page.reload();
+  await page.goto('/profil/freunde');
   await waitForApp(page);
-  await expect(page.getByRole('checkbox', { name: 'Privates Konto' })).not.toBeChecked();
   await expect(page.getByRole('list', { name: 'Follower (1)' }).getByText('@bert')).toBeVisible();
   await expect(page.getByRole('region', { name: /^Anfragen/ })).toHaveCount(0);
 });

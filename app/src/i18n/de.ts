@@ -1961,32 +1961,21 @@ export const de = {
     themeSystem: 'Wie System',
     themeLight: 'Hell',
     themeDark: 'Dunkel',
-    themeHint: 'Wird nur auf diesem Gerät gespeichert.',
     usage: 'Anonyme Nutzungszählung',
     usageOff: 'Aus',
     usageOn: 'An',
-    usageHint:
-      'Zählt, wie oft welcher Bereich der App geöffnet wird (z. B. „/fangbuch“) – über GoatCounter, ohne Cookies und ohne Kennung. Es werden keine Fänge, Orte, Notizen oder IDs übertragen. Standard: an.',
     tracking: 'Route bei Sessions',
     trackingOff: 'Aus',
     trackingOn: 'Aufzeichnen',
-    trackingHint:
-      'Zeichnet während einer laufenden Session deinen Weg per GPS auf – für den Rückblick nach der Session. Die Route bleibt auf dem Gerät und ist Teil deiner Sicherung. Im Browser wird nur aufgezeichnet, solange Fangpunkt geöffnet ist; in der iPhone-App auch bei gesperrtem Bildschirm (blaue Standort-Anzeige). Standard: an.',
     weather: 'Wetter am Fang',
     weatherOff: 'Aus',
     weatherOn: 'Automatisch laden',
     haptics: 'Vibration',
     hapticsOff: 'Aus',
     hapticsOn: 'An',
-    hapticsHint:
-      'Kurze Vibration beim Speichern eines Fangs, bei „Gefällt mir“ und beim Wischen über die untere Leiste. Standard: an.',
     location: 'Standort',
     locationOff: 'Nur auf Knopfdruck',
     locationOn: 'Beim Kartenstart',
-    locationHint:
-      'Zeigt beim Öffnen der Karte deinen Standort. Dein Browser fragt einmal nach der Erlaubnis. Der Standort wird nur auf der Karte angezeigt und nicht übertragen.',
-    weatherHint:
-      'Lädt zu jedem Fang mit Standort Modellwerte von Open-Meteo (Temperatur, Wind, Luftdruck, Bewölkung, Niederschlag). Dafür wird die auf etwa 100 m gerundete Position mit Datum und Stunde an Open-Meteo gesendet. Ohne Netz wird später nachgeladen. Verfügbar für Fänge ab 2022. Außerdem wird der Wasserstand am nächsten Pegel (bis 15 km) zum Fangzeitpunkt gespeichert; dafür lädt die App ganze Stationslisten von PEGELONLINE bzw. dem Land NRW und überträgt keine Position. Standard: an.',
   },
   achievements: {
     title: 'Erfolge',
@@ -3070,7 +3059,6 @@ export const de = {
   },
   push: {
     title: 'Mitteilungen',
-    intro: 'Mitteilungen aufs iPhone, wenn sich bei deinen Freunden etwas tut.',
     signedOut: 'Mitteilungen gibt es mit Konto. Melde dich unter Mehr → Konto an.',
     allow: 'Mitteilungen erlauben',
     denied:
@@ -3087,7 +3075,6 @@ export const de = {
       spots: 'Spots, die Freunde mit dir teilen',
       sessions: 'Gemeinsame Sessions: Einladungen, Zusagen und Highlights',
     },
-    note: 'Mitteilungen laufen über Apple. Sie enthalten den Namen der Person, bei Beiträgen und Kommentaren den Anfang des Textes und bei Sessions deren Titel.',
     deviceOk: 'Dieses iPhone ist für Mitteilungen angemeldet.',
     deviceMissing:
       'Dieses iPhone ist noch nicht für Mitteilungen angemeldet. Erlaube Mitteilungen oder starte die App neu.',
