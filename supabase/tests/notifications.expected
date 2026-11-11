@@ -1,0 +1,23 @@
+Tabelle direkt lesen|FEHLER: permission denied for table notifications
+Anna: Zahl ungelesen (Folgen, Gefällt mir, Kommentar; Dora blockiert)|3
+Anna: Liste|new_follower:bert::false:-:- | like:bert::false:anna:true | comment:bert:Toller Fisch!:false:anna:true
+Anna: Beitrag-Zeitpunkt für den Link|2026-11-01T10:00
+Anna öffnet: alle gelesen|
+Danach ungelesen|0
+Gelesene bleiben in der Liste|3
+Bert sieht nur seine eigenen (Folgen)|comment_reply:dora,new_follower:anna
+Bert: Zahl seiner ungelesenen|2
+Like am selben Tag nur einmal|1
+
+
+
+
+
+
+Einladung einmal, Start, kein Neuer Beitrag, kein Blockierter, nicht selbst|trip_invite:Abendansitz · 17.05. | trip_start:De Wittsee
+Neue ungelesene|2
+Seitenweise (max_rows 1)|1
+Cursor vor dem ältesten: leer|0
+Blockierte erscheinen nicht|0
+Ohne Anmeldung: Zahl|0
+Ohne Anmeldung: Markieren|FEHLER: not signed in

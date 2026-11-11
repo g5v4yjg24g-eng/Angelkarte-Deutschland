@@ -29,6 +29,7 @@ import { usePikeLike } from '../reactions/usePikeLike';
 import { useHaptics } from '../haptics/useHaptics';
 import { CatchTag } from '../profile/CatchInfoFields';
 import { useSaves } from './useSaves';
+import { NotificationsButton } from '../notifications/NotificationsButton';
 import styles from './Feed.module.css';
 
 const t = de.feed;
@@ -320,7 +321,12 @@ export function FeedPage({ mode = 'friends' }: { mode?: 'friends' | 'discover' }
   return (
     <Page
       title={t.title}
-      action={<IconButton label={t.refresh} icon={<RefreshIcon />} onClick={() => setTick((n) => n + 1)} />}
+      action={
+        <span className={styles.headActions}>
+          <IconButton label={t.refresh} icon={<RefreshIcon />} onClick={() => setTick((n) => n + 1)} />
+          <NotificationsButton />
+        </span>
+      }
     >
       <FeedTabs />
       <FeedList

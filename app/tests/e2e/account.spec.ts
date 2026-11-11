@@ -143,6 +143,9 @@ async function fakeSupabase(
     tripStatuses: [] as Record<string, unknown>[],
     tripResponses: [] as { trip: string; accept: boolean }[],
     tripCancels: [] as string[],
+    /** Mitteilungen (2026-11-11): Zeilen von my_notifications an Kevin, Zahl der Aufrufe zum Markieren */
+    notifications: [] as Record<string, unknown>[],
+    notificationsRead: 0,
   };
   // Paket 12: Profile anderer (per Nutzername), Suchtreffer, eigene Angaben auf dem Server
   const people = {
@@ -1127,6 +1130,20 @@ async function fakeSupabase(
       }
       case 'POST /rest/v1/rpc/my_start_requests':
         return json(route, group.startRequests);
+      case 'POST /rest/v1/rpc/my_notifications': {
+        const body = req.postDataJSON() as { before: string | null; max_rows: number };
+        const rows = group.notifications
+          .filter((r) => !body.before || String(r.created_at) < body.before)
+          .slice(0, body.max_rows);
+        return json(route, rows);
+      }
+      case 'POST /rest/v1/rpc/unread_notification_count':
+        return json(route, group.notifications.filter((r) => r.is_read === false).length);
+      case 'POST /rest/v1/rpc/mark_notifications_read': {
+        group.notificationsRead += 1;
+        for (const r of group.notifications) r.is_read = true;
+        return route.fulfill({ status: 204 });
+      }
       case 'POST /rest/v1/rpc/set_my_group_stats': {
         const body = req.postDataJSON() as { session: string; stats: Record<string, unknown> };
         group.statUploads.push(body);
@@ -1409,7 +1426,7 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules|my_start_requests|my_trip_invites|trip_invite_statuses)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules|my_start_requests|my_trip_invites|trip_invite_statuses|unread_notification_count)))/.test(
         c,
       ),
     ),
@@ -4329,5 +4346,141 @@ test('SHR-2: Profil teilen – Link mit Nutzernamen ans Teilen-Menü, ohne Teile
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(
     'https://fangpunkt.com/profil/?u=kevin',
   );
+  expect(errors).toEqual([]);
+});
+
+// ---- Mitteilungen im Feed (Wunsch Nutzer 2026-11-11) ----
+const notif = (id: string, over: Record<string, unknown> = {}) => ({
+  id,
+  kind: 'like',
+  actor_id: 'u-bert',
+  actor_username: 'bert',
+  actor_display_name: 'Bert',
+  ref: '11111111-1111-4111-8111-111111111111',
+  excerpt: null,
+  created_at: '2026-11-11T10:00:00+00:00',
+  is_read: false,
+  post_author_username: 'kevin',
+  post_created_at: '2026-11-01T10:00:00+00:00',
+  post_is_mine: true,
+  ...over,
+});
+
+test('NOTIF-1: Fisch im Feed zeigt die Zahl, die Liste nennt Name und Ereignis, Antippen führt zum Ziel', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  calls.group.notifications.push(
+    notif('n1'),
+    notif('n2', {
+      kind: 'comment',
+      actor_username: 'carl',
+      excerpt: 'Toller Fisch!',
+      created_at: '2026-11-11T09:00:00+00:00',
+    }),
+    notif('n3', {
+      kind: 'trip_invite',
+      actor_username: 'anna',
+      ref: '22222222-2222-4222-8222-222222222222',
+      excerpt: 'Abendansitz',
+      created_at: '2026-11-11T08:00:00+00:00',
+      post_author_username: null,
+      post_created_at: null,
+      post_is_mine: null,
+    }),
+    notif('n4', {
+      kind: 'new_follower',
+      actor_username: 'dora',
+      ref: null,
+      is_read: true,
+      created_at: '2026-11-05T08:00:00+00:00',
+      post_author_username: null,
+      post_created_at: null,
+      post_is_mine: null,
+    }),
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
+
+  const fish = page.getByRole('link', { name: 'Mitteilungen, 3 neu' });
+  await expect(fish).toBeVisible();
+  await expect(fish).toContainText('3');
+  await fish.click();
+
+  const screen = page.getByTestId('notifications');
+  await expect(screen.getByRole('heading', { level: 1, name: 'Mitteilungen' })).toBeVisible();
+  await expect(screen.getByText('bert gefällt dein Beitrag.')).toBeVisible();
+  await expect(screen.getByText('carl hat kommentiert: Toller Fisch!')).toBeVisible();
+  await expect(screen.getByText(/anna lädt dich zum Angeltermin „Abendansitz“ ein\./)).toBeVisible();
+  await expect(screen.getByText('dora folgt dir jetzt.')).toBeVisible();
+  await expect(screen.getByRole('heading', { level: 2, name: 'Neu' })).toBeVisible();
+  await expect(screen.getByRole('heading', { level: 2, name: 'Früher' })).toBeVisible();
+  // Ungelesene tragen die Marke, gelesene nicht
+  await expect(screen.getByRole('img', { name: 'Ungelesen' })).toHaveCount(3);
+  // Beim Öffnen gelesen markiert
+  await expect.poll(() => calls.group.notificationsRead).toBeGreaterThan(0);
+
+  // Barrierefreiheit in beiden Farbschemata
+  await animationsDone(screen);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.emulateMedia({ colorScheme: 'light' });
+
+  // Gefällt mir am eigenen Beitrag → Beitragsseite
+  await screen.getByRole('link', { name: /bert gefällt dein Beitrag/ }).click();
+  await expect(page).toHaveURL(/\/profil\/beitrag\/11111111-1111-4111-8111-111111111111$/);
+  await page.goBack();
+  // Einladung → Angelkalender
+  await page.getByTestId('notifications').getByRole('link', { name: /Abendansitz/ }).click();
+  await expect(page).toHaveURL(/\/wetter\/kalender$/);
+  expect(errors).toEqual([]);
+});
+
+test('NOTIF-2: ab 10 steht „9+“, Wischen nach rechts schließt das Fenster, danach keine Zahl mehr', async ({ page }) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  for (let i = 0; i < 12; i += 1)
+    calls.group.notifications.push(notif(`n${i}`, { created_at: `2026-11-11T10:${String(59 - i).padStart(2, '0')}:00+00:00` }));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
+
+  const fish = page.getByRole('link', { name: /^Mitteilungen, 12 neu$/ });
+  await expect(fish).toBeVisible();
+  await expect(fish).toContainText('9+');
+  await expect(fish).not.toContainText('12');
+  await fish.click();
+
+  const screen = page.getByTestId('notifications');
+  await expect(screen.getByRole('heading', { level: 1, name: 'Mitteilungen' })).toBeVisible();
+  await animationsDone(screen);
+  // Wischen von links nach rechts (Touch) schließt
+  await screen.evaluate((el) => {
+    const fire = (type: string, x: number) =>
+      el.dispatchEvent(
+        new PointerEvent(type, { bubbles: true, pointerType: 'touch', pointerId: 7, clientX: x, clientY: 300 }),
+      );
+    fire('pointerdown', 20);
+    fire('pointermove', 80);
+    fire('pointermove', 220);
+    fire('pointerup', 260);
+  });
+  await expect(page).toHaveURL(/\/feed$/);
+  await expect(page.getByTestId('notifications')).toHaveCount(0);
+  // Alles gelesen: der Fisch trägt keine Zahl mehr
+  await expect(page.getByRole('link', { name: 'Mitteilungen', exact: true })).toBeVisible();
+
+  // Escape schließt ebenfalls
+  await page.getByRole('link', { name: 'Mitteilungen', exact: true }).click();
+  await expect(page.getByTestId('notifications')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page).toHaveURL(/\/feed$/);
   expect(errors).toEqual([]);
 });

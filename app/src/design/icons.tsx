@@ -391,6 +391,13 @@ export const FishIcon = (p: IconProps) => (
     <circle cx="8.5" cy="11" r="0.9" fill="currentColor" />
   </Icon>
 );
+/** Fisch nur als Umriss (Mitteilungen im Feed) – ohne gefüllte Teile */
+export const FishOutlineIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 12c3-5 8-6.5 12-4.5l3.5-2.5v14L15 16.5C11 18.5 6 17 3 12Z" />
+    <circle cx="8.5" cy="11" r="0.6" />
+  </Icon>
+);
 /** Biss: Wellen mit Pfeil nach unten */
 export const BiteIcon = (p: IconProps) => (
   <Icon {...p}>
