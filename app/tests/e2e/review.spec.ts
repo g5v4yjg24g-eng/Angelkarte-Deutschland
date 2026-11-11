@@ -224,7 +224,7 @@ test('REV-2: Wiedergabe – Marker zum richtigen Zeitpunkt, Pause, Tempo, erneut
   await seed(page, reviewData);
   await page.goto('/fangbuch/sessions/rv/rueckblick');
   await waitForApp(page);
-  const dialog = page.getByRole('dialog', { name: 'De Wittsee' });
+  const dialog = page.getByRole('dialog', { name: 'Dein Angeltrip im Rückblick' });
   await expect(dialog).toBeVisible();
   await reviewReady(page);
 
@@ -362,7 +362,7 @@ test('REV-4: Lange Session (6 000 Punkte), 390 px, Dunkelmodus, ohne Netz', asyn
     history.pushState({}, '', '/fangbuch/sessions/rv/rueckblick');
     dispatchEvent(new PopStateEvent('popstate'));
   });
-  const dialog = page.getByRole('dialog', { name: 'De Wittsee' });
+  const dialog = page.getByRole('dialog', { name: 'Dein Angeltrip im Rückblick' });
   await expect(dialog).toContainText('Kartenhintergrund ohne Verbindung nicht verfügbar');
   await reviewReady(page);
   await dialog.getByRole('button', { name: 'Ganze Route' }).click();

@@ -4,6 +4,7 @@ import type { Badge } from '../domain/badges';
 import type { FriendEntry } from '../domain/friends';
 import type { FollowCounts, FollowEntry, FollowResult } from '../domain/follows';
 import type { GroupMember, GroupSession } from '../domain/groupSessions';
+import type { GroupStats, GroupStatsEntry } from '../domain/groupStats';
 import type { FeedPost } from '../domain/feed';
 import type { ProfileExtrasPayload, PublicProfile, UserHit } from '../domain/userProfile';
 import type { AchVisibility, RemoteAchievements } from '../domain/sharedAchievements';
@@ -161,6 +162,10 @@ export interface AccountProvider {
   endGroupSession(groupId: string): Promise<void>;
   myGroupSessions(): Promise<GroupSession[]>;
   groupSessionMembers(groupId: string): Promise<GroupMember[]>;
+  /** Rückblick: eigene Kennzahlen der Session hochladen (nur Zahlen; nur wer dabei ist oder war) */
+  setGroupStats(groupId: string, stats: GroupStats): Promise<void>;
+  /** Kennzahlen aller Teilnehmer, die welche hochgeladen haben */
+  groupStats(groupId: string): Promise<GroupStatsEntry[]>;
   /** Highlights einer gemeinsamen Session (Paket 8b), neueste zuerst; `before` = createdAt */
   groupHighlights(groupId: string, before?: string): Promise<FeedPost[]>;
   /** Paket 12: freiwillige Angaben des eigenen Profils für Freunde (Server prüft und filtert Highlights) */

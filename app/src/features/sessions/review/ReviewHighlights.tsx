@@ -4,6 +4,7 @@ import type { Catch, CatchOutcome } from '../../../domain/schemas';
 import { formatDuration } from '../../../domain/session';
 import type { Moment, Review } from '../../../domain/sessionReview';
 import { speciesById } from '../../../domain/species';
+import { DistanceIcon, ClockIcon, HookIcon } from '../../../design/icons';
 import { markerDataUrl } from '../../map/markerIcons';
 import styles from './Review.module.css';
 
@@ -50,78 +51,97 @@ export function ReviewHighlights({ review }: { review: Review }) {
   const r = review;
   const caught = r.counts.caught > 0;
   return (
-    <section className={styles.section} aria-labelledby="rv-highlights">
-      <h2 id="rv-highlights" className={styles.sectionTitle}>
-        {t.highlights}
-      </h2>
-      <div className={styles.stats}>
-        <Stat
-          label={t.duration}
-          value={formatDuration(r.durationMs)}
-          hint={r.activeMs < r.durationMs ? t.activeTime(formatDuration(r.activeMs)) : undefined}
-        />
-        <Stat label={t.distance} value={r.distanceM === undefined ? t.distanceNone : t.km(r.distanceM)} />
-        <Stat label={t.events} value={String(r.events)} />
-        <Stat label={t.bites} value={String(r.bites)} hint={t.bitesHint} />
+    <>
+      <div className={styles.statsRow} role="group" aria-label={t.statsRow}>
+        <div>
+          <DistanceIcon size={20} />
+          <strong>{r.distanceM === undefined ? '–' : t.km(r.distanceM)}</strong>
+          <span>{t.distance}</span>
+        </div>
+        <div>
+          <ClockIcon size={20} />
+          <strong>{formatDuration(r.durationMs)}</strong>
+          <span>{t.duration}</span>
+        </div>
+        <div>
+          <HookIcon size={20} />
+          <strong>{formatDuration(r.activeMs)}</strong>
+          <span>{t.activeShort}</span>
+        </div>
       </div>
-      <ul className={styles.counts} aria-label={t.events}>
-        {OUTCOMES.map((o) => (
-          <li key={o} className={styles.count}>
-            <img src={markerDataUrl(`catch-${o}`)} alt="" width={24} height={24} />
-            <span className="tabular">{r.counts[o]}</span> {t.counts[o]}
-          </li>
-        ))}
-      </ul>
-
-      <h3 className={styles.subTitle}>{t.catchTitle}</h3>
-      {!caught ? (
-        <div className={styles.calm}>
-          <p className={styles.calmTitle}>{t.noCatch}</p>
-          <p className="muted">{t.noCatchHint}</p>
+      <section className={styles.section} aria-labelledby="rv-highlights">
+        <h2 id="rv-highlights" className={styles.sectionTitle}>
+          {t.highlights}
+        </h2>
+        <div className={styles.stats}>
+          <Stat
+            label={t.duration}
+            value={formatDuration(r.durationMs)}
+            hint={r.activeMs < r.durationMs ? t.activeTime(formatDuration(r.activeMs)) : undefined}
+          />
+          <Stat label={t.distance} value={r.distanceM === undefined ? t.distanceNone : t.km(r.distanceM)} />
+          <Stat label={t.events} value={String(r.events)} />
+          <Stat label={t.bites} value={String(r.bites)} hint={t.bitesHint} />
         </div>
-      ) : (
-        <div className={styles.catchGrid}>
-          {r.longest && (
-            <Stat
-              label={t.longest}
-              value={t.lengthValue(r.longest.item.lengthCm ?? 0)}
-              hint={`${species(r.longest.item)}${r.longest.estimated ? ` · ${t.estimated}` : ''}`}
-            />
-          )}
-          {r.heaviest && (
-            <Stat
-              label={t.heaviest}
-              value={t.weightValue(r.heaviest.item.weightG ?? 0)}
-              hint={`${species(r.heaviest.item)}${r.heaviest.estimated ? ` · ${t.estimated}` : ''}`}
-            />
-          )}
-          {r.speciesCount > 0 && <Stat label={t.species} value={String(r.speciesCount)} />}
-          {r.topSpecies && (
-            <Stat
-              label={t.topSpecies}
-              value={speciesById(r.topSpecies.speciesId)?.de ?? t.unknownSpecies}
-              hint={t.timesCount(r.topSpecies.count)}
-            />
-          )}
-          {r.firstCatch && (
-            <Stat label={t.first} value={clock(r.firstCatch.at)} hint={species(r.firstCatch)} />
-          )}
-          {r.lastCatch && <Stat label={t.last} value={clock(r.lastCatch.at)} hint={species(r.lastCatch)} />}
-        </div>
-      )}
+        <ul className={styles.counts} aria-label={t.events}>
+          {OUTCOMES.map((o) => (
+            <li key={o} className={styles.count}>
+              <img src={markerDataUrl(`catch-${o}`)} alt="" width={24} height={24} />
+              <span className="tabular">{r.counts[o]}</span> {t.counts[o]}
+            </li>
+          ))}
+        </ul>
 
-      {r.moments.length > 0 && (
-        <>
-          <h3 className={styles.subTitle}>{t.momentsTitle}</h3>
-          <ul className={styles.moments}>
-            {r.moments.map((m, i) => (
-              <li key={i} className={styles.moment}>
-                {momentText(m)}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-    </section>
+        <h3 className={styles.subTitle}>{t.catchTitle}</h3>
+        {!caught ? (
+          <div className={styles.calm}>
+            <p className={styles.calmTitle}>{t.noCatch}</p>
+            <p className="muted">{t.noCatchHint}</p>
+          </div>
+        ) : (
+          <div className={styles.catchGrid}>
+            {r.longest && (
+              <Stat
+                label={t.longest}
+                value={t.lengthValue(r.longest.item.lengthCm ?? 0)}
+                hint={`${species(r.longest.item)}${r.longest.estimated ? ` · ${t.estimated}` : ''}`}
+              />
+            )}
+            {r.heaviest && (
+              <Stat
+                label={t.heaviest}
+                value={t.weightValue(r.heaviest.item.weightG ?? 0)}
+                hint={`${species(r.heaviest.item)}${r.heaviest.estimated ? ` · ${t.estimated}` : ''}`}
+              />
+            )}
+            {r.speciesCount > 0 && <Stat label={t.species} value={String(r.speciesCount)} />}
+            {r.topSpecies && (
+              <Stat
+                label={t.topSpecies}
+                value={speciesById(r.topSpecies.speciesId)?.de ?? t.unknownSpecies}
+                hint={t.timesCount(r.topSpecies.count)}
+              />
+            )}
+            {r.firstCatch && (
+              <Stat label={t.first} value={clock(r.firstCatch.at)} hint={species(r.firstCatch)} />
+            )}
+            {r.lastCatch && <Stat label={t.last} value={clock(r.lastCatch.at)} hint={species(r.lastCatch)} />}
+          </div>
+        )}
+
+        {r.moments.length > 0 && (
+          <>
+            <h3 className={styles.subTitle}>{t.momentsTitle}</h3>
+            <ul className={styles.moments}>
+              {r.moments.map((m, i) => (
+                <li key={i} className={styles.moment}>
+                  {momentText(m)}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
+    </>
   );
 }

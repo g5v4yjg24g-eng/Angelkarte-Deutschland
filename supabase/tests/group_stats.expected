@@ -1,0 +1,24 @@
+Tabelle direkt lesen|FEHLER: permission denied for table group_session_stats
+Session anlegen|true
+Bert einladen|1
+Dora einladen|1
+Anna lädt hoch|
+Nochmal (ersetzt)|
+Ohne Fisch|
+Unsinn|FEHLER: bad_stats
+Art kaputt|FEHLER: bad_stats
+Kein Objekt|FEHLER: bad_stats
+Nochmal gültig|
+Eingeladene (noch nicht dabei) laden nicht hoch|siehe unten
+Bert eingeladen: hochladen|FEHLER: not_member
+Bert eingeladen: lesen|∅
+Bert sagt zu|
+Bert lädt hoch|
+Bert liest beide|a1:4/7/62.5,b1:1/2/-
+Fremder liest|∅
+Fremder lädt hoch|FEHLER: not_member
+Dora (nur eingeladen) liest|∅
+Dora lädt hoch|FEHLER: not_member
+Dora sagt zu|
+Dora lädt hoch (dabei)|
+Ohne Anmeldung lesen|∅

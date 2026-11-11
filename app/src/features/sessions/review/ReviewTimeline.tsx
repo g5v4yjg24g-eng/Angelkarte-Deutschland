@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router';
 import { de } from '../../../i18n/de';
+import { FlagIcon } from '../../../design/icons';
 import type { Photo } from '../../../domain/schemas';
 import type { ReviewEvent } from '../../../domain/sessionReview';
 import { useObjectUrl } from '../../../lib/useObjectUrl';
@@ -24,6 +25,7 @@ export function ReviewTimeline({
   selectedId,
   scrollToSelected = true,
   onShow,
+  startNote,
 }: {
   events: ReviewEvent[];
   photos: Map<string, Photo>;
@@ -31,6 +33,8 @@ export function ReviewTimeline({
   /** nur nach einem Tipp auf einen Marker zum Eintrag scrollen (sonst springt die Seite von der Karte weg) */
   scrollToSelected?: boolean;
   onShow: (id: string) => void;
+  /** gemeinsame Session: wer am Wasser war (nur Namen, aus der Teilnehmerliste) */
+  startNote?: string | undefined;
 }) {
   const list = useRef<HTMLOListElement>(null);
   // Marker angetippt → Eintrag sichtbar machen
@@ -46,6 +50,12 @@ export function ReviewTimeline({
       <h2 id="rv-timeline" className={styles.sectionTitle}>
         {t.timelineTitle}
       </h2>
+      {startNote && (
+        <p className={styles.startNote}>
+          <FlagIcon size={20} />
+          <span>{startNote}</span>
+        </p>
+      )}
       {events.length === 0 ? (
         <p className="muted">{t.timelineEmpty}</p>
       ) : (

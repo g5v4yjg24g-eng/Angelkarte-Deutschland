@@ -3,6 +3,7 @@
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
 // delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen), *_push.sql (Geräte und Einstellungen für Mitteilungen), *_moderators.sql (Moderationsbereich, jede Funktion prüft is_moderator), *_avatars.sql (Profilbild im Speicher „avatars“, nur über Funktionen), *_post_saves.sql (Lesezeichen), *_discover.sql (Entdecken, höchstens 20 neue Beiträge in 24 h), *_group_sessions.sql (gemeinsame Sessions, nur über Funktionen), *_group_highlights.sql (Highlights nur für Teilnehmer). Nur der öffentliche Schlüssel steht in der App.
 import { parseGroupMembers, parseGroupSessions } from '../domain/groupSessions';
+import { parseGroupStats, statsPayload } from '../domain/groupStats';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
@@ -452,6 +453,18 @@ export function supabaseAccount(
       const { data, error } = await (await get()).rpc('group_session_members_list', { session: groupId });
       if (error) fail(error);
       return parseGroupMembers(data as unknown[] | null);
+    },
+    async setGroupStats(groupId, stats) {
+      const { error } = await (await get()).rpc('set_my_group_stats', {
+        session: groupId,
+        stats: statsPayload(stats),
+      });
+      if (error) fail(error);
+    },
+    async groupStats(groupId) {
+      const { data, error } = await (await get()).rpc('group_session_stats_list', { session: groupId });
+      if (error) fail(error);
+      return parseGroupStats(data as unknown[] | null);
     },
     async groupHighlights(groupId, before) {
       const c = await get();
