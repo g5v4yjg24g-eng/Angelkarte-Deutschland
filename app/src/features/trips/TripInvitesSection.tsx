@@ -6,20 +6,14 @@ import { de } from '../../i18n/de';
 import { Button } from '../../design/components/Button';
 import { Notice } from '../../design/components/Notice';
 import { getDb } from '../../data/db';
-import { repo } from '../../data/repository';
-import { missingAccepted, openInvites, tripFromInvite, type TripInvite } from '../../domain/tripInvites';
+import { missingAccepted, openInvites, type TripInvite } from '../../domain/tripInvites';
+import { importInvite } from './importInvite';
 import { useOnline } from '../../lib/useOnline';
 import { useProviders } from '../../ports/providersContext';
 import { storedUserId } from '../badges/badgeStore';
 import styles from '../calendar/Calendar.module.css';
 
 const t = de.calendar;
-
-/** Termin auf diesem Gerät anlegen (gleiche ID wie beim Ersteller), falls es ihn nicht gibt */
-async function importInvite(i: TripInvite) {
-  const known = await getDb().trips.get(i.tripId);
-  if (!known) await repo('trips').create(tripFromInvite(i));
-}
 
 export function TripInvitesSection() {
   const { account } = useProviders();

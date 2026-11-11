@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-15',
+    title: 'Mitteilungen aufräumen und Einladungen beantworten',
+    items: [
+      'Alle löschen: Ein Knopf entfernt alle Mitteilungen – offene Einladungen bleiben, bis du geantwortet hast.',
+      'Wischen: Von rechts nach links löscht nur die gewählte Mitteilung.',
+      'Einladungen: Termin und Session erscheinen als Visitenkarte der Person mit ihren Erfolgen. Dort kannst du gleich annehmen oder ablehnen.',
+    ],
+  },
+  {
     id: '2026-12-14',
     title: 'Mitteilungen im Feed',
     items: [
