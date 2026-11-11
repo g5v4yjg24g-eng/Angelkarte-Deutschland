@@ -1606,7 +1606,6 @@ test('FRD-2: Follower – Reiter, Suche, Anfrage bestätigen, folgen, zurückzie
   await expect(page.getByRole('link', { name: '1 Folge-Anfrage' })).toBeVisible();
   await page.getByRole('button', { name: 'Leute finden' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Follower' })).toBeVisible();
-  await expect(page.getByText('Dein Nutzername: @kevin')).toBeVisible();
   const tabs = page.getByRole('navigation', { name: 'Follower und Gefolgt' });
   await expect(tabs.getByRole('link', { name: 'Follower (0)' })).toHaveAttribute('aria-current', 'page');
   await expect(tabs.getByRole('link', { name: 'Gefolgt (0)' })).not.toHaveAttribute('aria-current', 'page');
@@ -1698,7 +1697,6 @@ test('FRD-4: Privates Konto ausschalten bestätigt offene Anfragen', async ({ pa
   const box = page.getByRole('checkbox', { name: 'Privates Konto' });
   await box.click();
   await expect(box).not.toBeChecked();
-  await expect(page.getByText(/Aus: Jeder mit Konto kann dir sofort folgen/)).toBeVisible();
   await page.reload();
   await waitForApp(page);
   await expect(page.getByRole('checkbox', { name: 'Privates Konto' })).not.toBeChecked();

@@ -3171,7 +3171,6 @@ export const de = {
     signedOut: 'Zum Folgen brauchst du ein Konto. Melde dich unter Mehr → Konto an.',
     noProfile: 'Lege zuerst unter Mehr → Konto deinen Nutzernamen an – darüber finden dich andere.',
     toAccount: 'Zum Konto',
-    yourName: (u: string) => `Dein Nutzername: @${u} – darüber finden dich andere.`,
     send: 'Folgen',
     requestedMsg: (u: string) => `Anfrage an @${u} gesendet – @${u} muss sie bestätigen.`,
     followingMsg: (u: string) => `Du folgst jetzt @${u}.`,
@@ -3204,14 +3203,8 @@ export const de = {
     removeFollowerTitle: 'Follower entfernen?',
     following2: 'Gefolgt',
     mutual: 'Freund',
-    friendsHint:
-      'Freunde sind Leute, denen du folgst und die dir auch folgen. Nur mit ihnen teilst du Spots und gemeinsame Sessions.',
     privateTitle: 'Privatsphäre',
     privateLabel: 'Privates Konto',
-    privateOn:
-      'An: Wer dir folgen möchte, braucht deine Bestätigung. Beiträge für „Follower“ sehen nur bestätigte Follower.',
-    privateOff: 'Aus: Jeder mit Konto kann dir sofort folgen und sieht deine Beiträge für „Follower“.',
-    privateOffNote: 'Beim Ausschalten werden offene Anfragen bestätigt.',
     privateError: 'Konnte nicht gespeichert werden. Bitte erneut versuchen.',
     handle: (u: string) => `@${u}`,
     searchTitle: 'Treffer',

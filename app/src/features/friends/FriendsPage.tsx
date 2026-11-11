@@ -365,13 +365,7 @@ export function FriendsPage() {
         }
       />
 
-      {groups && (
-        <>
-          <PrivateAccountSwitch onChange={reload} />
-          <p className="muted">{t.friendsHint}</p>
-        </>
-      )}
-      {me && <p className="muted">{t.yourName(me.username)}</p>}
+      {groups && <PrivateAccountSwitch onChange={reload} />}
       {blocked && blocked.length > 0 && (
         <Section title={de.moderation.blockedTitle}>
           <ul className={styles.list}>
