@@ -1,4 +1,5 @@
 // Fangbuch: alle Einträge nach Tagen, mit Suche und Filtern (M5.3); Reiter je Gewässer (P1, 2026-10-22).
+import { useCatches } from '../../data/useCatches';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -91,7 +92,7 @@ function CatchRow({ item }: { item: Catch }) {
 }
 
 export function CatchesPage() {
-  const all = useLiveQuery(() => getDb().catches.toArray(), []);
+  const all = useCatches();
   const [filter, setFilter] = useState<CatchFilter>(NO_FILTER);
   const location = useLocation();
   const navigate = useNavigate();

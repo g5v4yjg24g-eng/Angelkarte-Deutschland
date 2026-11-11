@@ -54,7 +54,9 @@ describe('Profile anderer und Suche (Paket 12/C, SOC-1)', () => {
       followingCount: 0,
     });
     // alte Beziehungen (vor Paket C) gelten nicht mehr
-    expect(parseUserProfile([{ user_id: 'u', username: 'b', display_name: 'B', relation: 'friend' }])).toBeNull();
+    expect(
+      parseUserProfile([{ user_id: 'u', username: 'b', display_name: 'B', relation: 'friend' }]),
+    ).toBeNull();
   });
 
   it('parseUserHits und searchTerm', () => {
@@ -64,7 +66,14 @@ describe('Profile anderer und Suche (Paket 12/C, SOC-1)', () => {
         { user_id: 'v', username: 'x', display_name: 'X', relation: 'boss' },
       ]),
     ).toEqual([
-      { userId: 'u', username: 'anna', displayName: 'Anna', badges: [], relation: 'requested', followsMe: true },
+      {
+        userId: 'u',
+        username: 'anna',
+        displayName: 'Anna',
+        badges: [],
+        relation: 'requested',
+        followsMe: true,
+      },
     ]);
     expect(searchTerm('  An ')).toBeUndefined();
     expect(searchTerm(' ANN ')).toBe('ann');

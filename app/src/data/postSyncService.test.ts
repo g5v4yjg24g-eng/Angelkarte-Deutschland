@@ -46,10 +46,18 @@ describe('Beiträge sichern (PST-2)', () => {
   it('hochladen (mit Vorschaubildern), Änderung nachziehen, löschen und wiederherstellen', async () => {
     const db = freshDb();
     const s = server();
-    const p = await createPost({ caption: 'Hecht!', visibility: 'friends', share: 'pending', photos: [photo(), photo()] }, db);
+    const p = await createPost(
+      { caption: 'Hecht!', visibility: 'friends', share: 'pending', photos: [photo(), photo()] },
+      db,
+    );
 
     expect(await syncPosts(s.account, ME, db)).toEqual({ done: 1, failed: 0 });
-    expect(s.posts.get(p.id)).toMatchObject({ caption: 'Hecht!', visibility: 'friends', photos: 2, thumbs: 2 });
+    expect(s.posts.get(p.id)).toMatchObject({
+      caption: 'Hecht!',
+      visibility: 'friends',
+      photos: 2,
+      thumbs: 2,
+    });
     expect(await db.posts.get(p.id)).toMatchObject({ share: 'shared', accountId: ME });
     expect(await syncPosts(s.account, ME, db)).toEqual({ done: 0, failed: 0 }); // nichts mehr zu tun
 
@@ -76,7 +84,11 @@ describe('Beiträge sichern (PST-2)', () => {
     await db.posts.update(other.id, { accountId: 'u-bert' }); // gehört einem anderen Konto auf diesem Gerät
 
     expect(await adoptLocalPosts(ME, db)).toBe(2);
-    expect(await db.posts.get(old.id)).toMatchObject({ share: 'pending', visibility: 'private', visibilityAssumed: true });
+    expect(await db.posts.get(old.id)).toMatchObject({
+      share: 'pending',
+      visibility: 'private',
+      visibilityAssumed: true,
+    });
     expect(await db.posts.get(pub.id)).toMatchObject({ share: 'pending', visibility: 'public' });
     expect((await db.posts.get(pub.id))?.visibilityAssumed).toBeUndefined();
     expect((await db.posts.get(gone.id))?.share).toBeUndefined();
@@ -147,7 +159,10 @@ describe('Beiträge sichern (PST-2)', () => {
   it('Highlight geht mit der gemeinsamen Session hoch (GRP-3)', async () => {
     const db = freshDb();
     const s = server();
-    const p = await createPost({ share: 'pending', groupId: 'g1', visibility: 'friends', photos: [photo()] }, db);
+    const p = await createPost(
+      { share: 'pending', groupId: 'g1', visibility: 'friends', photos: [photo()] },
+      db,
+    );
     await syncPosts(s.account, ME, db);
     expect(s.posts.get(p.id)).toMatchObject({ groupId: 'g1' });
   });

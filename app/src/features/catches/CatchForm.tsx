@@ -1,5 +1,6 @@
 // Fang, Fischkontakt, Fehlbiss oder Beobachtung erfassen bzw. bearbeiten (M5.1).
 // Erst das Nötigste (was, welche Art, wann); alles Weitere unter „Mehr Details".
+import { useCatches } from '../../data/useCatches';
 import { withWaterState } from '../../domain/regulationCheck';
 import { useMemo, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -141,7 +142,7 @@ export function CatchForm({
   }
   const details = useRef<HTMLDetailsElement>(null);
 
-  const all = useLiveQuery(() => getDb().catches.toArray(), []);
+  const all = useCatches();
   const recent = useMemo(() => recentSpecies(all ?? []), [all]);
   const haptics = useHaptics();
   const presets = useLiveQuery(() => getDb().baitPresets.toArray(), []);
