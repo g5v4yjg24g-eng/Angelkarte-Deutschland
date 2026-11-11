@@ -13,6 +13,12 @@ import { SelectField, TextArea, TextField } from '../../design/components/Field'
 import { SegmentedControl } from '../../design/components/SegmentedControl';
 import { ChevronLeftIcon, ChevronRightIcon, WeatherIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
+import { groupFriends } from '../../domain/friends';
+import { toggleInvitee, type Invitee } from '../../domain/tripStart';
+import { useProviders } from '../../ports/providersContext';
+import { useFriends } from '../friends/useFriends';
+import { TripStartBusyError, startTripWithInvitees } from '../trips/startTrip';
+import { groupErrorText } from '../sessions/group/groupText';
 import { repo } from '../../data/repository';
 import { userMessage } from '../../data/errors';
 import type { Trip } from '../../domain/schemas';
@@ -70,8 +76,11 @@ function TripForm({
   initial?: Trip | undefined;
   date: string;
   options: PlaceOption[];
-  onDone: (saved?: Trip) => void;
+  onDone: (saved?: Trip, note?: string) => void;
 }) {
+  const { account } = useProviders();
+  const { state: friends } = useFriends();
+  const [invited, setInvited] = useState<Invitee[]>(() => initial?.invited ?? []);
   const [draft, setDraft] = useState<TripDraft>(() =>
     initial ? tripDraftFrom(initial, keyForTrip(initial, options)) : emptyTripDraft(date),
   );
@@ -105,13 +114,29 @@ function TripForm({
     setBusy(true);
     try {
       const saved = initial
-        ? await repo('trips').update(initial.id, { ...fields, waterSnapshot })
+        ? await repo('trips').update(initial.id, { ...fields, waterSnapshot, invited })
         : await repo('trips').create({
             ...fields,
             tz: DEFAULT_TZ,
             ...(waterSnapshot ? { waterSnapshot } : {}),
+            ...(invited.length ? { invited } : {}),
           });
-      onDone(saved);
+      // neu Eingeladene bekommen eine Mitteilung; schlägt das fehl, gilt der Termin trotzdem
+      const before = new Set((initial?.invited ?? []).map((i) => i.userId));
+      const fresh = invited.filter((i) => !before.has(i.userId));
+      let note: string | undefined;
+      if (fresh.length > 0) {
+        note = await account
+          .inviteToTrip({
+            trip: saved.id,
+            userIds: fresh.map((i) => i.userId),
+            label: saved.title ?? saved.waterSnapshot?.name,
+            day: t.dayTitle(saved.date),
+          })
+          .then(() => t.inviteSent)
+          .catch(() => t.inviteFailed);
+      }
+      onDone(saved, note);
     } catch (x) {
       setSaveError(userMessage(x));
       setBusy(false);
@@ -163,6 +188,27 @@ function TripForm({
         value={draft.notes}
         onChange={(e) => set('notes', e.target.value)}
       />
+      {friends.kind === 'ready' && (
+        <fieldset className={styles.invite}>
+          <legend>{t.inviteTitle}</legend>
+          {groupFriends(friends.list).friends.length === 0 ? (
+            <p className="muted">{t.inviteNone}</p>
+          ) : (
+            groupFriends(friends.list).friends.map((f) => (
+              <label key={f.userId} className={styles.inviteRow}>
+                <input
+                  type="checkbox"
+                  checked={invited.some((i) => i.userId === f.userId)}
+                  onChange={() =>
+                    setInvited((cur) => toggleInvitee(cur, { userId: f.userId, name: f.displayName }))
+                  }
+                />
+                <span>{f.displayName}</span>
+              </label>
+            ))
+          )}
+        </fieldset>
+      )}
       {saveError && <Notice tone="error">{saveError}</Notice>}
       <div className={styles.actions}>
         <Button type="button" variant="secondary" onClick={() => onDone()}>
@@ -184,6 +230,7 @@ function TripCard({
   onEdit,
   onDelete,
   onExport,
+  onStart,
 }: {
   trip: Trip;
   today: string;
@@ -192,6 +239,8 @@ function TripCard({
   onEdit: () => void;
   onDelete: () => void;
   onExport: () => void;
+  /** nur mit Eingeladenen und am Tag des Termins */
+  onStart?: (() => void) | undefined;
 }) {
   const head = [showDate && t.dayTitle(trip.date), t.time(trip.from, trip.to)].filter(Boolean).join(' · ');
   const name = trip.title ?? waterLabel(trip.waterSnapshot?.name, trip.waterSnapshot?.place);
@@ -203,8 +252,16 @@ function TripCard({
         <p className="muted">{waterLabel(trip.waterSnapshot.name, trip.waterSnapshot.place)}</p>
       )}
       {trip.notes && <p className={styles.notes}>{trip.notes}</p>}
+      {trip.invited && trip.invited.length > 0 && (
+        <p className="muted">{t.invitedLine(trip.invited.map((i) => i.name).join(', '))}</p>
+      )}
       <TripWeather trip={trip} today={today} enabled={weather} />
       <div className={styles.actions}>
+        {onStart && (
+          <Button onClick={onStart} aria-label={t.startSessionLabel(head)}>
+            {t.startSession}
+          </Button>
+        )}
         <Button variant="secondary" onClick={onEdit} aria-label={`${head}: ${t.edit}`}>
           {t.edit}
         </Button>
@@ -220,6 +277,7 @@ function TripCard({
 }
 
 export function CalendarPage() {
+  const { account } = useProviders();
   const trips = useLiveQuery(() => getDb().trips.toArray(), []);
   const options = useWaterOptions();
   const weather = useWeatherEnabled();
@@ -264,6 +322,21 @@ export function CalendarPage() {
     await repo('trips').remove(x.id);
     setToast({ text: t.deleted, undoId: x.id });
   }
+  /** Start mit Eingeladenen: das Warten übernimmt das globale Fenster (TripStartHost) */
+  async function startTrip(x: Trip) {
+    try {
+      await startTripWithInvitees(account, x);
+    } catch (e) {
+      setToast({
+        text:
+          e instanceof TripStartBusyError
+            ? de.tripStart.busy
+            : !navigator.onLine
+              ? de.tripStart.offline
+              : groupErrorText(e),
+      });
+    }
+  }
   const card = (x: Trip, showDate: boolean) => (
     <TripCard
       key={x.id}
@@ -274,6 +347,7 @@ export function CalendarPage() {
       onEdit={() => setEditing(x.id)}
       onDelete={() => void remove(x)}
       onExport={() => void exportTrips([x], `angeltermin-${x.date}.ics`)}
+      onStart={x.invited?.length && x.date === today ? () => void startTrip(x) : undefined}
     />
   );
   const editTrip = live.find((x) => x.id === editing);
@@ -420,9 +494,10 @@ export function CalendarPage() {
             initial={editTrip}
             date={selected}
             options={options}
-            onDone={(saved) => {
+            onDone={(saved, note) => {
               setEditing(undefined);
               if (saved) setSelected(saved.date);
+              if (note) setToast({ text: note });
             }}
           />
         )}

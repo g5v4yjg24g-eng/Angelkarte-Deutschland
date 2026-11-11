@@ -142,3 +142,28 @@
 .tripAlerts p {
   margin: 0;
 }
+
+/* Freunde zum Termin einladen */
+.invite {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.invite legend {
+  padding: 0 var(--space-1);
+  font-weight: 600;
+}
+.inviteRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch);
+}
+.inviteRow input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-primary);
+}

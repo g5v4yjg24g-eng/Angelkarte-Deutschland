@@ -1,0 +1,19 @@
+Einladen (Bert Freund, Carl fremd, Dora blockiert)|1
+Einladung nochmal (keine doppelte Mitteilung)|1
+Mitteilung an Bert|trip_invite:Abendansitz · Sa 14.11.
+Nichts an Carl|∅
+Start ohne einladbare Person|FEHLER: no_invitees
+Start mit Bert|true
+Start-Mitteilung an Bert|trip_invite:Abendansitz · Sa 14.11.,trip_start:Abendansitz
+Keine Start-Mitteilung an Carl|∅
+Anna hat keine offene Anfrage|0
+Bert sieht die Anfrage|Anna/Abendansitz/De Wittsee
+Bert sagt zu|
+Danach keine offene Anfrage|0
+Teilnehmer|Anna:joined,Bert:joined
+Carl (nicht eingeladen) sieht nichts|0
+Zweiter Start|true
+Bert sieht zweite Anfrage|1
+Ersteller bricht ab|
+Anfrage weg|0
+Ohne Anmeldung|FEHLER: not signed in

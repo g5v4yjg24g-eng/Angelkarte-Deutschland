@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-12',
+    title: 'Angeltermin mit Einladung',
+    items: [
+      'Termin: Beim Eintragen eines Angeltermins kannst du Freunde einladen. Sie bekommen eine Mitteilung.',
+      'Gemeinsamer Start: Mit „Session starten“ am Termin fragst du die Eingeladenen. Deine Session beginnt, sobald jemand bestätigt – nach 2 Minuten kannst du auch ohne sie starten.',
+      'Bestätigen: Wer eingeladen ist, bekommt eine Mitteilung und in der App ein Fenster „Session starten?“ – in jedem Bereich, nur nicht beim Hochladen von Profilbild und Beiträgen.',
+    ],
+  },
+  {
     id: '2026-12-11-2',
     title: 'Privatsphäre unter Konto',
     items: [

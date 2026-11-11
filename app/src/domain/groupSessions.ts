@@ -115,11 +115,12 @@ export function invitableFriends(
 }
 
 export type GroupErrorKey =
-  'notFound' | 'ended' | 'tooManyMembers' | 'tooMany' | 'banned' | 'host' | 'unknown';
+  'notFound' | 'ended' | 'tooManyMembers' | 'tooMany' | 'banned' | 'host' | 'noInvitees' | 'unknown';
 
 /** Fehlertext des Servers → Schlüssel für die Anzeige */
 export function groupErrorKey(e: unknown): GroupErrorKey {
   const m = e instanceof Error ? e.message : String(e);
+  if (m.includes('no_invitees')) return 'noInvitees';
   if (m.includes('too_many_members')) return 'tooManyMembers';
   if (m.includes('too_many')) return 'tooMany';
   if (m.includes('not_found')) return 'notFound';

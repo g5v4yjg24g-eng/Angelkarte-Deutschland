@@ -25,6 +25,8 @@ type Kind =
   | 'comment_reply'
   | 'session_joined'
   | 'session_highlight'
+  | 'trip_invite'
+  | 'trip_start'
   | 'test';
 
 function secretKey(): string {
@@ -63,6 +65,10 @@ function message(kind: Kind, name: string, ref: string | null, excerpt: string |
       return { title: 'Zusage zur Session', body: excerpt ? `${name} ist bei „${excerpt}“ dabei.` : `${name} ist bei deiner gemeinsamen Session dabei.`, path: '/fangbuch/sessions' };
     case 'session_highlight':
       return { title: 'Neues Highlight', body: excerpt ? `${name} hat ein Highlight aus „${excerpt}“ geteilt.` : `${name} hat ein Highlight aus eurer Session geteilt.`, path: '/fangbuch/sessions' };
+    case 'trip_invite':
+      return { title: 'Einladung zum Angeltermin', body: excerpt ? `${name} lädt dich zum Angeltermin „${excerpt}“ ein.` : `${name} lädt dich zu einem Angeltermin ein.`, path: '/fangbuch/sessions' };
+    case 'trip_start':
+      return { title: 'Session startet', body: excerpt ? `${name} möchte „${excerpt}“ jetzt starten – bestätige, um dabei zu sein.` : `${name} möchte jetzt eine gemeinsame Session starten – bestätige, um dabei zu sein.`, path: '/fangbuch/sessions' };
     case 'test':
       return { title: 'Fangpunkt', body: 'Test-Mitteilung: Mitteilungen kommen auf diesem iPhone an. 🎣', path: '/feed' };
     default:

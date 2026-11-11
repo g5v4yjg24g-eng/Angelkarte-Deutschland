@@ -2241,8 +2241,38 @@ export const de = {
     tripWarning: (n: number) =>
       n === 1 ? 'Amtliche Warnung für diesen Tag:' : `${n} amtliche Warnungen für diesen Tag:`,
   },
+  tripStart: {
+    waitTitle: 'Session startet',
+    waiting: (names: string) => `Warte auf ${names} …`,
+    waitingAny: 'Warte auf die Bestätigung …',
+    declined: (names: string) => `${names} hat abgelehnt.`,
+    allDeclined: 'Alle haben abgelehnt.',
+    cancel: 'Abbrechen',
+    startWithout: (names: string) => `Ohne ${names} starten`,
+    startWithoutAny: 'Ohne die Eingeladenen starten',
+    starting: 'Session wird gestartet …',
+    errorStart: 'Das Starten hat nicht geklappt. Prüfe die Verbindung und versuch es noch einmal.',
+    busy: 'Es läuft schon eine Session. Beende sie zuerst.',
+    offline: 'Zum gemeinsamen Start brauchst du eine Verbindung.',
+    promptTitle: 'Session starten?',
+    prompt: (host: string, label?: string) =>
+      label
+        ? `${host} möchte „${label}“ jetzt starten.`
+        : `${host} möchte jetzt eine gemeinsame Session starten.`,
+    confirm: 'Dabei sein',
+    decline: 'Ablehnen',
+    promptError: 'Das hat nicht geklappt. Prüfe die Verbindung und versuch es noch einmal.',
+    promptBusy: 'Es läuft schon eine andere gemeinsame Session. Beende sie zuerst.',
+  },
   calendar: {
     title: 'Angelkalender',
+    inviteTitle: 'Freunde einladen',
+    inviteNone: 'Noch keine Freunde zum Einladen.',
+    invitedLine: (names: string) => `Eingeladen: ${names}`,
+    startSession: 'Session starten',
+    startSessionLabel: (head: string) => `Session starten: ${head}`,
+    inviteSent: 'Einladungen verschickt.',
+    inviteFailed: 'Die Einladung konnte nicht gesendet werden. Beim Start bekommen die Eingeladenen die Anfrage trotzdem.',
     tabForecast: 'Vorhersage',
     tabCalendar: 'Angelkalender',
     tabsLabel: 'Wetter-Ansicht',
@@ -3033,6 +3063,7 @@ export const de = {
       tooManyMembers: 'Es sind höchstens 10 Personen dabei. Wähle weniger aus.',
       tooMany: 'Du hast heute schon viele gemeinsame Sessions angelegt. Morgen geht es weiter.',
       banned: 'Dein Konto ist gesperrt.',
+      noInvitees: 'Niemand aus deiner Auswahl kann eingeladen werden.',
       host: 'Als Gastgeber beendest du die gemeinsame Session, indem du deine Session beendest.',
       unknown: 'Das hat nicht geklappt. Prüfe die Verbindung und versuch es noch einmal.',
     },
@@ -3391,7 +3422,7 @@ export const de = {
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',
-        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse und dein Passwort (gespeichert wird nur ein nicht umkehrbarer Hash; Bestätigungs-, Passwort- und Sicherheits-Mails kommen von noreply@fangpunkt.com), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), dein Profiltext und freiwillige Angaben (Lieblingsfische, Methoden, Region als Bundesland, angeheftete Beiträge – sichtbar nur für deine bestätigten Follower; „Profil teilen“ verschickt nur einen Link mit deinem Nutzernamen), deine erreichten Erfolge (nur Stufe und Datum, keine Fänge; sichtbar je nach deiner Wahl für Follower, alle mit Fangpunkt-Konto oder niemanden), wem du folgst, wer dir folgt, offene Folge-Anfragen, die Zahlen dazu (sichtbar für alle mit Fangpunkt-Konto) und ob dein Konto privat ist, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine bestätigten Follower bzw. bei „Alle“ für alle mit Fangpunkt-Konto, auch für Fremde unter Feed → Entdecken –, Beiträge, die du speicherst (nur für dich sichtbar), wie oft du am Tag nach Personen suchst (gegen massenhaftes Durchsuchen; die Suchbegriffe selbst werden nicht gespeichert), gemeinsame Sessions (Titel, auf Wunsch der Gewässername ohne Position, Beginn und Ende, wer eingeladen ist und wer dabei ist – sichtbar für die Teilnehmer; keine Positionen, Routen oder Fänge) samt den Kennzahlen, die du nach dem Ende einer gemeinsamen Session für den Rückblick teilst (Fänge, Bisse, Einträge, größter Fisch mit Art und Länge, Zeit am Wasser, Strecke – nur diese Zahlen, sichtbar nur für die Teilnehmer, ohne Route, Orte, Fotos und einzelne Einträge) und Highlights, die du dort teilst (Beiträge wie oben, sichtbar nur für die Teilnehmer) sowie Orte, die du selbst mit Freunden teilst (Freunde = ihr folgt euch gegenseitig; Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst, welcher Fassung der Regeln der Community du wann zugestimmt hast, einen Einspruch gegen eine Sperre (Text und Zeitpunkt; nur Moderatoren lesen ihn), sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte, Profilbilder und Profiltexte löschen, Konten verwarnen (90 Tage aktiv, zurücknehmbar) und befristet oder dauerhaft sperren; Verwarnungen, Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt bei Verwarnung, Sperre und Aufhebung eine Mail an ihre Konto-Adresse. Gesperrte Konten können nichts mehr veröffentlichen oder ändern. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person, bei Beiträgen und Kommentaren dem Anfang des Textes und bei gemeinsamen Sessions deren Titel); für „Test-Mitteilung senden“ wird nur vermerkt, ob Apple sie angenommen hat. Einzelne Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, solange du nicht angemeldet bist; mit Konto werden Beiträge auf dem Server gesichert, „Nur ich“ sieht nur du. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Follower und Gefolgte, Erfolge, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, gespeicherte Beiträge, gemeinsame Sessions, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
+        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse und dein Passwort (gespeichert wird nur ein nicht umkehrbarer Hash; Bestätigungs-, Passwort- und Sicherheits-Mails kommen von noreply@fangpunkt.com), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), dein Profiltext und freiwillige Angaben (Lieblingsfische, Methoden, Region als Bundesland, angeheftete Beiträge – sichtbar nur für deine bestätigten Follower; „Profil teilen“ verschickt nur einen Link mit deinem Nutzernamen), deine erreichten Erfolge (nur Stufe und Datum, keine Fänge; sichtbar je nach deiner Wahl für Follower, alle mit Fangpunkt-Konto oder niemanden), wem du folgst, wer dir folgt, offene Folge-Anfragen, die Zahlen dazu (sichtbar für alle mit Fangpunkt-Konto) und ob dein Konto privat ist, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine bestätigten Follower bzw. bei „Alle“ für alle mit Fangpunkt-Konto, auch für Fremde unter Feed → Entdecken –, Beiträge, die du speicherst (nur für dich sichtbar), wie oft du am Tag nach Personen suchst (gegen massenhaftes Durchsuchen; die Suchbegriffe selbst werden nicht gespeichert), gemeinsame Sessions (Titel, auf Wunsch der Gewässername ohne Position, Beginn und Ende, wer eingeladen ist und wer dabei ist – sichtbar für die Teilnehmer; keine Positionen, Routen oder Fänge) Angeltermine bleiben auf deinem Gerät; lädst du Freunde dazu ein, geht nur eine Mitteilung an sie (Titel oder Gewässername und Tag), und beim gemeinsamen Start wird eine gemeinsame Session angelegt (wie oben), samt den Kennzahlen, die du nach dem Ende einer gemeinsamen Session für den Rückblick teilst (Fänge, Bisse, Einträge, größter Fisch mit Art und Länge, Zeit am Wasser, Strecke – nur diese Zahlen, sichtbar nur für die Teilnehmer, ohne Route, Orte, Fotos und einzelne Einträge) und Highlights, die du dort teilst (Beiträge wie oben, sichtbar nur für die Teilnehmer) sowie Orte, die du selbst mit Freunden teilst (Freunde = ihr folgt euch gegenseitig; Art, Name, Notiz, genaue Position; sichtbar nur für die gewählten Freunde), wen du blockierst, welcher Fassung der Regeln der Community du wann zugestimmt hast, einen Einspruch gegen eine Sperre (Text und Zeitpunkt; nur Moderatoren lesen ihn), sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte, Profilbilder und Profiltexte löschen, Konten verwarnen (90 Tage aktiv, zurücknehmbar) und befristet oder dauerhaft sperren; Verwarnungen, Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt bei Verwarnung, Sperre und Aufhebung eine Mail an ihre Konto-Adresse. Gesperrte Konten können nichts mehr veröffentlichen oder ändern. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die Mitteilungen selbst stellt Apple zu (mit dem Namen der Person, bei Beiträgen und Kommentaren dem Anfang des Textes und bei gemeinsamen Sessions deren Titel); für „Test-Mitteilung senden“ wird nur vermerkt, ob Apple sie angenommen hat. Einzelne Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, solange du nicht angemeldet bist; mit Konto werden Beiträge auf dem Server gesichert, „Nur ich“ sieht nur du. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Follower und Gefolgte, Erfolge, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, gespeicherte Beiträge, gemeinsame Sessions, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
       },
       {
         name: 'GoatCounter (goatcounter.com)',
