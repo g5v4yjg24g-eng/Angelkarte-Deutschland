@@ -567,15 +567,7 @@ export const de = {
       time: 'Zeit am Wasser',
       badge: 'Größter Fisch',
       totalTitle: 'Session gesamt',
-      highlightsTitle: 'Session-Highlights',
-      biggestText: (name: string, species: string, cm: string) =>
-        `${name} hat den größten Fisch gefangen: ${species ? `${species}, ` : ''}${cm}.`,
-      mostBites: (name: string, n: number) => `${name} hatte die meisten Bisse (${n}).`,
-      mostCaught: (name: string, n: number) => `${name} hat die meisten Fische gelandet (${n}).`,
-      noLeader: 'Noch kein klarer Vorsprung – die Zahlen liegen gleichauf oder fehlen.',
       waiting: (names: string) => `Noch keine Zahlen von ${names}.`,
-      privacy:
-        'Von den anderen werden nur diese Kennzahlen geteilt – keine Route, keine Orte, keine Fotos und keine einzelnen Einträge.',
       started: (names: string) => `Session gestartet – ${names} sind am Wasser`,
       loading: 'Zahlen der anderen werden geladen …',
       failed: 'Die Zahlen der anderen konnten nicht geladen werden.',

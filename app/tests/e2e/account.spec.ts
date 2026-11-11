@@ -3591,16 +3591,21 @@ test('REV-5: Rückblick einer gemeinsamen Session – Vergleich aus geteilten Ke
   const dialog = page.getByRole('dialog');
   await expect(dialog.getByRole('heading', { name: 'Gemeinsame Session' })).toBeVisible();
   await expect(dialog.getByRole('heading', { name: 'Highlights im Vergleich' })).toBeVisible();
-  const table = dialog.getByRole('table');
-  await expect(table.getByRole('columnheader', { name: /Anna/ })).toBeVisible();
-  await expect(table.getByRole('columnheader', { name: /Du.*Größter Fisch/ })).toBeVisible();
-  await expect(table.getByRole('row', { name: /Fänge insgesamt/ })).toContainText('1');
-  await expect(table.getByRole('row', { name: /Bisse/ })).toContainText('3');
-  await expect(dialog).toContainText('Anna hatte die meisten Bisse (3).');
-  await expect(dialog).toContainText('Kevin hat den größten Fisch gefangen: Hecht, 62 cm.');
+  const vs = dialog.getByRole('list', { name: 'Highlights im Vergleich' });
+  const anna = vs.getByRole('listitem').filter({ hasText: 'Anna' });
+  const du = vs.getByRole('listitem').filter({ hasText: 'Du' });
+  await expect(anna).toContainText('Zander 48 cm');
+  await expect(anna).toContainText('3');
+  await expect(du).toContainText('Hecht 62 cm');
+  // Titel „Größter Fisch“ als Zeilenname in beiden, als Abzeichen nur beim Vorsprung (Kevin)
+  await expect(vs.getByText('Größter Fisch', { exact: true })).toHaveCount(3);
+  await expect(dialog.getByRole('heading', { name: 'Session-Highlights' })).toHaveCount(0);
   await expect(dialog.getByRole('heading', { name: 'Session gesamt' })).toBeVisible();
   await expect(dialog).toContainText('Session gestartet – Anna und Kevin sind am Wasser');
 
+  // gleiche Zeilen stehen in beiden Karten auf gleicher Höhe (kein Versatz durch das Abzeichen)
+  const ys = await vs.getByText('Fänge insgesamt').evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
+  expect(new Set(ys).size).toBe(1);
   // hochgeladen wurden nur Zahlen – keine Orte, Routen oder Texte
   expect(calls.group.statUploads).toHaveLength(1);
   const sent = calls.group.statUploads[0]?.stats ?? {};
