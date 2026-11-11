@@ -171,7 +171,6 @@ function TripForm({
       </div>
       <SelectField
         label={t.water}
-        hint={t.waterHint}
         options={waterOptions}
         value={draft.water}
         onChange={(e) => set('water', e.target.value)}
@@ -371,7 +370,6 @@ export function CalendarPage() {
   return (
     <Page title={de.forecast.title}>
       <WeatherTabs />
-      <p className="muted">{t.intro}</p>
       <TripInvitesSection />
 
       <div className={styles.toolbar}>
@@ -494,7 +492,6 @@ export function CalendarPage() {
                 {t.allToCalendar}
               </Button>
             )}
-            <p className="muted">{t.toCalendarHint}</p>
           </>
         )}
         {weather && <p className="muted">{t.weatherSource}</p>}

@@ -217,7 +217,6 @@ export function SignedOut({ account }: { account: AccountProvider }) {
     return (
       <form className={styles.form} noValidate onSubmit={forgot}>
         <h2 className={styles.h2}>{t.resetTitle}</h2>
-        <p className="muted">{t.resetIntro}</p>
         {emailField}
         {errorNotice}
         <div className={styles.actions}>
@@ -246,7 +245,6 @@ export function SignedOut({ account }: { account: AccountProvider }) {
         />
       </div>
       <form className={styles.form} noValidate onSubmit={signingUp ? signUp : signIn}>
-        {signingUp && <p className="muted">{t.signUpIntro}</p>}
         {emailField}
         <PasswordField
           label={t.passwordLabel}

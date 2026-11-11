@@ -116,7 +116,6 @@ function DayBody({ f, day, nowMs }: { f: Forecast; day: DaySummary; nowMs: numbe
             ]}
           />
         )}
-        <p className="muted">{mode === 'feels' ? t.feelsText : t.actualText}</p>
       </section>
 
       <section className={styles.detailSection} aria-labelledby="dd-precip">
@@ -134,7 +133,6 @@ function DayBody({ f, day, nowMs }: { f: Forecast; day: DaySummary; nowMs: numbe
           tone="precip"
         />
         {day.day.precipSum !== undefined && <p className="muted">{t.precipSum(day.day.precipSum)}</p>}
-        <p className="muted">{t.precipNote}</p>
       </section>
 
       <section className={styles.detailSection} aria-labelledby="dd-wind">

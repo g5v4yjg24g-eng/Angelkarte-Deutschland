@@ -958,7 +958,7 @@ export default function MapView() {
           shared={shared.length > 0}
           onChange={changeFilter}
         />
-        <Legend clustersLabeled={!usingFallback} withCatches={false} />
+        <Legend withCatches={false} />
       </>
     );
   } else if (sheet?.kind === 'locate') {

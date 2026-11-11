@@ -165,7 +165,6 @@ export function GroupPage() {
   return (
     <Page title={t.title} back={back}>
       <div className={sessionStyles.stack}>
-        {!groupId && <p className="muted">{t.intro}</p>}
         {groupId && !members && !failed && <p className="muted">{t.loading}</p>}
         {failed && <Notice tone="error">{t.loadError}</Notice>}
         {members && members.length > 0 && (

@@ -323,7 +323,6 @@ export function FeedPage({ mode = 'friends' }: { mode?: 'friends' | 'discover' }
       action={<IconButton label={t.refresh} icon={<RefreshIcon />} onClick={() => setTick((n) => n + 1)} />}
     >
       <FeedTabs />
-      {mode === 'discover' && <p className="muted">{t.discoverIntro}</p>}
       <FeedList
         key={mode}
         load={load}

@@ -91,7 +91,6 @@ export function WaterHeader({ group }: { group: WaterGroup }) {
             onChange={(e) => setName(e.target.value)}
             autoFocus
           />
-          <p className="muted">{t.renameHint}</p>
           {error && <p role="alert">{error}</p>}
           <div className={styles.actions}>
             <Button type="submit">{t.renameSave}</Button>

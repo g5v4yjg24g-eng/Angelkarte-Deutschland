@@ -17,7 +17,6 @@ export function RetrievesPage() {
   return (
     <Page title={t.title} back="/mehr">
       <KnotTabs />
-      <p className="muted">{t.intro}</p>
       <div className={styles.filters} role="group" aria-label={t.filterLabel}>
         <button type="button" className={styles.chip} aria-pressed={!zone} onClick={() => setZone(undefined)}>
           {t.all}

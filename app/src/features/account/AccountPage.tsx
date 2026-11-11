@@ -115,7 +115,6 @@ function CreateProfile({
   return (
     <form className={styles.form} onSubmit={(e) => void submit(e)} noValidate>
       <h2 className={styles.h2}>{t.createTitle}</h2>
-      <p className="muted">{t.createIntro}</p>
       <TextField
         label={t.usernameLabel}
         hint={t.usernameHint}
@@ -137,7 +136,6 @@ function CreateProfile({
       )}
       <TextField
         label={t.displayNameLabel}
-        hint={t.displayNameHint}
         maxLength={40}
         value={displayName}
         error={nameError}
@@ -287,12 +285,7 @@ function ProfileView({
           {t.privacyTitle}
         </h2>
         <div className={pageStyles.card}>
-          <ListLink
-            to="/mehr/konto/privatsphaere"
-            icon={<LockIcon />}
-            title={t.privacyTitle}
-            hint={t.privacyRowHint}
-          />
+          <ListLink to="/mehr/konto/privatsphaere" icon={<LockIcon />} title={t.privacyTitle} />
         </div>
       </section>
 
@@ -302,12 +295,7 @@ function ProfileView({
           {t.followTitle}
         </h2>
         <div className={pageStyles.card}>
-          <ListLink
-            to="/profil/freunde"
-            icon={<FeedIcon />}
-            title={t.followManage}
-            hint={t.followManageHint}
-          />
+          <ListLink to="/profil/freunde" icon={<FeedIcon />} title={t.followManage} />
         </div>
       </section>
 
@@ -320,7 +308,6 @@ function ProfileView({
             danger
             icon={<TrashIcon />}
             title={t.deleteTitle}
-            hint={t.deleteRowHint}
             expanded={deleting}
             onClick={() => setDeleting((v) => !v)}
           />
@@ -444,7 +431,6 @@ export function AccountPage() {
 
   return (
     <Page title={user && profile && !recovering ? t.detailsTitle : t.title} back="/mehr">
-      {!(user && profile) && <p className="muted">{t.intro}</p>}
       {!account.enabled ? (
         <Notice>{t.disabled}</Notice>
       ) : (

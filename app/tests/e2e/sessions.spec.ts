@@ -105,7 +105,7 @@ test('SES-3: Session länger als 24 h → Korrekturdialog mit Vorschlag', async 
   await page.getByRole('button', { name: 'Ende speichern' }).click();
   await expect(page.getByRole('heading', { name: 'Dein Angeltrip im Rückblick' })).toBeVisible();
   await page.getByRole('button', { name: 'Rückblick schließen' }).click();
-  await expect(page.getByText('4 h 00 min', { exact: true })).toBeVisible();
+  await expect(page.getByText('4 h 00 min', { exact: true }).first()).toBeVisible();
   await expect(page.getByRole('link', { name: /Session über 24 h/ })).toHaveCount(0);
 });
 

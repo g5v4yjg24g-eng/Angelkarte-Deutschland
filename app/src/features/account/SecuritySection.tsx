@@ -118,10 +118,6 @@ export function SecuritySection({ account, user }: { account: AccountProvider; u
         </p>
       )}
       {error && <Notice tone="error">{error}</Notice>}
-      <p className={`muted ${styles.small} ${styles.note}`}>
-        <ShieldIcon size={16} />
-        {ts.notifyNote}
-      </p>
     </section>
   );
 }
