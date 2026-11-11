@@ -66,7 +66,7 @@ function message(kind: Kind, name: string, ref: string | null, excerpt: string |
     case 'session_highlight':
       return { title: 'Neues Highlight', body: excerpt ? `${name} hat ein Highlight aus „${excerpt}“ geteilt.` : `${name} hat ein Highlight aus eurer Session geteilt.`, path: '/fangbuch/sessions' };
     case 'trip_invite':
-      return { title: 'Einladung zum Angeltermin', body: excerpt ? `${name} lädt dich zum Angeltermin „${excerpt}“ ein.` : `${name} lädt dich zu einem Angeltermin ein.`, path: '/fangbuch/sessions' };
+      return { title: 'Einladung zum Angeltermin', body: excerpt ? `${name} lädt dich zum Angeltermin „${excerpt}“ ein.` : `${name} lädt dich zu einem Angeltermin ein.`, path: '/wetter/kalender' };
     case 'trip_start':
       return { title: 'Session startet', body: excerpt ? `${name} möchte „${excerpt}“ jetzt starten – bestätige, um dabei zu sein.` : `${name} möchte jetzt eine gemeinsame Session starten – bestätige, um dabei zu sein.`, path: '/fangbuch/sessions' };
     case 'test':

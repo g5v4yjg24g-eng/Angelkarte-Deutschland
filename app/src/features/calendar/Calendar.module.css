@@ -167,3 +167,21 @@
   height: 22px;
   accent-color: var(--color-primary);
 }
+
+/* Einladungen zu Terminen */
+.invites {
+  display: grid;
+  gap: var(--space-3);
+}
+.invites h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+.inviteCard {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}

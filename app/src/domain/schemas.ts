@@ -206,9 +206,18 @@ export const TripSchema = MetaSchema.extend({
   notes: text(2000).optional(),
   /** Eingeladene Freunde (Wunsch Nutzer 2026-11-11): nur zur Anzeige und zum Start; Konto-IDs bleiben auf dem Gerät */
   invited: z
-    .array(z.object({ userId: z.string().min(1).max(64), name: text(60) }))
+    .array(
+      z.object({
+        userId: z.string().min(1).max(64),
+        name: text(60),
+        /** die Einladung ist beim Server angekommen (sonst wird sie beim Öffnen des Kalenders nachgeholt) */
+        sent: z.boolean().optional(),
+      }),
+    )
     .max(9)
     .optional(),
+  /** Termin stammt aus einer Einladung (Wunsch Nutzer 2026-11-11) */
+  invitedBy: z.object({ userId: z.string().min(1).max(64), name: text(60) }).optional(),
   legacy: LegacySchema.optional(),
 }).refine((t) => !t.from || !t.to || t.to > t.from, {
   message: 'Das Ende liegt vor dem Beginn.',
