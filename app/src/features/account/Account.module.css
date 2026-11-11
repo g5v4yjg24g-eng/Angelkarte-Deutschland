@@ -22,19 +22,35 @@
 }
 /* Kontodetails (Vorlage Nutzer 2026-11-11): Kopfkarte mit Profilbild, Name, Abzeichen, Adresse, Stand */
 .hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  background:
-    linear-gradient(
-      120deg,
-      transparent 40%,
-      color-mix(in srgb, var(--color-primary) 16%, transparent) 100%
-    ),
-    var(--color-surface);
+  background: var(--color-surface);
+}
+/* Sonnenuntergang rechts, nach links ausgeblendet – der Text links bleibt auf der Kartenfläche */
+.sunset {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 0 auto;
+  width: 72%;
+  height: 100%;
+  opacity: 0.5;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 78%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 78%);
+}
+:global([data-theme='dark']) .sunset {
+  opacity: 0.85;
+}
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .sunset {
+    opacity: 0.85;
+  }
 }
 .heroAvatar {
   position: relative;

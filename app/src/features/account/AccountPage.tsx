@@ -30,6 +30,7 @@ import { NewPasswordForm, SignedOut } from './AuthForms';
 import { SecuritySection } from './SecuritySection';
 import { PasswordField } from './PasswordField';
 import { RowButton } from './RowButton';
+import { SunsetScene } from './SunsetScene';
 import { Avatar } from '../profile/Avatar';
 import { useProfile } from '../profile/usePhoto';
 import { clearRecovery, markRecovery, useRecovery } from './recoveryState';
@@ -194,6 +195,7 @@ function ProfileView({
   return (
     <div className={styles.stack}>
       <section className={styles.hero} aria-label={t.detailsTitle}>
+        <SunsetScene />
         <span className={styles.heroAvatar}>
           <Avatar photoId={localProfile?.avatarPhotoId} size={76} />
           <Link to="/profil/bearbeiten" className={styles.heroEdit} aria-label={t.editProfile}>
