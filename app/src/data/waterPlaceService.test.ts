@@ -28,6 +28,7 @@ const provider = (fail = false): WaterDataProvider => ({
     if (fail) throw new Error('offline');
     return key === 'de' ? shard : [];
   },
+  loadAllSearchEntries: async () => shard,
   loadStates: async () => null,
 });
 

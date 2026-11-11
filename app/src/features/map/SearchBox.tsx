@@ -18,6 +18,7 @@ export function SearchBox({
   getNear,
   onPick,
   onActiveChange,
+  onOpenDetail,
 }: {
   water: WaterDataProvider;
   manifest: WaterManifest | null;
@@ -26,6 +27,8 @@ export function SearchBox({
   onPick: (r: SearchResult) => void;
   /** Tastatur/Trefferliste offen: die Karte hält dann ihre Größe */
   onActiveChange?: (active: boolean) => void;
+  /** Filter-Symbol in der Leiste: öffnet die Detailsuche */
+  onOpenDetail?: () => void;
 }) {
   const [q, setQ] = useState('');
   const [open, setOpen] = useState(false);
@@ -121,6 +124,20 @@ export function SearchBox({
             <CloseIcon />
           </button>
         )}
+        {onOpenDetail && (
+          <button
+            type="button"
+            className={styles.searchFilter}
+            aria-label={de.detailSearch.open}
+            onClick={() => {
+              setOpen(false);
+              input.current?.blur();
+              onOpenDetail();
+            }}
+          >
+            <FilterIcon />
+          </button>
+        )}
       </div>
       {showList && (
         <div id={listId} className={styles.searchResults}>
@@ -191,6 +208,25 @@ function CloseIcon() {
       aria-hidden="true"
     >
       <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  );
+}
+
+function FilterIcon() {
+  return (
+    <svg
+      width={17}
+      height={17}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
+      <circle cx="15" cy="7" r="2.2" />
+      <circle cx="9" cy="17" r="2.2" />
     </svg>
   );
 }

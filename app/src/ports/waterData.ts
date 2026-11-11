@@ -11,6 +11,11 @@ export interface WaterDataProvider {
   tilesUrl(m: WaterManifest): string;
   /** Einträge eines Suchindex-Teils; [] wenn es den Teil nicht gibt. Wirft bei Netzfehlern. */
   loadSearchShard(m: WaterManifest, key: string): Promise<SearchEntry[]>;
+  /**
+   * Alle Einträge des Suchindex (für die Detailsuche im Umkreis). Wird einmal geladen und auf dem Gerät gemerkt;
+   * `onProgress` meldet den Fortschritt 0…1. Wirft bei Netzfehlern.
+   */
+  loadAllSearchEntries(m: WaterManifest, onProgress?: (done: number) => void): Promise<SearchEntry[]>;
   /** Landesgrenzen; null, wenn die Daten keine enthalten oder sie nicht erreichbar sind. */
   loadStates(m: WaterManifest): Promise<StatesFile | null>;
 }

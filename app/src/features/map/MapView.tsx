@@ -44,6 +44,7 @@ import {
 } from './mapLayers';
 import { WaterProfile } from './WaterProfile';
 import { SearchBox } from './SearchBox';
+import { DetailSearch } from './DetailSearch';
 import { CatchDetails, LayerSwitches, Legend, NewHere, PlaceDetails, PlaceForm } from './MapSheets';
 import { adoptedPlace, incomingSpots } from '../../domain/sharedSpots';
 import { adoptSharedSpot } from '../../data/sharedSpotService';
@@ -548,6 +549,7 @@ export default function MapView() {
   }, []);
   // Während die Tastatur offen ist, bleibt die Karte so groß wie vorher: die Ansicht schrumpft mit der Tastatur
   // (Capacitor `resize: 'native'`), sonst würde die ganze Karte bei jedem Bild der Tastatur-Animation neu gezeichnet
+  const [detailOpen, setDetailOpen] = useState(false);
   const [frozen, setFrozen] = useState<{ w: number; h: number } | undefined>();
   const setSearchActive = useCallback((active: boolean) => {
     const el = container.current;
@@ -1011,7 +1013,21 @@ export default function MapView() {
         getNear={getSearchNear}
         onPick={onSearchPick}
         onActiveChange={setSearchActive}
+        onOpenDetail={() => setDetailOpen(true)}
       />
+      {detailOpen && (
+        <DetailSearch
+          water={water}
+          manifest={waterManifest}
+          me={geo.fix ? { lat: geo.fix.lat, lng: geo.fix.lng } : undefined}
+          getCenter={getSearchNear}
+          onPick={(r) => {
+            setDetailOpen(false);
+            onSearchPick(r);
+          }}
+          onClose={() => setDetailOpen(false)}
+        />
+      )}
       <div className={styles.status}>
         {!ready && <Notice>{de.map.loading}</Notice>}
         {ready && usingFallback && (
