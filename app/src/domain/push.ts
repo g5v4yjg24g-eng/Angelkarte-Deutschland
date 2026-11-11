@@ -43,7 +43,7 @@ export function validPushToken(token: string): boolean {
 export function pushTarget(data: unknown): string | undefined {
   const path = (data as { path?: unknown } | null)?.path;
   if (typeof path !== 'string') return undefined;
-  if (['/profil/freunde', '/profil/spots', '/feed', '/fangbuch/sessions'].includes(path)) return path;
+  if (['/profil/freunde', '/profil/spots', '/feed', '/fangbuch/sessions', '/wetter/kalender'].includes(path)) return path;
   if (/^\/profil\/beitrag\/[0-9a-zA-Z-]{1,100}$/.test(path)) return path;
   return undefined;
 }

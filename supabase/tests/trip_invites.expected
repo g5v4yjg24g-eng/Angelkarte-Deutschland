@@ -1,0 +1,18 @@
+Tabelle direkt lesen|FEHLER: permission denied for table trip_invites
+Einladen (Bert Freund, Carl fremd, Dora blockiert, selbst)|1
+Ohne Datum|FEHLER: bad_date
+Mitteilung an Bert (einmal)|trip_invite:Abendansitz · De Wittsee · 17.05.
+Nochmal einladen (Angaben aktualisieren)|1
+Mitteilung bleibt einmal|trip_invite:Abendansitz · De Wittsee · 17.05.
+Ersteller sieht Stand|00000000-0000-0000-0000-0000000000b1:invited
+Bert sieht Einladung|Anna/Abendansitz neu/18:00/invited
+Bert sieht Stände anderer nicht|0
+Bert sagt zu|
+Zugesagt bleibt sichtbar|accepted
+Unbekannte Einladung|FEHLER: not_found
+Bert überschreibt fremden Termin nicht|1
+Ersteller sieht Zusage|accepted
+Ersteller zieht zurück|
+Danach keine Einladung|0
+Fremder sieht nichts|0
+Ohne Anmeldung|FEHLER: not signed in

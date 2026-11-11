@@ -5,6 +5,7 @@
 import { parseGroupMembers, parseGroupSessions } from '../domain/groupSessions';
 import { parseGroupStats, statsPayload } from '../domain/groupStats';
 import { parseStartRequests } from '../domain/tripStart';
+import { parseTripInvites, parseTripReplies } from '../domain/tripInvites';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
@@ -455,15 +456,37 @@ export function supabaseAccount(
       if (error) fail(error);
       return parseGroupMembers(data as unknown[] | null);
     },
-    async inviteToTrip({ trip, userIds, label, day }) {
-      const { data, error } = await (await get()).rpc('invite_to_trip', {
+    async inviteToTrip({ trip, userIds, title, waterName, date, from, to, tz }) {
+      const { data, error } = await (await get()).rpc('invite_to_trip2', {
         trip,
         users: userIds,
-        label: label ?? null,
-        day: day ?? null,
+        title: title ?? null,
+        water_name: waterName ?? null,
+        trip_date: date,
+        from_time: from ?? null,
+        to_time: to ?? null,
+        tz,
       });
       if (error) fail(error);
       return Number(data ?? 0);
+    },
+    async myTripInvites() {
+      const { data, error } = await (await get()).rpc('my_trip_invites');
+      if (error) fail(error);
+      return parseTripInvites(data as unknown[] | null);
+    },
+    async respondTripInvite(trip, accept) {
+      const { error } = await (await get()).rpc('respond_trip_invite', { trip, accept });
+      if (error) fail(error);
+    },
+    async tripInviteStatuses(trips) {
+      const { data, error } = await (await get()).rpc('trip_invite_statuses', { trips });
+      if (error) fail(error);
+      return parseTripReplies(data as unknown[] | null);
+    },
+    async cancelTripInvites(trip) {
+      const { error } = await (await get()).rpc('cancel_trip_invites', { trip });
+      if (error) fail(error);
     },
     async startTripSession({ title, waterName, userIds }) {
       const { data, error } = await (await get()).rpc('start_trip_session', {

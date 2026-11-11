@@ -15,9 +15,13 @@ import { ChevronLeftIcon, ChevronRightIcon, WeatherIcon } from '../../design/ico
 import { getDb } from '../../data/db';
 import { groupFriends } from '../../domain/friends';
 import { toggleInvitee, type Invitee } from '../../domain/tripStart';
+import { invitedWithReplies, type TripReply } from '../../domain/tripInvites';
 import { useProviders } from '../../ports/providersContext';
 import { useFriends } from '../friends/useFriends';
 import { TripStartBusyError, startTripWithInvitees } from '../trips/startTrip';
+import { sendTripInvites } from '../trips/sendInvites';
+import { TripInvitesSection } from '../trips/TripInvitesSection';
+import { useTripSync } from '../trips/useTripSync';
 import { groupErrorText } from '../sessions/group/groupText';
 import { repo } from '../../data/repository';
 import { userMessage } from '../../data/errors';
@@ -121,21 +125,18 @@ function TripForm({
             ...(waterSnapshot ? { waterSnapshot } : {}),
             ...(invited.length ? { invited } : {}),
           });
-      // neu Eingeladene bekommen eine Mitteilung; schlägt das fehl, gilt der Termin trotzdem
-      const before = new Set((initial?.invited ?? []).map((i) => i.userId));
+      // neu Eingeladene bekommen die Einladung; schlägt das fehl, gilt der Termin trotzdem (wird nachgeholt)
+      const before = new Set((initial?.invited ?? []).filter((i) => i.sent).map((i) => i.userId));
       const fresh = invited.filter((i) => !before.has(i.userId));
       let note: string | undefined;
-      if (fresh.length > 0) {
-        note = await account
-          .inviteToTrip({
-            trip: saved.id,
-            userIds: fresh.map((i) => i.userId),
-            label: saved.title ?? saved.waterSnapshot?.name,
-            day: t.dayTitle(saved.date),
-          })
-          .then(() => t.inviteSent)
-          .catch(() => t.inviteFailed);
-      }
+      if (fresh.length > 0)
+        note = (await sendTripInvites(
+          account,
+          saved,
+          fresh.map((i) => i.userId),
+        ))
+          ? t.inviteSent
+          : t.inviteFailed;
       onDone(saved, note);
     } catch (x) {
       setSaveError(userMessage(x));
@@ -230,6 +231,7 @@ function TripCard({
   onDelete,
   onExport,
   onStart,
+  replies,
 }: {
   trip: Trip;
   today: string;
@@ -240,6 +242,8 @@ function TripCard({
   onExport: () => void;
   /** nur mit Eingeladenen und am Tag des Termins */
   onStart?: (() => void) | undefined;
+  /** Antworten der Eingeladenen (zugesagt/abgesagt) */
+  replies: readonly TripReply[];
 }) {
   const head = [showDate && t.dayTitle(trip.date), t.time(trip.from, trip.to)].filter(Boolean).join(' · ');
   const name = trip.title ?? waterLabel(trip.waterSnapshot?.name, trip.waterSnapshot?.place);
@@ -252,8 +256,16 @@ function TripCard({
       )}
       {trip.notes && <p className={styles.notes}>{trip.notes}</p>}
       {trip.invited && trip.invited.length > 0 && (
-        <p className="muted">{t.invitedLine(trip.invited.map((i) => i.name).join(', '))}</p>
+        <p className="muted">
+          {t.invitedLine(
+            invitedWithReplies(trip.invited, replies, trip.id, {
+              accepted: t.replyAccepted,
+              declined: t.replyDeclined,
+            }).join(', '),
+          )}
+        </p>
       )}
+      {trip.invitedBy && <p className="muted">{t.inviteFrom(trip.invitedBy.name)}</p>}
       <TripWeather trip={trip} today={today} enabled={weather} />
       <div className={styles.actions}>
         {onStart && (
@@ -308,6 +320,7 @@ export function CalendarPage() {
   const week = useMemo(() => weekDays(selected), [selected]);
   const weekTrips = week.flatMap((d) => tripsOn(live, d));
   const upcoming = upcomingTrips(live, today).slice(0, 10);
+  const replies = useTripSync(live, today);
 
   if (!trips || !options || weather === undefined)
     return (
@@ -319,6 +332,8 @@ export function CalendarPage() {
 
   async function remove(x: Trip) {
     await repo('trips').remove(x.id);
+    // Einladungen zurückziehen (Eingeladene behalten, was sie schon übernommen haben)
+    if (x.invited?.length) void account.cancelTripInvites(x.id).catch(() => undefined);
     setToast({ text: t.deleted, undoId: x.id });
   }
   /** Start mit Eingeladenen: das Warten übernimmt das globale Fenster (TripStartHost) */
@@ -347,6 +362,7 @@ export function CalendarPage() {
       onDelete={() => void remove(x)}
       onExport={() => void exportTrips([x], `angeltermin-${x.date}.ics`)}
       onStart={x.invited?.length && x.date === today ? () => void startTrip(x) : undefined}
+      replies={replies}
     />
   );
   const editTrip = live.find((x) => x.id === editing);
@@ -354,6 +370,7 @@ export function CalendarPage() {
   return (
     <Page title={de.forecast.title}>
       <WeatherTabs />
+      <TripInvitesSection />
 
       <div className={styles.toolbar}>
         <SegmentedControl
