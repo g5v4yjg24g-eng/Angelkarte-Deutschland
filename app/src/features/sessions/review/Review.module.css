@@ -37,9 +37,26 @@
   margin: 0 auto;
 }
 .header {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
+  align-items: flex-end;
+  min-height: 150px;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  /* Text steht immer hell auf dem dunkel abgetönten Bild – in beiden Farbschemas */
+  color: #fff;
+}
+.header::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgb(6 20 25 / 80%) 0%, rgb(6 20 25 / 45%) 58%, rgb(6 20 25 / 5%) 100%),
+    linear-gradient(0deg, rgb(6 20 25 / 55%), transparent 60%);
 }
 .headText {
   flex: 1;
@@ -49,24 +66,42 @@
 }
 .kicker {
   margin: 0;
-  color: var(--color-primary);
+  color: rgb(255 255 255 / 85%);
   font-size: var(--text-sm);
-  font-weight: 650;
-  letter-spacing: 0.02em;
 }
 .title {
-  margin: var(--space-1) 0;
+  margin: 0 0 var(--space-1);
   font-family: var(--font-display);
   font-size: var(--text-2xl);
   line-height: 1.15;
   overflow-wrap: anywhere;
 }
-.meta {
+/* Datum und Uhrzeit als Zeilen unter dem Kopfbild */
+.when {
+  display: grid;
   margin: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  /* clip statt hidden: hidden ließe die Zeilen in der Rasterzeile auf 2 px schrumpfen */
+  overflow: clip;
+}
+.when > div {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-  color: var(--color-text-muted);
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 48px;
+  padding: var(--space-1) var(--space-4);
+}
+.when > div + div {
+  border-top: 1px solid var(--color-border);
+}
+.when dt {
+  display: flex;
+  color: var(--color-primary);
+}
+.when dd {
+  margin: 0;
 }
 .close {
   /* bleibt beim Scrollen sichtbar (Wiedergabe scrollt die Zeitleiste mit) – Schließen immer erreichbar */
@@ -189,12 +224,137 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-4);
+  gap: var(--space-2);
 }
 .count {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+}
+/* Kennzahlen in einer Reihe (Strecke · Dauer · Angelzeit) */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.statsRow > div {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: var(--space-3) var(--space-2);
+  text-align: center;
+  min-width: 0;
+}
+.statsRow > div + div {
+  border-left: 1px solid var(--color-border);
+}
+.statsRow svg {
+  color: var(--color-primary);
+}
+.statsRow strong {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.statsRow span {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* Karten, Teilnehmer und Vergleich (gemeinsame Session) */
+.card {
+  display: grid;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  overflow: clip;
+}
+.card > * + * {
+  border-top: 1px solid var(--color-border);
+}
+.cardText {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+}
+.people {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+}
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+.initial {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  font-weight: 700;
+}
+.compareScroll {
+  overflow-x: auto;
+}
+.compare {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 100%;
+}
+.compare th,
+.compare td {
+  padding: var(--space-3) var(--space-2);
+  text-align: center;
+  vertical-align: middle;
+  min-width: 7.5rem;
+  overflow-wrap: anywhere;
+}
+.compare tbody th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  padding-left: var(--space-4);
+}
+.compare tbody tr + tr > * {
+  border-top: 1px solid var(--color-border);
+}
+.compare thead th:first-child,
+.compare tbody th {
+  width: 7.5rem;
+  min-width: 7.5rem;
+}
+.colHead {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  font-weight: 650;
+}
+.badge {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-accent) 22%, var(--color-surface));
+  color: var(--color-text);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+.winner {
+  /* Vorsprung orange hinterlegt; Schrift bleibt in Textfarbe (Kontrast in beiden Farbschemen) */
+  background: color-mix(in srgb, var(--color-accent) 24%, var(--color-surface));
+  color: var(--color-text);
+  font-weight: 700;
 }
 .calm {
   padding: var(--space-4);
@@ -229,6 +389,14 @@
   padding: 0;
   display: grid;
   gap: var(--space-2);
+}
+.startNote {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
 }
 .entry {
   display: flex;

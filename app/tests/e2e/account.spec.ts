@@ -131,6 +131,9 @@ async function fakeSupabase(
     responses: [] as { session: string; accept: boolean }[],
     ended: [] as string[],
     left: [] as string[],
+    /** Rückblick: Kennzahlen je Session (Zeilen wie group_session_stats_list) und die Uploads von Kevin */
+    stats: new Map<string, Record<string, unknown>[]>(),
+    statUploads: [] as { session: string; stats: Record<string, unknown> }[],
   };
   // Paket 12: Profile anderer (per Nutzername), Suchtreffer, eigene Angaben auf dem Server
   const people = {
@@ -1066,6 +1069,17 @@ async function fakeSupabase(
         }
         group.members.set(session, list);
         return json(route, users.length);
+      }
+      case 'POST /rest/v1/rpc/set_my_group_stats': {
+        const body = req.postDataJSON() as { session: string; stats: Record<string, unknown> };
+        group.statUploads.push(body);
+        const rows = (group.stats.get(body.session) ?? []).filter((r) => r.user_id !== 'u-1');
+        group.stats.set(body.session, [...rows, { user_id: 'u-1', ...body.stats }]);
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/group_session_stats_list': {
+        const { session } = req.postDataJSON() as { session: string };
+        return json(route, group.stats.get(session) ?? []);
       }
       case 'POST /rest/v1/rpc/group_highlights': {
         const { session } = req.postDataJSON() as { session: string };
@@ -3490,6 +3504,124 @@ test('GRP-3: Highlights – sichtbar in der Session und im Feed, eigener Fang al
     .poll(() => [...calls.posts.values()].map((p) => (p as { group_session_id?: string }).group_session_id))
     .toEqual(['g-anna']);
   expect([...calls.posts.values()][0]?.visibility).toBe('friends');
+  expect(errors).toEqual([]);
+});
+
+test('REV-5: Rückblick einer gemeinsamen Session – Vergleich aus geteilten Kennzahlen, nichts außer Zahlen geht hoch', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }], []);
+  calls.group.sessions.push({
+    id: 'g-anna',
+    host_id: 'u-anna',
+    host_username: 'anna',
+    host_display_name: 'Anna',
+    title: 'Abendansitz',
+    water_name: null,
+    started_at: '2026-11-06T16:00:00Z',
+    ended_at: null,
+    my_status: 'invited',
+    joined_count: 1,
+  });
+  calls.group.members.set('g-anna', [
+    { user_id: 'u-anna', username: 'anna', display_name: 'Anna', status: 'joined', is_host: true },
+    { user_id: 'u-1', username: 'kevin', display_name: 'Kevin', status: 'invited', is_host: false },
+  ]);
+  calls.group.stats.set('g-anna', [
+    {
+      user_id: 'u-anna',
+      caught: 1,
+      bites: 3,
+      entries: 3,
+      longest_cm: 48,
+      longest_species: 'zander',
+      active_ms: 5_400_000,
+      distance_m: 3100,
+    },
+  ]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/fangbuch/sessions');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Zusagen' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Abendansitz' })).toBeVisible();
+  const sessionId = new URL(page.url()).pathname.split('/').pop() ?? '';
+  calls.group.members.get('g-anna')?.forEach((m) => {
+    if (m.user_id === 'u-1') m.status = 'joined';
+  });
+
+  // ein Fang mit Länge und die Session beenden (direkt in der Datenbank)
+  await page.evaluate(async (sid) => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const r = indexedDB.open('fangpunkt');
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+    const now = new Date();
+    const tx = db.transaction(['catches', 'sessions'], 'readwrite');
+    tx.objectStore('catches').put({
+      id: 'rev5-fang',
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+      rev: 1,
+      at: now.toISOString(),
+      tz: 'Europe/Berlin',
+      outcome: 'caught',
+      speciesId: 'pike',
+      speciesCertainty: 'certain',
+      lengthCm: 62,
+      sessionId: sid,
+    });
+    const sessions = tx.objectStore('sessions');
+    const get = sessions.get(sid);
+    get.onsuccess = () => {
+      const s = get.result;
+      sessions.put({ ...s, endAt: new Date(now.getTime() + 60_000).toISOString() });
+    };
+    await new Promise((resolve, reject) => {
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  }, sessionId);
+
+  await page.goto(`/fangbuch/sessions/${sessionId}/rueckblick`);
+  await waitForApp(page);
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('heading', { name: 'Gemeinsame Session' })).toBeVisible();
+  await expect(dialog.getByRole('heading', { name: 'Highlights im Vergleich' })).toBeVisible();
+  const table = dialog.getByRole('table');
+  await expect(table.getByRole('columnheader', { name: /Anna/ })).toBeVisible();
+  await expect(table.getByRole('columnheader', { name: /Du.*Größter Fisch/ })).toBeVisible();
+  await expect(table.getByRole('row', { name: /Fänge insgesamt/ })).toContainText('1');
+  await expect(table.getByRole('row', { name: /Bisse/ })).toContainText('3');
+  await expect(dialog).toContainText('Anna hatte die meisten Bisse (3).');
+  await expect(dialog).toContainText('Kevin hat den größten Fisch gefangen: Hecht, 62 cm.');
+  await expect(dialog.getByRole('heading', { name: 'Session gesamt' })).toBeVisible();
+  await expect(dialog).toContainText('Session gestartet – Anna und Kevin sind am Wasser');
+
+  // hochgeladen wurden nur Zahlen – keine Orte, Routen oder Texte
+  expect(calls.group.statUploads).toHaveLength(1);
+  const sent = calls.group.statUploads[0]?.stats ?? {};
+  expect(Object.keys(sent).sort()).toEqual([
+    'active_ms',
+    'bites',
+    'caught',
+    'distance_m',
+    'entries',
+    'longest_cm',
+    'longest_species',
+  ]);
+  expect(sent).toMatchObject({ caught: 1, bites: 1, entries: 1, longest_cm: 62, longest_species: 'pike' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
   expect(errors).toEqual([]);
 });
 
