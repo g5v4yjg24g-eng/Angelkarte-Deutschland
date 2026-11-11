@@ -135,9 +135,14 @@ async function fakeSupabase(
     stats: new Map<string, Record<string, unknown>[]>(),
     statUploads: [] as { session: string; stats: Record<string, unknown> }[],
     /** Angeltermin (2026-11-11): Einladungen, Starts und offene Start-Anfragen an Kevin */
-    tripInvites: [] as { trip: string; users: string[]; label: string | null; day: string | null }[],
+    tripInvites: [] as { trip: string; users: string[]; title: string | null; water_name: string | null; trip_date: string }[],
     tripStarts: [] as { title: string | null; water_name: string | null; users: string[]; id: string }[],
     startRequests: [] as Record<string, unknown>[],
+    /** Termin-Einladungen: Zeilen von my_trip_invites an Kevin, Antworten an Kevins Termine, seine Zu-/Absagen */
+    myTripInvites: [] as Record<string, unknown>[],
+    tripStatuses: [] as Record<string, unknown>[],
+    tripResponses: [] as { trip: string; accept: boolean }[],
+    tripCancels: [] as string[],
   };
   // Paket 12: Profile anderer (per Nutzername), Suchtreffer, eigene Angaben auf dem Server
   const people = {
@@ -1074,10 +1079,31 @@ async function fakeSupabase(
         group.members.set(session, list);
         return json(route, users.length);
       }
-      case 'POST /rest/v1/rpc/invite_to_trip': {
-        const body = req.postDataJSON() as { trip: string; users: string[]; label: string | null; day: string | null };
+      case 'POST /rest/v1/rpc/invite_to_trip2': {
+        const body = req.postDataJSON() as {
+          trip: string;
+          users: string[];
+          title: string | null;
+          water_name: string | null;
+          trip_date: string;
+        };
         group.tripInvites.push(body);
         return json(route, body.users.length);
+      }
+      case 'POST /rest/v1/rpc/my_trip_invites':
+        return json(route, group.myTripInvites);
+      case 'POST /rest/v1/rpc/respond_trip_invite': {
+        const body = req.postDataJSON() as { trip: string; accept: boolean };
+        group.tripResponses.push(body);
+        const row = group.myTripInvites.find((r) => r.trip_id === body.trip);
+        if (row) row.status = body.accept ? 'accepted' : 'declined';
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/trip_invite_statuses':
+        return json(route, group.tripStatuses);
+      case 'POST /rest/v1/rpc/cancel_trip_invites': {
+        group.tripCancels.push((req.postDataJSON() as { trip: string }).trip);
+        return route.fulfill({ status: 204 });
       }
       case 'POST /rest/v1/rpc/start_trip_session': {
         const body = req.postDataJSON() as { title: string | null; water_name: string | null; users: string[] };
@@ -1383,7 +1409,7 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules|my_start_requests)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules|my_start_requests|my_trip_invites|trip_invite_statuses)))/.test(
         c,
       ),
     ),
@@ -3821,6 +3847,115 @@ test('TRIP-3: Eingeladene sehen das Fenster überall – außer beim Beitrag-Ers
   await expect.poll(() => calls.group.responses).toEqual([{ session: 'g-anna', accept: true }]);
   await expect(page.getByRole('heading', { level: 2, name: 'Abendansitz' })).toBeVisible();
   await expect(page.getByRole('dialog', { name: 'Session starten?' })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('TRIP-4: Eingeladener sagt zu (Termin im eigenen Kalender) und ab (nichts bleibt)', async ({ page }) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  const row = (id: string, title: string) => ({
+    trip_id: id,
+    host_id: 'u-anna',
+    host_username: 'anna',
+    host_display_name: 'Anna',
+    title,
+    water_name: 'De Wittsee',
+    trip_date: '2099-05-17',
+    from_time: '17:00',
+    to_time: '21:00',
+    tz: 'Europe/Berlin',
+    status: 'invited',
+  });
+  calls.group.myTripInvites.push(
+    row('11111111-1111-4111-8111-111111111111', 'Abendansitz'),
+    row('22222222-2222-4222-8222-222222222222', 'Nachtangeln'),
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/wetter/kalender');
+  await waitForApp(page);
+
+  const section = page.getByRole('region', { name: 'Einladungen' });
+  await expect(section).toContainText('Abendansitz');
+  await expect(section).toContainText('Nachtangeln');
+  await expect(section.getByText('Von Anna eingeladen').first()).toBeVisible();
+  await animationsDone(section);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.emulateMedia({ colorScheme: 'light' });
+
+  // zusagen → Antwort geht raus, der Termin steht im eigenen Kalender, die Einladung verschwindet
+  const first = section.locator('div').filter({ hasText: 'Abendansitz' }).filter({ has: page.getByRole('button', { name: 'Zusagen' }) }).last();
+  await first.getByRole('button', { name: 'Zusagen' }).click();
+  await expect
+    .poll(() => calls.group.tripResponses)
+    .toEqual([{ trip: '11111111-1111-4111-8111-111111111111', accept: true }]);
+  await expect(section).not.toContainText('Abendansitz');
+  const mine = page.getByRole('listitem').filter({ hasText: 'Abendansitz' }).first();
+  await expect(mine).toContainText('Von Anna eingeladen');
+  // der übernommene Termin kennt nur Titel, Gewässername, Tag und Zeit – keine Position
+  const stored = await page.evaluate(
+    () =>
+      new Promise<Record<string, unknown> | undefined>((resolve, reject) => {
+        const r = indexedDB.open('fangpunkt');
+        r.onsuccess = () => {
+          const q = r.result.transaction('trips').objectStore('trips').get('11111111-1111-4111-8111-111111111111');
+          q.onsuccess = () => resolve(q.result as Record<string, unknown> | undefined);
+          q.onerror = () => reject(q.error);
+        };
+        r.onerror = () => reject(r.error);
+      }),
+  );
+  expect(stored).toMatchObject({ date: '2099-05-17', from: '17:00', to: '21:00', waterSnapshot: { name: 'De Wittsee' } });
+  expect((stored?.waterSnapshot as Record<string, unknown>).centroid).toBeUndefined();
+
+  // absagen → kein Termin
+  await section.getByRole('button', { name: 'Ablehnen' }).click();
+  await expect
+    .poll(() => calls.group.tripResponses.map((r) => r.accept))
+    .toEqual([true, false]);
+  await expect(page.getByRole('listitem').filter({ hasText: 'Nachtangeln' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Einladungen' })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test('TRIP-5: Ersteller sieht die Antworten; Löschen zieht die Einladungen zurück', async ({ page }) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/wetter/kalender');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Termin eintragen' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Neuer Angeltermin' });
+  await sheet.getByLabel('Titel (optional)').fill('Morgenrunde');
+  await sheet.getByRole('checkbox', { name: 'Anna' }).check();
+  await sheet.getByRole('button', { name: 'Speichern' }).click();
+  await expect.poll(() => calls.group.tripInvites.length).toBe(1);
+  // die Einladung trägt Titel und Tag, aber keine Position
+  expect(calls.group.tripInvites[0]).toMatchObject({ title: 'Morgenrunde', users: ['u-anna'] });
+  const tripId = calls.group.tripInvites[0]?.trip ?? '';
+  const card = page.getByRole('listitem').filter({ hasText: 'Morgenrunde' }).first();
+  await expect(card).toContainText('Eingeladen: Anna');
+  await expect(card).not.toContainText('zugesagt');
+
+  // Anna sagt zu → nach dem Neuladen steht es am Termin
+  calls.group.tripStatuses.push({ trip_id: tripId, user_id: 'u-anna', status: 'accepted' });
+  await page.reload();
+  await waitForApp(page);
+  await expect(page.getByRole('listitem').filter({ hasText: 'Morgenrunde' }).first()).toContainText(
+    'Eingeladen: Anna (zugesagt)',
+  );
+
+  // Termin löschen → Einladungen werden zurückgezogen
+  await page.getByRole('listitem').filter({ hasText: 'Morgenrunde' }).first().getByRole('button', { name: /Löschen/ }).click();
+  await expect.poll(() => calls.group.tripCancels).toEqual([tripId]);
   expect(errors).toEqual([]);
 });
 
