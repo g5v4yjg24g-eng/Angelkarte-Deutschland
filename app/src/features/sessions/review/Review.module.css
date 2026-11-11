@@ -305,56 +305,121 @@
   background: var(--color-surface-2);
   font-weight: 700;
 }
-.compareScroll {
-  overflow-x: auto;
+.vs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
 }
-.compare {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  min-width: 100%;
+.vsOne {
+  grid-template-columns: minmax(0, 1fr);
 }
-.compare th,
-.compare td {
-  padding: var(--space-3) var(--space-2);
-  text-align: center;
-  vertical-align: middle;
-  min-width: 7.5rem;
+.vsCard {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  min-width: 0;
+}
+.vsHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  min-width: 0;
+  /* Platz fürs Abzeichen in jeder Karte, damit die Zeilen darunter auf gleicher Höhe stehen */
+  align-content: flex-start;
+  min-height: calc(40px + var(--space-1) + 26px);
+}
+.vsName {
+  font-weight: 700;
+  font-size: var(--text-md);
   overflow-wrap: anywhere;
 }
-.compare tbody th {
+.vsRows {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+}
+.vsRows > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+@media (min-width: 560px) {
+  .vsRows > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+  .vsRows dd {
+    flex: none;
+    max-width: 55%;
+    padding-left: 0;
+    text-align: right;
+    font-size: var(--text-sm);
+  }
+}
+.vsRows dt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+.vsRows dt > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vsRows dt svg {
+  flex: none;
+  color: var(--color-primary);
+}
+.vsRows dd {
+  margin: 0;
+  font-size: var(--text-md);
+  padding-left: 26px;
   text-align: left;
   font-weight: 600;
-  color: var(--color-text-muted);
-  padding-left: var(--space-4);
-}
-.compare tbody tr + tr > * {
-  border-top: 1px solid var(--color-border);
-}
-.compare thead th:first-child,
-.compare tbody th {
-  width: 7.5rem;
-  min-width: 7.5rem;
-}
-.colHead {
-  display: grid;
-  justify-items: center;
-  gap: var(--space-1);
-  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   padding: 2px var(--space-2);
+  border: 1px solid currentcolor;
   border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--color-accent) 22%, var(--color-surface));
-  color: var(--color-text);
+  /* Orange wie in der Vorlage; im hellen Schema abgedunkelt, damit der Kontrast reicht */
+  color: color-mix(in srgb, var(--color-focus) 70%, #000);
   font-size: var(--text-xs);
   font-weight: 700;
+  white-space: nowrap;
 }
 .winner {
-  /* Vorsprung orange hinterlegt; Schrift bleibt in Textfarbe (Kontrast in beiden Farbschemen) */
-  background: color-mix(in srgb, var(--color-accent) 24%, var(--color-surface));
-  color: var(--color-text);
+  color: color-mix(in srgb, var(--color-focus) 70%, #000);
   font-weight: 700;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .badge,
+  :root:not([data-theme='light']) .winner {
+    color: var(--color-focus);
+  }
+}
+:root[data-theme='dark'] .badge,
+:root[data-theme='dark'] .winner {
+  color: var(--color-focus);
 }
 .calm {
   padding: var(--space-4);
