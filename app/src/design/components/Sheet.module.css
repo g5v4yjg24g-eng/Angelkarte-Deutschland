@@ -80,3 +80,36 @@
     opacity: 0;
   }
 }
+
+/* Mit Kopfbild: Bild läuft bis an den Rand, nur der Inhalt darunter hat Abstand */
+.sheet:has(.withHero) {
+  overflow: hidden;
+}
+.withHero {
+  position: relative;
+  grid-template-rows: 1fr auto;
+}
+.withHero > .body {
+  grid-row: 1;
+  padding: 0;
+  gap: 0;
+}
+.withHero > .footer {
+  grid-row: 2;
+}
+.back {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-bg) 55%, transparent);
+  color: var(--color-text);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}

@@ -68,7 +68,9 @@ describe('nearbyWaters', () => {
     const r = nearbyWaters(E, { kinds: ['lake'], sort: 'name' });
     expect(r.map((x) => x.name)).toEqual(['De Wittsee', 'Fernsee', 'Windmühlenbruch']);
     expect(r[0]?.distanceKm).toBeUndefined();
-    expect(nearbyWaters(E, { kinds: [], name: 'fern', sort: 'name' }).map((x) => x.name)).toEqual(['Fernsee']);
+    expect(nearbyWaters(E, { kinds: [], name: 'fern', sort: 'name' }).map((x) => x.name)).toEqual([
+      'Fernsee',
+    ]);
   });
   it('sortiert nach Name und Größe', () => {
     const n = nearbyWaters(E, { origin: here, radiusKm: 10, kinds: ['lake', 'river'], sort: 'name' });

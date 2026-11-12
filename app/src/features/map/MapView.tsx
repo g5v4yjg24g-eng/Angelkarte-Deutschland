@@ -42,7 +42,7 @@ import {
   type OverlayData,
   WATER,
 } from './mapLayers';
-import { WaterProfile } from './WaterProfile';
+import { WaterHero, WaterProfile } from './WaterProfile';
 import { SearchBox } from './SearchBox';
 import { DetailSearch } from './DetailSearch';
 import { useWaterPhotos } from './useWaterPhotos';
@@ -233,7 +233,7 @@ export default function MapView() {
   });
   const centeredOnFix = useRef(centeredThisLaunch);
   const [waterManifest, setWaterManifest] = useState<WaterManifest | null>(null);
-  const waterPhotos = useWaterPhotos(water, waterManifest);
+  const waterMedia = useWaterPhotos(water, waterManifest);
   const waterRef = useRef<WaterManifest | null>(null);
   const [selectedWid, setSelectedWid] = useState<string>();
   const location = useLocation();
@@ -780,6 +780,7 @@ export default function MapView() {
 
   let sheetTitle = '';
   let sheetBody: React.ReactNode = null;
+  let sheetHero: React.ReactNode = null;
   if (sheet?.kind === 'new') {
     sheetTitle = de.map.newHereTitle;
     sheetBody = (
@@ -938,11 +939,25 @@ export default function MapView() {
   } else if (sheet?.kind === 'water') {
     const { info } = sheet;
     sheetTitle = info.name ?? de.water.unnamed;
+    sheetHero = <WaterHero info={info} photo={waterMedia.photos[info.wid]} />;
     sheetBody = (
       <WaterProfile
         info={info}
         manifest={waterManifest}
-        photo={waterPhotos[info.wid]}
+        crest={info.state ? waterMedia.crests[info.state] : undefined}
+        center={{ lat: sheet.lat, lng: sheet.lng }}
+        tiles={
+          waterManifest
+            ? {
+                url: water.tilesUrl(waterManifest),
+                attribution: `${waterManifest.source.attribution} (${waterManifest.source.license})`,
+              }
+            : null
+        }
+        onOpenMap={(b) => {
+          setSheet(null);
+          mapRef.current?.fitBounds(b, { padding: 48, maxZoom: 17 });
+        }}
         counts={{
           places: places?.filter((p) => p.waterId === info.wid && !p.deletedAt).length ?? 0,
           catches: catches?.filter((c) => c.waterId === info.wid && !c.deletedAt).length ?? 0,
@@ -1022,7 +1037,7 @@ export default function MapView() {
         <DetailSearch
           water={water}
           manifest={waterManifest}
-          photos={waterPhotos}
+          photos={waterMedia.photos}
           me={geo.fix ? { lat: geo.fix.lat, lng: geo.fix.lng } : undefined}
           getCenter={getSearchNear}
           onPick={(r) => {
@@ -1139,6 +1154,7 @@ export default function MapView() {
       <Sheet
         open={!!sheet && !!sheetBody}
         title={sheetTitle}
+        hero={sheetHero}
         onClose={() => setSheet(null)}
         returnFocus={fabRef}
       >

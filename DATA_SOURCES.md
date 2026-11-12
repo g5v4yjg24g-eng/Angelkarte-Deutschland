@@ -199,6 +199,7 @@ Links öffnen nur auf Tipp (neuer Tab); die App ruft die Seiten nicht selbst ab.
 - Quelle: Bild je Gewässer über OSM-Tag `wikimedia_commons` (nur `File:`) oder Wikidata-Eigenschaft P18 des Tags `wikidata`; Urheber/Lizenz aus der Commons-API (`imageinfo`, `extmetadata`). **[A]** API-Felder nach Dokumentation, im Datenlauf noch nicht gesehen – der erste Lauf muss geprüft werden **[O]**.
 - Übernommen wird nur, was eine freie Lizenz hat (CC0, CC BY, CC BY-SA, gemeinfrei); NC/ND, `NonFree`, unklare Lizenz → kein Foto (Platzhalter). Am Foto stehen Urheber, Lizenz und ein Link zur Commons-Seite.
 - Nur beim Bauen abgefragt (Pipeline, Stapel zu 50, beschreibender User-Agent, Wiederholung bei 429); die App lädt nur die Vorschau von `upload.wikimedia.org` (250/500 px) und sendet nichts über Nutzer.
+- Landeswappen: Wikidata-Eigenschaft P94 der 16 Länder-Objekte (Objekt gegen ISO 3166-2 P300 geprüft, SVG, Lizenzprüfung wie oben); Anzeige als PNG-Vorschau von `upload.wikimedia.org`. Ohne Treffer zeigt die App ein neutrales Schild. Q-Nummern der Länder **[A]**, im ersten Lauf prüfen **[O]** (Log nennt übersprungene Länder).
 - Ausfall der Abfrage bricht den Datenlauf nicht ab.
 
 ## 7. Hosting

@@ -3,6 +3,8 @@ import {
   attribution,
   buildPhotos,
   commonsInfo,
+  crestUrl,
+  entityIso,
   fileFromCommonsTag,
   imageOfEntity,
   isFreeLicense,
@@ -191,5 +193,27 @@ describe('Adresse und Namensnennung', () => {
     expect(
       PhotosFileSchema.safeParse({ ...ok, items: { x: { ...ok.items['osm:w1'], h: 'zz' } } }).success,
     ).toBe(false);
+  });
+});
+
+describe('Landeswappen', () => {
+  it('SVG-Vorschau kommt als PNG von Wikimedia', () => {
+    expect(crestUrl({ f: 'Wappen_NRW.svg', h: 'a/a9' }, 120)).toBe(
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Wappen_NRW.svg/120px-Wappen_NRW.svg.png',
+    );
+  });
+  it('SVG nur für Wappen erlaubt, P94 gelesen', () => {
+    expect(toFileName('A.svg')).toBeUndefined();
+    expect(toFileName('A.svg', true)).toBe('A.svg');
+    const e = { claims: { P94: [{ rank: 'normal', mainsnak: { datavalue: { value: 'Wappen X.svg' } } }] } };
+    expect(imageOfEntity(e)).toBeUndefined();
+    expect(imageOfEntity(e, 'P94')).toBe('Wappen_X.svg');
+  });
+  it('ISO-Code des Objekts', () => {
+    expect(entityIso({ claims: { P300: [{ mainsnak: { datavalue: { value: 'DE-NW' } } }] } })).toBe('DE-NW');
+    expect(entityIso({ claims: {} })).toBeUndefined();
+  });
+  it('Breite 960 für Banner', () => {
+    expect(thumbUrl({ f: 'A.jpg', h: 'a/a9' }, 960)).toContain('/960px-A.jpg');
   });
 });

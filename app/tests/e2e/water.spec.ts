@@ -40,6 +40,15 @@ async function openMapAt(
           formatVersion: 1,
           generatedAt: '2026-11-11T00:00:00Z',
           source: 'Wikimedia Commons',
+          crests: {
+            NW: {
+              f: 'Wappen_NRW.svg',
+              h: 'b/bb',
+              a: '',
+              l: 'Public domain',
+              p: 'https://commons.wikimedia.org/wiki/File:Wappen_NRW.svg',
+            },
+          },
           items: {
             'osm:w35044256': {
               f: 'De_Wittsee.jpg',
@@ -170,11 +179,6 @@ test('WAT-1/2: Suche findet den De Wittsee; das Profil zeigt nur belegte Angaben
   await expect(profile.getByText(/Nettetal · Kreis Viersen · Nordrhein-Westfalen/).first()).toBeVisible();
   await expect(profile.getByLabel('Überblick').getByText('24,6 ha')).toBeVisible();
   await expect(profile.getByRole('button', { name: 'Hier markieren' })).toBeVisible();
-  // Einzelheiten zum Aufklappen
-  await profile.getByText('Weitere Angaben').click();
-  await expect(profile.getByText('aus der Kartengeometrie berechnet', { exact: false })).toBeVisible();
-  await expect(profile.getByText(/^Nicht verfügbar/)).toBeVisible();
-  await expect(profile.getByText('Keine geprüften Angaben.')).toBeVisible();
   await expect(profile.getByText(/Datenstand 21\.10\.2026/)).toBeVisible();
   await expect(profile.getByRole('link', { name: 'Objekt bei OpenStreetMap ansehen' })).toHaveAttribute(
     'href',
@@ -183,9 +187,17 @@ test('WAT-1/2: Suche findet den De Wittsee; das Profil zeigt nur belegte Angaben
   // WAT-5: kein Tiefenkarten-Knopf ohne verfügbare Tiefendaten
   await expect(profile.getByRole('button', { name: /Tiefenkarte/ })).toHaveCount(0);
   // Landesrecht des Bundeslands verlinkt (M7)
-  await expect(
-    profile.getByRole('link', { name: 'Landesrecht Nordrhein-Westfalen: Schonzeiten, Mindestmaße' }),
-  ).toHaveAttribute('href', /\/mehr\/recht\/NW$/);
+  await expect(profile.getByRole('link', { name: /^Landesrecht Nordrhein-Westfalen/ })).toHaveAttribute(
+    'href',
+    /\/mehr\/recht\/NW$/,
+  );
+  // Reiter: Einzelheiten unter „Karte“, Fischarten unter „Regeln“
+  await profile.getByRole('tab', { name: 'Karte' }).click();
+  await expect(profile.getByText('aus der Kartengeometrie berechnet', { exact: false })).toBeVisible();
+  await expect(profile.getByText(/^Nicht verfügbar/)).toBeVisible();
+  await profile.getByRole('tab', { name: 'Regeln' }).click();
+  await expect(profile.getByText('Keine geprüften Angaben.')).toBeVisible();
+  await profile.getByRole('tab', { name: 'Übersicht' }).click();
   // Hervorhebung des gewählten Gewässers
   expect(
     await page.evaluate(
@@ -228,7 +240,7 @@ test('Antippen: See, Fließgewässer und unbenanntes Gewässer', async ({ page }
   const d = page.getByRole('dialog', { name: 'Unbenanntes Gewässer' });
   await expect(d).toBeVisible();
   await expect(d.getByRole('button', { name: 'Hier markieren' })).toBeVisible();
-  await d.getByText('Weitere Angaben').click();
+  await d.getByRole('tab', { name: 'Karte' }).click();
   await expect(d.getByText('Kartengewässer')).toBeVisible();
 });
 
@@ -293,7 +305,7 @@ test('PRM-5: Gewässerkarte – Landesverbände in NRW, eigener Link wird gespei
   await openMapAt(page, 6.2425, 51.3245, 14.3);
   await tapWater(page, 6.2418, 51.3263);
   const profile = page.getByRole('dialog', { name: 'De Wittsee' });
-  const section = profile.getByRole('region', { name: 'Gewässerkarte' });
+  const section = profile.getByRole('region', { name: 'Anlaufstellen & Verbände' });
   await expect(section.getByText('Noch kein geprüfter Eintrag für dieses Gewässer.')).toBeVisible();
   const assoc = section.getByRole('link', { name: 'Angelkarten des Verbands' });
   await expect(assoc).toHaveCount(2);
@@ -330,7 +342,7 @@ test('PRM-5: Gewässerkarte – Landesverbände in NRW, eigener Link wird gespei
   await tapWater(page, 6.2418, 51.3263);
   const again = page
     .getByRole('dialog', { name: 'De Wittsee' })
-    .getByRole('region', { name: 'Gewässerkarte' });
+    .getByRole('region', { name: 'Anlaufstellen & Verbände' });
   await expect(again.getByRole('link', { name: 'ASV Test' })).toBeVisible();
   await again.getByRole('button', { name: 'Entfernen' }).click();
   await expect(again.getByRole('button', { name: 'Eigenen Link speichern' })).toBeVisible();
@@ -501,8 +513,10 @@ test('WAT-10: Gewässerfoto aus Wikimedia Commons in Detailsuche und Profil, son
   await wittsee.getByRole('button').first().click();
   const profile = page.getByRole('dialog', { name: 'De Wittsee' });
   await expect(profile).toBeVisible({ timeout: 20_000 });
-  const credit = profile.getByRole('link', { name: 'Anna Beispiel · CC BY-SA 4.0 · Wikimedia Commons' });
+  const credit = profile.getByRole('link', { name: 'Anna Beispiel · CC BY-SA 4.0' });
   await expect(credit).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:De_Wittsee.jpg');
-  await expect(profile.locator('figure img')).toHaveAttribute('src', /\/500px-De_Wittsee\.jpg$/);
+  await expect(profile.locator('img[src$="/960px-De_Wittsee.jpg"]')).toHaveCount(1);
+  // Landeswappen bei „Angeln hier“
+  await expect(profile.locator('img[src$="/120px-Wappen_NRW.svg.png"]')).toHaveCount(1);
   expect(errors).toEqual([]);
 });

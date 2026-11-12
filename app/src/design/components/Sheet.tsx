@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode, type RefObject } from 'react';
 import { de } from '../../i18n/de';
-import { CloseIcon } from '../icons';
+import { ChevronLeftIcon, CloseIcon } from '../icons';
 import { IconButton } from './Button';
 import styles from './Sheet.module.css';
 
@@ -14,6 +14,7 @@ export function Sheet({
   onClose,
   children,
   footer,
+  hero,
   returnFocus,
 }: {
   open: boolean;
@@ -21,6 +22,8 @@ export function Sheet({
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
+  /** Kopfbild über dem Inhalt (ersetzt Griff und Kopfzeile); Zurück-Knopf liegt fest oben links */
+  hero?: ReactNode;
   /** Ziel für den Fokus nach dem Schließen, falls der Auslöser inzwischen verschwunden ist */
   returnFocus?: RefObject<HTMLElement | null>;
 }) {
@@ -67,13 +70,29 @@ export function Sheet({
       }}
     >
       {open && (
-        <div className={styles.inner}>
-          <div className={styles.handle} aria-hidden="true" />
-          <header className={styles.header}>
-            <h2 id={titleId}>{title}</h2>
-            <IconButton label={de.common.close} icon={<CloseIcon />} onClick={onClose} />
-          </header>
-          <div className={styles.body}>{children}</div>
+        <div className={[styles.inner, hero ? styles.withHero : ''].join(' ')}>
+          {hero ? (
+            <>
+              <h2 id={titleId} className="visually-hidden">
+                {title}
+              </h2>
+              <button type="button" className={styles.back} aria-label={de.common.close} onClick={onClose}>
+                <ChevronLeftIcon size={20} aria-hidden="true" />
+              </button>
+            </>
+          ) : (
+            <>
+              <div className={styles.handle} aria-hidden="true" />
+              <header className={styles.header}>
+                <h2 id={titleId}>{title}</h2>
+                <IconButton label={de.common.close} icon={<CloseIcon />} onClick={onClose} />
+              </header>
+            </>
+          )}
+          <div className={styles.body}>
+            {hero}
+            {children}
+          </div>
           {footer && <div className={styles.footer}>{footer}</div>}
         </div>
       )}
