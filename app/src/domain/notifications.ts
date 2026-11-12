@@ -15,6 +15,8 @@ export const NOTIFICATION_KINDS = [
   'session_highlight',
   'trip_invite',
   'trip_start',
+  'spot_link',
+  'spot_link_accepted',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -120,7 +122,10 @@ export function parseNotifications(rows: readonly unknown[] | null | undefined):
 
 /** Einladung mit Karte (Termin oder Session) – mit Annehmen/Ablehnen, solange sie offen ist */
 export const isInvite = (n: Pick<AppNotification, 'kind'>) =>
-  n.kind === 'trip_invite' || n.kind === 'session_invite' || n.kind === 'trip_start';
+  n.kind === 'trip_invite' ||
+  n.kind === 'session_invite' ||
+  n.kind === 'trip_start' ||
+  n.kind === 'spot_link';
 
 /** Offene Einladung: noch nicht beantwortet (Stand `invited`) – ohne Angabe gilt sie als offen */
 export const isOpenInvite = (n: AppNotification) =>
@@ -161,6 +166,8 @@ export function notificationPath(n: AppNotification): string | undefined {
     case 'friend_request':
       return '/profil/freunde';
     case 'spot':
+    case 'spot_link':
+    case 'spot_link_accepted':
       return '/profil/spots';
     case 'session_invite':
     case 'session_joined':

@@ -9,124 +9,264 @@
 //   APNS_PRIVATE_KEY – Inhalt der .p8-Datei (mit BEGIN/END-Zeilen)
 //   APNS_HOST        – optional; Standard api.push.apple.com (TestFlight und App Store)
 // SUPABASE_URL und der geheime Schlüssel kommen von Supabase selbst – nie ins Repo.
-import { createClient } from 'npm:@supabase/supabase-js@2.49.1';
+import { createClient } from "npm:@supabase/supabase-js@2.49.1";
 
-const TOPIC = 'com.fangpunkt.app';
+const TOPIC = "com.fangpunkt.app";
 
 type Kind =
-  | 'friend_request'
-  | 'friend_accepted'
-  | 'new_follower'
-  | 'like'
-  | 'comment'
-  | 'spot'
-  | 'session_invite'
-  | 'new_post'
-  | 'comment_reply'
-  | 'session_joined'
-  | 'session_highlight'
-  | 'trip_invite'
-  | 'trip_start'
-  | 'test';
+  | "friend_request"
+  | "friend_accepted"
+  | "new_follower"
+  | "like"
+  | "comment"
+  | "spot"
+  | "session_invite"
+  | "new_post"
+  | "comment_reply"
+  | "session_joined"
+  | "session_highlight"
+  | "trip_invite"
+  | "trip_start"
+  | "spot_link"
+  | "spot_link_accepted"
+  | "test";
 
 function secretKey(): string {
   try {
-    const keys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}') as Record<string, string>;
+    const keys = JSON.parse(
+      Deno.env.get("SUPABASE_SECRET_KEYS") ?? "{}",
+    ) as Record<string, string>;
     if (keys.default) return keys.default;
   } catch {
     // ältere Projekte: nur der bisherige Schlüssel
   }
-  return Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+  return Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 }
 
 /** Text und Ziel in der App je Art */
-function message(kind: Kind, name: string, ref: string | null, excerpt: string | null) {
+function message(
+  kind: Kind,
+  name: string,
+  ref: string | null,
+  excerpt: string | null,
+) {
   switch (kind) {
-    case 'friend_request':
+    case "friend_request":
       // seit Paket C (Folgen): Anfrage an ein privates Konto
-      return { title: 'Neue Folge-Anfrage', body: `${name} möchte dir folgen.`, path: '/profil/freunde' };
-    case 'friend_accepted':
-      return { title: 'Anfrage bestätigt', body: `${name} hat deine Anfrage bestätigt – du folgst jetzt.`, path: '/profil/freunde' };
-    case 'new_follower':
-      return { title: 'Neuer Follower', body: `${name} folgt dir jetzt.`, path: '/profil/freunde' };
-    case 'like':
-      return { title: 'Gefällt mir', body: `${name} gefällt dein Beitrag.`, path: `/profil/beitrag/${ref ?? ''}` };
-    case 'comment':
-      return { title: 'Neuer Kommentar', body: excerpt ? `${name}: ${excerpt}` : `${name} hat deinen Beitrag kommentiert.`, path: `/profil/beitrag/${ref ?? ''}` };
-    case 'spot':
-      return { title: 'Neuer Spot', body: excerpt ? `${name} hat einen Spot mit dir geteilt: ${excerpt}` : `${name} hat einen Spot mit dir geteilt.`, path: '/profil/spots' };
-    case 'session_invite':
-      return { title: 'Einladung zum Angeln', body: excerpt ? `${name} lädt dich zur Session „${excerpt}“ ein.` : `${name} lädt dich zu einer gemeinsamen Session ein.`, path: '/fangbuch/sessions' };
-    case 'new_post':
-      return { title: 'Neuer Beitrag', body: excerpt ? `${name}: ${excerpt}` : `${name} hat einen neuen Beitrag geteilt.`, path: '/feed' };
-    case 'comment_reply':
-      return { title: 'Neuer Kommentar', body: excerpt ? `${name} hat auch kommentiert: ${excerpt}` : `${name} hat einen Beitrag kommentiert, den du auch kommentiert hast.`, path: '/feed' };
-    case 'session_joined':
-      return { title: 'Zusage zur Session', body: excerpt ? `${name} ist bei „${excerpt}“ dabei.` : `${name} ist bei deiner gemeinsamen Session dabei.`, path: '/fangbuch/sessions' };
-    case 'session_highlight':
-      return { title: 'Neues Highlight', body: excerpt ? `${name} hat ein Highlight aus „${excerpt}“ geteilt.` : `${name} hat ein Highlight aus eurer Session geteilt.`, path: '/fangbuch/sessions' };
-    case 'trip_invite':
-      return { title: 'Einladung zum Angeltermin', body: excerpt ? `${name} lädt dich zum Angeltermin „${excerpt}“ ein.` : `${name} lädt dich zu einem Angeltermin ein.`, path: '/wetter/kalender' };
-    case 'trip_start':
-      return { title: 'Session startet', body: excerpt ? `${name} möchte „${excerpt}“ jetzt starten – bestätige, um dabei zu sein.` : `${name} möchte jetzt eine gemeinsame Session starten – bestätige, um dabei zu sein.`, path: '/fangbuch/sessions' };
-    case 'test':
-      return { title: 'Fangpunkt', body: 'Test-Mitteilung: Mitteilungen kommen auf diesem iPhone an. 🎣', path: '/feed' };
+      return {
+        title: "Neue Folge-Anfrage",
+        body: `${name} möchte dir folgen.`,
+        path: "/profil/freunde",
+      };
+    case "friend_accepted":
+      return {
+        title: "Anfrage bestätigt",
+        body: `${name} hat deine Anfrage bestätigt – du folgst jetzt.`,
+        path: "/profil/freunde",
+      };
+    case "new_follower":
+      return {
+        title: "Neuer Follower",
+        body: `${name} folgt dir jetzt.`,
+        path: "/profil/freunde",
+      };
+    case "like":
+      return {
+        title: "Gefällt mir",
+        body: `${name} gefällt dein Beitrag.`,
+        path: `/profil/beitrag/${ref ?? ""}`,
+      };
+    case "comment":
+      return {
+        title: "Neuer Kommentar",
+        body: excerpt
+          ? `${name}: ${excerpt}`
+          : `${name} hat deinen Beitrag kommentiert.`,
+        path: `/profil/beitrag/${ref ?? ""}`,
+      };
+    case "spot":
+      return {
+        title: "Neuer Spot",
+        body: excerpt
+          ? `${name} hat einen Spot mit dir geteilt: ${excerpt}`
+          : `${name} hat einen Spot mit dir geteilt.`,
+        path: "/profil/spots",
+      };
+    case "session_invite":
+      return {
+        title: "Einladung zum Angeln",
+        body: excerpt
+          ? `${name} lädt dich zur Session „${excerpt}“ ein.`
+          : `${name} lädt dich zu einer gemeinsamen Session ein.`,
+        path: "/fangbuch/sessions",
+      };
+    case "new_post":
+      return {
+        title: "Neuer Beitrag",
+        body: excerpt
+          ? `${name}: ${excerpt}`
+          : `${name} hat einen neuen Beitrag geteilt.`,
+        path: "/feed",
+      };
+    case "comment_reply":
+      return {
+        title: "Neuer Kommentar",
+        body: excerpt
+          ? `${name} hat auch kommentiert: ${excerpt}`
+          : `${name} hat einen Beitrag kommentiert, den du auch kommentiert hast.`,
+        path: "/feed",
+      };
+    case "session_joined":
+      return {
+        title: "Zusage zur Session",
+        body: excerpt
+          ? `${name} ist bei „${excerpt}“ dabei.`
+          : `${name} ist bei deiner gemeinsamen Session dabei.`,
+        path: "/fangbuch/sessions",
+      };
+    case "session_highlight":
+      return {
+        title: "Neues Highlight",
+        body: excerpt
+          ? `${name} hat ein Highlight aus „${excerpt}“ geteilt.`
+          : `${name} hat ein Highlight aus eurer Session geteilt.`,
+        path: "/fangbuch/sessions",
+      };
+    case "trip_invite":
+      return {
+        title: "Einladung zum Angeltermin",
+        body: excerpt
+          ? `${name} lädt dich zum Angeltermin „${excerpt}“ ein.`
+          : `${name} lädt dich zu einem Angeltermin ein.`,
+        path: "/wetter/kalender",
+      };
+    case "trip_start":
+      return {
+        title: "Session startet",
+        body: excerpt
+          ? `${name} möchte „${excerpt}“ jetzt starten – bestätige, um dabei zu sein.`
+          : `${name} möchte jetzt eine gemeinsame Session starten – bestätige, um dabei zu sein.`,
+        path: "/fangbuch/sessions",
+      };
+    case "spot_link":
+      return {
+        title: "Spots teilen",
+        body: `${name} möchte Spots mit dir teilen – nimm an oder lehne ab.`,
+        path: "/profil/spots",
+      };
+    case "spot_link_accepted":
+      return {
+        title: "Spots teilen",
+        body: `${name} hat angenommen – ihr teilt jetzt eure Spots.`,
+        path: "/profil/spots",
+      };
+    case "test":
+      return {
+        title: "Fangpunkt",
+        body: "Test-Mitteilung: Mitteilungen kommen auf diesem iPhone an. 🎣",
+        path: "/feed",
+      };
     default:
       // unbekannte Art (z. B. Datenbank neuer als diese Funktion): lieber allgemein als gar nicht
-      return { title: 'Fangpunkt', body: 'Es gibt Neuigkeiten für dich.', path: '/feed' };
+      return {
+        title: "Fangpunkt",
+        body: "Es gibt Neuigkeiten für dich.",
+        path: "/feed",
+      };
   }
 }
 
 // Apple-Anmeldung: JWT (ES256), höchstens 1 h gültig – hier je Aufruf neu und 50 min zwischengespeichert
 let cachedJwt: { token: string; at: number } | undefined;
 const b64url = (data: ArrayBuffer | Uint8Array | string) => {
-  const bytes = typeof data === 'string' ? new TextEncoder().encode(data) : new Uint8Array(data);
-  let s = '';
+  const bytes =
+    typeof data === "string"
+      ? new TextEncoder().encode(data)
+      : new Uint8Array(data);
+  let s = "";
   for (const b of bytes) s += String.fromCharCode(b);
-  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 };
 async function apnsJwt(): Promise<string> {
-  if (cachedJwt && Date.now() - cachedJwt.at < 50 * 60_000) return cachedJwt.token;
-  const pem = (Deno.env.get('APNS_PRIVATE_KEY') ?? '').replace(/-----[^-]+-----/g, '').replace(/\s+/g, '');
+  if (cachedJwt && Date.now() - cachedJwt.at < 50 * 60_000)
+    return cachedJwt.token;
+  const pem = (Deno.env.get("APNS_PRIVATE_KEY") ?? "")
+    .replace(/-----[^-]+-----/g, "")
+    .replace(/\s+/g, "");
   const der = Uint8Array.from(atob(pem), (c) => c.charCodeAt(0));
-  const key = await crypto.subtle.importKey('pkcs8', der, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
-  const header = b64url(JSON.stringify({ alg: 'ES256', kid: Deno.env.get('APNS_KEY_ID') }));
-  const claims = b64url(JSON.stringify({ iss: Deno.env.get('APNS_TEAM_ID'), iat: Math.floor(Date.now() / 1000) }));
-  const sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, new TextEncoder().encode(`${header}.${claims}`));
+  const key = await crypto.subtle.importKey(
+    "pkcs8",
+    der,
+    { name: "ECDSA", namedCurve: "P-256" },
+    false,
+    ["sign"],
+  );
+  const header = b64url(
+    JSON.stringify({ alg: "ES256", kid: Deno.env.get("APNS_KEY_ID") }),
+  );
+  const claims = b64url(
+    JSON.stringify({
+      iss: Deno.env.get("APNS_TEAM_ID"),
+      iat: Math.floor(Date.now() / 1000),
+    }),
+  );
+  const sig = await crypto.subtle.sign(
+    { name: "ECDSA", hash: "SHA-256" },
+    key,
+    new TextEncoder().encode(`${header}.${claims}`),
+  );
   cachedJwt = { token: `${header}.${claims}.${b64url(sig)}`, at: Date.now() };
   return cachedJwt.token;
 }
 
 Deno.serve(async (req) => {
-  if (req.method !== 'POST') return new Response('nur POST', { status: 405 });
+  if (req.method !== "POST") return new Response("nur POST", { status: 405 });
   let id: unknown;
   try {
     id = ((await req.json()) as { id?: unknown }).id;
   } catch {
-    return new Response('ungültig', { status: 400 });
+    return new Response("ungültig", { status: 400 });
   }
-  if (typeof id !== 'string') return new Response('ungültig', { status: 400 });
+  if (typeof id !== "string") return new Response("ungültig", { status: 400 });
 
-  const db = createClient(Deno.env.get('SUPABASE_URL') ?? '', secretKey(), { auth: { persistSession: false } });
+  const db = createClient(Deno.env.get("SUPABASE_URL") ?? "", secretKey(), {
+    auth: { persistSession: false },
+  });
   // Zeile „beanspruchen“: nur ein Aufruf verschickt sie
   const { data: row, error } = await db
-    .from('push_outbox')
+    .from("push_outbox")
     .update({ sent_at: new Date().toISOString() })
-    .eq('id', id)
-    .is('sent_at', null)
-    .select('id, user_id, kind, actor, ref, excerpt')
+    .eq("id", id)
+    .is("sent_at", null)
+    .select("id, user_id, kind, actor, ref, excerpt")
     .maybeSingle();
-  if (error) return new Response('Datenbankfehler', { status: 500 });
-  if (!row) return new Response('schon verschickt oder unbekannt', { status: 200 });
+  if (error) return new Response("Datenbankfehler", { status: 500 });
+  if (!row)
+    return new Response("schon verschickt oder unbekannt", { status: 200 });
 
   // Alles Weitere: Fehler immer an der Zeile vermerken – sonst sieht die App „verschickt“, obwohl nichts ankam
   const markError = (text: string) =>
-    db.from('push_outbox').update({ error: text.slice(0, 500) }).eq('id', row.id);
+    db
+      .from("push_outbox")
+      .update({ error: text.slice(0, 500) })
+      .eq("id", row.id);
   try {
-    const { data: actor } = await db.from('profiles').select('display_name').eq('id', row.actor).maybeSingle();
-    const { data: devices } = await db.from('push_devices').select('token').eq('user_id', row.user_id);
-    const msg = message(row.kind as Kind, actor?.display_name ?? 'Jemand', row.ref, row.excerpt);
-    const host = Deno.env.get('APNS_HOST') || 'api.push.apple.com';
+    const { data: actor } = await db
+      .from("profiles")
+      .select("display_name")
+      .eq("id", row.actor)
+      .maybeSingle();
+    const { data: devices } = await db
+      .from("push_devices")
+      .select("token")
+      .eq("user_id", row.user_id);
+    const msg = message(
+      row.kind as Kind,
+      actor?.display_name ?? "Jemand",
+      row.ref,
+      row.excerpt,
+    );
+    const host = Deno.env.get("APNS_HOST") || "api.push.apple.com";
 
     let jwt: string;
     try {
@@ -134,42 +274,55 @@ Deno.serve(async (req) => {
     } catch (e) {
       const text = e instanceof Error ? e.message : String(e);
       await markError(`Schlüssel: ${text}`);
-      console.error('APNs-Schlüssel unbrauchbar', text);
-      return new Response('Schlüssel unbrauchbar', { status: 500 });
+      console.error("APNs-Schlüssel unbrauchbar", text);
+      return new Response("Schlüssel unbrauchbar", { status: 500 });
     }
 
     const problems: string[] = [];
     for (const d of devices ?? []) {
       const res = await fetch(`https://${host}/3/device/${d.token}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
           authorization: `bearer ${jwt}`,
-          'apns-topic': TOPIC,
-          'apns-push-type': 'alert',
-          'apns-priority': '10',
-          'content-type': 'application/json',
+          "apns-topic": TOPIC,
+          "apns-push-type": "alert",
+          "apns-priority": "10",
+          "content-type": "application/json",
         },
         body: JSON.stringify({
-          aps: { alert: { title: msg.title, body: msg.body }, sound: 'default', 'thread-id': row.kind },
+          aps: {
+            alert: { title: msg.title, body: msg.body },
+            sound: "default",
+            "thread-id": row.kind,
+          },
           path: msg.path,
         }),
       });
       if (res.ok) continue;
-      const reason = ((await res.json().catch(() => ({}))) as { reason?: string }).reason ?? String(res.status);
+      const reason =
+        ((await res.json().catch(() => ({}))) as { reason?: string }).reason ??
+        String(res.status);
       // Gerät gibt es nicht mehr (App gelöscht) → Token entfernen
-      if (res.status === 410 || reason === 'BadDeviceToken' || reason === 'Unregistered')
-        await db.from('push_devices').delete().eq('token', d.token);
+      if (
+        res.status === 410 ||
+        reason === "BadDeviceToken" ||
+        reason === "Unregistered"
+      )
+        await db.from("push_devices").delete().eq("token", d.token);
       problems.push(`${res.status} ${reason}`);
     }
     if (problems.length) {
-      await markError(problems.join('; '));
-      console.error('APNs-Fehler', problems.join('; '));
+      await markError(problems.join("; "));
+      console.error("APNs-Fehler", problems.join("; "));
     }
-    return new Response(problems.length ? `teilweise: ${problems.join('; ')}` : 'ok', { status: 200 });
+    return new Response(
+      problems.length ? `teilweise: ${problems.join("; ")}` : "ok",
+      { status: 200 },
+    );
   } catch (e) {
     const text = e instanceof Error ? e.message : String(e);
     await markError(`Funktion: ${text}`);
-    console.error('send-push', text);
-    return new Response('Fehler', { status: 500 });
+    console.error("send-push", text);
+    return new Response("Fehler", { status: 500 });
   }
 });

@@ -35,14 +35,19 @@ export function InviteCard({
   const status = n.inviteStatus ?? 'invited';
   const isTrip = n.kind === 'trip_invite';
   const tone: VisitTone = status === 'accepted' ? 'success' : status === 'declined' ? 'danger' : 'waiting';
+  const isSpots = n.kind === 'spot_link';
   const label =
     status === 'accepted'
-      ? t.accepted
+      ? isSpots
+        ? t.spotsAccepted
+        : t.accepted
       : status === 'declined'
         ? t.declined
-        : isTrip
-          ? t.invitedTrip
-          : t.invitedSession;
+        : isSpots
+          ? t.invitedSpots
+          : isTrip
+            ? t.invitedTrip
+            : t.invitedSession;
   const sessionTitle = n.sessionTitle ?? n.excerpt;
   const tripTitle = n.trip?.title ?? n.excerpt;
   return (
@@ -80,7 +85,7 @@ export function InviteCard({
               )}
             </dl>
           ) : (
-            sessionTitle && <p className={styles.sessionTitle}>„{sessionTitle}“</p>
+            !isSpots && sessionTitle && <p className={styles.sessionTitle}>„{sessionTitle}“</p>
           )}
           {status === 'invited' && (
             <div className={styles.answers}>

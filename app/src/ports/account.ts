@@ -12,6 +12,7 @@ import type { FeedPost } from '../domain/feed';
 import type { ProfileExtrasPayload, PublicProfile, UserHit } from '../domain/userProfile';
 import type { AchVisibility, RemoteAchievements } from '../domain/sharedAchievements';
 import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
+import type { SpotLink } from '../domain/spotLinks';
 import type { BlockedUser, ReportInput } from '../domain/moderation';
 import type { ServerComment, ServerReactions } from '../domain/reactions';
 import type { PushPrefs, PushStatus } from '../domain/push';
@@ -230,6 +231,17 @@ export interface AccountProvider {
   /** Ort teilen; derselbe Ort an denselben Empfänger erneut = Stand aktualisieren */
   shareSpot(input: ShareSpotInput): Promise<void>;
   unshareSpot(id: string): Promise<void>;
+  /** Meine Spot-Verbindungen (Angebote und angenommene) mit Zahl der geteilten Spots */
+  spotLinks(): Promise<SpotLink[]>;
+  /** Das Teilen anbieten (nur Freunden); 'accepted', wenn die Person es selbst angeboten hatte */
+  offerSpotLink(partnerId: string): Promise<'offered' | 'pending' | 'already' | 'accepted'>;
+  respondSpotLink(link: string, accept: boolean): Promise<void>;
+  /** Bestandsverbindung: auch meine eigenen Spots teilen */
+  joinSpotLink(link: string): Promise<void>;
+  /** Teilen mit dieser Person beenden (löscht die geteilten Spots in beide Richtungen) */
+  endSpotLink(link: string): Promise<void>;
+  /** Einen Ort bei allen Partnern entfernen (Ort gelöscht oder nicht mehr geteilt) */
+  unsharePlace(placeId: string): Promise<void>;
   /** Inhalt oder Konto melden (Server-Funktion report_content, Mail an moderation@fangpunkt.com) */
   report(input: ReportInput): Promise<void>;
   /** Blockieren beendet die Freundschaft und blendet beide gegenseitig aus */

@@ -17,6 +17,7 @@ import { FEED_PAGE, parseFeedRows, type FeedPost } from '../domain/feed';
 import { parseUserHits, parseUserProfile } from '../domain/userProfile';
 import { isAchVisibility, parseRemoteAchievements } from '../domain/sharedAchievements';
 import { parseSharedSpotRows } from '../domain/sharedSpots';
+import { parseSpotLinkRows } from '../domain/spotLinks';
 import { parseBlockRows } from '../domain/moderation';
 import { parseCommentRows, parseReactionRows } from '../domain/reactions';
 import { parsePushPrefs, parsePushStatus } from '../domain/push';
@@ -649,6 +650,32 @@ export function supabaseAccount(
     },
     async unshareSpot(id) {
       const { error } = await (await get()).rpc('unshare_spot', { spot: id });
+      if (error) fail(error);
+    },
+    async spotLinks() {
+      const { data, error } = await (await get()).rpc('my_spot_links');
+      if (error) fail(error);
+      return parseSpotLinkRows(data as unknown[] | null);
+    },
+    async offerSpotLink(partnerId) {
+      const { data, error } = await (await get()).rpc('offer_spot_link', { partner: partnerId });
+      if (error) fail(error);
+      return data === 'pending' || data === 'already' || data === 'accepted' ? data : 'offered';
+    },
+    async respondSpotLink(link, accept) {
+      const { error } = await (await get()).rpc('respond_spot_link', { link, accept });
+      if (error) fail(error);
+    },
+    async joinSpotLink(link) {
+      const { error } = await (await get()).rpc('join_spot_link', { link });
+      if (error) fail(error);
+    },
+    async endSpotLink(link) {
+      const { error } = await (await get()).rpc('end_spot_link', { link });
+      if (error) fail(error);
+    },
+    async unsharePlace(placeId) {
+      const { error } = await (await get()).rpc('unshare_place', { place: placeId });
       if (error) fail(error);
     },
     async report(input) {

@@ -225,3 +225,22 @@ describe('Einladungen und Löschen', () => {
     expect(withoutNotification(list, 'x')).toHaveLength(3);
   });
 });
+
+describe('Spot-Angebote in den Mitteilungen (SPOT-6)', () => {
+  it('Angebot zählt als Einladung, bestätigt nicht; Ziel ist die Spot-Seite', () => {
+    expect(isInvite({ kind: 'spot_link' })).toBe(true);
+    expect(isInvite({ kind: 'spot_link_accepted' })).toBe(false);
+    expect(isOpenInvite(n({ kind: 'spot_link', inviteStatus: 'invited' }))).toBe(true);
+    expect(isOpenInvite(n({ kind: 'spot_link', inviteStatus: 'accepted' }))).toBe(false);
+    expect(notificationPath(n({ kind: 'spot_link' }))).toBe('/profil/spots');
+    expect(notificationPath(n({ kind: 'spot_link_accepted' }))).toBe('/profil/spots');
+  });
+  it('liest die neuen Arten', () => {
+    const list = parseNotifications([
+      { ...base, id: 'a', kind: 'spot_link', invite_status: 'invited' },
+      { ...base, id: 'b', kind: 'spot_link_accepted' },
+    ]);
+    expect(list.map((x) => x.kind)).toEqual(['spot_link', 'spot_link_accepted']);
+    expect(list[0]?.inviteStatus).toBe('invited');
+  });
+});
