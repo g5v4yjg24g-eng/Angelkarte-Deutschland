@@ -45,6 +45,7 @@ import {
 import { WaterProfile } from './WaterProfile';
 import { SearchBox } from './SearchBox';
 import { DetailSearch } from './DetailSearch';
+import { useWaterPhotos } from './useWaterPhotos';
 import { CatchDetails, LayerSwitches, Legend, NewHere, PlaceDetails, PlaceForm } from './MapSheets';
 import { adoptedPlace, incomingSpots } from '../../domain/sharedSpots';
 import { adoptSharedSpot } from '../../data/sharedSpotService';
@@ -232,6 +233,7 @@ export default function MapView() {
   });
   const centeredOnFix = useRef(centeredThisLaunch);
   const [waterManifest, setWaterManifest] = useState<WaterManifest | null>(null);
+  const waterPhotos = useWaterPhotos(water, waterManifest);
   const waterRef = useRef<WaterManifest | null>(null);
   const [selectedWid, setSelectedWid] = useState<string>();
   const location = useLocation();
@@ -940,6 +942,7 @@ export default function MapView() {
       <WaterProfile
         info={info}
         manifest={waterManifest}
+        photo={waterPhotos[info.wid]}
         counts={{
           places: places?.filter((p) => p.waterId === info.wid && !p.deletedAt).length ?? 0,
           catches: catches?.filter((c) => c.waterId === info.wid && !c.deletedAt).length ?? 0,
@@ -1019,6 +1022,7 @@ export default function MapView() {
         <DetailSearch
           water={water}
           manifest={waterManifest}
+          photos={waterPhotos}
           me={geo.fix ? { lat: geo.fix.lat, lng: geo.fix.lng } : undefined}
           getCenter={getSearchNear}
           onPick={(r) => {

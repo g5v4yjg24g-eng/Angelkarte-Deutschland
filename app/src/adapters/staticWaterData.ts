@@ -2,6 +2,7 @@ import { WaterManifestSchema, type WaterManifest } from '../domain/water';
 import type { SearchEntry } from '../domain/search';
 import type { WaterDataProvider } from '../ports/waterData';
 import { StatesFileSchema, type StatesFile } from '../domain/states';
+import { PhotosFileSchema, type PhotosFile } from '../domain/waterPhotos';
 
 /** Gewässerdaten als statische Dateien unter baseUrl (water-manifest.json, water.pmtiles, search/*.json). */
 export function staticWaterData(baseUrl: string): WaterDataProvider {
@@ -9,6 +10,7 @@ export function staticWaterData(baseUrl: string): WaterDataProvider {
   let shardIndex: Promise<Set<string>> | undefined;
   const shards = new Map<string, Promise<SearchEntry[]>>();
   let states: Promise<StatesFile | null> | undefined;
+  let photos: Promise<PhotosFile | null> | undefined;
   let all: Promise<SearchEntry[]> | undefined;
 
   return {
@@ -38,6 +40,23 @@ export function staticWaterData(baseUrl: string): WaterDataProvider {
       // Fehlschlag (z. B. offline beim ersten Start) beim nächsten Mal erneut versuchen
       void p.then((v) => {
         if (v === null && states === p) states = undefined;
+      });
+      return p;
+    },
+    loadPhotos(m) {
+      if (!m.photos) return Promise.resolve(null);
+      const url = new URL(m.photos, base);
+      photos ??= fetch(url)
+        .then(async (r) => {
+          if (!r.ok) return null;
+          const p = PhotosFileSchema.safeParse(await r.json());
+          return p.success ? p.data : null;
+        })
+        .catch(() => null);
+      const p = photos;
+      // Fehlschlag (z. B. offline) beim nächsten Mal erneut versuchen
+      void p.then((v) => {
+        if (v === null && photos === p) photos = undefined;
       });
       return p;
     },

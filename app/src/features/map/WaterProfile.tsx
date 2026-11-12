@@ -2,11 +2,13 @@
 // Aufbau (Wunsch Nutzer 2026-11-05: „unfassbar unübersichtlich“): Art und Lage unter dem Namen, Kurzüberblick in
 // Kacheln, Hauptaktion oben, „Angeln hier“ (Recht + Angelkarte) als Karte, „Weitere Angaben“ zum Aufklappen,
 // Quelle klein am Ende. Keine Angabe ist weggefallen.
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { de } from '../../i18n/de';
 import { Button } from '../../design/components/Button';
 import { ChevronRightIcon } from '../../design/icons';
 import { osmUrl, type WaterInfo, type WaterManifest } from '../../domain/water';
+import { attribution, thumbUrl, type WaterPhoto } from '../../domain/waterPhotos';
 import { WaterPermitSection } from '../permits/WaterPermitSection';
 import { WaterRulesSection } from '../permits/WaterRulesSection';
 import styles from './WaterProfile.module.css';
@@ -20,11 +22,14 @@ export function WaterProfile({
   info,
   manifest,
   counts,
+  photo,
   onMarkHere,
 }: {
   info: WaterInfo;
   manifest: WaterManifest | null;
   counts: { places: number; catches: number };
+  /** Foto aus Wikimedia Commons, falls es zu diesem Gewässer eines gibt */
+  photo?: WaterPhoto | undefined;
   onMarkHere: () => void;
 }) {
   const t = de.water;
@@ -39,6 +44,8 @@ export function WaterProfile({
         <strong>{t.types[info.type]}</strong>
         {where && <span className="muted"> · {where}</span>}
       </p>
+
+      {photo && <PhotoFigure photo={photo} />}
 
       {info.isLine && <p className={`muted ${styles.small}`}>{t.lineHint}</p>}
 
@@ -115,5 +122,28 @@ export function WaterProfile({
         )}
       </p>
     </div>
+  );
+}
+
+/** Foto mit Namensnennung (Urheber, Lizenz, Link zur Commons-Seite); lädt es nicht, entfällt der Block */
+function PhotoFigure({ photo }: { photo: WaterPhoto }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+  return (
+    <figure className={styles.photo}>
+      <img
+        src={thumbUrl(photo, 500)}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        referrerPolicy="no-referrer"
+        onError={() => setFailed(true)}
+      />
+      <figcaption>
+        <a href={photo.p} target="_blank" rel="noreferrer">
+          {attribution(photo)}
+        </a>
+      </figcaption>
+    </figure>
   );
 }

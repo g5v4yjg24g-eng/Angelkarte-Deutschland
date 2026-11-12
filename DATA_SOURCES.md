@@ -195,6 +195,12 @@ Es gibt keine offene, bundesweite Quelle, welcher Verein welches Gewässer betre
 - **C – eigener Link** des Nutzers: bleibt auf dem Gerät (Tabelle `waterLinks`, DB v4), Teil der Sicherung, wird nie gesendet.
 Links öffnen nur auf Tipp (neuer Tab); die App ruft die Seiten nicht selbst ab. Prüfung erneut nach spätestens 12 Monaten [A].
 
+### 6c. Gewässerfotos – Wikimedia Commons (Entscheidung Nutzer 2026-11-11)
+- Quelle: Bild je Gewässer über OSM-Tag `wikimedia_commons` (nur `File:`) oder Wikidata-Eigenschaft P18 des Tags `wikidata`; Urheber/Lizenz aus der Commons-API (`imageinfo`, `extmetadata`). **[A]** API-Felder nach Dokumentation, im Datenlauf noch nicht gesehen – der erste Lauf muss geprüft werden **[O]**.
+- Übernommen wird nur, was eine freie Lizenz hat (CC0, CC BY, CC BY-SA, gemeinfrei); NC/ND, `NonFree`, unklare Lizenz → kein Foto (Platzhalter). Am Foto stehen Urheber, Lizenz und ein Link zur Commons-Seite.
+- Nur beim Bauen abgefragt (Pipeline, Stapel zu 50, beschreibender User-Agent, Wiederholung bei 429); die App lädt nur die Vorschau von `upload.wikimedia.org` (250/500 px) und sendet nichts über Nutzer.
+- Ausfall der Abfrage bricht den Datenlauf nicht ab.
+
 ## 7. Hosting
 
 | Option | Eignung | Offene Punkte |

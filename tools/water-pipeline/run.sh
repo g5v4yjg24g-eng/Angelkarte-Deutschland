@@ -97,5 +97,13 @@ echo "5/5 Prüfung: jedes Objekt steht bei z14 in den Kacheln, mit unveränderte
 "${TC}tippecanoe-decode" -Z14 -z14 "$OUT/water.pmtiles" \
   | node --max-old-space-size=6144 --import tsx "$HERE/src/verify.ts" "$OUT"
 
+echo "Zusatz: Fotos (Wikimedia Commons, nicht kritisch)"
+# Nur beim Bauen; PHOTOS=skip überspringt. Fehler brechen nichts ab, die App zeigt dann Platzhalter.
+if [ "${PHOTOS:-fetch}" = skip ]; then
+  echo "  übersprungen (PHOTOS=skip)"
+else
+  node --import tsx "$HERE/src/photos.ts" "$OUT" || echo "  Fotos nicht erzeugt"
+fi
+
 echo "Fertig in $(( $(date +%s) - t0 )) s"
 ls -la "$OUT"

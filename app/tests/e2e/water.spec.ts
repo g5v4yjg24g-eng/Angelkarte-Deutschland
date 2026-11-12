@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from './fixtures';
 import { collectErrors, serveWaterFixture, waitForApp, waterFixtureSearch } from './helpers';
@@ -10,9 +11,51 @@ const TEST_STYLE = {
   layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#dfe8e8' } }],
 };
 
-async function openMapAt(page: Page, lng: number, lat: number, zoom: number, { missing = false } = {}) {
+/** Ein winziges Bild als Ersatz für upload.wikimedia.org (kein Zugriff auf Fremdserver im Test) */
+const PIXEL = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==',
+  'base64',
+);
+
+async function openMapAt(
+  page: Page,
+  lng: number,
+  lat: number,
+  zoom: number,
+  { missing = false, photos = false } = {},
+) {
   await page.route('https://tiles.openfreemap.org/**', (r) => r.fulfill({ json: TEST_STYLE }));
   await serveWaterFixture(page, { missing });
+  if (photos) {
+    const manifest = JSON.parse(
+      readFileSync(new URL('../fixtures/water/water-manifest.json', import.meta.url), 'utf8'),
+    ) as Record<string, unknown>;
+    await page.route('**/data/water/water-manifest.json', (r) =>
+      r.fulfill({ json: { ...manifest, photos: 'photos.json' } }),
+    );
+    await page.route('**/data/water/photos.json', (r) =>
+      r.fulfill({
+        json: {
+          format: 'fangpunkt-photos',
+          formatVersion: 1,
+          generatedAt: '2026-11-11T00:00:00Z',
+          source: 'Wikimedia Commons',
+          items: {
+            'osm:w35044256': {
+              f: 'De_Wittsee.jpg',
+              h: 'a/a9',
+              a: 'Anna Beispiel',
+              l: 'CC BY-SA 4.0',
+              p: 'https://commons.wikimedia.org/wiki/File:De_Wittsee.jpg',
+            },
+          },
+        },
+      }),
+    );
+    await page.route('https://upload.wikimedia.org/**', (r) =>
+      r.fulfill({ body: PIXEL, contentType: 'image/png' }),
+    );
+  }
   await page.addInitScript((v) => localStorage.setItem('fangpunkt.mapView', JSON.stringify(v)), {
     lng,
     lat,
@@ -381,7 +424,10 @@ test('WAT-9: Detailsuche – Umkreis, Gewässerart als Mehrfachauswahl, Liste na
   // Barrierefreiheit in beiden Farbschemata
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme, reducedMotion: 'reduce' });
-    const r = await new AxeBuilder({ page }).include('[data-testid="detail-search"]').withTags(['wcag2a', 'wcag2aa']).analyze();
+    const r = await new AxeBuilder({ page })
+      .include('[data-testid="detail-search"]')
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
     expect(
       r.violations
         .filter((v) => v.impact === 'serious' || v.impact === 'critical')
@@ -415,8 +461,48 @@ test('WAT-9: Detailsuche – Umkreis, Gewässerart als Mehrfachauswahl, Liste na
   // Namensfilter + Tipp öffnet das Gewässerprofil
   await screen.getByRole('searchbox', { name: 'Gewässername oder Ort' }).fill('wittsee');
   await go.click();
-  await list.getByRole('button', { name: /De Wittsee/ }).first().click();
+  await list
+    .getByRole('button', { name: /De Wittsee/ })
+    .first()
+    .click();
   await expect(page.getByRole('dialog', { name: 'Gewässer suchen' })).toHaveCount(0);
   await expect(page.getByRole('dialog', { name: 'De Wittsee' })).toBeVisible({ timeout: 20_000 });
+  expect(errors).toEqual([]);
+});
+
+test('WAT-10: Gewässerfoto aus Wikimedia Commons in Detailsuche und Profil, sonst Platzhalter', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openMapAt(page, 6.27, 51.31, 11, { photos: true });
+  await page.getByRole('button', { name: 'Detailsuche öffnen' }).click();
+  const screen = page.getByRole('dialog', { name: 'Gewässer suchen' });
+  const go = screen.getByRole('button', { name: 'Suchen', exact: true });
+  await expect(go).toBeEnabled({ timeout: 30_000 });
+  await screen.getByRole('slider', { name: 'Umkreis' }).fill('25');
+  await go.click();
+  const list = screen.getByRole('region', { name: 'Ergebnisse' });
+  const wittsee = list
+    .getByRole('listitem')
+    .filter({ hasText: 'De Wittsee' })
+    .filter({ hasNotText: 'Kleiner' });
+  // mit Foto: Vorschau von upload.wikimedia.org (250 px, Bildname mit Unterstrichen)
+  await expect(wittsee.locator('img')).toHaveAttribute(
+    'src',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/De_Wittsee.jpg/250px-De_Wittsee.jpg',
+  );
+  // ohne Foto: Platzhalter-Zeichnung
+  const nette = list.getByRole('listitem').filter({ hasText: 'Nette' }).first();
+  await expect(nette.locator('img')).toHaveCount(0);
+  await expect(nette.locator('svg').first()).toBeVisible();
+  // Profil: Foto mit Namensnennung und Link zu Commons
+  await wittsee.getByRole('button').first().click();
+  const profile = page.getByRole('dialog', { name: 'De Wittsee' });
+  await expect(profile).toBeVisible({ timeout: 20_000 });
+  const credit = profile.getByRole('link', { name: 'Anna Beispiel · CC BY-SA 4.0 · Wikimedia Commons' });
+  await expect(credit).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:De_Wittsee.jpg');
+  await expect(profile.locator('figure img')).toHaveAttribute('src', /\/500px-De_Wittsee\.jpg$/);
   expect(errors).toEqual([]);
 });

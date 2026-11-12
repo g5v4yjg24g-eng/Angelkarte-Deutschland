@@ -1,6 +1,7 @@
 import type { SearchEntry } from '../domain/search';
 import type { WaterManifest } from '../domain/water';
 import type { StatesFile } from '../domain/states';
+import type { PhotosFile } from '../domain/waterPhotos';
 
 // Port für die Gewässerdaten aus der Pipeline (ARCHITECTURE §6). Wo die Dateien liegen, weiß nur der Adapter.
 export interface WaterDataProvider {
@@ -18,4 +19,6 @@ export interface WaterDataProvider {
   loadAllSearchEntries(m: WaterManifest, onProgress?: (done: number) => void): Promise<SearchEntry[]>;
   /** Landesgrenzen; null, wenn die Daten keine enthalten oder sie nicht erreichbar sind. */
   loadStates(m: WaterManifest): Promise<StatesFile | null>;
+  /** Fotos je Gewässer (Wikimedia Commons, nur freie Lizenzen); null, wenn die Daten keine enthalten oder sie nicht erreichbar sind. */
+  loadPhotos(m: WaterManifest): Promise<PhotosFile | null>;
 }
