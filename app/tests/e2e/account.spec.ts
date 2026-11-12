@@ -1531,7 +1531,7 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules|my_start_requests|my_trip_invites|trip_invite_statuses|unread_notification_count)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules|my_start_requests|my_trip_invites|trip_invite_statuses|unread_notification_count|my_spot_links)))/.test(
         c,
       ),
     ),
