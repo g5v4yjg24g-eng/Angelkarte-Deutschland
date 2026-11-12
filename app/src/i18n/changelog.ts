@@ -4,6 +4,11 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-20-2',
+    title: 'Feed per Wischen aktualisieren',
+    items: ['Feed: Ganz oben nach unten wischen lädt neu, mit kleiner Ladeanimation.'],
+  },
+  {
     id: '2026-12-20',
     title: 'Roter Punkt bei neuen Mitteilungen',
     items: ['Feed: Ein kleiner roter Punkt in der Leiste zeigt, dass es etwas Neues gibt.'],

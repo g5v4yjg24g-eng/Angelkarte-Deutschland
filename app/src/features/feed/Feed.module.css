@@ -158,3 +158,32 @@
   align-items: center;
   gap: var(--space-1);
 }
+
+/* Nach unten ziehen zum Aktualisieren */
+.pull {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transition: height 200ms ease;
+  color: var(--color-primary);
+}
+.pullIcon {
+  display: grid;
+  place-items: center;
+}
+.pullSpin {
+  animation: pullSpin 800ms linear infinite;
+}
+@keyframes pullSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pull {
+    transition: none;
+  }
+  .pullSpin {
+    animation: none;
+  }
+}

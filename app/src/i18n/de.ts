@@ -2581,6 +2581,7 @@ export const de = {
     emptyText: 'Hier erscheinen geteilte Beiträge von dir und von Leuten, denen du folgst.',
     addFriends: 'Leute finden',
     refresh: 'Aktualisieren',
+    refreshing: 'Wird aktualisiert …',
     more: 'Ältere Beiträge laden',
     end: 'Das waren alle Beiträge.',
     error: 'Der Feed konnte nicht geladen werden. Prüfe die Verbindung und versuch es noch einmal.',

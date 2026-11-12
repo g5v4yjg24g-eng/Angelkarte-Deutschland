@@ -2111,6 +2111,44 @@ test('FEED-2: Feed in der Leiste – Beiträge von Freunden mit Fotos, Name, Abz
   expect(errors).toEqual([]);
 });
 
+test('FEED-6: Feed nach unten ziehen aktualisiert mit Ladeanimation, kein Aktualisieren-Knopf mehr', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [], [feedRow({})]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
+  await expect(page.getByText('Zander am Abend')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Aktualisieren' })).toHaveCount(0);
+  const feedCalls = () => calls.filter((c) => /rpc\/feed$/.test(c)).length;
+  const before = feedCalls();
+
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true });
+  const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', y: number) =>
+    cdp.send('Input.dispatchTouchEvent', {
+      type,
+      touchPoints: type === 'touchEnd' ? [] : [{ x: 195, y }],
+    });
+  // kurzer Zug: keine Aktualisierung
+  await touch('touchStart', 200);
+  for (const y of [210, 220, 228]) await touch('touchMove', y);
+  await touch('touchEnd', 228);
+  await page.waitForTimeout(400);
+  expect(feedCalls()).toBe(before);
+  // langer Zug: Animation, dann neu laden
+  await touch('touchStart', 200);
+  for (const y of [230, 270, 320, 380, 440]) await touch('touchMove', y);
+  await expect(page.getByRole('status').filter({ hasText: 'Wird aktualisiert' })).toHaveCount(0);
+  await touch('touchEnd', 440);
+  await expect(page.getByText('Wird aktualisiert …')).toBeAttached();
+  await expect.poll(feedCalls).toBe(before + 1);
+  await expect(page.getByText('Wird aktualisiert …')).toHaveCount(0);
+  await expect(page.getByText('Zander am Abend')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
 test('FEED-3: leerer Feed führt zu „Leute finden“; ohne Anmeldung Hinweis und keine Anfrage', async ({
   page,
 }) => {
