@@ -704,7 +704,8 @@ export const de = {
       usernameTaken: 'Dieser Nutzername ist vergeben oder nicht erlaubt.',
       notSignedIn: 'Du bist nicht mehr angemeldet. Bitte melde dich erneut an.',
       wrongPassword: 'E-Mail-Adresse oder Passwort stimmen nicht.',
-      notConfirmed: 'Deine E-Mail-Adresse ist noch nicht bestätigt. Wir haben dir eine neue E-Mail geschickt.',
+      notConfirmed:
+        'Deine E-Mail-Adresse ist noch nicht bestätigt. Wir haben dir eine neue E-Mail geschickt.',
       weakPassword: 'Das Passwort ist zu schwach. Bitte nimm ein längeres.',
       samePassword: 'Das neue Passwort muss sich vom bisherigen unterscheiden.',
       emailTaken: 'Diese E-Mail-Adresse wird schon verwendet.',
@@ -782,8 +783,7 @@ export const de = {
     addFriends: 'Leute finden',
     shareNeedsAccount: 'Zum Teilen brauchst du ein Konto mit Nutzernamen (Mehr → Konto).',
     shareProfileTitle: 'Mein Fangpunkt-Profil',
-    shareProfileText: (name: string, username: string) =>
-      `${name} (@${username}) auf Fangpunkt – folg mir!`,
+    shareProfileText: (name: string, username: string) => `${name} (@${username}) auf Fangpunkt – folg mir!`,
     linkCopied: 'Link zu deinem Profil kopiert.',
     placeholderName: 'Dein Name',
     avatarAlt: 'Profilbild',
@@ -911,10 +911,12 @@ export const de = {
     shareRetry: 'Erneut versuchen',
     visibilityAssumed: 'Sichtbarkeit war nicht festgelegt und wurde auf „Nur ich“ gesetzt – bitte prüfen.',
     syncTitle: 'Beiträge sichern',
-    syncSignedOut: 'Beiträge liegen nur auf diesem Gerät. Mit Konto werden sie automatisch auf dem Server gesichert.',
+    syncSignedOut:
+      'Beiträge liegen nur auf diesem Gerät. Mit Konto werden sie automatisch auf dem Server gesichert.',
     syncAllSaved: (n: number) =>
       n === 0 ? 'Noch keine Beiträge.' : n === 1 ? '1 Beitrag gesichert.' : `Alle ${n} Beiträge gesichert.`,
-    syncProgress: (saved: number, total: number) => `${saved} von ${total} Beiträgen gesichert – wird übertragen …`,
+    syncProgress: (saved: number, total: number) =>
+      `${saved} von ${total} Beiträgen gesichert – wird übertragen …`,
     syncFailed: (n: number) =>
       n === 1
         ? '1 Beitrag konnte noch nicht übertragen werden – wird automatisch erneut versucht.'
@@ -1682,7 +1684,7 @@ export const de = {
     },
   },
   permit: {
-    title: 'Gewässerkarte',
+    title: 'Anlaufstellen & Verbände',
     loading: 'Wird geladen …',
     toClub: 'Zur Angelkarten-Seite',
     checked: (date: string, host: string) => `Link geprüft am ${date} · ${host}`,
@@ -1738,6 +1740,13 @@ export const de = {
     speciesNone: 'Keine geprüften Angaben.',
     rulesTitle: 'Angelregeln',
     rulesState: (state: string) => `Landesrecht ${state}: Schonzeiten, Mindestmaße`,
+    rulesStateTitle: (state: string) => `Landesrecht ${state}`,
+    rulesStateSub: 'Schonzeiten, Mindestmaße und weitere Regelungen',
+    tabsLabel: 'Bereiche des Gewässers',
+    tabs: { overview: 'Übersicht', map: 'Karte', rules: 'Regeln', assoc: 'Verbände' },
+    mapTitle: 'Gewässerkarte',
+    openMap: 'Karte öffnen',
+    mapNone: 'Keine Kartendaten.',
     rulesNoState: 'Bundesland unbekannt.',
     rulesWater:
       'Wer hier angeln darf und welche Gewässerregeln gelten, ist unbekannt – frag den Verein bzw. Fischereiberechtigten.',
@@ -2224,7 +2233,8 @@ export const de = {
     startSession: 'Session starten',
     startSessionLabel: (head: string) => `Session starten: ${head}`,
     inviteSent: 'Einladungen verschickt.',
-    inviteFailed: 'Die Einladung konnte nicht gesendet werden. Beim Start bekommen die Eingeladenen die Anfrage trotzdem.',
+    inviteFailed:
+      'Die Einladung konnte nicht gesendet werden. Beim Start bekommen die Eingeladenen die Anfrage trotzdem.',
     tabForecast: 'Vorhersage',
     tabCalendar: 'Angelkalender',
     tabsLabel: 'Wetter-Ansicht',
@@ -2488,7 +2498,8 @@ export const de = {
   notifications: {
     title: 'Mitteilungen',
     close: 'Schließen',
-    button: (unread: number) => (unread > 0 ? `Mitteilungen, ${unread > 99 ? 'über 99' : unread} neu` : 'Mitteilungen'),
+    button: (unread: number) =>
+      unread > 0 ? `Mitteilungen, ${unread > 99 ? 'über 99' : unread} neu` : 'Mitteilungen',
     fresh: 'Neu',
     earlier: 'Früher',
     emptyTitle: 'Noch keine Mitteilungen',
@@ -2521,16 +2532,24 @@ export const de = {
     kinds: {
       like: () => 'gefällt dein Beitrag.',
       comment: (x?: string) => (x ? `hat kommentiert: ${x}` : 'hat deinen Beitrag kommentiert.'),
-      comment_reply: (x?: string) => (x ? `hat auch kommentiert: ${x}` : 'hat einen Beitrag kommentiert, den du auch kommentiert hast.'),
+      comment_reply: (x?: string) =>
+        x ? `hat auch kommentiert: ${x}` : 'hat einen Beitrag kommentiert, den du auch kommentiert hast.',
       new_follower: () => 'folgt dir jetzt.',
       friend_request: () => 'möchte dir folgen.',
       friend_accepted: () => 'hat deine Anfrage bestätigt.',
       spot: (x?: string) => (x ? `hat einen Spot mit dir geteilt: ${x}` : 'hat einen Spot mit dir geteilt.'),
-      session_invite: (x?: string) => (x ? `lädt dich zur Session „${x}“ ein.` : 'lädt dich zu einer gemeinsamen Session ein.'),
-      session_joined: (x?: string) => (x ? `ist bei „${x}“ dabei.` : 'ist bei deiner gemeinsamen Session dabei.'),
-      session_highlight: (x?: string) => (x ? `hat ein Highlight aus „${x}“ geteilt.` : 'hat ein Highlight aus eurer Session geteilt.'),
-      trip_invite: (x?: string) => (x ? `lädt dich zum Angeltermin „${x}“ ein.` : 'lädt dich zu einem Angeltermin ein.'),
-      trip_start: (x?: string) => (x ? `startet „${x}“ jetzt – bestätige, um dabei zu sein.` : 'startet jetzt eine gemeinsame Session – bestätige, um dabei zu sein.'),
+      session_invite: (x?: string) =>
+        x ? `lädt dich zur Session „${x}“ ein.` : 'lädt dich zu einer gemeinsamen Session ein.',
+      session_joined: (x?: string) =>
+        x ? `ist bei „${x}“ dabei.` : 'ist bei deiner gemeinsamen Session dabei.',
+      session_highlight: (x?: string) =>
+        x ? `hat ein Highlight aus „${x}“ geteilt.` : 'hat ein Highlight aus eurer Session geteilt.',
+      trip_invite: (x?: string) =>
+        x ? `lädt dich zum Angeltermin „${x}“ ein.` : 'lädt dich zu einem Angeltermin ein.',
+      trip_start: (x?: string) =>
+        x
+          ? `startet „${x}“ jetzt – bestätige, um dabei zu sein.`
+          : 'startet jetzt eine gemeinsame Session – bestätige, um dabei zu sein.',
     },
   },
   feed: {
@@ -2572,7 +2591,13 @@ export const de = {
   modAdmin: {
     title: 'Moderation',
     // Admin-Bereich mit eigener Leiste (Phase 1, Wunsch Nutzer 2026-11-10)
-    nav: { label: 'Admin-Navigation', overview: 'Übersicht', reports: 'Meldungen', users: 'Nutzer', settings: 'Verwaltung' },
+    nav: {
+      label: 'Admin-Navigation',
+      overview: 'Übersicht',
+      reports: 'Meldungen',
+      users: 'Nutzer',
+      settings: 'Verwaltung',
+    },
     backToApp: 'Zur App',
     backToAppLabel: 'Admin-Bereich verlassen, zurück zur App',
     openBadge: (n: number) => (n === 1 ? '1 offene Meldung' : `${n} offene Meldungen`),
@@ -2677,7 +2702,8 @@ export const de = {
       note: 'Notiz (optional, z. B. warum)',
       add: 'Sperren',
       empty: 'Noch keine gesperrten Wörter.',
-      matches: (n: number) => (n === 0 ? 'kein bestehendes Konto' : n === 1 ? '1 bestehendes Konto' : `${n} bestehende Konten`),
+      matches: (n: number) =>
+        n === 0 ? 'kein bestehendes Konto' : n === 1 ? '1 bestehendes Konto' : `${n} bestehende Konten`,
       by: (name: string, d: string) => `von ${name}, ${d}`,
       remove: 'Freigeben',
       removeTitle: (p: string) => `„${p}“ wieder erlauben?`,
@@ -2693,7 +2719,8 @@ export const de = {
     },
     protocol: {
       title: 'Moderationsprotokoll',
-      intro: 'Jeder Eingriff im Admin-Bereich, neueste zuerst. Einträge lassen sich nicht ändern oder löschen.',
+      intro:
+        'Jeder Eingriff im Admin-Bereich, neueste zuerst. Einträge lassen sich nicht ändern oder löschen.',
       filter: 'Aktion',
       allActions: 'Alle Aktionen',
       empty: 'Keine Einträge.',
@@ -2711,7 +2738,10 @@ export const de = {
       reports: 'Meldungen',
       done: 'davon erledigt',
       median: 'Bearbeitung (Median)',
-      medianValue: (h: number) => (h < 24 ? `${h.toLocaleString('de-DE')} Std.` : `${(Math.round((h / 24) * 10) / 10).toLocaleString('de-DE')} Tage`),
+      medianValue: (h: number) =>
+        h < 24
+          ? `${h.toLocaleString('de-DE')} Std.`
+          : `${(Math.round((h / 24) * 10) / 10).toLocaleString('de-DE')} Tage`,
       interventions: 'Eingriffe',
       newUsers: 'Neue Konten',
       now: 'Gerade',
@@ -2745,7 +2775,8 @@ export const de = {
       accept: 'Annehmen',
       reject: 'Ablehnen',
       acceptTitle: 'Einspruch annehmen?',
-      acceptText: 'Die Sperre wird sofort aufgehoben, die Person kann sich wieder anmelden und bekommt eine Mail.',
+      acceptText:
+        'Die Sperre wird sofort aufgehoben, die Person kann sich wieder anmelden und bekommt eine Mail.',
       acceptNote: 'Notiz (optional, nur im Protokoll)',
       rejectTitle: 'Einspruch ablehnen?',
       rejectText: 'Die Sperre bleibt. Die Person bekommt deine Begründung per Mail.',
@@ -2795,7 +2826,8 @@ export const de = {
       names: { founder: 'Founder', moderator: 'Moderator' },
       rights: {
         founder: 'Alle Rechte, dazu Suche per E-Mail.',
-        moderator: 'Meldungen bearbeiten, Inhalte ausblenden und entfernen, verwarnen, sperren, Namen sperren.',
+        moderator:
+          'Meldungen bearbeiten, Inhalte ausblenden und entfernen, verwarnen, sperren, Namen sperren.',
       },
       since: (d: string) => `seit ${d}`,
       everyone: 'Alle Moderatoren',
@@ -3345,7 +3377,8 @@ export const de = {
     yesUnfollow: 'Ja, nicht mehr folgen',
     cancel: 'Abbrechen',
     followsYou: 'Folgt dir',
-    privateNote: (u: string) => `Privates Konto – folge @${u}, um Angaben und Beiträge für Follower zu sehen.`,
+    privateNote: (u: string) =>
+      `Privates Konto – folge @${u}, um Angaben und Beiträge für Follower zu sehen.`,
     followersOnly: (u: string) => `Folge @${u}, um Angaben und Beiträge für Follower zu sehen.`,
     highlightsTitle: 'Highlights',
     postsTitle: 'Beiträge',

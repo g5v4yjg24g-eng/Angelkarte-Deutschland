@@ -4,6 +4,16 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-17',
+    title: 'Neues Gewässerprofil',
+    items: [
+      'Kopfbild: Name und Lage des Gewässers stehen groß über dem Bild.',
+      'Reiter: Übersicht, Karte, Regeln und Verbände statt einer langen Seite.',
+      'Gewässerkarte: Kartenauszug mit dem ganzen Gewässer, wie in der normalen Karte.',
+      'Angeln hier: Landesrecht mit dem Wappen des Bundeslands.',
+    ],
+  },
+  {
     id: '2026-12-16-2',
     title: 'Detailsuche',
     items: [

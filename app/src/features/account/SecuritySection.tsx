@@ -165,7 +165,12 @@ function ChangePasswordForm({
     <form className={styles.form} noValidate onSubmit={submit}>
       <h3 className={styles.h2}>{ts.changePassword}</h3>
       <input type="email" autoComplete="username" value={email} readOnly hidden />
-      <PasswordField label={t.currentPasswordLabel} value={current} onValue={setCurrent} error={currentError} />
+      <PasswordField
+        label={t.currentPasswordLabel}
+        value={current}
+        onValue={setCurrent}
+        error={currentError}
+      />
       <PasswordField
         label={t.newPasswordLabel}
         hint={t.passwordHint}
@@ -221,7 +226,9 @@ function ChangeEmailForm({
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const to = normalizeEmail(email);
-    setEmailError(!validEmail(email) ? t.emailInvalid : to === normalizeEmail(user.email) ? ts.sameEmail : undefined);
+    setEmailError(
+      !validEmail(email) ? t.emailInvalid : to === normalizeEmail(user.email) ? ts.sameEmail : undefined,
+    );
     setPasswordError(password ? undefined : t.passwordMissing);
     if (!validEmail(email) || to === normalizeEmail(user.email) || !password) return;
     setBusy(true);
@@ -255,7 +262,12 @@ function ChangeEmailForm({
         error={emailError}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <PasswordField label={t.currentPasswordLabel} value={password} onValue={setPassword} error={passwordError} />
+      <PasswordField
+        label={t.currentPasswordLabel}
+        value={password}
+        onValue={setPassword}
+        error={passwordError}
+      />
       {error && <Notice tone="error">{error}</Notice>}
       <div className={styles.actions}>
         <Button type="submit" disabled={busy}>

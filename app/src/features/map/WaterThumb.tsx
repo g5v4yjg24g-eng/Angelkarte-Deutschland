@@ -16,7 +16,16 @@ const LOOK: Record<string, Look> = {
   harbour: { sky: '#c9b8d6', water: '#33657f', sun: false, shape: 'canal' },
 };
 
-export function WaterThumb({ kind, photo }: { kind: string; photo?: string | undefined }) {
+export function WaterThumb({
+  kind,
+  photo,
+  fill = false,
+}: {
+  kind: string;
+  photo?: string | undefined;
+  /** füllt den Rahmen (Banner) statt fester 72 × 56 px */
+  fill?: boolean;
+}) {
   const id = useId();
   const [failed, setFailed] = useState<string>();
   // Bild nicht ladbar (offline, Datei entfernt): Platzhalter
@@ -34,7 +43,14 @@ export function WaterThumb({ kind, photo }: { kind: string; photo?: string | und
     );
   const l = LOOK[kind] ?? OTHER;
   return (
-    <svg viewBox="0 0 72 56" width="72" height="56" aria-hidden="true" focusable="false">
+    <svg
+      viewBox="0 0 72 56"
+      {...(fill
+        ? { width: '100%', height: '100%', preserveAspectRatio: 'xMidYMid slice' }
+        : { width: 72, height: 56 })}
+      aria-hidden="true"
+      focusable="false"
+    >
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor={l.sky} />

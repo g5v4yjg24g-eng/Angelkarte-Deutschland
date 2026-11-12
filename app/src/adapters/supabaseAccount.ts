@@ -37,7 +37,13 @@ import {
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
 import { parseCurrentRules, parseRulesHistory } from '../domain/communityRules';
 import { parseAppealInfo, parseModAppeals } from '../domain/appeals';
-import { parseBlockedNames, parseModLogItems, parseModRole, parseModRoles, parseModStats } from '../domain/modTools';
+import {
+  parseBlockedNames,
+  parseModLogItems,
+  parseModRole,
+  parseModRoles,
+  parseModStats,
+} from '../domain/modTools';
 
 type Row = { id: string; username: string; display_name: string };
 const toProfile = (r: Row): Profile => ({ id: r.id, username: r.username, displayName: r.display_name });
@@ -71,7 +77,9 @@ async function withPhotoUrls(c: SupabaseClient, posts: Omit<FeedPost, 'photoUrls
   const paths = posts.flatMap((p) => p.photoPaths);
   const urls = new Map<string, string>();
   if (paths.length) {
-    const { data: signed, error } = await c.storage.from(POST_BUCKET).createSignedUrls(paths, PHOTO_URL_SECONDS);
+    const { data: signed, error } = await c.storage
+      .from(POST_BUCKET)
+      .createSignedUrls(paths, PHOTO_URL_SECONDS);
     if (error) fail(error);
     for (const s of signed ?? []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
   }
@@ -153,7 +161,9 @@ export function supabaseAccount(
       return user;
     },
     async signUp(email, password) {
-      const { error } = await (await get()).auth.signUp({
+      const { error } = await (
+        await get()
+      ).auth.signUp({
         email,
         password,
         options: { data: { has_password: true }, ...(redirectTo ? { emailRedirectTo: redirectTo } : {}) },
@@ -168,7 +178,9 @@ export function supabaseAccount(
       return user;
     },
     async resendConfirmation(email) {
-      const { error } = await (await get()).auth.resend({
+      const { error } = await (
+        await get()
+      ).auth.resend({
         type: 'signup',
         email,
         ...(redirectTo ? { options: { emailRedirectTo: redirectTo } } : {}),
@@ -176,7 +188,9 @@ export function supabaseAccount(
       if (error) fail(error);
     },
     async requestPasswordReset(email) {
-      const { error } = await (await get()).auth.resetPasswordForEmail(email, redirectTo ? { redirectTo } : {});
+      const { error } = await (
+        await get()
+      ).auth.resetPasswordForEmail(email, redirectTo ? { redirectTo } : {});
       if (error) fail(error);
     },
     async confirmPasswordReset(email, code) {
@@ -200,14 +214,14 @@ export function supabaseAccount(
       if (!email) throw new AccountError('not signed in', 401);
       const { error } = await c.auth.signInWithPassword({ email, password });
       if (!error) return true;
-      if (error.code === 'invalid_credentials' || /invalid login credentials/i.test(error.message)) return false;
+      if (error.code === 'invalid_credentials' || /invalid login credentials/i.test(error.message))
+        return false;
       return fail(error);
     },
     async changeEmail(newEmail) {
-      const { error } = await (await get()).auth.updateUser(
-        { email: newEmail },
-        redirectTo ? { emailRedirectTo: redirectTo } : {},
-      );
+      const { error } = await (
+        await get()
+      ).auth.updateUser({ email: newEmail }, redirectTo ? { emailRedirectTo: redirectTo } : {});
       if (error) fail(error);
     },
     async signOutOthers() {
@@ -312,7 +326,9 @@ export function supabaseAccount(
       const id = await uid(c);
       const folder = `${id}/${post.id}`;
       // Was schon im Speicher liegt (früherer, abgebrochener Versuch), wird nicht erneut hochgeladen
-      const { data: existing, error: listError } = await c.storage.from(POST_BUCKET).list(folder, { limit: 100 });
+      const { data: existing, error: listError } = await c.storage
+        .from(POST_BUCKET)
+        .list(folder, { limit: 100 });
       if (listError) fail(listError);
       const have = new Set((existing ?? []).map((f) => `${folder}/${f.name}`));
       const upload = async (path: string, blob: Blob, contentType: string) => {
@@ -347,7 +363,9 @@ export function supabaseAccount(
       const c = await get();
       const folder = paths[0]?.split('/').slice(0, 2).join('/') ?? '';
       // erst nachsehen, was da ist (ältere Beiträge haben kein Vorschaubild) – so gibt es keine Fehlanfragen
-      const { data: files, error: listError } = await c.storage.from(POST_BUCKET).list(folder, { limit: 100 });
+      const { data: files, error: listError } = await c.storage
+        .from(POST_BUCKET)
+        .list(folder, { limit: 100 });
       if (listError) return undefined;
       const have = new Set((files ?? []).map((f) => `${folder}/${f.name}`));
       const load = async (path: string) => {
@@ -458,7 +476,9 @@ export function supabaseAccount(
       return parseGroupMembers(data as unknown[] | null);
     },
     async inviteToTrip({ trip, userIds, title, waterName, date, from, to, tz }) {
-      const { data, error } = await (await get()).rpc('invite_to_trip2', {
+      const { data, error } = await (
+        await get()
+      ).rpc('invite_to_trip2', {
         trip,
         users: userIds,
         title: title ?? null,
@@ -490,7 +510,9 @@ export function supabaseAccount(
       if (error) fail(error);
     },
     async startTripSession({ title, waterName, userIds }) {
-      const { data, error } = await (await get()).rpc('start_trip_session', {
+      const { data, error } = await (
+        await get()
+      ).rpc('start_trip_session', {
         title: title ?? null,
         water_name: waterName ?? null,
         users: userIds,
@@ -504,7 +526,9 @@ export function supabaseAccount(
       return parseStartRequests(data as unknown[] | null);
     },
     async notifications(before) {
-      const { data, error } = await (await get()).rpc('my_notifications2', {
+      const { data, error } = await (
+        await get()
+      ).rpc('my_notifications2', {
         before: before ?? null,
         max_rows: NOTIFICATIONS_PAGE,
       });
@@ -530,7 +554,9 @@ export function supabaseAccount(
       return parseUnreadCount(data);
     },
     async setGroupStats(groupId, stats) {
-      const { error } = await (await get()).rpc('set_my_group_stats', {
+      const { error } = await (
+        await get()
+      ).rpc('set_my_group_stats', {
         session: groupId,
         stats: statsPayload(stats),
       });
@@ -718,7 +744,9 @@ export function supabaseAccount(
       return parseModReports(old.data as unknown[] | null);
     },
     async modSetReportStatus(reportId, status, note) {
-      const { error } = await (await get()).rpc('mod_set_report_status', {
+      const { error } = await (
+        await get()
+      ).rpc('mod_set_report_status', {
         report: reportId,
         new_status: status,
         note: note ?? null,
@@ -736,7 +764,9 @@ export function supabaseAccount(
       return parseModLog(data as unknown[] | null);
     },
     async modHidePost(postId, reportId, reason) {
-      const { error } = await (await get()).rpc('mod_hide_post', {
+      const { error } = await (
+        await get()
+      ).rpc('mod_hide_post', {
         post: postId,
         report: reportId ?? null,
         reason,
@@ -744,7 +774,9 @@ export function supabaseAccount(
       if (error) fail(error);
     },
     async modRestorePost(postId, reportId, note) {
-      const { error } = await (await get()).rpc('mod_restore_post', {
+      const { error } = await (
+        await get()
+      ).rpc('mod_restore_post', {
         post: postId,
         report: reportId ?? null,
         note: note ?? null,
@@ -762,7 +794,8 @@ export function supabaseAccount(
       const parsed = error ? undefined : parseModOverview(data as unknown[] | null);
       if (parsed) return parsed;
       // Funktion (noch) nicht eingespielt: nur zählen, was sicher bekannt ist
-      if (error && !/mod_overview|PGRST202|does not exist/i.test(`${error.code ?? ''} ${error.message}`)) fail(error);
+      if (error && !/mod_overview|PGRST202|does not exist/i.test(`${error.code ?? ''} ${error.message}`))
+        fail(error);
       const { data: open, error: e } = await c.rpc('mod_reports', { state: 'open' });
       if (e) fail(e);
       return { openReports: parseModReports(open as unknown[] | null).length };
@@ -789,7 +822,11 @@ export function supabaseAccount(
     },
     async modPhotoUrls(paths) {
       if (paths.length === 0) return [];
-      const { data, error } = await (await get()).storage.from(POST_BUCKET).createSignedUrls(paths, PHOTO_URL_SECONDS);
+      const { data, error } = await (
+        await get()
+      ).storage
+        .from(POST_BUCKET)
+        .createSignedUrls(paths, PHOTO_URL_SECONDS);
       if (error) fail(error);
       const urls = new Map((data ?? []).map((s) => [s.path, s.signedUrl]));
       return paths.map((p) => urls.get(p) ?? '');
@@ -854,7 +891,9 @@ export function supabaseAccount(
       return parseBlockedNames(data as unknown[] | null);
     },
     async modAddBlockedName(pattern, kind, note) {
-      const { error } = await (await get()).rpc('mod_add_blocked_username', { pattern, kind, note: note ?? null });
+      const { error } = await (
+        await get()
+      ).rpc('mod_add_blocked_username', { pattern, kind, note: note ?? null });
       if (error) fail(error);
     },
     async modRemoveBlockedName(pattern) {
@@ -862,7 +901,9 @@ export function supabaseAccount(
       if (error) fail(error);
     },
     async modLogList(action, before) {
-      const { data, error } = await (await get()).rpc('mod_log_list', {
+      const { data, error } = await (
+        await get()
+      ).rpc('mod_log_list', {
         what: action ?? null,
         before: before ?? null,
       });
@@ -908,7 +949,9 @@ export function supabaseAccount(
       return parseModAppeals(data as unknown[] | null);
     },
     async modDecideAppeal(id, accept, note) {
-      const { error } = await (await get()).rpc('mod_decide_appeal', { appeal: id, accept, note: note ?? null });
+      const { error } = await (
+        await get()
+      ).rpc('mod_decide_appeal', { appeal: id, accept, note: note ?? null });
       if (error) fail(error);
     },
     async modStats(days) {

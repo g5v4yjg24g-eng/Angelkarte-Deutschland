@@ -34,11 +34,13 @@ export const PhotosFileSchema = z.object({
   generatedAt: z.string(),
   source: z.string(),
   items: z.record(z.string(), WaterPhotoSchema),
+  /** Landeswappen je Bundesland-Kürzel (SVG auf Commons, als PNG-Vorschau); fehlt = kein Wappen */
+  crests: z.record(z.string(), WaterPhotoSchema).optional(),
 });
 export type PhotosFile = z.infer<typeof PhotosFileSchema>;
 
 /** Vorschau-Breiten, die Wikimedia ausliefert (andere Breiten werden abgelehnt) */
-export const THUMB_WIDTHS = [250, 500] as const;
+export const THUMB_WIDTHS = [250, 500, 960] as const;
 
 const enc = (f: string) => encodeURIComponent(f.replace(/ /g, '_')).replace(/%28/g, '(').replace(/%29/g, ')');
 
@@ -59,10 +61,10 @@ export function fileFromCommonsTag(tag: string | undefined): string | undefined 
   return toFileName(m[1]);
 }
 
-/** Dateiname mit Unterstrichen; nur Formate, die als Vorschau taugen (jpg, jpeg, png) */
-export function toFileName(name: string): string | undefined {
+/** Dateiname mit Unterstrichen; nur Formate, die als Vorschau taugen (jpg, jpeg, png; für Wappen auch svg) */
+export function toFileName(name: string, svg = false): string | undefined {
   const f = name.trim().replace(/\s+/g, '_');
-  return /\.(jpe?g|png)$/i.test(f) ? f : undefined;
+  return (svg ? /\.(jpe?g|png|svg)$/i : /\.(jpe?g|png)$/i).test(f) ? f : undefined;
 }
 
 /** Wikidata-Objekt aus dem OSM-Tag prüfen (Q123) */
@@ -77,14 +79,17 @@ interface Claim {
 }
 
 /** Bild (P18) eines Wikidata-Objekts: bevorzugter Rang, sonst der erste normale; Dateiname mit Unterstrichen */
-export function imageOfEntity(entity: { claims?: { P18?: Claim[] } } | undefined): string | undefined {
-  const claims = entity?.claims?.P18 ?? [];
+export function imageOfEntity(
+  entity: { claims?: Record<string, Claim[] | undefined> } | undefined,
+  property: 'P18' | 'P94' = 'P18',
+): string | undefined {
+  const claims = entity?.claims?.[property] ?? [];
   const ok = claims.filter(
     (c) => c.rank !== 'deprecated' && typeof c.mainsnak?.datavalue?.value === 'string',
   );
   const pick = ok.find((c) => c.rank === 'preferred') ?? ok[0];
   const v = pick?.mainsnak?.datavalue?.value;
-  return typeof v === 'string' ? toFileName(v) : undefined;
+  return typeof v === 'string' ? toFileName(v, property === 'P94') : undefined;
 }
 
 /** Freie Lizenzen: CC0, CC BY, CC BY-SA, gemeinfrei. Alles andere (auch „NC“/„ND“, unbekannt) → nicht übernehmen. */
@@ -124,7 +129,7 @@ interface CommonsPage {
 }
 
 /** Seite der Commons-API (imageinfo mit extmetadata) → Angaben; nichts bei fehlender Datei, nichtfreier oder unklarer Lizenz */
-export function commonsInfo(page: CommonsPage): CommonsInfo | undefined {
+export function commonsInfo(page: CommonsPage, svg = false): CommonsInfo | undefined {
   if (page.missing || !page.title) return undefined;
   const info = page.imageinfo?.[0];
   const meta = info?.extmetadata ?? {};
@@ -133,7 +138,7 @@ export function commonsInfo(page: CommonsPage): CommonsInfo | undefined {
   if (/^(true|1|yes)$/i.test(meta['NonFree']?.value ?? '')) return undefined;
   const pageUrl = info?.descriptionurl;
   if (!pageUrl || !/^https:\/\/commons\.wikimedia\.org\//.test(pageUrl)) return undefined;
-  const file = toFileName(page.title.replace(/^File:/i, ''));
+  const file = toFileName(page.title.replace(/^File:/i, ''), svg);
   if (!file) return undefined;
   const lu = meta['LicenseUrl']?.value;
   return {
@@ -170,4 +175,38 @@ export function buildPhotos(
     };
   }
   return out;
+}
+
+/** Vorschau eines Wappens: SVG wird von Wikimedia als PNG der gewünschten Breite ausgeliefert */
+export function crestUrl(c: Pick<WaterPhoto, 'f' | 'h'>, width: 120 | 250): string {
+  const f = enc(c.f);
+  return `https://upload.wikimedia.org/wikipedia/commons/thumb/${c.h}/${f}/${width}px-${f}${/\.svg$/i.test(c.f) ? '.png' : ''}`;
+}
+
+/** Wikidata-Objekte der Bundesländer (Kürzel wie in `StateCode`). Die Pipeline prüft jedes gegen den ISO-Code (P300). */
+export const STATE_ENTITIES: Readonly<Record<string, { q: string; iso: string }>> = {
+  BW: { q: 'Q985', iso: 'DE-BW' },
+  BY: { q: 'Q980', iso: 'DE-BY' },
+  BE: { q: 'Q64', iso: 'DE-BE' },
+  BB: { q: 'Q1208', iso: 'DE-BB' },
+  HB: { q: 'Q1209', iso: 'DE-HB' },
+  HH: { q: 'Q1055', iso: 'DE-HH' },
+  HE: { q: 'Q1199', iso: 'DE-HE' },
+  MV: { q: 'Q1196', iso: 'DE-MV' },
+  NI: { q: 'Q1197', iso: 'DE-NI' },
+  NW: { q: 'Q1198', iso: 'DE-NW' },
+  RP: { q: 'Q1200', iso: 'DE-RP' },
+  SL: { q: 'Q1201', iso: 'DE-SL' },
+  SN: { q: 'Q1202', iso: 'DE-SN' },
+  ST: { q: 'Q1206', iso: 'DE-ST' },
+  SH: { q: 'Q1194', iso: 'DE-SH' },
+  TH: { q: 'Q1205', iso: 'DE-TH' },
+};
+
+/** ISO-3166-2-Code (P300) eines Wikidata-Objekts – schützt vor falschen Objekt-IDs */
+export function entityIso(
+  entity: { claims?: Record<string, Claim[] | undefined> } | undefined,
+): string | undefined {
+  const v = entity?.claims?.['P300']?.[0]?.mainsnak?.datavalue?.value;
+  return typeof v === 'string' ? v : undefined;
 }

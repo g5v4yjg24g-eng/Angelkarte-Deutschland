@@ -85,7 +85,8 @@ async function fakeSupabase(
     rules: [
       {
         version: 1,
-        intro: 'Fangpunkt lebt davon, dass sich alle wohlfühlen. Mit einem Konto hältst du dich an diese Regeln:',
+        intro:
+          'Fangpunkt lebt davon, dass sich alle wohlfühlen. Mit einem Konto hältst du dich an diese Regeln:',
         items: [
           'Keine beleidigenden, bedrohenden oder diskriminierenden Inhalte.',
           'Keine Nacktheit, keine Gewalt, keine Tierquälerei und keine anstößigen Bilder.',
@@ -135,7 +136,13 @@ async function fakeSupabase(
     stats: new Map<string, Record<string, unknown>[]>(),
     statUploads: [] as { session: string; stats: Record<string, unknown> }[],
     /** Angeltermin (2026-11-11): Einladungen, Starts und offene Start-Anfragen an Kevin */
-    tripInvites: [] as { trip: string; users: string[]; title: string | null; water_name: string | null; trip_date: string }[],
+    tripInvites: [] as {
+      trip: string;
+      users: string[];
+      title: string | null;
+      water_name: string | null;
+      trip_date: string;
+    }[],
     tripStarts: [] as { title: string | null; water_name: string | null; users: string[]; id: string }[],
     startRequests: [] as Record<string, unknown>[],
     /** Termin-Einladungen: Zeilen von my_trip_invites an Kevin, Antworten an Kevins Termine, seine Zu-/Absagen */
@@ -363,7 +370,8 @@ async function fakeSupabase(
         if (name === 'gibtsnicht') return json(route, { code: 'P0001', message: 'not_found' }, 400);
         const known = people.profiles.get(name);
         const userId = String(known?.user_id ?? `u-${name}`);
-        if (follows.some((f) => f.user_id === userId && f.direction === 'following')) return json(route, 'already');
+        if (follows.some((f) => f.user_id === userId && f.direction === 'following'))
+          return json(route, 'already');
         const open = known?.is_private === false;
         follows.push({
           user_id: userId,
@@ -387,7 +395,9 @@ async function fakeSupabase(
       }
       case 'POST /rest/v1/rpc/respond_follow_request': {
         const { other, accept } = req.postDataJSON() as { other: string; accept: boolean };
-        const i = follows.findIndex((f) => f.user_id === other && f.direction === 'follower' && f.status === 'pending');
+        const i = follows.findIndex(
+          (f) => f.user_id === other && f.direction === 'follower' && f.status === 'pending',
+        );
         if (i < 0) return json(route, { code: 'P0001', message: 'not_found' }, 400);
         if (accept) (follows[i] as FakeFollow).status = 'accepted';
         else follows.splice(i, 1);
@@ -526,8 +536,7 @@ async function fakeSupabase(
       case 'POST /rest/v1/rpc/post_comment_list': {
         const { post } = req.postDataJSON() as { post: string };
         const owner = feed.find((x) => (x as { id: string }).id === post) as
-          | { author_id: string }
-          | undefined;
+          { author_id: string } | undefined;
         return json(
           route,
           comments
@@ -750,8 +759,20 @@ async function fakeSupabase(
       case 'POST /rest/v1/rpc/mod_roles':
         if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
         return json(route, [
-          { user_id: 'u-1', username: 'kevin', display_name: 'Kevin', role: mod.founder ? 'founder' : 'moderator', since: '2026-11-04T10:00:00Z' },
-          { user_id: 'u-mod2', username: 'lena', display_name: 'Lena', role: 'moderator', since: '2026-11-08T10:00:00Z' },
+          {
+            user_id: 'u-1',
+            username: 'kevin',
+            display_name: 'Kevin',
+            role: mod.founder ? 'founder' : 'moderator',
+            since: '2026-11-04T10:00:00Z',
+          },
+          {
+            user_id: 'u-mod2',
+            username: 'lena',
+            display_name: 'Lena',
+            role: 'moderator',
+            since: '2026-11-08T10:00:00Z',
+          },
         ]);
       case 'POST /rest/v1/rpc/mod_blocked_usernames':
         if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
@@ -795,7 +816,9 @@ async function fakeSupabase(
               moderator_name: 'Kevin',
               target_user: (l.who as string | null | undefined) ?? null,
               target_name: l.who ? String(mod.users.get(l.who as string)?.display_name ?? '') || null : null,
-              target_username: l.who ? ((mod.users.get(l.who as string)?.username as string | undefined) ?? null) : null,
+              target_username: l.who
+                ? ((mod.users.get(l.who as string)?.username as string | undefined) ?? null)
+                : null,
               report_id: (l.report as string | null | undefined) ?? null,
             }))
             .filter((l) => !b.what || l.action === b.what)
@@ -831,7 +854,8 @@ async function fakeSupabase(
         return json(route, Math.max(0, ...mod.consents));
       case 'POST /rest/v1/rpc/accept_rules': {
         const { v } = req.postDataJSON() as { v: number };
-        if (!mod.rules.some((r) => r.version === v)) return json(route, { code: 'P0001', message: 'not_found' }, 400);
+        if (!mod.rules.some((r) => r.version === v))
+          return json(route, { code: 'P0001', message: 'not_found' }, 400);
         if (!mod.consents.includes(v)) mod.consents.push(v);
         return route.fulfill({ status: 204 });
       }
@@ -850,7 +874,13 @@ async function fakeSupabase(
         if (!mod.founder) return json(route, { code: 'P0001', message: 'founder_only' }, 400);
         const b = req.postDataJSON() as { intro: string; items: string[]; summary: string };
         const version = mod.rules.length + 1;
-        mod.rules.push({ version, intro: b.intro, items: b.items, summary: b.summary, published_at: '2026-11-10T13:00:00Z' });
+        mod.rules.push({
+          version,
+          intro: b.intro,
+          items: b.items,
+          summary: b.summary,
+          published_at: '2026-11-10T13:00:00Z',
+        });
         mod.log.push({ action: 'publish_rules', who: null, detail: `Fassung ${version}: ${b.summary}` });
         return json(route, version);
       }
@@ -858,7 +888,8 @@ async function fakeSupabase(
       case 'POST /rest/v1/rpc/appeal_info': {
         const { token } = req.postDataJSON() as { token: string };
         const tok = mod.appealTokens.get(token);
-        if (!tok) return json(route, [{ state: 'invalid', ban_until: null, ban_reason: null, appeal_status: null }]);
+        if (!tok)
+          return json(route, [{ state: 'invalid', ban_until: null, ban_reason: null, appeal_status: null }]);
         const u = mod.users.get(tok.user);
         const a = mod.appeals.find((x) => x.token === token);
         return json(route, [
@@ -902,7 +933,12 @@ async function fakeSupabase(
             .filter((a) => state === 'all' || a.status === state)
             .map((a) => {
               const u = mod.users.get(a.user_id as string);
-              return { ...a, banned: u?.banned ?? false, ban_until: u?.ban_until ?? null, ban_reason: u?.ban_reason ?? null };
+              return {
+                ...a,
+                banned: u?.banned ?? false,
+                ban_until: u?.ban_until ?? null,
+                ban_reason: u?.ban_reason ?? null,
+              };
             }),
         );
       }
@@ -918,7 +954,11 @@ async function fakeSupabase(
           decided_by_name: 'Kevin',
           decision_note: b.note,
         });
-        mod.log.push({ action: b.accept ? 'appeal_accept' : 'appeal_reject', who: a.user_id, detail: b.note });
+        mod.log.push({
+          action: b.accept ? 'appeal_accept' : 'appeal_reject',
+          who: a.user_id,
+          detail: b.note,
+        });
         if (b.accept) {
           const u = mod.users.get(a.user_id as string);
           if (u) Object.assign(u, { banned: false, ban_until: null, ban_reason: null });
@@ -1111,9 +1151,19 @@ async function fakeSupabase(
         return route.fulfill({ status: 204 });
       }
       case 'POST /rest/v1/rpc/start_trip_session': {
-        const body = req.postDataJSON() as { title: string | null; water_name: string | null; users: string[] };
+        const body = req.postDataJSON() as {
+          title: string | null;
+          water_name: string | null;
+          users: string[];
+        };
         const id = `g-trip-${group.tripStarts.length + 1}`;
-        group.sessions.push({ id, host_id: 'u-1', title: body.title, water_name: body.water_name, my_status: 'joined' });
+        group.sessions.push({
+          id,
+          host_id: 'u-1',
+          title: body.title,
+          water_name: body.water_name,
+          my_status: 'joined',
+        });
         group.members.set(id, [
           { user_id: 'u-1', username: 'kevin', display_name: 'Kevin', status: 'joined', is_host: true },
           ...body.users.map((u) => {
@@ -1149,7 +1199,8 @@ async function fakeSupabase(
       }
       case 'POST /rest/v1/rpc/clear_notifications': {
         group.notificationClears += 1;
-        const open = (r: Record<string, unknown>) => r.invite_status === 'invited' || r.kind === 'friend_request';
+        const open = (r: Record<string, unknown>) =>
+          r.invite_status === 'invited' || r.kind === 'friend_request';
         const before = group.notifications.length;
         group.notifications = group.notifications.filter(open);
         return json(route, before - group.notifications.length);
@@ -1270,7 +1321,10 @@ async function fakeSupabase(
       }
       case 'POST /rest/v1/rpc/user_achievements': {
         const { author } = req.postDataJSON() as { author: string };
-        return json(route, people.achievements.get(author) ?? [{ visible: false, key: null, unlocked_at: null }]);
+        return json(
+          route,
+          people.achievements.get(author) ?? [{ visible: false, key: null, unlocked_at: null }],
+        );
       }
       case 'POST /rest/v1/rpc/search_users_v2': {
         const { q } = req.postDataJSON() as { q: string };
@@ -1421,7 +1475,10 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
     'E-Mail-Adresse ändern',
     'Auf allen anderen Geräten abmelden',
   ]);
-  await expect(page.getByRole('link', { name: /^Follower verwalten/ })).toHaveAttribute('href', /\/profil\/freunde$/);
+  await expect(page.getByRole('link', { name: /^Follower verwalten/ })).toHaveAttribute(
+    'href',
+    /\/profil\/freunde$/,
+  );
   await expect(page.getByRole('button', { name: 'Konto endgültig löschen' })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   for (const scheme of ['light', 'dark'] as const) {
@@ -1694,7 +1751,12 @@ test('FRD-2: Follower – Reiter, Suche, Anfrage bestätigen, folgen, zurückzie
     ],
   );
   // Annas Konto ist öffentlich: Zurückfolgen gilt sofort; Zander ist privat (Standard)
-  server.people.profiles.set('anna', { user_id: 'u-anna', username: 'anna', display_name: 'Anna', is_private: false });
+  server.people.profiles.set('anna', {
+    user_id: 'u-anna',
+    username: 'anna',
+    display_name: 'Anna',
+    is_private: false,
+  });
   server.people.profiles.set('zander', {
     user_id: 'u-zander',
     username: 'zander',
@@ -2094,8 +2156,7 @@ test('SPOT-3: Spots teilen – Spot von Anna auf der Karte übernehmen, eigenen 
   const sharedCount = () =>
     page.evaluate(() => {
       const src = window.__fangpunktMap?.getSource('fp-places') as
-        | { serialize?: () => { data?: unknown } }
-        | undefined;
+        { serialize?: () => { data?: unknown } } | undefined;
       const fc = src?.serialize?.().data as { features?: { properties?: { entity?: string } }[] } | undefined;
       return (fc?.features ?? []).filter((f) => f.properties?.entity === 'shared').length;
     });
@@ -2903,7 +2964,9 @@ test('MODA-5: Nutzerverwaltung – Konten suchen (Name, E-Mail nur Founder), ver
   expect(errors.filter((e) => !/status of 400/.test(e))).toEqual([]);
 });
 
-test('MODA-6: Verwaltung – Nutzernamen sperren und freigeben, Protokoll, Statistik, Rollen', async ({ page }) => {
+test('MODA-6: Verwaltung – Nutzernamen sperren und freigeben, Protokoll, Statistik, Rollen', async ({
+  page,
+}) => {
   const errors = collectErrors(page);
   const calls = await fakeSupabase(page);
   calls.mod.moderator = true;
@@ -2945,10 +3008,15 @@ test('MODA-6: Verwaltung – Nutzernamen sperren und freigeben, Protokoll, Stati
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
-    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
   }
   await item.getByRole('button', { name: 'Freigeben' }).click();
-  await page.getByRole('dialog', { name: '„hass“ wieder erlauben?' }).getByRole('button', { name: 'Bestätigen' }).click();
+  await page
+    .getByRole('dialog', { name: '„hass“ wieder erlauben?' })
+    .getByRole('button', { name: 'Bestätigen' })
+    .click();
   await expect(page.getByText('Wieder erlaubt.')).toBeVisible();
   await expect(page.getByText('Noch keine gesperrten Wörter.')).toBeVisible();
 
@@ -2977,7 +3045,9 @@ test('MODA-6: Verwaltung – Nutzernamen sperren und freigeben, Protokoll, Stati
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
-    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
@@ -3012,13 +3082,17 @@ test('MODA-7: Community-Regeln – neue Fassung veröffentlichen, angemeldete Nu
   await page.getByRole('button', { name: 'Regel hinzufügen' }).click();
   await page.getByRole('textbox', { name: 'Regel 6' }).fill('Respektiere Schonzeiten und Mindestmaße.');
   await page.getByRole('button', { name: 'Regel 6 nach oben' }).click();
-  await expect(page.getByRole('textbox', { name: 'Regel 5' })).toHaveValue('Respektiere Schonzeiten und Mindestmaße.');
+  await expect(page.getByRole('textbox', { name: 'Regel 5' })).toHaveValue(
+    'Respektiere Schonzeiten und Mindestmaße.',
+  );
   await expect(page.getByText('Bitte kurz schreiben, was sich ändert.')).toBeVisible();
   await page.getByRole('textbox', { name: /Was ändert sich/ }).fill('Neue Regel zu Schonzeiten.');
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
-    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.getByRole('button', { name: 'Veröffentlichen' }).click();
@@ -3099,7 +3173,9 @@ test('MODA-8: Einspruch gegen eine Sperre – über den Link aus der Mail ohne A
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
-    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.getByRole('button', { name: 'Einspruch senden' }).click();
@@ -3109,7 +3185,9 @@ test('MODA-8: Einspruch gegen eine Sperre – über den Link aus der Mail ohne A
   await expect(page.getByText('Er wird noch geprüft.')).toBeVisible();
   // zweiter Einspruch (anderes Konto)
   await page.goto(`/einspruch?t=${T_OTTO}`);
-  await page.getByRole('textbox', { name: 'Deine Begründung' }).fill('Ich habe keine Werbung gemacht, bitte prüfen.');
+  await page
+    .getByRole('textbox', { name: 'Deine Begründung' })
+    .fill('Ich habe keine Werbung gemacht, bitte prüfen.');
   await page.getByRole('button', { name: 'Einspruch senden' }).click();
   await expect(page.getByText(/Dein Einspruch ist angekommen/)).toBeVisible();
 
@@ -3131,7 +3209,10 @@ test('MODA-8: Einspruch gegen eine Sperre – über den Link aus der Mail ohne A
   await expect(page.getByText('Abgelehnt. Die Person bekommt eine Mail.')).toBeVisible();
   const otto = page.getByRole('listitem').filter({ hasText: 'Otto' });
   await otto.getByRole('button', { name: 'Annehmen' }).click();
-  await page.getByRole('dialog', { name: 'Einspruch annehmen?' }).getByRole('button', { name: 'Bestätigen' }).click();
+  await page
+    .getByRole('dialog', { name: 'Einspruch annehmen?' })
+    .getByRole('button', { name: 'Bestätigen' })
+    .click();
   await expect(page.getByText('Angenommen. Die Sperre ist aufgehoben.')).toBeVisible();
   await expect(page.getByText('Keine offenen Einsprüche.')).toBeVisible();
   expect(calls.mod.users.get('u-otto')?.banned).toBe(false);
@@ -3142,7 +3223,9 @@ test('MODA-8: Einspruch gegen eine Sperre – über den Link aus der Mail ohne A
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
-    expect(r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id)).toEqual([]);
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
   }
   expect(calls.mod.log.map((l) => l.action)).toEqual(['appeal_reject', 'appeal_accept', 'unban']);
   expect(errors).toEqual([]);
@@ -3692,7 +3775,9 @@ test('REV-5: Rückblick einer gemeinsamen Session – Vergleich aus geteilten Ke
   await expect(dialog).toContainText('Session gestartet – Anna und Kevin sind am Wasser');
 
   // gleiche Zeilen stehen in beiden Karten auf gleicher Höhe (kein Versatz durch das Abzeichen)
-  const ys = await vs.getByText('Fänge insgesamt').evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
+  const ys = await vs
+    .getByText('Fänge insgesamt')
+    .evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
   expect(new Set(ys).size).toBe(1);
   // hochgeladen wurden nur Zahlen – keine Orte, Routen oder Texte
   expect(calls.group.statUploads).toHaveLength(1);
@@ -3757,7 +3842,7 @@ test('TRIP-1: Termin mit Einladung – Start wartet auf die Bestätigung, dann s
           };
           r.onerror = () => reject(r.error);
         }),
-  );
+    );
   expect(await sessionCount()).toBe(0);
   // kurz nach dem Start gibt es noch kein „Ohne Anna starten“
   await expect(wait.getByRole('button', { name: /Ohne Anna starten/ })).toHaveCount(0);
@@ -3774,7 +3859,9 @@ test('TRIP-1: Termin mit Einladung – Start wartet auf die Bestätigung, dann s
   expect(errors).toEqual([]);
 });
 
-test('TRIP-2: Ohne Bestätigung – „Ohne Anna starten“ nach 2 Minuten, Abbrechen jederzeit', async ({ page }) => {
+test('TRIP-2: Ohne Bestätigung – „Ohne Anna starten“ nach 2 Minuten, Abbrechen jederzeit', async ({
+  page,
+}) => {
   const errors = collectErrors(page);
   const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
   const members = [
@@ -3814,7 +3901,10 @@ test('TRIP-2: Ohne Bestätigung – „Ohne Anna starten“ nach 2 Minuten, Abbr
   );
   await page.goto('/');
   await waitForApp(page);
-  await page.getByRole('dialog', { name: 'Session startet' }).getByRole('button', { name: 'Ohne Anna starten' }).click();
+  await page
+    .getByRole('dialog', { name: 'Session startet' })
+    .getByRole('button', { name: 'Ohne Anna starten' })
+    .click();
   await expect(page.getByRole('heading', { level: 2, name: 'Abends' })).toBeVisible();
   expect(calls.group.ended).not.toContain('g-w2');
   expect(errors).toEqual([]);
@@ -3919,7 +4009,11 @@ test('TRIP-4: Eingeladener sagt zu (Termin im eigenen Kalender) und ab (nichts b
   await page.emulateMedia({ colorScheme: 'light' });
 
   // zusagen → Antwort geht raus, der Termin steht im eigenen Kalender, die Einladung verschwindet
-  const first = section.locator('div').filter({ hasText: 'Abendansitz' }).filter({ has: page.getByRole('button', { name: 'Zusagen' }) }).last();
+  const first = section
+    .locator('div')
+    .filter({ hasText: 'Abendansitz' })
+    .filter({ has: page.getByRole('button', { name: 'Zusagen' }) })
+    .last();
   await first.getByRole('button', { name: 'Zusagen' }).click();
   await expect
     .poll(() => calls.group.tripResponses)
@@ -3933,21 +4027,27 @@ test('TRIP-4: Eingeladener sagt zu (Termin im eigenen Kalender) und ab (nichts b
       new Promise<Record<string, unknown> | undefined>((resolve, reject) => {
         const r = indexedDB.open('fangpunkt');
         r.onsuccess = () => {
-          const q = r.result.transaction('trips').objectStore('trips').get('11111111-1111-4111-8111-111111111111');
+          const q = r.result
+            .transaction('trips')
+            .objectStore('trips')
+            .get('11111111-1111-4111-8111-111111111111');
           q.onsuccess = () => resolve(q.result as Record<string, unknown> | undefined);
           q.onerror = () => reject(q.error);
         };
         r.onerror = () => reject(r.error);
       }),
   );
-  expect(stored).toMatchObject({ date: '2099-05-17', from: '17:00', to: '21:00', waterSnapshot: { name: 'De Wittsee' } });
+  expect(stored).toMatchObject({
+    date: '2099-05-17',
+    from: '17:00',
+    to: '21:00',
+    waterSnapshot: { name: 'De Wittsee' },
+  });
   expect((stored?.waterSnapshot as Record<string, unknown>).centroid).toBeUndefined();
 
   // absagen → kein Termin
   await section.getByRole('button', { name: 'Ablehnen' }).click();
-  await expect
-    .poll(() => calls.group.tripResponses.map((r) => r.accept))
-    .toEqual([true, false]);
+  await expect.poll(() => calls.group.tripResponses.map((r) => r.accept)).toEqual([true, false]);
   await expect(page.getByRole('listitem').filter({ hasText: 'Nachtangeln' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Einladungen' })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
@@ -3983,7 +4083,12 @@ test('TRIP-5: Ersteller sieht die Antworten; Löschen zieht die Einladungen zur�
   );
 
   // Termin löschen → Einladungen werden zurückgezogen
-  await page.getByRole('listitem').filter({ hasText: 'Morgenrunde' }).first().getByRole('button', { name: /Löschen/ }).click();
+  await page
+    .getByRole('listitem')
+    .filter({ hasText: 'Morgenrunde' })
+    .first()
+    .getByRole('button', { name: /Löschen/ })
+    .click();
   await expect.poll(() => calls.group.tripCancels).toEqual([tripId]);
   expect(errors).toEqual([]);
 });
@@ -4155,7 +4260,8 @@ test('SOC-1: Nutzer suchen, Profil mit Follower/Gefolgt, Angaben, Highlights und
   const tops = await Promise.all(
     ['Beiträge', 'Follower', 'Gefolgt', 'Folgt dir'].map(async (label) =>
       Math.round(
-        (await page.getByRole('region', { name: 'Profil' }).getByText(label, { exact: true }).boundingBox())?.y ?? -1,
+        (await page.getByRole('region', { name: 'Profil' }).getByText(label, { exact: true }).boundingBox())
+          ?.y ?? -1,
       ),
     ),
   );
@@ -4466,11 +4572,15 @@ test('NOTIF-1: Fisch im Feed zeigt die Zahl, die Liste nennt Name und Ereignis, 
   expect(errors).toEqual([]);
 });
 
-test('NOTIF-2: ab 10 steht „9+“, Wischen nach rechts schließt das Fenster, danach keine Zahl mehr', async ({ page }) => {
+test('NOTIF-2: ab 10 steht „9+“, Wischen nach rechts schließt das Fenster, danach keine Zahl mehr', async ({
+  page,
+}) => {
   const errors = collectErrors(page);
   const calls = await fakeSupabase(page);
   for (let i = 0; i < 12; i += 1)
-    calls.group.notifications.push(notif(`n${i}`, { created_at: `2026-11-11T10:${String(59 - i).padStart(2, '0')}:00+00:00` }));
+    calls.group.notifications.push(
+      notif(`n${i}`, { created_at: `2026-11-11T10:${String(59 - i).padStart(2, '0')}:00+00:00` }),
+    );
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
   await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
@@ -4488,7 +4598,13 @@ test('NOTIF-2: ab 10 steht „9+“, Wischen nach rechts schließt das Fenster, 
   await screen.evaluate((el) => {
     const fire = (type: string, x: number) =>
       el.dispatchEvent(
-        new PointerEvent(type, { bubbles: true, pointerType: 'touch', pointerId: 7, clientX: x, clientY: 300 }),
+        new PointerEvent(type, {
+          bubbles: true,
+          pointerType: 'touch',
+          pointerId: 7,
+          clientX: x,
+          clientY: 300,
+        }),
       );
     fire('pointerdown', 20);
     fire('pointermove', 80);
@@ -4507,7 +4623,6 @@ test('NOTIF-2: ab 10 steht „9+“, Wischen nach rechts schließt das Fenster, 
   await expect(page).toHaveURL(/\/feed$/);
   expect(errors).toEqual([]);
 });
-
 
 test('NOTIF-3: Einladungen als Visitenkarte – Termin und Session mit Annehmen/Ablehnen, Antippen öffnet den Kalender', async ({
   page,
@@ -4581,7 +4696,10 @@ test('NOTIF-3: Einladungen als Visitenkarte – Termin und Session mit Annehmen/
   await termin.getByRole('button', { name: 'Annehmen' }).click();
   await expect(termin).toContainText('Zugesagt');
   await expect(termin.getByRole('button', { name: 'Annehmen' })).toHaveCount(0);
-  expect(calls.group.tripResponses).toContainEqual({ trip: '22222222-2222-4222-8222-222222222222', accept: true });
+  expect(calls.group.tripResponses).toContainEqual({
+    trip: '22222222-2222-4222-8222-222222222222',
+    accept: true,
+  });
 
   // Session ablehnen
   await session.getByRole('button', { name: 'Ablehnen' }).click();
@@ -4594,7 +4712,9 @@ test('NOTIF-3: Einladungen als Visitenkarte – Termin und Session mit Annehmen/
   expect(errors).toEqual([]);
 });
 
-test('NOTIF-4: Alle löschen lässt offene Einladungen stehen, Wischen löscht nur die gewählte Zeile', async ({ page }) => {
+test('NOTIF-4: Alle löschen lässt offene Einladungen stehen, Wischen löscht nur die gewählte Zeile', async ({
+  page,
+}) => {
   const errors = collectErrors(page);
   const calls = await fakeSupabase(page);
   calls.group.notifications.push(
@@ -4612,7 +4732,12 @@ test('NOTIF-4: Alle löschen lässt offene Einladungen stehen, Wischen löscht n
     }),
     notif('l1', { actor_username: 'carl', created_at: '2026-11-11T11:00:00+00:00' }),
     notif('l2', { actor_username: 'dora', created_at: '2026-11-11T10:00:00+00:00' }),
-    notif('l3', { kind: 'new_follower', actor_username: 'emil', ref: null, created_at: '2026-11-11T09:00:00+00:00' }),
+    notif('l3', {
+      kind: 'new_follower',
+      actor_username: 'emil',
+      ref: null,
+      created_at: '2026-11-11T09:00:00+00:00',
+    }),
   );
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
@@ -4626,7 +4751,13 @@ test('NOTIF-4: Alle löschen lässt offene Einladungen stehen, Wischen löscht n
     const front = el.closest('[class*="swipeFront"]') as HTMLElement;
     const fire = (type: string, x: number) =>
       front.dispatchEvent(
-        new PointerEvent(type, { bubbles: true, pointerType: 'touch', pointerId: 5, clientX: x, clientY: 300 }),
+        new PointerEvent(type, {
+          bubbles: true,
+          pointerType: 'touch',
+          pointerId: 5,
+          clientX: x,
+          clientY: 300,
+        }),
       );
     fire('pointerdown', 360);
     fire('pointermove', 300);
@@ -4653,7 +4784,10 @@ test('NOTIF-4: Alle löschen lässt offene Einladungen stehen, Wischen löscht n
   await expect(screen.getByText('emil folgt dir jetzt.')).toBeVisible();
   expect(calls.group.notificationClears).toBe(0);
   await screen.getByRole('button', { name: 'Alle löschen' }).click();
-  await page.getByRole('dialog', { name: 'Alle Mitteilungen löschen?' }).getByRole('button', { name: 'Alle löschen' }).click();
+  await page
+    .getByRole('dialog', { name: 'Alle Mitteilungen löschen?' })
+    .getByRole('button', { name: 'Alle löschen' })
+    .click();
   await expect(screen.getByText('emil folgt dir jetzt.')).toHaveCount(0);
   await expect(screen.getByRole('region', { name: 'Einladung von Bert' })).toBeVisible();
   expect(calls.group.notificationClears).toBe(1);
@@ -4662,7 +4796,9 @@ test('NOTIF-4: Alle löschen lässt offene Einladungen stehen, Wischen löscht n
   expect(errors).toEqual([]);
 });
 
-test('NOTIF-5: Session-Einladung in den Mitteilungen annehmen startet die Session auf diesem Gerät', async ({ page }) => {
+test('NOTIF-5: Session-Einladung in den Mitteilungen annehmen startet die Session auf diesem Gerät', async ({
+  page,
+}) => {
   const errors = collectErrors(page);
   const calls = await fakeSupabase(page);
   calls.group.notifications.push(

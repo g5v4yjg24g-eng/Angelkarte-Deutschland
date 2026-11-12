@@ -1,6 +1,7 @@
 .profile {
   display: grid;
   gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-4);
 }
 .profile p {
   margin: 0;
@@ -118,20 +119,158 @@
   font-size: var(--text-sm);
 }
 
-/* Foto aus Wikimedia Commons mit Namensnennung */
-.photo {
-  margin: 0;
-  display: grid;
-  gap: var(--space-1);
+/* Kopfbild */
+.hero {
+  position: relative;
+  min-height: 210px;
+  display: flex;
+  align-items: flex-end;
+  color: #fff;
 }
-.photo img {
+.heroImage {
+  position: absolute;
+  inset: 0;
+  background: var(--color-brand-deep);
+}
+.heroImage img,
+.heroImage svg {
+  display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   object-fit: cover;
-  border-radius: var(--radius-md);
+}
+/* dunkler Verlauf: Name bleibt auf jedem Foto lesbar, in beiden Farbschemata */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgb(6 20 25 / 0.35) 0%,
+    rgb(6 20 25 / 0) 35%,
+    rgb(6 20 25 / 0.85) 100%
+  );
+  pointer-events: none;
+}
+.heroText {
+  position: relative;
+  z-index: 1;
+  padding: 0 var(--space-4) var(--space-3);
+  display: grid;
+  gap: 2px;
+}
+.heroTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  text-shadow: 0 1px 6px rgb(0 0 0 / 0.5);
+}
+.heroSub {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: rgb(255 255 255 / 0.92);
+}
+/* Urheberverweis: klein in der Ecke */
+.credit {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 2;
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: rgb(6 20 25 / 0.45);
+  color: rgb(255 255 255 / 0.8);
+  font-size: 0.625rem;
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+/* Reiter */
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
   background: var(--color-surface-2);
 }
-.photo figcaption {
-  font-size: var(--text-sm);
+.tab {
+  min-height: 36px;
+  padding: 0 var(--space-1);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
   color: var(--color-text-muted);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.tab[aria-selected='true'] {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-1);
+}
+.panel {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* Landesrecht mit Wappen */
+.rowText {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.rowText .muted {
+  font-size: var(--text-sm);
+}
+.crest {
+  flex: none;
+  width: 34px;
+  height: 40px;
+  object-fit: contain;
+  color: var(--color-text-muted);
+}
+
+/* Kartenauszug */
+.miniMap {
+  position: relative;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface-2);
+}
+.miniCanvas {
+  position: absolute;
+  inset: 0;
+}
+.openMap {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  z-index: 2;
+  min-height: 32px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+  color: var(--color-primary);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.rowLink strong {
+  color: var(--color-text);
 }

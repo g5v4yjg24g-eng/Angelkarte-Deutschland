@@ -41,7 +41,8 @@ function fakeAccount(badges: Badge[] = []): FakeAccount {
       const a = accounts.get(email);
       if (!a || a.password !== password)
         return Promise.reject(new AccountError('Invalid login credentials', 400, 'invalid_credentials'));
-      if (!a.confirmed) return Promise.reject(new AccountError('Email not confirmed', 400, 'email_not_confirmed'));
+      if (!a.confirmed)
+        return Promise.reject(new AccountError('Email not confirmed', 400, 'email_not_confirmed'));
       return Promise.resolve(signInAs(email));
     },
     signUp: (email, password) => {
@@ -51,7 +52,8 @@ function fakeAccount(badges: Badge[] = []): FakeAccount {
     },
     confirmSignUp: (email, code) => {
       const a = accounts.get(email);
-      if (code !== '123456' || !a) return Promise.reject(new AccountError('Token has expired or is invalid', 403));
+      if (code !== '123456' || !a)
+        return Promise.reject(new AccountError('Token has expired or is invalid', 403));
       a.confirmed = true;
       return Promise.resolve(signInAs(email));
     },
@@ -340,7 +342,9 @@ describe('Mehr → Konto (ACC-2)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Link senden' }));
     expect(await screen.findByText(/Falls es ein Konto mit alt@example\.de gibt/)).toBeInTheDocument();
     expect(acc.calls).toEqual(['reset:alt@example.de']);
-    fireEvent.change(screen.getByRole('textbox', { name: 'Code aus der E-Mail' }), { target: { value: '123456' } });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Code aus der E-Mail' }), {
+      target: { value: '123456' },
+    });
     fireEvent.click(screen.getByRole('button', { name: 'Bestätigen' }));
     expect(await screen.findByRole('heading', { name: 'Neues Passwort festlegen' })).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Neues Passwort'), { target: { value: PW } });
@@ -425,7 +429,9 @@ describe('Mehr → Konto (ACC-2)', () => {
     fireEvent.click(del);
     expect(await screen.findByText('Das aktuelle Passwort stimmt nicht.')).toBeInTheDocument();
     expect(acc.calls).not.toContain('delete');
-    fireEvent.change(screen.getByLabelText('Zum Bestätigen dein Passwort eingeben'), { target: { value: PW } });
+    fireEvent.change(screen.getByLabelText('Zum Bestätigen dein Passwort eingeben'), {
+      target: { value: PW },
+    });
     fireEvent.click(del);
     expect(await screen.findByText('Dein Konto wurde gelöscht.')).toBeInTheDocument();
     expect(acc.calls).toContain('delete');
