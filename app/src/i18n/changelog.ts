@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-17-2',
+    title: 'Fenster wegwischen',
+    items: [
+      'Gewässerprofil: Nach unten ziehen schließt das Fenster, auch bei allen anderen Fenstern von unten.',
+    ],
+  },
+  {
     id: '2026-12-17',
     title: 'Neues Gewässerprofil',
     items: [

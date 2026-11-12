@@ -520,3 +520,55 @@ test('WAT-10: Gewässerfoto aus Wikimedia Commons in Detailsuche und Profil, son
   await expect(profile.locator('img[src$="/120px-Wappen_NRW.svg.png"]')).toHaveCount(1);
   expect(errors).toEqual([]);
 });
+
+test('WAT-11: Gewässerprofil lässt sich nach unten wegschieben, im gescrollten Inhalt erst ganz oben', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openMapAt(page, 6.2425, 51.3245, 14.3);
+  await tapWater(page, 6.2418, 51.3263);
+  const profile = page.getByRole('dialog', { name: 'De Wittsee' });
+  await expect(profile).toBeVisible();
+  const swipe = (selector: string, dy: number) =>
+    page.evaluate(
+      ([sel, d]) => {
+        const target = document.querySelector(sel as string) as HTMLElement;
+        const fire = (type: string, y: number) => {
+          const t = new Touch({ identifier: 1, target, clientX: 100, clientY: y });
+          target.dispatchEvent(
+            new TouchEvent(type, {
+              touches: type === 'touchend' ? [] : [t],
+              changedTouches: [t],
+              bubbles: true,
+              cancelable: true,
+            }),
+          );
+        };
+        fire('touchstart', 300);
+        fire('touchmove', 300 + (d as number) / 2);
+        fire('touchmove', 300 + (d as number));
+        fire('touchend', 300 + (d as number));
+      },
+      [selector, dy],
+    );
+  // kurzer Zug schließt nicht
+  await swipe('dialog[open] [role="tablist"]', 20);
+  await expect(profile).toBeVisible();
+  // Inhalt gescrollt: Zug nach unten scrollt, schließt nicht
+  await page.evaluate(() => {
+    const body = document.querySelector('dialog[open] > div > div:last-of-type') as HTMLElement | null;
+    const scroller = [...document.querySelectorAll<HTMLElement>('dialog[open] *')].find(
+      (e) => e.scrollHeight > e.clientHeight + 20 && getComputedStyle(e).overflowY === 'auto',
+    );
+    (scroller ?? body)?.scrollTo(0, 50);
+  });
+  await swipe('dialog[open] [role="tablist"]', 400);
+  await expect(profile).toBeVisible();
+  // ganz oben: langer Zug nach unten schließt
+  await page.evaluate(() => {
+    for (const e of document.querySelectorAll<HTMLElement>('dialog[open] *')) e.scrollTop = 0;
+  });
+  await swipe('dialog[open] [role="tablist"]', 400);
+  await expect(page.getByRole('dialog', { name: 'De Wittsee' })).toHaveCount(0);
+});
