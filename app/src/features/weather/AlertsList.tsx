@@ -2,6 +2,7 @@
 // Höchste Stufe zuerst; abgelaufene Warnungen werden nicht gezeigt.
 import { useMemo } from 'react';
 import { de } from '../../i18n/de';
+import { WarningIcon } from '../../design/icons';
 import { alertsBetween, alertsQuery, type Alert } from '../../domain/alerts';
 import { useAlerts } from './useAlerts';
 import styles from './Alerts.module.css';
@@ -17,28 +18,40 @@ const when = (iso: string) =>
     timeZone: 'Europe/Berlin',
   });
 
-export function AlertItem({ a, compact = false }: { a: Alert; compact?: boolean }) {
+export function AlertItem({ a, compact = false, place }: { a: Alert; compact?: boolean; place?: string }) {
   return (
     <li className={[styles.alert, styles[a.severity]].join(' ')}>
-      <p className={styles.level}>{t.levels[a.severity]}</p>
-      <p className={styles.headline}>{a.headline}</p>
-      <p className="muted">{t.period(when(a.from), a.to && when(a.to))}</p>
-      {!compact && (a.description || a.instruction) && (
-        <details className={styles.details}>
-          <summary>{t.details}</summary>
-          {a.description && <p>{a.description}</p>}
-          {a.instruction && <p className={styles.instruction}>{a.instruction}</p>}
-        </details>
-      )}
+      <WarningIcon size={30} className={styles.alertIcon} />
+      <div className={styles.alertBody}>
+        <p className={styles.level}>{t.officialFor(place)}</p>
+        <p className={styles.headline}>{a.headline}</p>
+        <p className="muted">{t.period(when(a.from), a.to && when(a.to))}</p>
+        <p className={styles.stage}>{t.levels[a.severity]}</p>
+        {!compact && (a.description || a.instruction) && (
+          <details className={styles.details}>
+            <summary>{t.details}</summary>
+            {a.description && <p>{a.description}</p>}
+            {a.instruction && <p className={styles.instruction}>{a.instruction}</p>}
+          </details>
+        )}
+      </div>
     </li>
   );
 }
 
-export function AlertsList({ alerts, compact }: { alerts: Alert[]; compact?: boolean }) {
+export function AlertsList({
+  alerts,
+  compact,
+  place,
+}: {
+  alerts: Alert[];
+  compact?: boolean;
+  place?: string | undefined;
+}) {
   return (
     <ul className={styles.list}>
       {alerts.map((a) => (
-        <AlertItem key={a.id} a={a} {...(compact ? { compact } : {})} />
+        <AlertItem key={a.id} a={a} {...(compact ? { compact } : {})} {...(place ? { place } : {})} />
       ))}
     </ul>
   );
@@ -55,7 +68,7 @@ export function WeatherAlerts({ lat, lng, nowMs }: { lat: number; lng: number; n
   const list = data ? alertsBetween(data.alerts, nowMs, Infinity) : [];
   return (
     <section className={styles.section} aria-labelledby="alerts-title">
-      <h2 id="alerts-title" className={styles.title}>
+      <h2 id="alerts-title" className={list.length > 0 ? 'visually-hidden' : styles.title}>
         {t.title}
         {data?.place && <span className={styles.place}> {t.for(data.place)}</span>}
       </h2>
@@ -67,7 +80,7 @@ export function WeatherAlerts({ lat, lng, nowMs }: { lat: number; lng: number; n
           {list.length === 0 ? (
             <p className={styles.none}>{t.none(data.place)}</p>
           ) : (
-            <AlertsList alerts={list} />
+            <AlertsList alerts={list} place={data.place} />
           )}
           <p className={styles.source}>{t.source}</p>
         </>

@@ -4,67 +4,189 @@
   display: grid;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 28%, var(--color-border));
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface)),
+    var(--color-surface) 65%
+  );
   color: var(--color-text);
 }
 .cardTitle {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   margin: 0;
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--color-border);
-  font-size: var(--text-sm);
-  font-weight: 650;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+  font-size: var(--text-lg, 1.15rem);
+  font-weight: 700;
+  color: var(--color-text);
 }
 .cardTitle svg {
   color: var(--color-primary);
 }
-
-/* Kopf */
-.hero {
+.cardMore {
   display: grid;
-  justify-items: center;
-  text-align: center;
-  gap: 0;
-  padding: var(--space-4) var(--space-3);
-  border-radius: var(--radius-lg);
-  /* leichter Türkis-Schimmer wie Wasser – Akzentfarbe der App, kein Fremd-Blau */
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--color-primary) 16%, var(--color-surface)),
-    var(--color-surface)
-  );
-  border: 1px solid var(--color-border);
+  place-items: center;
+  width: var(--touch);
+  height: var(--touch);
+  margin: calc(var(--space-2) * -1) calc(var(--space-2) * -1) calc(var(--space-2) * -1) auto;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  cursor: pointer;
 }
-.hero p {
+.cardMore:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Ort */
+.placeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.placeLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 650;
+  color: var(--color-text);
+}
+.placeLabel svg {
+  color: var(--color-primary);
+}
+.placeSelect {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.placeSelect select {
+  width: 100%;
+  min-height: var(--touch);
+  padding: 0 2.4rem 0 var(--space-4);
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+  color: var(--color-text);
+  font: inherit;
+  text-overflow: ellipsis;
+}
+.placeSelect::after {
+  content: '';
+  position: absolute;
+  right: 1.1rem;
+  top: 50%;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-top: -0.4rem;
+  border-right: 2px solid var(--color-text);
+  border-bottom: 2px solid var(--color-text);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+.placeSelect select:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Jetzt */
+.nowGrid {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+.nowMain {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-width: 0;
+}
+.nowMain p {
   margin: 0;
 }
-.heroPlace {
+.nowLabel {
   font-size: var(--text-lg, 1.15rem);
-  font-weight: 600;
+  font-weight: 650;
 }
-.heroTemp {
+.nowTempRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.nowTemp {
   font-family: var(--font-display, inherit);
-  font-size: 4.2rem;
+  font-size: 4rem;
   font-weight: 600;
-  color: var(--color-primary);
   line-height: 1.05;
+  color: color-mix(in srgb, var(--color-primary) 70%, var(--color-text));
   font-variant-numeric: tabular-nums;
-  padding-left: 0.3em;
 }
-.heroSky {
-  font-size: 1.15rem;
+.nowSky {
+  font-size: 1.2rem;
   font-weight: 600;
+}
+.nowHiLo {
+  margin-top: var(--space-2) !important;
+  font-weight: 600;
+  white-space: pre;
+}
+.nowMetrics {
+  display: grid;
+  align-content: center;
+  margin: 0;
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--color-border);
+}
+.metric {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  column-gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-2) 0;
+}
+.metric + .metric {
+  border-top: 1px solid var(--color-border);
+}
+.metric svg {
+  grid-row: 1 / span 2;
+  color: var(--color-primary);
+}
+.metric dt {
+  font-size: var(--text-sm);
   color: var(--color-text-muted);
 }
-.heroHiLo {
-  font-weight: 600;
+.metric dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-1);
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+.metric dd small {
+  flex-basis: 100%;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+.metricLine {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap;
+}
+.trend {
+  display: inline-flex;
+  color: var(--color-primary);
+}
+.trend svg {
+  grid-row: auto;
 }
 
 /* Stundenleiste */
@@ -83,11 +205,25 @@
 }
 .stripItem {
   flex: none;
-  min-width: 3.4rem;
+  min-width: 3.9rem;
   display: grid;
   justify-items: center;
   gap: var(--space-1);
+  padding: var(--space-2) var(--space-1);
+  border-radius: var(--radius-md, 12px);
   font-weight: 600;
+}
+.stripItem + .stripItem {
+  border-left: 1px solid var(--color-border);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.stripNow {
+  border: 1px solid color-mix(in srgb, var(--color-primary) 45%, transparent) !important;
+  background: color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+.stripNow + .stripItem {
+  border-left: 0;
 }
 .stripSun {
   min-width: 6.5rem;
@@ -127,11 +263,11 @@
 }
 .dayRow {
   display: grid;
-  grid-template-columns: 4.4rem 2.6rem 2.4rem minmax(3rem, 1fr) 2.4rem;
+  grid-template-columns: 4rem 5.2rem 2.2rem minmax(2.5rem, 1fr) 2.2rem;
   align-items: center;
   gap: var(--space-2);
   width: 100%;
-  min-height: 3.4rem;
+  min-height: 4.4rem;
   padding: var(--space-1) 0;
   border: 0;
   background: none;
@@ -148,9 +284,11 @@
   border-radius: var(--radius-md, 12px);
 }
 .dayIcon {
-  display: grid;
-  justify-items: center;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
+
 .dayMin {
   text-align: right;
   color: var(--color-text-muted);
@@ -573,6 +711,8 @@
   display: grid;
   justify-items: start;
   gap: 2px;
+  font-size: 1.15rem;
+  font-weight: 650;
 }
 .outlookChip {
   display: inline-block;

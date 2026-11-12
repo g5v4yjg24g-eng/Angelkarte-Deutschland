@@ -405,3 +405,24 @@ export const BiteIcon = (p: IconProps) => (
     <path d="M4 15c2.5 2.5 5.5 2.5 8 0s5.5-2.5 8 0M6.5 19c1.700 1.300 3.5 1.300 5.5 0s3.800-1.300 5.5 0" />
   </Icon>
 );
+
+export const GaugeIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4.5 17a8.5 8.5 0 1 1 15 0M12 13.5l3.2-4M8 17.5h8" />
+  </Icon>
+);
+export const WindIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 9h10.5a2.5 2.5 0 1 0-2.4-3.2M3 13h14a2.5 2.5 0 1 1-2.4 3.2M3 17h6" />
+  </Icon>
+);
+export const DropIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3.5s6 6.2 6 10.5a6 6 0 0 1-12 0c0-4.3 6-10.5 6-10.5Z" />
+  </Icon>
+);
+export const WarningIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 4 2.8 19.5h18.4L12 4ZM12 10v4.500M12 17v.2" />
+  </Icon>
+);

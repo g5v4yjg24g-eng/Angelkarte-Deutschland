@@ -27,6 +27,8 @@ export const ForecastSchema = z.object({
       precipMm: n.optional(),
       precipProb: n.optional(),
       cloudPct: n.optional(),
+      /** relative Luftfeuchte (%) – fehlt in älteren Zwischenspeichern */
+      humidityPct: n.optional(),
       code: z.number().int().optional(),
     }),
   ),
@@ -84,6 +86,7 @@ export function parseOpenMeteoForecast(json: unknown, q: ForecastQuery, fetchedA
         precipMm: at(h, 'precipitation', i),
         precipProb: at(h, 'precipitation_probability', i),
         cloudPct: at(h, 'cloud_cover', i),
+        humidityPct: at(h, 'relative_humidity_2m', i),
         code: at(h, 'weather_code', i),
       }),
     )

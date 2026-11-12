@@ -2,7 +2,8 @@
 // Zahlen mit Grundlage. Die Solunar-Zeiten stehen seit 2026-10-30 nur noch im Tagesdetail (Wunsch Nutzer).
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
-import { Section } from '../../design/components/Page';
+import { BiteIcon } from '../../design/icons';
+import { WxSection } from './WxSection';
 import { getDb } from '../../data/db';
 import { analyzeBites, matchNow, pressureBucket, SLOT_HOURS } from '../../domain/biteAnalysis';
 import type { ForecastHour } from '../../domain/forecast';
@@ -137,13 +138,13 @@ export function BiteWindows(props: {
   change?: number | undefined;
 }) {
   return (
-    <Section title={t.title}>
+    <WxSection id="wx-bite" title={t.title} icon={<BiteIcon size={20} />}>
       <section className={styles.biteBlock} aria-labelledby="bite-own">
         <h3 id="bite-own" className={styles.blockTitle}>
           {t.ownTitle}
         </h3>
         <OwnBites nowMs={props.nowMs} now={props.now} change={props.change} />
       </section>
-    </Section>
+    </WxSection>
   );
 }

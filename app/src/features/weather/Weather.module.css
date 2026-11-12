@@ -109,21 +109,38 @@
   grid-template-columns: 1fr 1fr;
   gap: 4px;
   padding: 4px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
   border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
 }
 .tab {
-  display: grid;
-  place-items: center;
-  min-height: var(--touch);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 3.2rem;
+  border: 1px solid transparent;
   border-radius: var(--radius-full);
   color: var(--color-text);
   text-decoration: none;
-  font-weight: 600;
-  font-size: var(--text-sm);
+  font-weight: 650;
+  font-size: var(--text-md);
 }
 .tabActive {
-  background: var(--color-surface);
-  box-shadow: var(--shadow-1);
-  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 42%, var(--color-surface)),
+    color-mix(in srgb, var(--color-primary) 18%, var(--color-surface))
+  );
+  box-shadow: 0 0 18px color-mix(in srgb, var(--color-primary) 35%, transparent);
+  color: var(--color-text);
+}
+.tab:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.gaugeFacts {
+  display: grid;
+  gap: var(--space-2);
 }
