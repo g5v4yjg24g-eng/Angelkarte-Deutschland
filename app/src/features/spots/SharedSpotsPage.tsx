@@ -1,7 +1,8 @@
-// Geteilte Spots (Etappe 4, Wunsch Nutzer 2026-11-03): mit mir geteilt (auf der Karte zeigen, übernehmen)
-// und von mir geteilt (Teilen beenden). Nur angemeldet – sonst kein Netz.
+// Geteilte Spots (Wunsch Nutzer 2026-11-12): Verbindungen als Visitenkarten. Reiter „Mit dir geteilt“ und „Von dir
+// geteilt“ zeigen je Person die Zahl der Spots; Angebote an mich lassen sich annehmen oder ablehnen, bestehende per
+// X oder Wisch beenden (mit Rückfrage). Nur angemeldet – sonst kein Netz.
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useId, useState, type KeyboardEvent } from 'react';
+import { useEffect, useId, useState, type KeyboardEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
@@ -14,12 +15,19 @@ import { FeedIcon, MapIcon, PinIcon, RefreshIcon, SendIcon } from '../../design/
 import { getDb } from '../../data/db';
 import { adoptSharedSpot } from '../../data/sharedSpotService';
 import { userMessage } from '../../data/errors';
-import { adoptedPlace, incomingSpots, outgoingSpots } from '../../domain/sharedSpots';
-import { spotErrorText } from './spotErrors';
+import { adoptedPlace, incomingSpots } from '../../domain/sharedSpots';
+import { sharedByMe, sharedWithMe, spotLinkErrorKind, type SpotLink } from '../../domain/spotLinks';
+import type { FriendEntry } from '../../domain/friends';
 import { useProviders } from '../../ports/providersContext';
 import type { MapFocusState } from '../map/MapView';
-import { SharedSpotDetails, SpotHead } from './SharedSpotDetails';
+import { useAvatarUrls } from '../profile/avatarUrls';
+import { useMemberAchievements } from '../sessions/group/useMemberAchievements';
+import { SharedSpotDetails } from './SharedSpotDetails';
+import { SpotLinkCard } from './SpotLinkCard';
+import { notifySpotsChanged } from './spotsChanged';
 import { useSharedSpots } from './useSharedSpots';
+import { useSpotLinks } from './useSpotLinks';
+import { spotErrorText } from './spotErrors';
 import { isHidden } from '../../domain/moderation';
 import { useHidden } from '../moderation/hiddenStore';
 import styles from './Spots.module.css';
@@ -27,20 +35,60 @@ import styles from './Spots.module.css';
 const t = de.spots;
 type Tab = 'incoming' | 'outgoing';
 
+const linkErrorText = (e: unknown) => {
+  const k = spotLinkErrorKind(e);
+  const m = t.link;
+  switch (k) {
+    case 'not_friends':
+      return m.notFriends;
+    case 'declined_recently':
+      return m.declinedRecently;
+    case 'too_many':
+      return m.tooMany;
+    case 'not_found':
+      return m.notFound;
+    case 'no_profile':
+      return m.noProfile;
+    default:
+      return e instanceof Error && /fetch|network/i.test(e.message) ? t.errors.offline : m.unknown;
+  }
+};
+
 export function SharedSpotsPage() {
   const { account } = useProviders();
-  const { state, reload } = useSharedSpots();
+  const links = useSpotLinks();
+  const spots = useSharedSpots();
   const places = useLiveQuery(() => getDb().places.toArray(), []);
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [toast, setToast] = useState<string>();
   const [tab, setTab] = useState<Tab>('incoming');
-  const [picking, setPicking] = useState(false);
+  const [offering, setOffering] = useState(false);
+  const [ending, setEnding] = useState<SpotLink>();
+  const [expanded, setExpanded] = useState<string>();
   const tabsId = useId();
   const hidden = useHidden();
+  const state = links.state;
 
-  const refresh = <IconButton label={de.feed.refresh} icon={<RefreshIcon />} onClick={() => void reload()} />;
+  const list = state.kind === 'ready' ? state.list : [];
+  const withMe = sharedWithMe(list);
+  const byMe = sharedByMe(list);
+  const shown = tab === 'incoming' ? withMe : byMe;
+  const ids = list.map((l) => l.partnerId);
+  const avatars = useAvatarUrls(ids);
+  const achievements = useMemberAchievements(ids);
+
+  const refresh = (
+    <IconButton
+      label={de.feed.refresh}
+      icon={<RefreshIcon />}
+      onClick={() => {
+        void links.reload();
+        void spots.reload();
+      }}
+    />
+  );
 
   if (state.kind === 'signedOut')
     return (
@@ -50,24 +98,30 @@ export function SharedSpotsPage() {
       </Page>
     );
 
-  const incoming =
-    state.kind === 'ready'
-      ? incomingSpots(state.list).filter((x) => !isHidden(hidden, 'spot', x.id, x.ownerId))
-      : [];
-  const outgoing = state.kind === 'ready' ? outgoingSpots(state.list) : [];
-
-  const unshare = async (id: string) => {
+  const run = async (fn: () => Promise<void>, done?: string) => {
     setBusy(true);
     setError(undefined);
     try {
-      await account.unshareSpot(id);
-      await reload();
-      setToast(t.unshared);
+      await fn();
+      await links.reload();
+      await spots.reload();
+      notifySpotsChanged();
+      if (done) setToast(done);
     } catch (e) {
-      setError(spotErrorText(e));
+      setError(linkErrorText(e));
     } finally {
       setBusy(false);
     }
+  };
+
+  const answer = (l: SpotLink, accept: boolean) =>
+    run(() => account.respondSpotLink(l.id, accept), t.answered);
+  const join = (l: SpotLink) => run(() => account.joinSpotLink(l.id), t.offerAccepted);
+  const end = async () => {
+    const l = ending;
+    if (!l) return;
+    setEnding(undefined);
+    await run(() => account.endSpotLink(l.id), t.ended);
   };
 
   const onKeys = (e: KeyboardEvent) => {
@@ -85,11 +139,53 @@ export function SharedSpotsPage() {
       </span>
       <strong>{t.emptyTitle}</strong>
       <p>{kind === 'incoming' ? t.emptyIncoming : t.emptyOutgoing}</p>
-      <Button onClick={() => setPicking(true)}>
+      <Button onClick={() => setOffering(true)}>
         <SendIcon size={18} aria-hidden="true" /> {t.shareSpot}
       </Button>
     </div>
   );
+
+  const partnerSpots = (l: SpotLink) => {
+    if (tab !== 'incoming' || l.status !== 'accepted' || l.spotsFromPartner === 0) return null;
+    const mine =
+      spots.state.kind === 'ready'
+        ? incomingSpots(spots.state.list).filter(
+            (x) => x.ownerId === l.partnerId && !isHidden(hidden, 'spot', x.id, x.ownerId),
+          )
+        : [];
+    const open = expanded === l.id;
+    return (
+      <>
+        <button
+          type="button"
+          className={styles.spotsToggle}
+          aria-expanded={open}
+          onClick={() => setExpanded(open ? undefined : l.id)}
+        >
+          {open ? t.hideSpots : t.showSpots(l.spotsFromPartner)}
+        </button>
+        {open && (
+          <ul className={styles.list}>
+            {mine.map((s) => (
+              <li key={s.id} className={styles.item}>
+                <SharedSpotDetails
+                  spot={s}
+                  adopted={!!places && !!adoptedPlace(s, places)}
+                  onSafety={setToast}
+                  onShowMap={() => void navigate('/', { state: { focusShared: s.id } satisfies MapFocusState })}
+                  onAdopt={() =>
+                    void adoptSharedSpot(s, t.adoptOrigin)
+                      .then(() => setToast(t.adoptedToast))
+                      .catch((e: unknown) => setError(userMessage(e)))
+                  }
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </>
+    );
+  };
 
   return (
     <Page title={t.title} back="/profil" action={refresh}>
@@ -102,8 +198,8 @@ export function SharedSpotsPage() {
           <div role="tablist" aria-label={t.tabsLabel} className={styles.tabs} onKeyDown={onKeys}>
             {(
               [
-                ['incoming', t.tabIncoming, incoming.length, <FeedIcon key="i" size={18} />],
-                ['outgoing', t.tabOutgoing, outgoing.length, <PinIcon key="o" size={18} />],
+                ['incoming', t.tabIncoming, withMe.length, <FeedIcon key="i" size={18} />],
+                ['outgoing', t.tabOutgoing, byMe.length, <PinIcon key="o" size={18} />],
               ] as const
             ).map(([k, label, n, icon]) => (
               <button
@@ -130,52 +226,30 @@ export function SharedSpotsPage() {
             aria-labelledby={`${tabsId}-${tab}`}
             className={styles.panel}
           >
-            {tab === 'incoming' &&
-              (incoming.length === 0 ? (
-                empty('incoming')
-              ) : (
-                <ul className={styles.list}>
-                  {incoming.map((s) => (
-                    <li key={s.id} className={styles.item}>
-                      <SharedSpotDetails
-                        spot={s}
-                        adopted={!!places && !!adoptedPlace(s, places)}
-                        onSafety={setToast}
-                        onShowMap={() =>
-                          void navigate('/', { state: { focusShared: s.id } satisfies MapFocusState })
-                        }
-                        onAdopt={() =>
-                          void adoptSharedSpot(s, t.adoptOrigin)
-                            .then(() => setToast(t.adoptedToast))
-                            .catch((e: unknown) => setError(userMessage(e)))
-                        }
-                      />
-                    </li>
-                  ))}
-                </ul>
-              ))}
-            {tab === 'outgoing' &&
-              (outgoing.length === 0 ? (
-                empty('outgoing')
-              ) : (
-                <>
-                  <ul className={styles.list}>
-                    {outgoing.map((s) => (
-                      <li key={s.id} className={styles.item}>
-                        <SpotHead spot={s} />
-                        <div className={styles.buttons}>
-                          <Button variant="secondary" disabled={busy} onClick={() => void unshare(s.id)}>
-                            {t.unshare}
-                          </Button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button variant="secondary" onClick={() => setPicking(true)}>
-                    <SendIcon size={18} aria-hidden="true" /> {t.shareSpot}
-                  </Button>
-                </>
-              ))}
+            {shown.length === 0 ? (
+              empty(tab)
+            ) : (
+              <>
+                {shown.map((l) => (
+                  <SpotLinkCard
+                    key={l.id}
+                    link={l}
+                    tab={tab}
+                    avatarUrl={avatars.get(l.partnerId)}
+                    unlocked={achievements.get(l.partnerId)}
+                    busy={busy}
+                    onAnswer={(a) => void answer(l, a)}
+                    onEnd={() => setEnding(l)}
+                    onJoin={() => void join(l)}
+                  >
+                    {partnerSpots(l)}
+                  </SpotLinkCard>
+                ))}
+                <Button variant="secondary" onClick={() => setOffering(true)}>
+                  <SendIcon size={18} aria-hidden="true" /> {t.shareSpot}
+                </Button>
+              </>
+            )}
           </div>
           <ul className={styles.perks}>
             <li>
@@ -193,32 +267,97 @@ export function SharedSpotsPage() {
           </ul>
         </>
       )}
-      <Sheet open={picking} title={t.pickTitle} onClose={() => setPicking(false)}>
-        {places && places.filter((p) => !p.deletedAt).length > 0 ? (
-          <ul className={styles.list}>
-            {places
-              .filter((p) => !p.deletedAt)
-              .map((p) => (
-                <li key={p.id}>
-                  <Link
-                    className={styles.pick}
-                    to={`/profil/spots/teilen/${encodeURIComponent(p.id)}`}
-                    onClick={() => setPicking(false)}
-                  >
-                    <strong>{p.name ?? de.map.placeTypes[p.type]}</strong>
-                    {p.name && <span className="muted">{de.map.placeTypes[p.type]}</span>}
-                  </Link>
-                </li>
-              ))}
-          </ul>
-        ) : (
-          <>
-            <p className="muted">{t.noPlaces}</p>
-            <Link to="/">{t.toMap}</Link>
-          </>
+      <OfferSheet
+        open={offering}
+        links={list}
+        onClose={() => setOffering(false)}
+        onOffer={(f) =>
+          void run(async () => {
+            const r = await account.offerSpotLink(f.userId);
+            setOffering(false);
+            setToast(
+              r === 'accepted'
+                ? t.offerAccepted
+                : r === 'offered'
+                  ? t.offerSent
+                  : r === 'pending'
+                    ? t.offerPending
+                    : t.offerAlready,
+            );
+          })
+        }
+        busy={busy}
+      />
+      <Sheet open={!!ending} title={t.endTitle} onClose={() => setEnding(undefined)}>
+        {ending && (
+          <div className={styles.confirmBox}>
+            <p>{t.endText(ending.displayName)}</p>
+            <div className={styles.confirmActions}>
+              <Button variant="secondary" onClick={() => setEnding(undefined)}>
+                {t.endKeep}
+              </Button>
+              <Button variant="danger" disabled={busy} onClick={() => void end()}>
+                {t.endConfirm}
+              </Button>
+            </div>
+          </div>
         )}
       </Sheet>
       {toast && <Toast onDismiss={() => setToast(undefined)}>{toast}</Toast>}
     </Page>
+  );
+}
+
+/** Freunde ohne Verbindung, denen man das Teilen anbieten kann */
+function OfferSheet({
+  open,
+  links,
+  busy,
+  onClose,
+  onOffer,
+}: {
+  open: boolean;
+  links: readonly SpotLink[];
+  busy: boolean;
+  onClose: () => void;
+  onOffer: (f: FriendEntry) => void;
+}) {
+  const { account } = useProviders();
+  const [friends, setFriends] = useState<FriendEntry[]>();
+  useEffect(() => {
+    if (!open) return;
+    let live = true;
+    account
+      .friends()
+      .then((f) => live && setFriends(f))
+      .catch(() => live && setFriends([]));
+    return () => {
+      live = false;
+    };
+  }, [open, account]);
+  const linked = new Set(links.map((l) => l.partnerId));
+  const free = (friends ?? []).filter((f) => f.status === 'accepted' && !linked.has(f.userId));
+  return (
+    <Sheet open={open} title={t.offerTitle} onClose={onClose}>
+      {!friends ? (
+        <p className="muted">{t.offerFriendsLoading}</p>
+      ) : free.length === 0 ? (
+        <p className="muted">{t.offerNoFriends}</p>
+      ) : (
+        <ul className={styles.list}>
+          {free.map((f) => (
+            <li key={f.userId} className={`${styles.item} ${styles.offerRow}`}>
+              <span className={styles.who}>
+                <strong>{f.displayName}</strong>
+                <span className="muted">@{f.username}</span>
+              </span>
+              <Button disabled={busy} onClick={() => onOffer(f)}>
+                {t.offer}
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Sheet>
   );
 }

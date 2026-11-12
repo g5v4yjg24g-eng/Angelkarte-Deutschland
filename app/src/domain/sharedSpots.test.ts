@@ -123,6 +123,7 @@ describe('Geteilte Spots (SPOT-1)', () => {
       name: 'Steg',
       notes: 'Nur morgens\n\nvon Anna (@anna)',
       position: { lat: 51, lng: 7, source: 'import' },
+      sharedWithFriends: false,
     });
     expect(adoptFields(spot({ note: 'x'.repeat(2000) }), () => 'Herkunft').notes).toHaveLength(2000);
   });

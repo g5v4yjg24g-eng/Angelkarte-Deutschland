@@ -153,6 +153,8 @@ async function fakeSupabase(
     spotLinkResponses: [] as { link: string; accept: boolean }[],
     spotLinkOffers: [] as string[],
     spotLinkEnds: [] as string[],
+    spotLinkJoins: [] as string[],
+    unsharedPlaces: [] as string[],
     tripCancels: [] as string[],
     /** Mitteilungen (2026-11-11): Zeilen von my_notifications an Kevin, Zahl der Aufrufe zum Markieren */
     notifications: [] as Record<string, unknown>[],
@@ -1158,9 +1160,14 @@ async function fakeSupabase(
         group.spotLinks = group.spotLinks.filter((r) => r.id !== id);
         return route.fulfill({ status: 204 });
       }
-      case 'POST /rest/v1/rpc/join_spot_link':
-      case 'POST /rest/v1/rpc/unshare_place':
+      case 'POST /rest/v1/rpc/join_spot_link': {
+        group.spotLinkJoins.push((req.postDataJSON() as { link: string }).link);
         return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/unshare_place': {
+        group.unsharedPlaces.push((req.postDataJSON() as { place: string }).place);
+        return route.fulfill({ status: 204 });
+      }
       case 'POST /rest/v1/rpc/my_trip_invites':
         return json(route, group.myTripInvites);
       case 'POST /rest/v1/rpc/respond_trip_invite': {
@@ -2166,11 +2173,26 @@ async function localMap(page: Page) {
   });
 }
 
-test('SPOT-3: Spots teilen – Spot von Anna auf der Karte übernehmen, eigenen Ort teilen, Teilen beenden', async ({
+const LINK_ANNA = {
+  id: 'l-anna',
+  partner_id: 'u-anna',
+  partner_username: 'anna',
+  partner_display_name: 'Anna',
+  partner_badges: ['founder'],
+  direction: 'incoming',
+  status: 'accepted',
+  created_at: '2026-11-12T08:00:00Z',
+  spots_from_partner: 1,
+  spots_to_partner: 0,
+  i_share: true,
+};
+
+test('SPOT-3: Spots teilen – Spot von Anna übernehmen, neuer Ort geht automatisch an Anna, Schalter je Ort', async ({
   page,
 }) => {
   const errors = collectErrors(page);
   const calls = await fakeSupabase(page, [], [{ ...ANNA }], [], [{ ...BUHNE }]);
+  calls.group.spotLinks.push({ ...LINK_ANNA });
   await localMap(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
@@ -2208,7 +2230,7 @@ test('SPOT-3: Spots teilen – Spot von Anna auf der Karte übernehmen, eigenen 
   await expect(adopted.getByText('Geteilt von Anna (@anna)', { exact: false })).toBeVisible();
   await page.keyboard.press('Escape');
 
-  // eigenen Ort anlegen und teilen
+  // neuer Ort: „Mit Freunden geteilt“ ist an und der Ort geht von selbst an Anna
   const p = await screenPoint(page, 6.2418, 51.3253);
   await page.mouse.click(p.x, p.y);
   await page
@@ -2217,74 +2239,62 @@ test('SPOT-3: Spots teilen – Spot von Anna auf der Karte übernehmen, eigenen 
     .click();
   const form = page.getByRole('dialog', { name: 'Angelsteg anlegen' });
   await form.getByLabel('Bezeichnung (optional)').fill('Steg am Schilf');
+  await expect(form.getByRole('switch', { name: 'Mit Freunden geteilt' })).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
   await form.getByRole('button', { name: 'Speichern' }).click();
-  await tapRendered(page, 'fp-places', 6.2418, 51.3253);
-  await page.getByRole('dialog', { name: 'Angelsteg' }).getByRole('button', { name: 'Teilen' }).click();
-
-  await expect(page.getByRole('heading', { level: 1, name: 'Spot teilen' })).toBeVisible();
-  await expect(page.getByText('Steg am Schilf')).toBeVisible();
-  await expect(page.getByRole('radio', { name: /Alle Freunde/ })).toBeChecked();
-  await page.getByRole('button', { name: 'Teilen', exact: true }).click();
-  await expect(page.getByText('Geteilt an alle Freunde.')).toBeVisible();
-  await page.getByRole('radio', { name: /Anna/ }).check();
-  await page.getByRole('button', { name: 'Teilen', exact: true }).click();
-  await expect(page.getByText('Geteilt an Anna.')).toBeVisible();
-  const current = page.getByRole('region', { name: 'Bereits geteilt' });
-  await expect(current.getByText('an alle Freunde')).toBeVisible();
-  await expect(current.getByText('an Anna')).toBeVisible();
-  // genau die gespeicherte Position, nur Art/Name/Position
+  await expect.poll(() => calls.spots.filter((x) => x.direction === 'outgoing').length).toBe(1);
   const out = calls.spots.filter((x) => x.direction === 'outgoing');
-  expect(out).toHaveLength(2);
   const local = await page.evaluate(
     () =>
-      new Promise<{ lat: number; lng: number }>((resolve, reject) => {
+      new Promise<{ id: string; lat: number; lng: number }>((resolve, reject) => {
         const open = indexedDB.open('fangpunkt');
         open.onerror = () => reject(open.error);
         open.onsuccess = () => {
           const req = open.result.transaction('places').objectStore('places').getAll();
           req.onsuccess = () => {
-            const rows = req.result as { name?: string; position: { lat: number; lng: number } }[];
+            const rows = req.result as {
+              id: string;
+              name?: string;
+              position: { lat: number; lng: number };
+            }[];
             const hit = rows.find((x) => x.name === 'Steg am Schilf');
-            if (hit) resolve(hit.position);
+            if (hit) resolve({ id: hit.id, ...hit.position });
             else reject(new Error('Ort fehlt'));
           };
         };
       }),
   );
+  // genau die gespeicherte Position, nur Art/Name/Position
   expect(out[0]).toMatchObject({
     place_type: 'jetty',
     name: 'Steg am Schilf',
     note: null,
     lat: local.lat,
     lng: local.lng,
+    recipient_id: 'u-anna',
   });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  for (const scheme of ['light', 'dark'] as const) {
-    await page.emulateMedia({ colorScheme: scheme });
-    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
-    expect(
-      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
-    ).toEqual([]);
-  }
-  await current
-    .getByRole('listitem')
-    .filter({ hasText: 'an alle Freunde' })
-    .getByRole('button', { name: 'Nicht mehr teilen' })
-    .click();
-  await expect(page.getByText('Wird nicht mehr geteilt.')).toBeVisible();
-  await expect(current.getByText('an alle Freunde')).toHaveCount(0);
 
-  // Übersicht im Profil
+  // Schalter am Ort aus: der Ort wird bei Anna entfernt
+  await tapRendered(page, 'fp-places', 6.2418, 51.3253);
+  const detail = page.getByRole('dialog', { name: 'Angelsteg' });
+  await detail.getByRole('switch', { name: 'Mit Freunden geteilt' }).click();
+  await expect.poll(() => calls.group.unsharedPlaces).toEqual([local.id]);
+  await page.keyboard.press('Escape');
+
+  // Übersicht im Profil: Karte von Anna mit Zahl der Spots
   await page.goto('/profil');
   await page.getByRole('button', { name: 'Geteilte Spots' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Geteilte Spots' })).toBeVisible();
   const incoming = page.getByRole('tabpanel');
+  const card = incoming.getByRole('region', { name: 'Anna' });
+  await expect(card.getByText('1 Spot mit dir geteilt')).toBeVisible();
+  await card.getByRole('button', { name: 'Spots ansehen (1)' }).click();
   await expect(incoming.getByText('Buhne 3')).toBeVisible();
   await expect(incoming.getByRole('button', { name: 'In deinen Orten' })).toBeDisabled();
   await page.getByRole('tab', { name: /Von dir geteilt/ }).click();
-  const mine = page.getByRole('tabpanel');
-  await expect(mine.getByText('Steg am Schilf')).toBeVisible();
-  await expect(mine.getByText(/an Anna/)).toBeVisible();
+  await expect(page.getByRole('tabpanel').getByRole('region', { name: 'Anna' })).toBeVisible();
   await page.getByRole('tab', { name: /Mit dir geteilt/ }).click();
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
@@ -2308,9 +2318,90 @@ test('SPOT-4: ohne Anmeldung – Hinweis aufs Konto, keine Anfrage an Supabase',
   await page.goto('/');
   await waitForApp(page);
   await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-places'), null, { timeout: 30_000 });
-  await page.goto('/profil/spots/teilen/irgendwas');
-  await expect(page.getByText(/Zum Teilen von Spots brauchst du ein Konto/)).toBeVisible();
   expect(calls).toEqual([]);
+});
+
+test('SPOT-6: Angebot annehmen, ablehnen, anbieten und per X oder Wisch beenden (mit Rückfrage)', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  calls.group.spotLinks.push({
+    ...LINK_ANNA,
+    status: 'pending',
+    spots_from_partner: 0,
+    spots_to_partner: 0,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil/spots');
+  await waitForApp(page);
+  const panel = page.getByRole('tabpanel');
+  const card = panel.getByRole('region', { name: 'Anna' });
+  await expect(card.getByText('Möchte Spots mit dir teilen')).toBeVisible();
+  await expect(card.getByRole('button', { name: /Teilen mit Anna beenden/ })).toHaveCount(0);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await expect(card.getByRole('button', { name: 'Ablehnen' })).toBeVisible();
+  await card.getByRole('button', { name: 'Annehmen' }).click();
+  expect(calls.group.spotLinkResponses).toEqual([{ link: 'l-anna', accept: true }]);
+  // nach dem Annehmen: keine Antwortknöpfe mehr, dafür die Zahl und das X
+  await expect(card.getByRole('button', { name: 'Annehmen' })).toHaveCount(0);
+  await expect(card.getByRole('button', { name: 'Ablehnen' })).toHaveCount(0);
+  await expect(card.getByText('0 Spots mit dir geteilt')).toBeVisible();
+
+  // X fragt nach; Abbrechen lässt alles, wie es ist
+  await card.getByRole('button', { name: 'Teilen mit Anna beenden' }).click();
+  const confirm = page.getByRole('dialog', { name: 'Teilen beenden?' });
+  await expect(confirm.getByText(/Alle Spots, die Anna mit dir geteilt hat, verschwinden/)).toBeVisible();
+  await confirm.getByRole('button', { name: 'Abbrechen' }).click();
+  expect(calls.group.spotLinkEnds).toEqual([]);
+
+  // Wisch von rechts nach links fragt genauso nach
+  const box = await card.boundingBox();
+  if (!box) throw new Error('Karte fehlt');
+  const y = box.y + box.height / 2;
+  await page.mouse.move(box.x + box.width - 20, y);
+  await page.dispatchEvent('[aria-label="Anna"]', 'pointerdown', {
+    pointerType: 'touch',
+    pointerId: 7,
+    clientX: box.x + box.width - 20,
+    clientY: y,
+    isPrimary: true,
+  });
+  await page.dispatchEvent('[aria-label="Anna"]', 'pointermove', {
+    pointerType: 'touch',
+    pointerId: 7,
+    clientX: box.x + 10,
+    clientY: y,
+    isPrimary: true,
+  });
+  await page.dispatchEvent('[aria-label="Anna"]', 'pointerup', {
+    pointerType: 'touch',
+    pointerId: 7,
+    clientX: box.x + 10,
+    clientY: y,
+    isPrimary: true,
+  });
+  await expect(confirm).toBeVisible();
+  expect(calls.group.spotLinkEnds).toEqual([]);
+  await confirm.getByRole('button', { name: 'Teilen beenden' }).click();
+  await expect.poll(() => calls.group.spotLinkEnds).toEqual(['l-anna']);
+  await expect(panel.getByRole('region', { name: 'Anna' })).toHaveCount(0);
+  await expect(page.getByText('Teilen beendet.')).toBeVisible();
+
+  // Anbieten an einen Freund ohne Verbindung
+  await panel.getByRole('button', { name: 'Spot teilen' }).click();
+  const offer = page.getByRole('dialog', { name: 'Spots teilen mit …' });
+  await offer.getByRole('button', { name: 'Anbieten' }).click();
+  expect(calls.group.spotLinkOffers).toEqual(['u-anna']);
+  await expect(page.getByText('Angebot gesendet.')).toBeVisible();
+  expect(errors).toEqual([]);
 });
 
 const FEED_ANNA = {
@@ -2417,11 +2508,13 @@ test('MOD-3: Freund blockieren und wieder freigeben – Folgen endet in beide Ri
 test('MOD-4: geteilten Spot melden – auf der Karte und in der Liste ausgeblendet', async ({ page }) => {
   const errors = collectErrors(page);
   const calls = await fakeSupabase(page, [], [{ ...ANNA }], [], [{ ...BUHNE }]);
+  calls.group.spotLinks.push({ ...LINK_ANNA });
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
   await page.goto('/profil/spots');
   await waitForApp(page);
   const incoming = page.getByRole('tabpanel');
+  await incoming.getByRole('button', { name: 'Spots ansehen (1)' }).click();
   await expect(incoming.getByText('Buhne 3')).toBeVisible();
   await incoming.getByRole('button', { name: 'Optionen zu Anna' }).click();
   await page.getByRole('dialog', { name: 'Optionen' }).getByRole('button', { name: 'Melden' }).click();
@@ -4856,7 +4949,7 @@ test('NOTIF-5: Session-Einladung in den Mitteilungen annehmen startet die Sessio
   expect(errors).toEqual([]);
 });
 
-test('SPOT-5: Seite „Geteilte Spots“ – Kopfkarte, leere Liste, Ort zum Teilen wählen', async ({ page }) => {
+test('SPOT-5: Seite „Geteilte Spots“ – Kopfkarte, leere Liste, Freund zum Anbieten wählen', async ({ page }) => {
   const errors = collectErrors(page);
   await fakeSupabase(page, [], [], [], []);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -4872,7 +4965,7 @@ test('SPOT-5: Seite „Geteilte Spots“ – Kopfkarte, leere Liste, Ort zum Tei
   );
   await expect(page.getByText('Noch keine geteilten Spots')).toBeVisible();
   await page.getByRole('tab', { name: /Von dir geteilt \(0\)/ }).click();
-  await expect(page.getByText('Wähle einen deiner Orte aus')).toBeVisible();
+  await expect(page.getByText('Biete einem Freund das Teilen an')).toBeVisible();
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
@@ -4882,8 +4975,8 @@ test('SPOT-5: Seite „Geteilte Spots“ – Kopfkarte, leere Liste, Ort zum Tei
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.getByRole('button', { name: 'Spot teilen' }).click();
-  const sheet = page.getByRole('dialog', { name: 'Ort zum Teilen wählen' });
-  await expect(sheet.getByText('Du hast noch keine Orte')).toBeVisible();
+  const sheet = page.getByRole('dialog', { name: 'Spots teilen mit …' });
+  await expect(sheet.getByText(/Alle deine Freunde sind schon verbunden/)).toBeVisible();
   expect(errors.filter((e) => !/status of 404/.test(e))).toEqual([]);
 });
 

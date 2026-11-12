@@ -286,13 +286,6 @@ export const routes = [
                 ),
               },
               {
-                path: 'profil/spots/teilen/:placeId',
-                lazy: page(
-                  () => import('../features/spots/ShareSpotPage'),
-                  (m) => m.ShareSpotPage,
-                ),
-              },
-              {
                 path: 'feed',
                 lazy: page(
                   () => import('../features/feed/FeedPage'),

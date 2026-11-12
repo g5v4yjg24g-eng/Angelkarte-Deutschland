@@ -59,3 +59,9 @@
 .danger {
   background: var(--color-danger);
 }
+
+.trailing {
+  margin-left: auto;
+  align-self: flex-start;
+  flex: none;
+}

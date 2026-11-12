@@ -14,6 +14,8 @@ export function SwipeRow({
   label,
   onDelete,
   card = false,
+  confirm = false,
+  actionLabel,
   children,
 }: {
   /** Beschriftung des Löschen-Knopfs für Screenreader */
@@ -21,6 +23,10 @@ export function SwipeRow({
   onDelete: () => void;
   /** Zeile ist eine Karte: oben und unten Luft, damit „Löschen“ dahinter nicht hervorschaut */
   card?: boolean;
+  /** Die Aktion wird erst nach einer Rückfrage ausgeführt: die Zeile springt zurück, statt zu verschwinden */
+  confirm?: boolean;
+  /** Beschriftung hinter der Zeile (Standard: Löschen) */
+  actionLabel?: string;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -37,6 +43,11 @@ export function SwipeRow({
   } | null>(null);
 
   const remove = () => {
+    if (confirm) {
+      setX(0);
+      onDelete();
+      return;
+    }
     setGone(true);
     setX(-(ref.current?.offsetWidth ?? 400));
     window.setTimeout(onDelete, 180);
@@ -79,7 +90,7 @@ export function SwipeRow({
   return (
     <div className={`${styles.swipe} ${gone ? styles.swipeGone : ''}`} ref={ref}>
       <button type="button" className={styles.swipeDelete} aria-label={label} onClick={remove}>
-        {de.notifications.delete}
+        {actionLabel ?? de.notifications.delete}
       </button>
       <div
         className={`${styles.swipeFront} ${card ? styles.swipeCard : ''}`}

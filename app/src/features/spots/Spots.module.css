@@ -190,3 +190,56 @@
   color: inherit;
   text-decoration: none;
 }
+
+/* X am rechten Rand der Verbindungskarte */
+.endButton {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--touch);
+  height: var(--touch);
+  margin: calc(var(--space-2) * -1);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+.endButton:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.endButton:disabled {
+  opacity: 0.5;
+}
+.spotsToggle {
+  position: relative;
+  justify-self: start;
+  min-height: var(--touch);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.confirmBox {
+  display: grid;
+  gap: var(--space-4);
+}
+.confirmBox p {
+  margin: 0;
+}
+.confirmActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+.offerRow {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
