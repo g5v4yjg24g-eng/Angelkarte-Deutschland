@@ -1,0 +1,42 @@
+Tabelle direkt lesen|FEHLER: permission denied for table spot_links
+Anna bietet Bert an|offered
+Nochmal anbieten|pending
+Fremde Carl|FEHLER: not_friends
+Blockierte Dora|FEHLER: not_friends
+Sich selbst|FEHLER: not_friends
+Teilen vor Annahme|FEHLER: no_link
+Teilen ohne Empfänger|FEHLER: not_friends
+Annas Liste|outgoing/pending/bert
+Mitteilung an Bert (einmal)|spot_link
+Bert sieht Angebot|incoming/pending/anna/0
+Bert: Mitteilung offen|invited
+Anna antwortet auf eigenes Angebot|FEHLER: not_found
+Bert lehnt ab|
+Bert: Mitteilung abgelehnt|declined
+Abgelehnt erscheint nicht|0
+Anna erneut anbieten (7 Tage Sperre)|FEHLER: declined_recently
+Bert bietet Anna an (darf sofort)|offered
+Anna: Offen-Mitteilung|invited
+Alle löschen behält offenes Angebot|3
+Angebot noch da|1
+Anna nimmt an|
+Bert bekommt „angenommen“|spot_link,spot_link_accepted
+Annehmen zweimal|FEHLER: not_found
+Anna teilt Spot mit Bert|true
+Teilen erneut aktualisiert|true
+Anna teilt Spot mit Carl (keine Verbindung)|FEHLER: not_friends
+Anna teilt zweiten Spot|true
+Bert teilt Spot mit Anna|true
+Bert sieht Annas Spots|Buhne 4,Steg
+Zähler Bert|2/1/true
+Bert direkt in der Tabelle|3
+Carl sieht nichts|0
+Anna entfernt Ort überall|1
+Anna: noch ein Spot|1
+Eva bietet Anna an|offered
+Anna bietet Eva an (beide wollen = verbunden)|accepted
+Anna beendet Verbindung mit Bert|
+Geteilte Spots weg|0
+Bert sieht nichts mehr|0
+Beenden fremder Verbindung|FEHLER: not_found
+Ohne Anmeldung|FEHLER: not signed in

@@ -2520,6 +2520,8 @@ export const de = {
     decline: 'Ablehnen',
     invitedTrip: 'Zum Angeltermin eingeladen',
     invitedSession: 'Zur Session eingeladen',
+    invitedSpots: 'Möchte Spots mit dir teilen',
+    spotsAccepted: 'Teilt jetzt Spots mit dir',
     accepted: 'Zugesagt',
     declined: 'Abgelehnt',
     tripName: 'Termin',
@@ -2538,6 +2540,8 @@ export const de = {
       friend_request: () => 'möchte dir folgen.',
       friend_accepted: () => 'hat deine Anfrage bestätigt.',
       spot: (x?: string) => (x ? `hat einen Spot mit dir geteilt: ${x}` : 'hat einen Spot mit dir geteilt.'),
+      spot_link: () => 'möchte Spots mit dir teilen.',
+      spot_link_accepted: () => 'teilt jetzt Spots mit dir.',
       session_invite: (x?: string) =>
         x ? `lädt dich zur Session „${x}“ ein.` : 'lädt dich zu einer gemeinsamen Session ein.',
       session_joined: (x?: string) =>

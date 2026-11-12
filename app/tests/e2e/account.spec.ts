@@ -149,6 +149,10 @@ async function fakeSupabase(
     myTripInvites: [] as Record<string, unknown>[],
     tripStatuses: [] as Record<string, unknown>[],
     tripResponses: [] as { trip: string; accept: boolean }[],
+    spotLinks: [] as Record<string, unknown>[],
+    spotLinkResponses: [] as { link: string; accept: boolean }[],
+    spotLinkOffers: [] as string[],
+    spotLinkEnds: [] as string[],
     tripCancels: [] as string[],
     /** Mitteilungen (2026-11-11): Zeilen von my_notifications an Kevin, Zahl der Aufrufe zum Markieren */
     notifications: [] as Record<string, unknown>[],
@@ -1135,6 +1139,28 @@ async function fakeSupabase(
         group.tripInvites.push(body);
         return json(route, body.users.length);
       }
+      case 'POST /rest/v1/rpc/my_spot_links':
+        return json(route, group.spotLinks);
+      case 'POST /rest/v1/rpc/offer_spot_link': {
+        group.spotLinkOffers.push((req.postDataJSON() as { partner: string }).partner);
+        return json(route, 'offered');
+      }
+      case 'POST /rest/v1/rpc/respond_spot_link': {
+        const body = req.postDataJSON() as { link: string; accept: boolean };
+        group.spotLinkResponses.push(body);
+        const row = group.spotLinks.find((r) => r.id === body.link);
+        if (row) row.status = 'accepted';
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/end_spot_link': {
+        const id = (req.postDataJSON() as { link: string }).link;
+        group.spotLinkEnds.push(id);
+        group.spotLinks = group.spotLinks.filter((r) => r.id !== id);
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/join_spot_link':
+      case 'POST /rest/v1/rpc/unshare_place':
+        return route.fulfill({ status: 204 });
       case 'POST /rest/v1/rpc/my_trip_invites':
         return json(route, group.myTripInvites);
       case 'POST /rest/v1/rpc/respond_trip_invite': {
@@ -4858,5 +4884,61 @@ test('SPOT-5: Seite „Geteilte Spots“ – Kopfkarte, leere Liste, Ort zum Tei
   await page.getByRole('button', { name: 'Spot teilen' }).click();
   const sheet = page.getByRole('dialog', { name: 'Ort zum Teilen wählen' });
   await expect(sheet.getByText('Du hast noch keine Orte')).toBeVisible();
+  expect(errors.filter((e) => !/status of 404/.test(e))).toEqual([]);
+});
+
+test('NOTIF-6: Angebot zum Teilen von Spots – Visitenkarte mit Annehmen/Ablehnen in den Mitteilungen', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  calls.group.spotLinks.push({ id: 'l-anna', status: 'pending' });
+  calls.group.notifications.push(
+    notif('sp1', {
+      kind: 'spot_link',
+      actor_id: 'u-anna',
+      actor_username: 'anna',
+      actor_display_name: 'Anna',
+      ref: 'l-anna',
+      excerpt: null,
+      post_author_username: null,
+      post_created_at: null,
+      post_is_mine: null,
+      invite_status: 'invited',
+    }),
+    notif('sp2', {
+      kind: 'spot_link_accepted',
+      actor_id: 'u-bert',
+      actor_username: 'bert',
+      actor_display_name: 'Bert',
+      ref: 'l-bert',
+      created_at: '2026-11-11T09:00:00+00:00',
+      post_author_username: null,
+      post_created_at: null,
+      post_is_mine: null,
+    }),
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed/mitteilungen');
+  await waitForApp(page);
+
+  const angebot = page.getByRole('region', { name: 'Einladung von Anna' });
+  await expect(angebot).toContainText('@anna');
+  await expect(angebot).toContainText('Möchte Spots mit dir teilen');
+  await expect(page.getByText('teilt jetzt Spots mit dir.')).toBeVisible();
+  await expect(angebot.getByRole('button', { name: 'Ablehnen' })).toBeVisible();
+  await animationsDone(angebot);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await angebot.getByRole('button', { name: 'Annehmen' }).click();
+  await expect(angebot).toContainText('Teilt jetzt Spots mit dir');
+  await expect(angebot.getByRole('button', { name: 'Annehmen' })).toHaveCount(0);
+  expect(calls.group.spotLinkResponses).toEqual([{ link: 'l-anna', accept: true }]);
   expect(errors.filter((e) => !/status of 404/.test(e))).toEqual([]);
 });

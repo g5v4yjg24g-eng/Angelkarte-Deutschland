@@ -204,6 +204,8 @@ export function NotificationsPage() {
             status: 'accepted',
           });
         await account.respondTripInvite(n.ref, accept);
+      } else if (n.kind === 'spot_link') {
+        await account.respondSpotLink(n.ref, accept);
       } else if (accept) {
         const local = await joinGroupLocally({
           id: n.ref,
@@ -224,7 +226,7 @@ export function NotificationsPage() {
       const text =
         e instanceof Error && e.message === t.busy
           ? t.busy
-          : n.kind === 'trip_invite'
+          : n.kind === 'trip_invite' || n.kind === 'spot_link'
             ? t.answerError
             : groupErrorText(e);
       setErrors((cur) => ({ ...cur, [n.id]: text }));
