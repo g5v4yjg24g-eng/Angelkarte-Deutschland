@@ -59,4 +59,5 @@ Lizenz der Ausgabedaten: **ODbL 1.0** (© OpenStreetMap-Mitwirkende). Die Ausgab
 ## Gewässerfotos (Zusatzschritt)
 - `process.ts` sammelt für benannte Gewässer die OSM-Tags `wikidata` und `wikimedia_commons` in `photo-refs.json` (je `wid`; bei Flüssen der erste Abschnitt der Gruppe).
 - `src/photos.ts` (Schritt „Zusatz“ in `run.sh`, nach der Prüfung) löst sie über Wikidata (P18) und die Commons-API (Urheber, Lizenz) auf und schreibt `photos.json` (Schema `PhotosFileSchema` in `app/src/domain/waterPhotos.ts`) sowie `photos` im Manifest. Nur freie Lizenzen; Pfadteil der Vorschau-Adresse aus dem MD5 des Dateinamens.
+- Quellen je Gewässer in dieser Reihenfolge: Commons-Datei, Wikidata P18, Wikipedia-Artikelbild (jpg, kein Kartenname), Commons-Kategorie (P373 oder OSM-Tag, höchstens 45 min). Teilschritte dürfen scheitern, was gefunden ist, bleibt.
 - Nicht kritisch: Fehler brechen den Lauf nicht ab (dann gibt es keine Fotos), `PHOTOS=skip` überspringt den Schritt. Abfrage in Stapeln zu 50 mit Pause und Wiederholung bei 429; die Umgebung der Entwicklung erreicht Wikimedia nicht, der erste Lauf läuft deshalb im Actions-Workflow.

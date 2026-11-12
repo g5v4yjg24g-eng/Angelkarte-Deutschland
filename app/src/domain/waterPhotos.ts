@@ -9,6 +9,10 @@ export interface PhotoRef {
   wd?: string | undefined;
   /** Dateiname auf Commons (mit Unterstrichen, ohne „File:“) */
   wc?: string | undefined;
+  /** Commons-Kategorie (ohne „Category:“, mit Unterstrichen) */
+  cat?: string | undefined;
+  /** Wikipedia-Artikel aus dem OSM-Tag `wikipedia`, z. B. „de:Möhnesee“ */
+  wp?: string | undefined;
 }
 
 /** Ein aufgelöstes Foto samt Namensnennung */
@@ -67,6 +71,21 @@ export function toFileName(name: string, svg = false): string | undefined {
   return (svg ? /\.(jpe?g|png|svg)$/i : /\.(jpe?g|png)$/i).test(f) ? f : undefined;
 }
 
+/** Kategorie aus einem OSM-Tag `wikimedia_commons=Category:…` (ohne Präfix, mit Unterstrichen) */
+export function categoryFromCommonsTag(tag: string | undefined): string | undefined {
+  const m = /^\s*Category:(.+?)\s*$/i.exec(tag ?? '');
+  const c = m?.[1]?.replace(/\s+/g, '_');
+  return c && !/[|\n]/.test(c) ? c : undefined;
+}
+
+/** Artikel aus einem OSM-Tag `wikipedia=de:Titel` (Sprache + Titel mit Unterstrichen; ohne Abschnitt) */
+export function wikipediaFromTag(tag: string | undefined): { lang: string; title: string } | undefined {
+  const m = /^\s*([a-z]{2,3}):(.+?)\s*$/i.exec(tag ?? '');
+  const title = m?.[2]?.split('#')[0]?.trim().replace(/\s+/g, '_');
+  const lang = m?.[1]?.toLowerCase();
+  return lang && title && !/[|\n]/.test(title) ? { lang, title } : undefined;
+}
+
 /** Wikidata-Objekt aus dem OSM-Tag prüfen (Q123) */
 export function wikidataId(tag: string | undefined): string | undefined {
   const m = /^\s*(Q\d{1,12})\s*$/i.exec(tag ?? '');
@@ -93,6 +112,23 @@ export function imageOfEntity(
 }
 
 /** Freie Lizenzen: CC0, CC BY, CC BY-SA, gemeinfrei. Alles andere (auch „NC“/„ND“, unbekannt) → nicht übernehmen. */
+/** Commons-Kategorie (P373) eines Wikidata-Objekts */
+export function categoryOfEntity(
+  entity: { claims?: Record<string, Claim[] | undefined> } | undefined,
+): string | undefined {
+  const v = entity?.claims?.['P373']?.[0]?.mainsnak?.datavalue?.value;
+  return typeof v === 'string' && !/[|\n]/.test(v) ? v.trim().replace(/\s+/g, '_') : undefined;
+}
+
+/** Titel des Artikels eines Wikidata-Objekts in einer Wikipedia-Sprache (`sitelinks.dewiki`) */
+export function articleOfEntity(
+  entity: { sitelinks?: Record<string, { title?: string } | undefined> } | undefined,
+  lang: string,
+): string | undefined {
+  const t = entity?.sitelinks?.[`${lang}wiki`]?.title;
+  return t && !/[|\n]/.test(t) ? t.trim().replace(/\s+/g, '_') : undefined;
+}
+
 export function isFreeLicense(short: string | undefined): boolean {
   const s = (short ?? '').trim();
   if (!s || /\b(NC|ND)\b/i.test(s)) return false;
@@ -125,7 +161,59 @@ export interface CommonsInfo {
 interface CommonsPage {
   title?: string;
   missing?: boolean;
-  imageinfo?: { descriptionurl?: string; extmetadata?: Record<string, { value?: string }> }[];
+  imageinfo?: {
+    descriptionurl?: string;
+    width?: number;
+    height?: number;
+    extmetadata?: Record<string, { value?: string }>;
+  }[];
+}
+
+/** Dateinamen, die erkennbar kein Foto des Gewässers sind (Karten, Wappen, Logos, Pläne …) */
+const NOT_A_PHOTO =
+  /(^|[_\-.\s])(karte|map|maps|wappen|coat|logo|flagge|flag|diagram|diagramm|plan|lageplan|schild|sign|skizze|grafik|chart|gliederung|uebersicht|übersicht|lage|location|locator|verlauf|einzugsgebiet|querschnitt|schema|topographie|relief)([_\-.\s\d]|$)/i;
+export const isPhotoName = (file: string): boolean => !NOT_A_PHOTO.test(file);
+
+/**
+ * Aus den Dateien einer Commons-Kategorie das Foto wählen: freie Lizenz, Querformat, mindestens 800 px breit, kein
+ * Karten-/Wappen-Name; unter mehreren das mit der größten Breite (meist das sorgfältigste Foto). Nichts → nichts.
+ */
+export function pickFromCategory(pages: readonly CommonsPage[]): CommonsInfo | undefined {
+  let best: { info: CommonsInfo; width: number } | undefined;
+  for (const page of pages) {
+    const info = commonsInfo(page);
+    const size = page.imageinfo?.[0];
+    const w = size?.width ?? 0;
+    const h = size?.height ?? 0;
+    if (!info || !isPhotoName(info.file) || w < 800 || w < h * 1.2) continue;
+    if (!best || w > best.width) best = { info, width: w };
+  }
+  return best?.info;
+}
+
+/**
+ * Pro Gewässer das erste Bild aus der Kandidatenliste, das eine geprüfte freie Lizenz hat (Reihenfolge = Güte:
+ * Commons-Datei, Wikidata-Bild, Wikipedia-Artikelbild, Kategorie).
+ */
+export function choosePhotos(
+  candidates: Readonly<Record<string, readonly string[]>>,
+  commons: ReadonlyMap<string, CommonsInfo>,
+  hash: (file: string) => string,
+): Record<string, WaterPhoto> {
+  const out: Record<string, WaterPhoto> = {};
+  for (const [wid, files] of Object.entries(candidates)) {
+    const info = files.map((f) => commons.get(f)).find((i): i is CommonsInfo => !!i);
+    if (!info) continue;
+    out[wid] = {
+      f: info.file,
+      h: hash(info.file),
+      a: info.author,
+      l: info.license,
+      ...(info.licenseUrl ? { lu: info.licenseUrl } : {}),
+      p: info.pageUrl,
+    };
+  }
+  return out;
 }
 
 /** Seite der Commons-API (imageinfo mit extmetadata) → Angaben; nichts bei fehlender Datei, nichtfreier oder unklarer Lizenz */
@@ -148,33 +236,6 @@ export function commonsInfo(page: CommonsPage, svg = false): CommonsInfo | undef
     ...(lu && /^https?:\/\//.test(lu) ? { licenseUrl: lu } : {}),
     pageUrl,
   };
-}
-
-/**
- * Fotos je Gewässer zusammenstellen: Datei aus dem Commons-Tag, sonst das Bild des Wikidata-Objekts; nur wenn die
- * Lizenz geprüft frei ist. `hash` liefert den Pfadteil der Vorschau-Adresse (MD5 des Dateinamens).
- */
-export function buildPhotos(
-  refs: Record<string, PhotoRef>,
-  wikidataImages: ReadonlyMap<string, string>,
-  commons: ReadonlyMap<string, CommonsInfo>,
-  hash: (file: string) => string,
-): Record<string, WaterPhoto> {
-  const out: Record<string, WaterPhoto> = {};
-  for (const [wid, ref] of Object.entries(refs)) {
-    const file = ref.wc ?? (ref.wd ? wikidataImages.get(ref.wd) : undefined);
-    const info = file ? commons.get(file) : undefined;
-    if (!file || !info) continue;
-    out[wid] = {
-      f: info.file,
-      h: hash(info.file),
-      a: info.author,
-      l: info.license,
-      ...(info.licenseUrl ? { lu: info.licenseUrl } : {}),
-      p: info.pageUrl,
-    };
-  }
-  return out;
 }
 
 /** Vorschau eines Wappens: SVG wird von Wikimedia als PNG der gewünschten Breite ausgeliefert */
