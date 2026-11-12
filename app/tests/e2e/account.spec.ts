@@ -2399,7 +2399,7 @@ test('SPOT-6: Angebot annehmen, ablehnen, anbieten und per X oder Wisch beenden 
   await panel.getByRole('button', { name: 'Spot teilen' }).click();
   const offer = page.getByRole('dialog', { name: 'Spots teilen mit …' });
   await offer.getByRole('button', { name: 'Anbieten' }).click();
-  expect(calls.group.spotLinkOffers).toEqual(['u-anna']);
+  await expect.poll(() => calls.group.spotLinkOffers).toEqual(['u-anna']);
   await expect(page.getByText('Angebot gesendet.')).toBeVisible();
   expect(errors).toEqual([]);
 });
