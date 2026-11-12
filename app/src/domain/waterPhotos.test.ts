@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
   attribution,
-  buildPhotos,
+  articleOfEntity,
+  categoryFromCommonsTag,
+  categoryOfEntity,
+  choosePhotos,
+  isPhotoName,
+  pickFromCategory,
+  wikipediaFromTag,
   commonsInfo,
   crestUrl,
   entityIso,
@@ -130,7 +136,7 @@ describe('commonsInfo', () => {
   });
 });
 
-describe('buildPhotos', () => {
+describe('choosePhotos', () => {
   const info = (file: string): CommonsInfo => ({
     file,
     author: 'A',
@@ -138,27 +144,73 @@ describe('buildPhotos', () => {
     pageUrl: 'https://commons.wikimedia.org/wiki/File:' + file,
   });
   const hash = (f: string) => (f.startsWith('E') ? 'a/a9' : 'b/bb');
-  it('Commons-Tag vor Wikidata; nur geprüfte Dateien', () => {
-    const out = buildPhotos(
-      {
-        'osm:w1': { wc: 'Direkt.jpg', wd: 'Q1' },
-        'osm:w2': { wd: 'Q2' },
-        'osm:w3': { wd: 'Q3' },
-        'osm:w4': { wc: 'Unbekannt.jpg' },
-      },
+  it('nimmt je Gewässer den ersten Kandidaten mit geprüfter Lizenz', () => {
+    const out = choosePhotos(
+      { 'osm:w1': ['Ohne.jpg', 'Example.jpg', 'Spaeter.jpg'], 'osm:w2': ['Unbekannt.jpg'], 'osm:w3': [] },
       new Map([
-        ['Q1', 'Falsch.jpg'],
-        ['Q2', 'Example.jpg'],
-      ]),
-      new Map([
-        ['Direkt.jpg', info('Direkt.jpg')],
         ['Example.jpg', info('Example.jpg')],
+        ['Spaeter.jpg', info('Spaeter.jpg')],
       ]),
       hash,
     );
-    expect(Object.keys(out).sort()).toEqual(['osm:w1', 'osm:w2']);
-    expect(out['osm:w1']?.f).toBe('Direkt.jpg');
-    expect(out['osm:w2']).toMatchObject({ f: 'Example.jpg', h: 'a/a9', l: 'CC0' });
+    expect(Object.keys(out)).toEqual(['osm:w1']);
+    expect(out['osm:w1']).toMatchObject({ f: 'Example.jpg', h: 'a/a9', l: 'CC0' });
+  });
+});
+
+describe('Weitere Verweise: Kategorie und Wikipedia', () => {
+  it('Kategorie aus dem Commons-Tag', () => {
+    expect(categoryFromCommonsTag('Category:Möhnesee (Gewässer)')).toBe('Möhnesee_(Gewässer)');
+    expect(categoryFromCommonsTag('File:A.jpg')).toBeUndefined();
+    expect(categoryFromCommonsTag('Category:A|B')).toBeUndefined();
+  });
+  it('Wikipedia-Tag mit Sprache, ohne Abschnitt', () => {
+    expect(wikipediaFromTag('de:Möhnesee')).toEqual({ lang: 'de', title: 'Möhnesee' });
+    expect(wikipediaFromTag('en:Lake Constance#History')).toEqual({ lang: 'en', title: 'Lake_Constance' });
+    expect(wikipediaFromTag('Möhnesee')).toBeUndefined();
+    expect(wikipediaFromTag('de:')).toBeUndefined();
+  });
+  it('Kategorie und Artikel eines Wikidata-Objekts', () => {
+    const e = {
+      claims: { P373: [{ mainsnak: { datavalue: { value: 'Lake Foo' } } }] },
+      sitelinks: { dewiki: { title: 'Foo See' } },
+    };
+    expect(categoryOfEntity(e)).toBe('Lake_Foo');
+    expect(articleOfEntity(e, 'de')).toBe('Foo_See');
+    expect(articleOfEntity(e, 'en')).toBeUndefined();
+  });
+  const page = (title: string, width: number, height: number, license = 'CC BY-SA 4.0') => ({
+    title: `File:${title}`,
+    imageinfo: [
+      {
+        descriptionurl: `https://commons.wikimedia.org/wiki/File:${title}`,
+        width,
+        height,
+        extmetadata: { LicenseShortName: { value: license }, Artist: { value: 'Anna' } },
+      },
+    ],
+  });
+  it('Kategorie: freies, breites Querformat, größtes gewinnt; Karten und Wappen nie', () => {
+    const pick = pickFromCategory([
+      page('See_klein.jpg', 900, 600),
+      page('See_gross.jpg', 3000, 2000),
+      page('Karte_See.jpg', 5000, 3000),
+      page('See_hoch.jpg', 2000, 3000),
+      page('See_nc.jpg', 4000, 2500, 'CC BY-NC 4.0'),
+      page('Winzig.jpg', 400, 300),
+    ]);
+    expect(pick?.file).toBe('See_gross.jpg');
+    expect(pickFromCategory([page('Nur_hoch.jpg', 1000, 2000)])).toBeUndefined();
+    expect(pickFromCategory([])).toBeUndefined();
+  });
+  it('Namensfilter erkennt Nicht-Fotos, nicht aber Wörter mit gleichem Anfang', () => {
+    expect(isPhotoName('Wappen_Foo.jpg')).toBe(false);
+    expect(isPhotoName('Lageplan_Foo.jpg')).toBe(false);
+    expect(isPhotoName('Karte.jpg')).toBe(false);
+    expect(isPhotoName('Gliederung_des_Bodensees.png')).toBe(false);
+    expect(isPhotoName('Moehnesee_Lage.jpg')).toBe(false);
+    expect(isPhotoName('Kartoffelacker_am_See.jpg')).toBe(true);
+    expect(isPhotoName('Plank_See_2019.jpg')).toBe(true);
   });
 });
 

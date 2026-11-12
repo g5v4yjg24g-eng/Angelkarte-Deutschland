@@ -34,8 +34,10 @@ import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import Flatbush from "flatbush";
 // Dieselbe Geometrie wie in der App, damit Pipeline-Prüfung und App gleich rechnen
 import {
+  categoryFromCommonsTag,
   fileFromCommonsTag,
   wikidataId,
+  wikipediaFromTag,
   type PhotoRef,
 } from "../../../app/src/domain/waterPhotos.ts";
 import {
@@ -369,9 +371,16 @@ async function main(): Promise<void> {
   const photoRefs: Record<string, PhotoRef> = {};
   const addPhotoRef = (wid: string, tags: Tags) => {
     const wd = wikidataId(tags.wikidata),
-      wc = fileFromCommonsTag(tags.wikimedia_commons);
-    if (wd || wc)
-      photoRefs[wid] = { ...(wd ? { wd } : {}), ...(wc ? { wc } : {}) };
+      wc = fileFromCommonsTag(tags.wikimedia_commons),
+      cat = categoryFromCommonsTag(tags.wikimedia_commons),
+      wp = wikipediaFromTag(tags.wikipedia);
+    if (wd || wc || cat || wp)
+      photoRefs[wid] = {
+        ...(wd ? { wd } : {}),
+        ...(wc ? { wc } : {}),
+        ...(cat ? { cat } : {}),
+        ...(wp ? { wp: `${wp.lang}:${wp.title}` } : {}),
+      };
   };
   const areasOut = writer(join(outDir, "tiles-areas.geojsonseq"));
   const linesOut = writer(join(outDir, "tiles-lines.geojsonseq"));
