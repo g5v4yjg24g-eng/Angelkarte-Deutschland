@@ -893,7 +893,10 @@ export default function MapView() {
         }
         onDelete={() => void deletePlace(sheetPlace.id)}
         {...(account.enabled
-          ? { onShare: () => void navigate(`/profil/spots/teilen/${encodeURIComponent(sheetPlace.id)}`) }
+          ? {
+              onToggleShared: (on: boolean) =>
+                void repo('places').update(sheetPlace.id, { sharedWithFriends: on }),
+            }
           : {})}
         onAddCatch={() =>
           setSheet({

@@ -4,6 +4,16 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-19',
+    title: 'Spots teilen mit Bestätigung',
+    items: [
+      'Angebot: Biete einem Freund das Teilen an – er nimmt an oder lehnt ab.',
+      'Alle Spots: Nach dem Annehmen teilt ihr alle Orte, auch neue gleich automatisch.',
+      'Pro Ort: „Mit Freunden geteilt“ lässt sich je Ort ausschalten.',
+      'Beenden: Mit dem X oder Wischen nach links, nach Rückfrage.',
+    ],
+  },
+  {
     id: '2026-12-18',
     title: 'Geteilte Spots neu gestaltet',
     items: [

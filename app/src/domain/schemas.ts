@@ -53,6 +53,8 @@ export const PlaceSchema = MetaSchema.extend({
   }),
   ...WaterRefSchema,
   photoIds: z.array(id).optional(),
+  /** Mit Freunden geteilt (Spot-Verbindungen); fehlt = geteilt, `false` = nur für mich */
+  sharedWithFriends: z.boolean().optional(),
 });
 
 export const CatchOutcomeSchema = z.enum(['caught', 'contact', 'missed_bite', 'observation']);

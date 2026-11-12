@@ -129,6 +129,8 @@ export function adoptFields(spot: SharedSpot, fromLabel: (name: string, username
     ...(spot.name ? { name: spot.name } : {}),
     notes: note.slice(0, 2000),
     position: { lat: spot.lat, lng: spot.lng, source: 'import' as const },
+    // übernommene Spots anderer werden nicht zurückgeteilt
+    sharedWithFriends: false,
   };
 }
 

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { de } from '../../i18n/de';
 import { Button } from '../../design/components/Button';
 import { Notice } from '../../design/components/Notice';
+import { Switch } from '../../design/components/Switch';
+import { useProviders } from '../../ports/providersContext';
 import { TextArea, TextField } from '../../design/components/Field';
 import { userMessage } from '../../data/errors';
 import { repo } from '../../data/repository';
@@ -72,6 +74,9 @@ export function PlaceForm({
   const [type, setType] = useState<PlaceType>(initial.type);
   const [name, setName] = useState(initial.name ?? '');
   const [notes, setNotes] = useState(initial.notes ?? '');
+  const { account } = useProviders();
+  // Spots mit Freunden teilen: standardmäßig an (nur sichtbar mit Konto)
+  const [shared, setShared] = useState(initial.sharedWithFriends !== false);
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
 
@@ -83,6 +88,7 @@ export function PlaceForm({
       type,
       ...(name.trim() ? { name: name.trim() } : { name: undefined }),
       ...(notes.trim() ? { notes: notes.trim() } : { notes: undefined }),
+      ...(account.enabled ? { sharedWithFriends: shared } : {}),
     };
     try {
       const r = repo('places');
@@ -127,6 +133,12 @@ export function PlaceForm({
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
       />
+      {account.enabled && (
+        <div className={styles.sharedRow}>
+          <span>{de.map.sharedWithFriends}</span>
+          <Switch checked={shared} onChange={setShared} label={de.map.sharedWithFriends} />
+        </div>
+      )}
       <p className="muted tabular">{de.map.coords(lat, lng)}</p>
       {error && <Notice tone="error">{error}</Notice>}
       <div className={styles.formActions}>
@@ -146,14 +158,14 @@ export function PlaceDetails({
   onEdit,
   onDelete,
   onAddCatch,
-  onShare,
+  onToggleShared,
 }: {
   place: Place;
   onEdit: () => void;
   onDelete: () => void;
   onAddCatch: () => void;
-  /** nur wenn ein Konto möglich ist (Etappe 4) */
-  onShare?: (() => void) | undefined;
+  /** nur wenn ein Konto möglich ist: Ort mit Freunden teilen ein/aus */
+  onToggleShared?: ((on: boolean) => void) | undefined;
 }) {
   return (
     <>
@@ -170,10 +182,15 @@ export function PlaceDetails({
       <Button variant="secondary" onClick={onAddCatch}>
         {de.map.addCatchHere}
       </Button>
-      {onShare && (
-        <Button variant="secondary" onClick={onShare}>
-          {de.spots.mapShare}
-        </Button>
+      {onToggleShared && (
+        <div className={styles.sharedRow}>
+          <span>{de.map.sharedWithFriends}</span>
+          <Switch
+            checked={place.sharedWithFriends !== false}
+            onChange={onToggleShared}
+            label={de.map.sharedWithFriends}
+          />
+        </div>
       )}
       <div className={styles.formActions}>
         <Button variant="danger" onClick={onDelete}>

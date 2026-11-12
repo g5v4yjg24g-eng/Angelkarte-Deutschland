@@ -16,6 +16,7 @@ export function VisitCard({
   detail,
   status,
   footer,
+  trailing,
 }: {
   /** Name des Bereichs für Screenreader */
   label: string;
@@ -30,6 +31,8 @@ export function VisitCard({
   status?: { label: string; tone: VisitTone };
   /** Inhalt unter der Karte (z. B. Angaben und Knöpfe einer Einladung), innerhalb des Rahmens */
   footer?: ReactNode;
+  /** Knopf am rechten Rand der Karte (z. B. X zum Beenden) */
+  trailing?: ReactNode;
 }) {
   return (
     <section className={styles.card} aria-label={label}>
@@ -51,6 +54,7 @@ export function VisitCard({
             </span>
           )}
         </div>
+        {trailing && <span className={styles.trailing}>{trailing}</span>}
       </div>
       {footer && <div className={styles.footer}>{footer}</div>}
     </section>
