@@ -55,3 +55,8 @@ Lizenz der Ausgabedaten: **ODbL 1.0** (© OpenStreetMap-Mitwirkende). Die Ausgab
 - Kreisfreie Städte haben keine Gemeindeebene (admin_level 8); dann gilt die Kreisebene.
 - Ein OSM-Way kann zugleich Fläche und Fließgewässer-Linie sein und erscheint dann zweimal mit derselben `wid` (NRW: 1 Fall). Wird in M4 zusammengeführt.
 - `wid` basiert auf OSM-IDs. Zur Stabilität siehe ARCHITECTURE §6.2.
+
+## Gewässerfotos (Zusatzschritt)
+- `process.ts` sammelt für benannte Gewässer die OSM-Tags `wikidata` und `wikimedia_commons` in `photo-refs.json` (je `wid`; bei Flüssen der erste Abschnitt der Gruppe).
+- `src/photos.ts` (Schritt „Zusatz“ in `run.sh`, nach der Prüfung) löst sie über Wikidata (P18) und die Commons-API (Urheber, Lizenz) auf und schreibt `photos.json` (Schema `PhotosFileSchema` in `app/src/domain/waterPhotos.ts`) sowie `photos` im Manifest. Nur freie Lizenzen; Pfadteil der Vorschau-Adresse aus dem MD5 des Dateinamens.
+- Nicht kritisch: Fehler brechen den Lauf nicht ab (dann gibt es keine Fotos), `PHOTOS=skip` überspringt den Schritt. Abfrage in Stapeln zu 50 mit Pause und Wiederholung bei 429; die Umgebung der Entwicklung erreicht Wikimedia nicht, der erste Lauf läuft deshalb im Actions-Workflow.

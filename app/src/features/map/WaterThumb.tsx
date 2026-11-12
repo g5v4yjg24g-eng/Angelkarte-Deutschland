@@ -1,6 +1,6 @@
 // Vorschaubild eines Gewässers in der Detailsuche. Ohne Foto eine eigene Platzhalter-Zeichnung je Gewässerart –
 // bewusst keine Foto-Anmutung, damit niemand sie für ein Bild dieses Gewässers hält.
-import { useId } from 'react';
+import { useId, useState } from 'react';
 
 type Look = { sky: string; water: string; sun: boolean; shape: 'lake' | 'river' | 'canal' | 'dam' | 'pond' };
 
@@ -18,7 +18,20 @@ const LOOK: Record<string, Look> = {
 
 export function WaterThumb({ kind, photo }: { kind: string; photo?: string | undefined }) {
   const id = useId();
-  if (photo) return <img className="waterThumbImg" src={photo} alt="" loading="lazy" decoding="async" />;
+  const [failed, setFailed] = useState<string>();
+  // Bild nicht ladbar (offline, Datei entfernt): Platzhalter
+  if (photo && failed !== photo)
+    return (
+      <img
+        className="waterThumbImg"
+        src={photo}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        referrerPolicy="no-referrer"
+        onError={() => setFailed(photo)}
+      />
+    );
   const l = LOOK[kind] ?? OTHER;
   return (
     <svg viewBox="0 0 72 56" width="72" height="56" aria-hidden="true" focusable="false">

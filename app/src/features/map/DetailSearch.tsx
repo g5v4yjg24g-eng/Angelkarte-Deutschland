@@ -21,6 +21,7 @@ import type { WaterManifest } from '../../domain/water';
 import type { WaterDataProvider } from '../../ports/waterData';
 import { useOnline } from '../../lib/useOnline';
 import { WaterThumb } from './WaterThumb';
+import { thumbUrl, type WaterPhoto } from '../../domain/waterPhotos';
 import styles from './DetailSearch.module.css';
 
 const t = de.detailSearch;
@@ -31,6 +32,7 @@ const kindLabel = (k: string) =>
 export function DetailSearch({
   water,
   manifest,
+  photos,
   me,
   getCenter,
   onPick,
@@ -38,6 +40,8 @@ export function DetailSearch({
 }: {
   water: WaterDataProvider;
   manifest: WaterManifest | null;
+  /** Fotos je Gewässer-ID (Wikimedia Commons); fehlt eines, zeigt die Karte den Platzhalter */
+  photos: Readonly<Record<string, WaterPhoto>>;
   /** eigener Standort, falls bekannt */
   me?: { lat: number; lng: number } | undefined;
   /** Kartenmitte als Ersatz (bei der Suche gelesen) */
@@ -255,7 +259,12 @@ export function DetailSearch({
                   <li key={`${r.wid ?? r.name}-${r.lat}-${r.lng}`}>
                     <button type="button" className={styles.card} onClick={() => onPick(r)}>
                       <span className={styles.thumb}>
-                        <WaterThumb kind={r.kind} />
+                        <WaterThumb
+                          kind={r.kind}
+                          photo={
+                            r.wid && photos[r.wid] ? thumbUrl(photos[r.wid] as WaterPhoto, 250) : undefined
+                          }
+                        />
                       </span>
                       <span className={styles.text}>
                         <b>{r.name}</b>

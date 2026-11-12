@@ -57,3 +57,49 @@ describe('Alle Einträge des Suchindex (Detailsuche)', () => {
     expect(await water.loadAllSearchEntries(manifest)).toHaveLength(1);
   });
 });
+
+describe('Fotos zu Gewässern', () => {
+  const file = {
+    format: 'fangpunkt-photos',
+    formatVersion: 1,
+    generatedAt: '2026-11-11T00:00:00Z',
+    source: 'Wikimedia Commons',
+    items: {
+      'osm:w1': {
+        f: 'De_Wittsee.jpg',
+        h: 'a/a9',
+        a: 'Anna',
+        l: 'CC BY-SA 4.0',
+        p: 'https://commons.wikimedia.org/wiki/File:De_Wittsee.jpg',
+      },
+    },
+  };
+  const withPhotos = { ...manifest, photos: 'photos.json' } as WaterManifest;
+
+  it('ohne Eintrag im Manifest wird nichts abgerufen', async () => {
+    const f = vi.fn();
+    vi.stubGlobal('fetch', f);
+    expect(await staticWaterData('https://example.test/w/').loadPhotos(manifest)).toBeNull();
+    expect(f).not.toHaveBeenCalled();
+  });
+
+  it('lädt die Fotodatei einmal und prüft sie', async () => {
+    const f = vi.fn(async () => new Response(JSON.stringify(file)));
+    vi.stubGlobal('fetch', f);
+    const water = staticWaterData('https://example.test/w/');
+    expect((await water.loadPhotos(withPhotos))?.items['osm:w1']?.a).toBe('Anna');
+    await water.loadPhotos(withPhotos);
+    expect(f).toHaveBeenCalledTimes(1);
+  });
+
+  it('kaputte oder fehlende Datei ergibt null und wird später erneut versucht', async () => {
+    let body: Response = new Response('{"x":1}');
+    const f = vi.fn(async () => body);
+    vi.stubGlobal('fetch', f);
+    const water = staticWaterData('https://example.test/w/');
+    expect(await water.loadPhotos(withPhotos)).toBeNull();
+    await Promise.resolve();
+    body = new Response(JSON.stringify(file));
+    expect(await water.loadPhotos(withPhotos)).not.toBeNull();
+  });
+});

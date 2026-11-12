@@ -30,6 +30,7 @@ const provider = (fail = false): WaterDataProvider => ({
   },
   loadAllSearchEntries: async () => shard,
   loadStates: async () => null,
+  loadPhotos: async () => null,
 });
 
 describe('Ort nachtragen und unbekannte Gewässer benennen', () => {

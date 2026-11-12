@@ -117,3 +117,21 @@
 .source {
   font-size: var(--text-sm);
 }
+
+/* Foto aus Wikimedia Commons mit Namensnennung */
+.photo {
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+.photo img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+}
+.photo figcaption {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}

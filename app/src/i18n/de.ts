@@ -2460,6 +2460,10 @@ export const de = {
         name: 'Gewässer, Suche und Landesgrenzen: OpenStreetMap',
         license: '© OpenStreetMap-Mitwirkende, ODbL 1.0',
       },
+      {
+        name: 'Gewässerfotos: Wikimedia Commons (Urheber und Lizenz stehen am Foto)',
+        license: 'freie Lizenzen (CC0, CC BY, CC BY-SA, gemeinfrei)',
+      },
       { name: 'Wetter am Fang: Open-Meteo.com', license: 'CC BY 4.0' },
       {
         name: 'Amtliche Warnungen: Deutscher Wetterdienst, abgerufen über Bright Sky (brightsky.dev)',
@@ -3393,6 +3397,10 @@ export const de = {
       {
         name: 'OpenGeoData.NRW (www.opengeodata.nrw.de)',
         what: 'nur wenn „Wetter am Fang“ an ist und der gewählte Ort oder ein Fang der letzten 6 Tage in NRW liegt: die Tagesdatei der Landespegel (etwa 1 MB, höchstens alle 6 Stunden). Es wird keine Position übertragen.',
+      },
+      {
+        name: 'Wikimedia Commons (upload.wikimedia.org)',
+        what: 'nur wenn die Gewässerdaten Fotos enthalten und du ein Gewässer in der Detailsuche oder im Gewässerprofil ansiehst: die Vorschaubilder der angezeigten Gewässer. Dabei erfährt Wikimedia, welche Bilder du abrufst. Es werden keine Angaben zu dir, deinem Standort oder deinen Fängen gesendet.',
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',

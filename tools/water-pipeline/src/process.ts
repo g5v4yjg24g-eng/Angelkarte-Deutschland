@@ -2,6 +2,7 @@
 //  - tiles-areas.geojsonseq / tiles-lines.geojsonseq  (Eingabe für tippecanoe; Profilfelder stecken in den Kacheln)
 //  - search/<xx>.json + search/index.json             (Suchindex, nach Wort-Präfix geteilt)
 //  - states.json                                      (vereinfachte Landesgrenzen: Bundesland am Fangort, offline)
+//  - photo-refs.json                                  (Verweise auf Wikidata/Commons je Gewässer, Eingabe für photos.ts)
 //  - water-manifest.json                              (Datenstand, Lizenz, Abdeckung)
 //  - report.json                                      (Mengen und Größen, Grundlage für DATA_SOURCES.md)
 // Zwei Durchläufe über die Exportdatei, damit auch der Deutschland-Auszug nicht komplett im Speicher liegt.
@@ -17,6 +18,7 @@ import pointOnFeature from '@turf/point-on-feature';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import Flatbush from 'flatbush';
 // Dieselbe Geometrie wie in der App, damit Pipeline-Prüfung und App gleich rechnen
+import { fileFromCommonsTag, wikidataId, type PhotoRef } from '../../../app/src/domain/waterPhotos.ts';
 import { simplifyRing, stateAt, type PolygonRings, type Ring, type StateShape } from '../../../app/src/domain/geo.ts';
 
 // Landesgrenzen: Vereinfachung (m) und Sicherheitsabstand, ab dem die App nicht rät (m). Der Abstand muss die
@@ -215,6 +217,12 @@ async function main(): Promise<void> {
   type Entry = [name: string, kind: string, lat: number, lng: number, context: string, rank: number, wid: string];
   const entries: Entry[] = [];
   const lineGroups = new Map<string, { n: string; t: WaterType; c: [number, number]; km: number; ctx: string; wid: string }>();
+  // Verweise auf Fotos (OSM-Tags wikidata / wikimedia_commons) je Gewässer-ID, nur für benannte Gewässer
+  const photoRefs: Record<string, PhotoRef> = {};
+  const addPhotoRef = (wid: string, tags: Tags) => {
+    const wd = wikidataId(tags.wikidata), wc = fileFromCommonsTag(tags.wikimedia_commons);
+    if (wd || wc) photoRefs[wid] = { ...(wd ? { wd } : {}), ...(wc ? { wc } : {}) };
+  };
   const areasOut = writer(join(outDir, 'tiles-areas.geojsonseq'));
   const linesOut = writer(join(outDir, 'tiles-lines.geojsonseq'));
 
@@ -247,6 +255,7 @@ async function main(): Promise<void> {
       checkState(wid, lng, lat, adm.s);
       areasHa.push(ha);
       if (tags.name) {
+        addPhotoRef(wid, tags);
         const rank = Math.round(Math.log10(1 + ha) * 100), ctx = adm.g ?? adm.k ?? '';
         entries.push([tags.name, t, r6(lat), r6(lng), ctx, rank, wid]);
         // Weitere Namen aus OSM (z. B. Möhnetalsperre: name:de=Möhnesee), angezeigt als „Weiterer Name (Name)"
@@ -273,7 +282,10 @@ async function main(): Promise<void> {
         const key = `${tags.name}|${t}|${adm.k ?? ''}`;
         const grp = lineGroups.get(key);
         if (grp) grp.km += km;
-        else lineGroups.set(key, { n: tags.name, t, c: [r6(lat), r6(lng)], km, ctx: adm.k ?? adm.g ?? '', wid });
+        else {
+          lineGroups.set(key, { n: tags.name, t, c: [r6(lat), r6(lng)], km, ctx: adm.k ?? adm.g ?? '', wid });
+          addPhotoRef(wid, tags);
+        }
       }
       await linesOut.write(JSON.stringify({ type: 'Feature', properties: {
         wid, t, mz: t === 'stream' ? 12 : 8, ...(tags.name ? { n: tags.name } : {}), ...adm }, geometry: g }) + '\n');
@@ -321,6 +333,8 @@ async function main(): Promise<void> {
     console.error(`FEHLER: Landesgrenzen ergeben ${stateCheck.wrong.length}× ein falsches Land, fehlend: ${missingStates.join(', ') || '–'} (Liste: states-errors.txt)`);
     process.exit(1);
   }
+
+  writeFileSync(join(outDir, 'photo-refs.json'), JSON.stringify(photoRefs));
 
   // ---------- Manifest ----------
   writeFileSync(join(outDir, 'water-manifest.json'), JSON.stringify({

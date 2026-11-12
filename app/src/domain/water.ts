@@ -96,5 +96,7 @@ export const WaterManifestSchema = z.object({
   search: z.string(),
   /** Landesgrenzen (ab den Daten mit Rechts-Warnung); ältere Releases haben keine */
   states: z.string().optional(),
+  /** Fotos aus Wikimedia Commons je Gewässer (ab dem Datenlauf mit Fotos); ältere Releases haben keine */
+  photos: z.string().optional(),
 });
 export type WaterManifest = z.infer<typeof WaterManifestSchema>;
