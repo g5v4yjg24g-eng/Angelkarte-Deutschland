@@ -2497,6 +2497,7 @@ export const de = {
       'Fangpunkt ersetzt keine Rechtsauskunft. Maßgeblich sind die amtlichen Texte und dein Erlaubnisschein.',
   },
   notifications: {
+    navDot: 'Neue Mitteilungen',
     title: 'Mitteilungen',
     close: 'Schließen',
     button: (unread: number) =>

@@ -4690,7 +4690,10 @@ test('NOTIF-1: Fisch im Feed zeigt die Zahl, die Liste nennt Name und Ereignis, 
   );
   await page.setViewportSize({ width: 390, height: 844 });
   await signInWithProfile(page, 'kevin');
-  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
+  // roter Punkt am Feed in der Leiste, solange es Ungelesenes gibt
+  const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
+  await expect(nav.getByRole('img', { name: 'Neue Mitteilungen' })).toBeVisible();
+  await nav.getByRole('link', { name: 'Feed' }).click();
 
   const fish = page.getByRole('link', { name: 'Mitteilungen, 3 neu' });
   await expect(fish).toBeVisible();
@@ -4709,6 +4712,8 @@ test('NOTIF-1: Fisch im Feed zeigt die Zahl, die Liste nennt Name und Ereignis, 
   await expect(screen.getByRole('img', { name: 'Ungelesen' })).toHaveCount(2);
   // Beim Öffnen gelesen markiert
   await expect.poll(() => calls.group.notificationsRead).toBeGreaterThan(0);
+  // nach dem Lesen ist der Punkt weg
+  await expect(nav.getByRole('img', { name: 'Neue Mitteilungen' })).toHaveCount(0);
 
   // Barrierefreiheit in beiden Farbschemata
   await animationsDone(screen);

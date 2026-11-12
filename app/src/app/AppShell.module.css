@@ -279,3 +279,15 @@
     white-space: nowrap;
   }
 }
+
+/* Roter Punkt oben rechts am Symbol: etwas Neues (z. B. ungelesene Mitteilungen im Feed) */
+.navDot {
+  position: absolute;
+  top: 6px;
+  left: calc(50% + 10px);
+  width: 11px;
+  height: 11px;
+  border-radius: var(--radius-full);
+  background: var(--color-danger);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+}
