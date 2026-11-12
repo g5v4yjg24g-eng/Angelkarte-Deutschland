@@ -25,6 +25,9 @@ import { RulesSync } from '../features/moderation/RulesSync';
 import { TripStartHost } from '../features/trips/TripStartHost';
 import { ProfileNavIcon } from '../features/profile/ProfileNavIcon';
 import { BottomNav, type NavItem } from './BottomNav';
+import { useProviders } from '../ports/providersContext';
+import { useStoredUserId } from '../features/badges/badgeStore';
+import { useUnreadNotifications } from '../features/notifications/unreadStore';
 import styles from './AppShell.module.css';
 
 // Sechs Punkte, Profil in der Mitte (Entscheidung Nutzer 2026-10-27); die Statistik ist ein Reiter im Fangbuch.
@@ -105,10 +108,14 @@ export function ShellHeader({ start, end }: { start?: ReactNode; end?: ReactNode
 }
 
 export function AppShell() {
+  const { account } = useProviders();
+  const userId = useStoredUserId();
+  const unread = useUnreadNotifications(account, account.enabled && !!userId);
+  const items = unread > 0 ? NAV.map((n) => (n.to === '/feed' ? { ...n, dot: de.notifications.navDot } : n)) : NAV;
   return (
     <div className={styles.shell}>
       <ShellHeader end={<SessionChip />} />
-      <BottomNav items={NAV} label={de.nav.label} />
+      <BottomNav items={items} label={de.nav.label} />
       <main className={styles.main} id="main">
         <BackupReminder />
         <Outlet />
