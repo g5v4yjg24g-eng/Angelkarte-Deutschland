@@ -25,6 +25,8 @@ export interface NavItem {
   also?: string;
   /** kleine Zahl am Symbol (z. B. offene Meldungen) */
   badge?: ReactNode;
+  /** kleiner roter Punkt oben rechts am Symbol (etwas Neues, ohne Zahl); Text für Screenreader */
+  dot?: string;
 }
 
 /** Linse etwas breiter als ein Punkt, damit sie ihn umschließt */
@@ -160,7 +162,7 @@ export function BottomNav({ items, label }: { items: readonly NavItem[]; label: 
           aria-hidden="true"
         />
       )}
-      {items.map(({ to, label: text, icon: Icon, end, also, badge }, i) => (
+      {items.map(({ to, label: text, icon: Icon, end, also, badge, dot }, i) => (
         <NavLink
           key={to}
           ref={itemRef(i)}
@@ -180,6 +182,7 @@ export function BottomNav({ items, label }: { items: readonly NavItem[]; label: 
           </span>
           <span className={styles.navLabel}>{text}</span>
           {badge !== undefined && <span className={styles.navBadge}>{badge}</span>}
+          {dot && <span className={styles.navDot} role="img" aria-label={dot} />}
         </NavLink>
       ))}
     </nav>
