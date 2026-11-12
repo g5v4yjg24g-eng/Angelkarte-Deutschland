@@ -76,6 +76,7 @@ export function openMeteoForecastUrl(q: ForecastQuery, base = OPEN_METEO_FORECAS
       'precipitation',
       'precipitation_probability',
       'cloud_cover',
+      'relative_humidity_2m',
       'weather_code',
     ].join(','),
     daily: [

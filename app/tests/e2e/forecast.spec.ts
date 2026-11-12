@@ -41,6 +41,7 @@ async function fakeForecast(page: Page) {
           wind_speed_10m: hours.map(() => 4),
           wind_direction_10m: hours.map(() => 270),
           wind_gusts_10m: hours.map(() => 9),
+          relative_humidity_2m: hours.map(() => 74),
           weather_code: hours.map(() => 3),
         },
         daily: {
@@ -128,11 +129,18 @@ test('FC-1: Wetter-Bereich mit Vorhersage, Luftdruck-Verlauf, Ortswahl, Zwischen
   await expect(now).toContainText('9°');
   await expect(now).toContainText('Bedeckt');
   await expect(now).toContainText('H: 12° T: 5°');
+  // rechts: Luftdruck mit Trend, Wind mit Böen, Luftfeuchte
+  await expect(now).toContainText('Luftdruck');
+  await expect(now).toContainText('4 m/s (W)');
+  await expect(now).toContainText('Böen: 9 m/s');
+  await expect(now).toContainText('74 %');
   await expect(page.getByText(/−0,3 hPa in 3 h/)).toBeVisible();
   await expect(page.getByRole('img', { name: /Luftdruck-Verlauf von/ })).toBeVisible();
   // Stundenleiste und Tagesliste wie beim iPhone-Wetter
   await expect(page.getByRole('list', { name: 'Vorhersage der nächsten 24 Stunden' })).toContainText('Jetzt');
-  await expect(page.getByRole('region', { name: /-Tage-Vorhersage/ }).getByRole('button')).toHaveCount(8);
+  await expect(page.getByRole('region', { name: /-Tage-Vorhersage/ }).locator('ul').getByRole('button')).toHaveCount(
+    8,
+  );
   await expect(page.getByRole('button', { name: /^Heute.*Leichter Regen.*5°.*12°/ })).toBeVisible();
   await expect(page.getByText(/Quelle: Open-Meteo\.com \(CC BY 4\.0\)/)).toBeVisible();
   expect(api.requests.at(-1)?.searchParams.get('latitude')).toBe('51.326');

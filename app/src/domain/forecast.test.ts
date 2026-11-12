@@ -45,6 +45,15 @@ describe('Wettervorhersage', () => {
     });
   });
 
+  it('liest die Luftfeuchte, wo sie geliefert wird, sonst fehlt sie', () => {
+    expect(parseOpenMeteoForecast(json, q, 1)?.hours[0]?.humidityPct).toBeUndefined();
+    const withHumidity = {
+      ...json,
+      hourly: { ...json.hourly, relative_humidity_2m: hours.map(() => 74) },
+    };
+    expect(parseOpenMeteoForecast(withHumidity, q, 1)?.hours[0]?.humidityPct).toBe(74);
+  });
+
   it('der Tag der Zeitumstellung hat 25 Stunden', () => {
     const f = parseOpenMeteoForecast(json, q, 1);
     const days = f ? daySummaries(f) : [];

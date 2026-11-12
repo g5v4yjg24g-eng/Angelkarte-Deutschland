@@ -3,10 +3,11 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { de } from '../../i18n/de';
-import { Page, Section } from '../../design/components/Page';
+import { Page } from '../../design/components/Page';
 import { Notice } from '../../design/components/Notice';
 import { Button } from '../../design/components/Button';
-import { SelectField } from '../../design/components/Field';
+import { ChartIcon, PinIcon } from '../../design/icons';
+import { WxSection } from './WxSection';
 import { compassIndex } from '../../domain/weather';
 import {
   daySummaries,
@@ -25,6 +26,7 @@ import { WeatherTabs } from './WeatherTabs';
 import { WeatherAlerts } from './AlertsList';
 import { GaugeCard } from './GaugeCard';
 import { ForecastOverview } from './ForecastOverview';
+import wx from './WeatherView.module.css';
 
 const t = de.forecast;
 const w = de.weather;
@@ -32,17 +34,7 @@ const stamp = (ms: number) =>
   new Date(ms).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Berlin' });
 const berlinDate = (ms: number) => new Date(ms).toLocaleDateString('sv-SE', { timeZone: 'Europe/Berlin' });
 
-function ForecastView({
-  f,
-  nowMs,
-  stale,
-  placeLabel,
-}: {
-  f: Forecast;
-  nowMs: number;
-  stale: boolean;
-  placeLabel: string;
-}) {
+function ForecastView({ f, nowMs, stale }: { f: Forecast; nowMs: number; stale: boolean }) {
   const now = hourAt(f, nowMs);
   const change = now ? pressureChange(f, now.t) : undefined;
   // Vergangene Tage (past_days) und Stunden vor heute 0 Uhr ausblenden
@@ -52,8 +44,8 @@ function ForecastView({
   return (
     <>
       {stale && <Notice tone="warning">{t.offlineCached(stamp(f.fetchedAt))}</Notice>}
-      <ForecastOverview f={f} days={days} now={now} nowMs={nowMs} placeLabel={placeLabel} />
-      <Section title={t.pressureChart}>
+      <ForecastOverview f={f} days={days} now={now} nowMs={nowMs} change={change} />
+      <WxSection id="wx-pressure" title={t.pressureChart} icon={<ChartIcon size={20} />}>
         {now?.pressureHpa !== undefined && (
           <p className="muted">
             {w.pressureValue(now.pressureHpa)}
@@ -67,7 +59,7 @@ function ForecastView({
           </p>
         )}
         <PressureChart hours={chartHours} days={days} nowMs={nowMs} />
-      </Section>
+      </WxSection>
       <BiteWindows nowMs={nowMs} now={now} change={change} />
       <p className="muted">
         {t.note} {t.source(stamp(f.fetchedAt))}
@@ -93,8 +85,6 @@ export function WeatherPage() {
   const { state, reload } = useForecast(enabled ? q : undefined);
   const [nowMs] = useState(() => Date.now());
 
-  const placeLabel = useMe ? t.myLocation : (water?.label ?? t.myLocation);
-
   const options = [
     { value: 'me', label: t.myLocationRounded },
     ...(waters ?? []).map((o) => ({ value: o.key, label: o.sub ? `${o.label} (${o.sub})` : o.label })),
@@ -111,7 +101,7 @@ export function WeatherPage() {
   else if (useMe && geo.status === 'denied') body = <Notice tone="warning">{t.locationDenied}</Notice>;
   else if (useMe && geo.status !== 'ok') body = <Notice>{t.locating}</Notice>;
   else if (state.status === 'ok')
-    body = <ForecastView f={state.forecast} nowMs={nowMs} stale={state.stale} placeLabel={placeLabel} />;
+    body = <ForecastView f={state.forecast} nowMs={nowMs} stale={state.stale} />;
   else if (state.status === 'error')
     body = (
       <Notice tone="error">
@@ -122,7 +112,7 @@ export function WeatherPage() {
       </Notice>
     );
   else if (state.status === 'loading' && state.cached)
-    body = <ForecastView f={state.cached} nowMs={nowMs} stale={false} placeLabel={placeLabel} />;
+    body = <ForecastView f={state.cached} nowMs={nowMs} stale={false} />;
   else body = <Notice>{t.loading}</Notice>;
 
   return (
@@ -130,12 +120,20 @@ export function WeatherPage() {
       <WeatherTabs />
       {enabled && (
         <>
-          <SelectField
-            label={t.place}
-            options={options}
-            value={useMe ? 'me' : choice}
-            onChange={(e) => setChoice(e.target.value)}
-          />
+          <div className={wx.placeRow}>
+            <label htmlFor="wx-place" className={wx.placeLabel}>
+              <PinIcon size={20} /> {t.place}
+            </label>
+            <span className={wx.placeSelect}>
+              <select id="wx-place" value={useMe ? 'me' : choice} onChange={(e) => setChoice(e.target.value)}>
+                {options.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </span>
+          </div>
           {waters?.length === 0 && <p className="muted">{t.noPlaces}</p>}
         </>
       )}

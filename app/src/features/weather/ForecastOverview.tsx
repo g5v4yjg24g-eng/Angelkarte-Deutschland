@@ -1,10 +1,11 @@
-// Übersicht im Stil des iPhone-Wetters (Wunsch Nutzer 2026-10-28, ohne Hintergrundbild): Kopf mit Temperatur und
-// Wetterlage, Stundenleiste mit Sonnenauf-/untergang, 10-Tage-Liste mit Temperaturbalken; ein Tag öffnet das Detail.
+// Übersicht (Vorlage Nutzer 2026-11-12): „Jetzt“-Karte mit Luftdruck, Wind und Luftfeuchte, Stundenleiste mit
+// Sonnenauf-/untergang, 10-Tage-Liste mit Temperaturbalken; ein Tag öffnet das Detail.
 import { useState } from 'react';
 import { de } from '../../i18n/de';
 import type { DaySummary, Forecast, ForecastHour } from '../../domain/forecast';
 import { barSpan, hourStrip, pct, tempBounds, tempColor, weatherIcon } from '../../domain/forecastView';
-import { ClockIcon, CalendarIcon } from '../../design/icons';
+import { ClockIcon, CalendarIcon, ChevronRightIcon } from '../../design/icons';
+import { NowCard } from './NowCard';
 import { WeatherIcon } from './WeatherIcon';
 import { DayDetailSheet } from './DayDetailSheet';
 import { OutlookChip } from './OutlookChip';
@@ -28,39 +29,34 @@ export function ForecastOverview({
   days,
   now,
   nowMs,
-  placeLabel,
+  change,
 }: {
   f: Forecast;
   days: DaySummary[];
   now: ForecastHour | undefined;
   nowMs: number;
-  placeLabel: string;
+  change: number | undefined;
 }) {
   const [openDay, setOpenDay] = useState<number>();
   const strip = hourStrip(f, nowMs, 24);
+  const nowHour = strip.find((s) => s.kind === 'hour' && s.now);
+  const nowIcon = nowHour?.kind === 'hour' ? nowHour.icon : undefined;
   const bounds = tempBounds(days.map((d) => d.day));
   const today = days.find((d) => berlinDate(d.t) === berlinDate(nowMs));
   const dayName = (ms: number) => (berlinDate(ms) === berlinDate(nowMs) ? t.today : t.weekdayShort(ms));
 
   return (
     <>
-      <section className={styles.hero} aria-label={t.now}>
-        <p className={styles.heroPlace}>{placeLabel}</p>
-        {now?.tempC !== undefined && <p className={styles.heroTemp}>{t.deg(now.tempC)}</p>}
-        <p className={styles.heroSky}>{codeText(now?.code)}</p>
-        {today?.day.tMax !== undefined && today.day.tMin !== undefined && (
-          <p className={styles.heroHiLo}>{t.hiLo(today.day.tMax, today.day.tMin)}</p>
-        )}
-      </section>
+      <NowCard now={now} today={today} icon={nowIcon} change={change} />
 
       <section className={styles.card} aria-labelledby="wx-hourly">
         <h2 id="wx-hourly" className={styles.cardTitle}>
-          <ClockIcon size={16} /> {t.hourly}
+          <ClockIcon size={20} /> {t.hourly}
         </h2>
         <ol className={styles.strip} aria-label={t.hourlyLabel}>
           {strip.map((s) =>
             s.kind === 'hour' ? (
-              <li key={s.t} className={styles.stripItem}>
+              <li key={s.t} className={`${styles.stripItem} ${s.now ? styles.stripNow : ''}`}>
                 <span className={styles.stripTime}>{s.now ? t.now : t.hourLabel(hourOf(s.t))}</span>
                 <span className={styles.stripIcon}>
                   <WeatherIcon icon={s.icon} size={30} />
@@ -85,7 +81,17 @@ export function ForecastOverview({
 
       <section className={styles.card} aria-labelledby="wx-days">
         <h2 id="wx-days" className={styles.cardTitle}>
-          <CalendarIcon size={16} /> {t.tenDays(days.length)}
+          <CalendarIcon size={20} /> {t.tenDays(days.length)}
+          {today && (
+            <button
+              type="button"
+              className={styles.cardMore}
+              aria-label={t.openToday}
+              onClick={() => setOpenDay(today.t)}
+            >
+              <ChevronRightIcon size={20} />
+            </button>
+          )}
         </h2>
         <ul className={styles.dayList}>
           {days.map((d) => {

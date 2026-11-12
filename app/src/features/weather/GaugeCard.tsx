@@ -3,6 +3,8 @@
 import { de } from '../../i18n/de';
 import { GAUGE_RADIUS_KM, seriesOf, type GaugeSeries, type GaugeStation } from '../../domain/gauges';
 import { useGauge } from './useGauge';
+import { GaugeIcon } from '../../design/icons';
+import { WxSection } from './WxSection';
 import styles from './Alerts.module.css';
 import w from './Weather.module.css';
 
@@ -34,7 +36,7 @@ function GaugeFacts({
   const level = seriesOf(station, 'W');
   const state = level?.state ? t.states[level.state] : '';
   return (
-    <div className={w.nowCard}>
+    <div className={w.gaugeFacts}>
       <span className="muted">{t.station(station.name, waterOf(station), km)}</span>
       <dl className={w.facts}>
         {level && level.value !== undefined && (
@@ -76,10 +78,7 @@ function GaugeFacts({
 export function GaugeCard({ lat, lng }: { lat: number; lng: number }) {
   const g = useGauge({ lat, lng });
   return (
-    <section className={styles.section} aria-labelledby="gauge-title">
-      <h2 id="gauge-title" className={styles.title}>
-        {t.title}
-      </h2>
+    <WxSection id="gauge-title" title={t.title} icon={<GaugeIcon size={20} />}>
       {g.status === 'loading' && <p className="muted">{t.loading}</p>}
       {g.status === 'error' && <p className="muted">{t.error}</p>}
       {g.status === 'ok' && (
@@ -105,6 +104,6 @@ export function GaugeCard({ lat, lng }: { lat: number; lng: number }) {
           </p>
         </>
       )}
-    </section>
+    </WxSection>
   );
 }

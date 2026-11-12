@@ -2050,7 +2050,7 @@ export const de = {
     title: 'Wetter',
     place: 'Ort',
     myLocation: 'Mein Standort',
-    myLocationRounded: 'Mein Standort (auf ca. 100 m gerundet)',
+    myLocationRounded: 'Mein Standort (ca. 100 m)',
     locating: 'Standort wird bestimmt …',
     locationDenied: 'Der Standort ist nicht verfügbar. Wähle ein Gewässer aus deinem Fangbuch.',
     noPlaces: 'Noch keine Gewässer im Fangbuch – die Vorhersage gilt für deinen Standort.',
@@ -2062,6 +2062,14 @@ export const de = {
     retry: 'Erneut laden',
     now: 'Jetzt',
     pressure: 'Luftdruck',
+    windLabel: 'Wind',
+    gustLabel: (ms: number) => `Böen: ${ms.toLocaleString('de-DE', { maximumFractionDigits: 1 })} m/s`,
+    humidity: 'Luftfeuchte',
+    humidityValue: (p: number) => `${Math.round(p)} %`,
+    trendUp: 'steigend',
+    trendDown: 'fallend',
+    trendFlat: 'gleichbleibend',
+    openToday: 'Heutige Wetterlage öffnen',
     signedHpa: (delta: number) =>
       `${delta > 0 ? '+' : delta < 0 ? '−' : '±'}${Math.abs(delta).toLocaleString('de-DE', { maximumFractionDigits: 1 })} hPa`,
     pressureChange: (delta: number, h: number) =>
@@ -2185,6 +2193,7 @@ export const de = {
     error: 'Warnungen sind gerade nicht abrufbar. Bei Gewitter am Wasser: Angel einpacken und Schutz suchen.',
     stale: (time: string) => `Ohne Verbindung – Stand ${time}. Neuere Warnungen sind möglich.`,
     for: (place: string) => `für ${place}`,
+    officialFor: (place?: string) => (place ? `Amtliche Warnung für ${place}` : 'Amtliche Warnung'),
     // Stufen laut DWD [V: dwd.de/DE/wetter/warnungen_aktuell/kriterien/warnstufen.html, 2026-10-23]
     levels: {
       minor: 'Stufe 1 · Amtliche Warnung',

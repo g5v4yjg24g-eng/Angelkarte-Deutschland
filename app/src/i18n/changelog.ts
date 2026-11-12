@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-21',
+    title: 'Wetter neu gestaltet',
+    items: [
+      'Jetzt: Temperatur, Luftdruck mit Trend, Wind mit Böen und Luftfeuchte auf einen Blick.',
+      'Ort und Warnungen: Ortswahl als Zeile, Amtliche Warnungen als auffällige Karte.',
+      'Einheitlich: Stündlich, 10-Tage, Luftdruck, Beißfenster und Pegel im gleichen Look.',
+    ],
+  },
+  {
     id: '2026-12-20-2',
     title: 'Feed per Wischen aktualisieren',
     items: ['Feed: Ganz oben nach unten wischen lädt neu, mit kleiner Ladeanimation.'],
