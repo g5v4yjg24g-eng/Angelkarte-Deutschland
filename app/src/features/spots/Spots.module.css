@@ -99,3 +99,94 @@
   justify-content: space-between;
   gap: var(--space-2);
 }
+
+/* Reiter: Mit dir geteilt | Von dir geteilt */
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+}
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch);
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+.tab[aria-selected='true'] {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.tab:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.panel {
+  display: grid;
+  gap: var(--space-3);
+}
+
+/* Leere Liste: gestrichelte Karte */
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-4);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+.empty p {
+  margin: 0;
+  color: var(--color-text-muted);
+  max-width: 30ch;
+}
+.emptyIcon {
+  color: var(--color-primary);
+}
+
+/* drei Stichworte unter der Liste */
+.perks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+.perks li {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.perks svg {
+  color: var(--color-primary);
+}
+
+/* Ort wählen */
+.pick {
+  display: grid;
+  gap: 2px;
+  min-height: var(--touch);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+}
