@@ -1,4 +1,4 @@
-// Kommentar-Fenster per Herunterziehen schließen (Wunsch Nutzer 2026-10-27, wie bei Instagram).
+// Blätter und Fenster per Herunterziehen schließen (Sheet, Kommentare) (Wunsch Nutzer 2026-10-27, wie bei Instagram).
 
 /** Ab dieser Geschwindigkeit (px/ms) nach unten genügt ein kurzer Wisch */
 export const FLICK_SPEED = 0.5;

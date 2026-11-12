@@ -13,7 +13,7 @@ import { COMMENT_MAX, commentValid } from '../../domain/profile';
 import { LOCAL_AUTHOR } from '../../domain/schemas';
 import { FounderBadge } from '../badges/FounderBadge';
 import { Avatar } from './Avatar';
-import { dragOffset, shouldClose } from './sheetDrag';
+import { dragOffset, shouldClose } from '../../lib/sheetDrag';
 import styles from './Comments.module.css';
 
 const t = de.profile;
