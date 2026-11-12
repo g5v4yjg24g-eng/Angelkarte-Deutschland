@@ -2252,12 +2252,14 @@ test('SPOT-3: Spots teilen – Spot von Anna auf der Karte übernehmen, eigenen 
   await page.goto('/profil');
   await page.getByRole('button', { name: 'Geteilte Spots' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Geteilte Spots' })).toBeVisible();
-  const incoming = page.getByRole('region', { name: 'Mit dir geteilt' });
+  const incoming = page.getByRole('tabpanel');
   await expect(incoming.getByText('Buhne 3')).toBeVisible();
   await expect(incoming.getByRole('button', { name: 'In deinen Orten' })).toBeDisabled();
-  const mine = page.getByRole('region', { name: 'Von dir geteilt' });
+  await page.getByRole('tab', { name: /Von dir geteilt/ }).click();
+  const mine = page.getByRole('tabpanel');
   await expect(mine.getByText('Steg am Schilf')).toBeVisible();
   await expect(mine.getByText(/an Anna/)).toBeVisible();
+  await page.getByRole('tab', { name: /Mit dir geteilt/ }).click();
   for (const scheme of ['light', 'dark'] as const) {
     await page.emulateMedia({ colorScheme: scheme });
     const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
@@ -2393,7 +2395,7 @@ test('MOD-4: geteilten Spot melden – auf der Karte und in der Liste ausgeblend
   await signInWithProfile(page, 'kevin');
   await page.goto('/profil/spots');
   await waitForApp(page);
-  const incoming = page.getByRole('region', { name: 'Mit dir geteilt' });
+  const incoming = page.getByRole('tabpanel');
   await expect(incoming.getByText('Buhne 3')).toBeVisible();
   await incoming.getByRole('button', { name: 'Optionen zu Anna' }).click();
   await page.getByRole('dialog', { name: 'Optionen' }).getByRole('button', { name: 'Melden' }).click();
@@ -4826,4 +4828,35 @@ test('NOTIF-5: Session-Einladung in den Mitteilungen annehmen startet die Sessio
     .click();
   await expect(page).toHaveURL(/\/fangbuch\/sessions\/[0-9a-f-]+$/);
   expect(errors).toEqual([]);
+});
+
+test('SPOT-5: Seite „Geteilte Spots“ – Kopfkarte, leere Liste, Ort zum Teilen wählen', async ({ page }) => {
+  const errors = collectErrors(page);
+  await fakeSupabase(page, [], [], [], []);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/profil/spots');
+  await waitForApp(page);
+  await expect(page.getByRole('region', { name: 'Geteilte Spots' })).toContainText(
+    'Entdecke Spots, die Freunde mit dir teilen',
+  );
+  await expect(page.getByRole('tab', { name: /Mit dir geteilt \(0\)/ })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await expect(page.getByText('Noch keine geteilten Spots')).toBeVisible();
+  await page.getByRole('tab', { name: /Von dir geteilt \(0\)/ }).click();
+  await expect(page.getByText('Wähle einen deiner Orte aus')).toBeVisible();
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.getByRole('button', { name: 'Spot teilen' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Ort zum Teilen wählen' });
+  await expect(sheet.getByText('Du hast noch keine Orte')).toBeVisible();
+  expect(errors.filter((e) => !/status of 404/.test(e))).toEqual([]);
 });

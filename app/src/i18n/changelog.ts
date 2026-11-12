@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-18',
+    title: 'Geteilte Spots neu gestaltet',
+    items: [
+      'Kopfkarte: Dieselbe Abendstimmung wie bei den Kontodetails.',
+      'Reiter: Mit dir geteilt und Von dir geteilt mit der Anzahl.',
+      'Spot teilen: Knopf zum Auswählen eines deiner Orte.',
+    ],
+  },
+  {
     id: '2026-12-17-2',
     title: 'Fenster wegwischen',
     items: [
