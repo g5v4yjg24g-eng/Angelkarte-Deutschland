@@ -8,12 +8,13 @@ import { Page } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
 import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
-import { FeedIcon, RefreshIcon } from '../../design/icons';
-import { IconButton } from '../../design/components/Button';
+import { FeedIcon } from '../../design/icons';
 import { TabLinks } from '../../design/components/TabLinks';
 import { hasMore, initialOf, type FeedPost } from '../../domain/feed';
 import { useProviders } from '../../ports/providersContext';
 import { mergeHandlers, useSwipeCarousel } from '../../lib/useSwipeCarousel';
+import { usePullToRefresh } from '../../lib/usePullToRefresh';
+import { PullIndicator } from './PullIndicator';
 import { FounderBadge } from '../badges/FounderBadge';
 import { storedUserId } from '../badges/badgeStore';
 import { Toast } from '../../design/components/Toast';
@@ -196,15 +197,22 @@ export function FeedList({
   cursorOf,
   empty,
   reloadKey = 0,
+  onSettled,
 }: {
   load: (before?: string) => Promise<FeedPost[]>;
   cursorOf: (p: FeedPost) => string;
   empty: ReactNode;
   reloadKey?: number;
+  /** Das (Neu-)Laden ist fertig – mit Erfolg oder Fehler */
+  onSettled?: () => void;
 }) {
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [tick, setTick] = useState(0);
   const refresh = useCallback(() => setTick((n) => n + 1), []);
+  const settled = useRef(onSettled);
+  useEffect(() => {
+    settled.current = onSettled;
+  });
   const hidden = useHidden();
   const [toast, setToast] = useState<string>();
   const ids = state.kind === 'ready' ? state.posts.map((p) => p.id) : [];
@@ -216,7 +224,8 @@ export function FeedList({
     let live = true;
     load()
       .then((posts) => live && setState({ kind: 'ready', posts, more: hasMore(posts), loadingMore: false }))
-      .catch(() => live && setState({ kind: 'error' }));
+      .catch(() => live && setState({ kind: 'error' }))
+      .finally(() => live && settled.current?.());
     return () => {
       live = false;
     };
@@ -305,6 +314,22 @@ export function FeedPage({ mode = 'friends' }: { mode?: 'friends' | 'discover' }
   const { account } = useProviders();
   const signedIn = account.enabled && !!storedUserId();
   const [tick, setTick] = useState(0);
+  // Aktualisieren durch Ziehen: wartet, bis die Liste neu geladen ist (mindestens kurz sichtbar)
+  const settle = useRef<(() => void) | undefined>(undefined);
+  const pull = usePullToRefresh(
+    () =>
+      new Promise<void>((resolve) => {
+        const started = Date.now();
+        const timer = window.setTimeout(resolve, 8000);
+        settle.current = () => {
+          settle.current = undefined;
+          window.clearTimeout(timer);
+          window.setTimeout(resolve, Math.max(0, 600 - (Date.now() - started)));
+        };
+        setTick((n) => n + 1);
+      }),
+    account.enabled && !!storedUserId(),
+  );
   const load = useCallback(
     (before?: string) => (mode === 'discover' ? account.discoverFeed(before) : account.feed(before)),
     [account, mode],
@@ -323,14 +348,15 @@ export function FeedPage({ mode = 'friends' }: { mode?: 'friends' | 'discover' }
       title={t.title}
       action={
         <span className={styles.headActions}>
-          <IconButton label={t.refresh} icon={<RefreshIcon />} onClick={() => setTick((n) => n + 1)} />
           <NotificationsButton />
         </span>
       }
     >
       <FeedTabs />
+      <PullIndicator offset={pull.offset} state={pull.state} />
       <FeedList
         key={mode}
+        onSettled={() => settle.current?.()}
         load={load}
         cursorOf={(p) => (mode === 'discover' ? (p.sharedAt ?? p.createdAt) : p.createdAt)}
         reloadKey={tick}
