@@ -18,6 +18,7 @@ export function Sheet({
   footer,
   hero,
   banner,
+  titleIcon,
   returnFocus,
 }: {
   open: boolean;
@@ -29,6 +30,8 @@ export function Sheet({
   hero?: ReactNode;
   /** Kopfkarte mit Abendstimmung statt der einfachen Kopfzeile (z. B. Fang): Inhalt links, Schließen-Knopf rechts */
   banner?: ReactNode;
+  /** Symbol vor dem Titel der einfachen Kopfzeile; der Schließen-Knopf wird dann rund umrandet */
+  titleIcon?: ReactNode;
   /** Ziel für den Fokus nach dem Schließen, falls der Auslöser inzwischen verschwunden ist */
   returnFocus?: RefObject<HTMLElement | null>;
 }) {
@@ -165,8 +168,26 @@ export function Sheet({
             <>
               <div className={styles.handle} aria-hidden="true" />
               <header className={styles.header}>
-                <h2 id={titleId}>{title}</h2>
-                <IconButton label={de.common.close} icon={<CloseIcon />} onClick={onClose} />
+                <h2 id={titleId} className={titleIcon ? styles.titleWithIcon : undefined}>
+                  {titleIcon && (
+                    <span className={styles.titleIcon} aria-hidden="true">
+                      {titleIcon}
+                    </span>
+                  )}
+                  {title}
+                </h2>
+                {titleIcon ? (
+                  <button
+                    type="button"
+                    className={styles.roundClose}
+                    aria-label={de.common.close}
+                    onClick={onClose}
+                  >
+                    <CloseIcon size={22} aria-hidden="true" />
+                  </button>
+                ) : (
+                  <IconButton label={de.common.close} icon={<CloseIcon />} onClick={onClose} />
+                )}
               </header>
             </>
           )}

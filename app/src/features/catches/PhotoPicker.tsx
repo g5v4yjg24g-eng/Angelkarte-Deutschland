@@ -2,7 +2,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
 import { Notice } from '../../design/components/Notice';
-import { CloseIcon } from '../../design/icons';
+import { CameraIcon, CloseIcon, ImagesIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
 import type { Photo } from '../../domain/schemas';
 import { MAX_PHOTOS_PER_CATCH } from '../../domain/photo';
@@ -54,6 +54,7 @@ export function PhotoPicker({
 
   const input = (capture: boolean) => (
     <label className={styles.fileLabel} aria-disabled={full || processing || undefined}>
+      {capture ? <CameraIcon size={20} aria-hidden="true" /> : <ImagesIcon size={20} aria-hidden="true" />}
       {capture ? t.takePhoto : t.choosePhotos}
       <input
         type="file"
@@ -71,7 +72,7 @@ export function PhotoPicker({
 
   return (
     <fieldset className={styles.picker}>
-      <legend>{t.photos}</legend>
+      <legend className="visually-hidden">{t.photos}</legend>
       {items.length > 0 && (
         <ul className={styles.strip}>
           {items.map((it, i) => (

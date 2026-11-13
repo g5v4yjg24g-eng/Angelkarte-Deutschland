@@ -16,7 +16,7 @@ import type { PlaceType } from '../../domain/schemas';
 import { waterFromTile, waterPlace, type WaterInfo, type WaterManifest } from '../../domain/water';
 import type { SearchResult } from '../../domain/search';
 import { IconButton, Button } from '../../design/components/Button';
-import { ShareIcon, TrashIcon } from '../../design/icons';
+import { HookIcon, ShareIcon, TrashIcon } from '../../design/icons';
 import { CatchHead } from '../catches/CatchFacts';
 import { Sheet } from '../../design/components/Sheet';
 import { Toast } from '../../design/components/Toast';
@@ -786,6 +786,7 @@ export default function MapView() {
   let sheetHero: React.ReactNode = null;
   let sheetBanner: React.ReactNode = null;
   let sheetFooter: React.ReactNode = null;
+  let sheetTitleIcon: React.ReactNode = null;
   if (sheet?.kind === 'new') {
     sheetTitle = de.map.newHereTitle;
     sheetBody = (
@@ -818,6 +819,7 @@ export default function MapView() {
   } else if (sheet?.kind === 'catchForm') {
     const existing = sheet.id ? catches?.find((c) => c.id === sheet.id) : undefined;
     sheetTitle = sheet.id ? de.catchForm.editTitle : de.catchForm.newTitle;
+    sheetTitleIcon = <HookIcon size={26} />;
     sheetBody =
       sheet.id && !existing ? null : (
         <CatchForm
@@ -1214,6 +1216,7 @@ export default function MapView() {
         title={sheetTitle}
         hero={sheetHero}
         banner={sheetBanner}
+        titleIcon={sheetTitleIcon}
         footer={sheetFooter}
         onClose={() => setSheet(null)}
         returnFocus={fabRef}

@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-23',
+    title: 'Fang erfassen neu gestaltet',
+    items: [
+      'Auswahl: Fang, Fischkontakt, Fehlbiss und Beobachtung als schmale Reiter.',
+      'Abschnitte: Fischart, Datum & Uhrzeit, Fotos, Ort und Gewässer mit Symbolen.',
+      'Datum und Uhrzeit stehen in einem Feld, unten Abbrechen und Speichern.',
+    ],
+  },
+  {
     id: '2026-12-22',
     title: 'Fang, Ort und Spot neu gestaltet',
     items: [

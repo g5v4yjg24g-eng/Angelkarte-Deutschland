@@ -159,3 +159,31 @@
   flex: 0 1 auto;
   min-width: 9rem;
 }
+
+/* Kopfzeile mit Symbol vor dem Titel (Fang erfassen) */
+.titleWithIcon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.titleIcon {
+  display: grid;
+  place-items: center;
+  color: var(--color-primary);
+}
+.roundClose {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--touch);
+  height: var(--touch);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 40%, var(--color-border));
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--color-text);
+  cursor: pointer;
+}
+.roundClose:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}

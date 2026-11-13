@@ -1,25 +1,31 @@
 .form {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
+}
+.form > * {
+  min-width: 0;
 }
 
 .outcomes {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+  display: flex;
   gap: var(--space-2);
   margin: 0;
   padding: 0;
   border: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* Fokusrahmen und Auswahlrand nicht abschneiden */
+  padding-block: 2px;
 }
-.outcomes legend,
-.group legend {
-  font-weight: 600;
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-2);
-  padding: 0;
+.outcomes::-webkit-scrollbar {
+  display: none;
 }
 .outcome {
   position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .outcome input {
   position: absolute;
@@ -31,29 +37,125 @@
 .outcome > span {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  min-height: 60px;
-  height: 100%;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
+  justify-content: center;
+  gap: 3px;
+  min-height: var(--touch);
+  padding: 0 8px;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-primary) 6%, var(--color-surface));
+  font-size: 0.76rem;
+  white-space: nowrap;
 }
-.outcome > span > span {
-  display: grid;
-  line-height: 1.25;
-}
-.outcome small {
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
+.outcome > span img {
+  width: 16px;
+  height: 16px;
 }
 .outcome input:checked + span {
-  border: 2px solid var(--color-primary);
-  background: color-mix(in srgb, var(--color-primary) 12%, var(--color-surface));
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 .outcome input:focus-visible + span {
   outline: 3px solid var(--color-focus);
   outline-offset: 2px;
+}
+
+/* Abschnitte mit Symbol vor der Überschrift */
+.section {
+  display: grid;
+  gap: var(--space-2);
+}
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 650;
+}
+.sectionIcon {
+  display: grid;
+  color: var(--color-primary);
+}
+.speciesRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.speciesRow > :first-child {
+  flex: 1 1 11rem;
+  min-width: 0;
+}
+.dateTime {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.dateTimeCell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: 0 var(--space-3);
+  color: var(--color-primary);
+}
+.dateTimeCell + .dateTimeCell {
+  border-left: 1px solid var(--color-border);
+}
+.dateTimeCell {
+  position: relative;
+}
+.dateTimeCell svg {
+  flex: none;
+}
+/* Das ganze Feld öffnet die Auswahl, das eingebaute Symbol bleibt unsichtbar (eigene Symbole davor) */
+.dateTimeCell input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.dateTimeCell > div {
+  flex: 1;
+  min-width: 0;
+}
+/* Eingabefelder im Kombi-Feld ohne eigenen Rahmen */
+.dateTimeCell input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  box-shadow: none;
+}
+.positionRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.positionRow p {
+  margin: 0;
+}
+.positionRow button {
+  gap: var(--space-2);
+}
+.waterBox {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch);
+  margin: 0;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
 
 .species {
@@ -103,9 +205,24 @@
   min-height: var(--touch);
   display: flex;
   align-items: center;
+  gap: var(--space-2);
   padding: 0 var(--space-3);
   font-weight: 600;
   cursor: pointer;
+  list-style: none;
+}
+.details summary::-webkit-details-marker {
+  display: none;
+}
+.details summary > svg:first-child {
+  color: var(--color-primary);
+}
+.summaryChevron {
+  margin-left: auto;
+  transition: transform 150ms;
+}
+.details[open] .summaryChevron {
+  transform: rotate(180deg);
 }
 .detailBody {
   display: grid;
@@ -124,8 +241,8 @@
   /* Bleibt am unteren Rand sichtbar; reicht über den Innenabstand des Sheets, damit nichts darunter durchscheint */
   position: sticky;
   bottom: calc(var(--nav-clearance) - var(--space-4));
-  display: flex;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
   gap: var(--space-2);
   margin-bottom: calc(-1 * var(--space-4));
   padding: var(--space-2) 0 var(--space-4);
