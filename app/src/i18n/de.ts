@@ -2590,6 +2590,42 @@ export const de = {
           : 'startet jetzt eine gemeinsame Session – bestätige, um dabei zu sein.',
     },
   },
+  // „Angler entdecken“ (Wunsch Nutzer 2026-11-13): Profilvorschläge im Feed und die zugehörigen Einstellungen
+  suggest: {
+    title: 'Angler entdecken',
+    subtitle: 'Entdecke Angler, die zu dir passen.',
+    carouselLabel: 'Profilvorschläge',
+    slide: (i: number, n: number) => `Profil ${i} von ${n}`,
+    prev: 'Vorherige Profile',
+    next: 'Weitere Profile',
+    follow: 'Folgen',
+    followLabel: (name: string) => `${name} folgen`,
+    busy: 'Folgen …',
+    requested: 'Angefragt',
+    following: 'Gefolgt',
+    dismiss: (name: string) => `${name} ausblenden`,
+    openProfile: (name: string) => `Profil von ${name} öffnen`,
+    handle: (u: string) => `@${u}`,
+    reasonFriends: (n: number) => (n === 1 ? '1 gemeinsamer Freund' : `${n} gemeinsame Freunde`),
+    achievements: 'Erfolge',
+    noAchievements: 'Noch keine Erfolge sichtbar',
+    followError: 'Folgen hat nicht geklappt. Bitte später erneut versuchen.',
+    tooMany: 'Du folgst heute schon vielen Personen. Bitte morgen weiter.',
+    settings: {
+      title: 'Angler entdecken',
+      discoverable: 'In Vorschlägen anderer erscheinen',
+      waters: 'Meine Gewässer für Vorschläge nutzen',
+      watersHint:
+        'Geteilt werden nur Name und Kennung der Gewässer aus deinem Fangbuch – keine Orte, Zeiten oder Fänge.',
+      region: 'Angler aus meiner Region vorschlagen',
+      regionHint:
+        'Dafür wird einmalig dein Standort abgefragt und nur auf ein grobes Raster (ca. 10 km) gerundet gespeichert. Angezeigt wird nie eine Entfernung.',
+      regionDenied: 'Ohne Standortfreigabe kann die Region nicht genutzt werden.',
+      regionOutside: 'Dein Standort liegt außerhalb von Deutschland und Umgebung.',
+      locating: 'Standort wird bestimmt …',
+      error: 'Speichern hat nicht geklappt. Bitte später erneut versuchen.',
+    },
+  },
   feed: {
     title: 'Feed',
     tabsLabel: 'Feed-Ansicht',
@@ -3287,7 +3323,8 @@ export const de = {
     emptyOutgoing: 'Biete einem Freund das Teilen an – nimmt er an, teilt ihr alle eure Orte.',
     shareSpot: 'Spot teilen',
     offerTitle: 'Spots teilen mit …',
-    offerNoFriends: 'Alle deine Freunde sind schon verbunden – oder du hast noch keine. Freunde sind Leute, denen du folgst und die dir auch folgen.',
+    offerNoFriends:
+      'Alle deine Freunde sind schon verbunden – oder du hast noch keine. Freunde sind Leute, denen du folgst und die dir auch folgen.',
     offer: 'Anbieten',
     offerSent: 'Angebot gesendet.',
     offerAccepted: 'Ihr teilt jetzt eure Spots.',
@@ -3524,7 +3561,7 @@ export const de = {
       },
       {
         name: 'Supabase (sgnyymciwnwjgvojptwu.supabase.co, Rechenzentrum in Irland)',
-        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse und dein Passwort (gespeichert wird nur ein nicht umkehrbarer Hash; Bestätigungs-, Passwort- und Sicherheits-Mails kommen von noreply@fangpunkt.com), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), dein Profiltext und freiwillige Angaben (Lieblingsfische, Methoden, Region als Bundesland, angeheftete Beiträge – sichtbar nur für deine bestätigten Follower; „Profil teilen“ verschickt nur einen Link mit deinem Nutzernamen), deine erreichten Erfolge (nur Stufe und Datum, keine Fänge; sichtbar je nach deiner Wahl für Follower, alle mit Fangpunkt-Konto oder niemanden), wem du folgst, wer dir folgt, offene Folge-Anfragen, die Zahlen dazu (sichtbar für alle mit Fangpunkt-Konto) und ob dein Konto privat ist, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine bestätigten Follower bzw. bei „Alle“ für alle mit Fangpunkt-Konto, auch für Fremde unter Feed → Entdecken –, Beiträge, die du speicherst (nur für dich sichtbar), wie oft du am Tag nach Personen suchst (gegen massenhaftes Durchsuchen; die Suchbegriffe selbst werden nicht gespeichert), gemeinsame Sessions (Titel, auf Wunsch der Gewässername ohne Position, Beginn und Ende, wer eingeladen ist und wer dabei ist – sichtbar für die Teilnehmer; keine Positionen, Routen oder Fänge) Angeltermine bleiben auf deinem Gerät; lädst du Freunde dazu ein, speichert der Server für sie Titel, Gewässername (nur Text), Tag und Uhrzeit des Termins (sichtbar nur für die Eingeladenen, ohne Position und Notizen) und ob sie zu- oder abgesagt haben – löschst du den Termin, wird das zurückgezogen –, und beim gemeinsamen Start wird eine gemeinsame Session angelegt (wie oben), samt den Kennzahlen, die du nach dem Ende einer gemeinsamen Session für den Rückblick teilst (Fänge, Bisse, Einträge, größter Fisch mit Art und Länge, Zeit am Wasser, Strecke – nur diese Zahlen, sichtbar nur für die Teilnehmer, ohne Route, Orte, Fotos und einzelne Einträge) und Highlights, die du dort teilst (Beiträge wie oben, sichtbar nur für die Teilnehmer) sowie Orte, die du mit Freunden teilst (Freunde = ihr folgt euch gegenseitig; das Teilen bietest du einer Person an, sie muss annehmen; danach teilt ihr alle eure Orte, einzelne schaltest du am Ort aus; Art, Name, Notiz, genaue Position; sichtbar nur für die verbundene Person), wen du blockierst, welcher Fassung der Regeln der Community du wann zugestimmt hast, einen Einspruch gegen eine Sperre (Text und Zeitpunkt; nur Moderatoren lesen ihn), sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte, Profilbilder und Profiltexte löschen, Konten verwarnen (90 Tage aktiv, zurücknehmbar) und befristet oder dauerhaft sperren; Verwarnungen, Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt bei Verwarnung, Sperre und Aufhebung eine Mail an ihre Konto-Adresse. Gesperrte Konten können nichts mehr veröffentlichen oder ändern. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die die Liste „Mitteilungen“ im Feed (Art, wer sie ausgelöst hat, Bezug und ein kurzer Textauszug; höchstens 200 Einträge und 90 Tage, auch ohne iPhone-App); Mitteilungen selbst stellt Apple zu (mit dem Namen der Person, bei Beiträgen und Kommentaren dem Anfang des Textes und bei gemeinsamen Sessions deren Titel); für „Test-Mitteilung senden“ wird nur vermerkt, ob Apple sie angenommen hat. Einzelne Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, solange du nicht angemeldet bist; mit Konto werden Beiträge auf dem Server gesichert, „Nur ich“ sieht nur du. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Follower und Gefolgte, Erfolge, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, gespeicherte Beiträge, gemeinsame Sessions, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
+        what: 'nur wenn du unter Mehr → Konto ein Konto anlegst oder angemeldet bist: deine E-Mail-Adresse und dein Passwort (gespeichert wird nur ein nicht umkehrbarer Hash; Bestätigungs-, Passwort- und Sicherheits-Mails kommen von noreply@fangpunkt.com), dein Nutzername und Anzeigename, dein Profilbild (zugeschnitten, ohne Kamera- und Ortsangaben; sichtbar für alle mit Fangpunkt-Konto außer Blockierten), dein Profiltext und freiwillige Angaben (Lieblingsfische, Methoden, Region als Bundesland, angeheftete Beiträge – sichtbar nur für deine bestätigten Follower; „Profil teilen“ verschickt nur einen Link mit deinem Nutzernamen), deine erreichten Erfolge (nur Stufe und Datum, keine Fänge; sichtbar je nach deiner Wahl für Follower, alle mit Fangpunkt-Konto oder niemanden), wem du folgst, wer dir folgt, offene Folge-Anfragen, die Zahlen dazu (sichtbar für alle mit Fangpunkt-Konto) und ob dein Konto privat ist, Beiträge, die du teilst (Fotos, Text, Sichtbarkeit) samt „Gefällt mir“ und Kommentaren dazu – sichtbar nur für deine bestätigten Follower bzw. bei „Alle“ für alle mit Fangpunkt-Konto, auch für Fremde unter Feed → Entdecken –, Beiträge, die du speicherst (nur für dich sichtbar), wie oft du am Tag nach Personen suchst (gegen massenhaftes Durchsuchen; die Suchbegriffe selbst werden nicht gespeichert), für „Angler entdecken“ deine Einstellungen dazu, die Namen und Kennungen der Gewässer aus deinen Fängen und Sessions (höchstens 30, ohne Orte, Zeiten und Fänge; Standard: an, abschaltbar unter Mehr → Konto → Privatsphäre; nur der Server vergleicht sie mit denen anderer – eine fremde Gewässerliste siehst du nie, bei einem gemeinsamen Gewässer nur dessen Namen), auf Wunsch eine grobe Region (Rasterpunkt von etwa 10 km, Standard: aus; nur der Server rechnet damit, angezeigt wird nie eine Entfernung oder Position) und welche Vorschläge du ausgeblendet hast, gemeinsame Sessions (Titel, auf Wunsch der Gewässername ohne Position, Beginn und Ende, wer eingeladen ist und wer dabei ist – sichtbar für die Teilnehmer; keine Positionen, Routen oder Fänge) Angeltermine bleiben auf deinem Gerät; lädst du Freunde dazu ein, speichert der Server für sie Titel, Gewässername (nur Text), Tag und Uhrzeit des Termins (sichtbar nur für die Eingeladenen, ohne Position und Notizen) und ob sie zu- oder abgesagt haben – löschst du den Termin, wird das zurückgezogen –, und beim gemeinsamen Start wird eine gemeinsame Session angelegt (wie oben), samt den Kennzahlen, die du nach dem Ende einer gemeinsamen Session für den Rückblick teilst (Fänge, Bisse, Einträge, größter Fisch mit Art und Länge, Zeit am Wasser, Strecke – nur diese Zahlen, sichtbar nur für die Teilnehmer, ohne Route, Orte, Fotos und einzelne Einträge) und Highlights, die du dort teilst (Beiträge wie oben, sichtbar nur für die Teilnehmer) sowie Orte, die du mit Freunden teilst (Freunde = ihr folgt euch gegenseitig; das Teilen bietest du einer Person an, sie muss annehmen; danach teilt ihr alle eure Orte, einzelne schaltest du am Ort aus; Art, Name, Notiz, genaue Position; sichtbar nur für die verbundene Person), wen du blockierst, welcher Fassung der Regeln der Community du wann zugestimmt hast, einen Einspruch gegen eine Sperre (Text und Zeitpunkt; nur Moderatoren lesen ihn), sowie Meldungen, die du abgibst (Grund, Hinweis, gemeldeter Inhalt; eine Benachrichtigung mit diesen Angaben geht per E-Mail an moderation@fangpunkt.com). Bei Verstößen gegen die Regeln kann ein Moderator Inhalte, Profilbilder und Profiltexte löschen, Konten verwarnen (90 Tage aktiv, zurücknehmbar) und befristet oder dauerhaft sperren; Verwarnungen, Sperren und Moderations-Aktionen werden protokolliert, und die betroffene Person bekommt bei Verwarnung, Sperre und Aufhebung eine Mail an ihre Konto-Adresse. Gesperrte Konten können nichts mehr veröffentlichen oder ändern. In der iPhone-App, wenn du Mitteilungen erlaubst: eine Gerätekennung für Mitteilungen und welche Arten du an- oder abgeschaltet hast; die die Liste „Mitteilungen“ im Feed (Art, wer sie ausgelöst hat, Bezug und ein kurzer Textauszug; höchstens 200 Einträge und 90 Tage, auch ohne iPhone-App); Mitteilungen selbst stellt Apple zu (mit dem Namen der Person, bei Beiträgen und Kommentaren dem Anfang des Textes und bei gemeinsamen Sessions deren Titel); für „Test-Mitteilung senden“ wird nur vermerkt, ob Apple sie angenommen hat. Einzelne Fänge, Routen und nicht geteilte Orte werden nicht übertragen. Ein Beitrag bleibt nur auf dem Gerät, solange du nicht angemeldet bist; mit Konto werden Beiträge auf dem Server gesichert, „Nur ich“ sieht nur du. Löschen: Mehr → Konto → Konto löschen entfernt Konto, Profil, Gerätekennungen für Mitteilungen, Follower und Gefolgte, Erfolge, Blockierungen, eigene Meldungen, „Gefällt mir“-Angaben, Kommentare, gespeicherte Beiträge, gemeinsame Sessions, geteilte Spots, das Profilbild und geteilte Beiträge samt Fotos endgültig.',
       },
       {
         name: 'GoatCounter (goatcounter.com)',
