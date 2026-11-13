@@ -1,4 +1,6 @@
 .form {
+  max-width: 100%;
+  overflow-x: clip;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);

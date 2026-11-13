@@ -11,6 +11,10 @@
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: var(--shadow-2);
+  /* Nie seitwärts verschiebbar (iPhone): nur senkrecht scrollen */
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
 }
 .sheet[open] {
   animation: sheet-up var(--dur-med) var(--ease-out);
@@ -42,6 +46,8 @@
 }
 .body {
   overflow: auto;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
   padding: var(--space-2) var(--space-4) var(--space-4);
   display: grid;
   gap: var(--space-3);
