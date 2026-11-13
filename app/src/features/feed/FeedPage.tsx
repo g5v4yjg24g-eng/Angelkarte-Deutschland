@@ -1,7 +1,7 @@
 // Feed (Etappe 3, Wunsch Nutzer 2026-11-03): geteilte Beiträge von Freunden und eigene, neueste zuerst.
 // Reiter „Entdecken“ (Paket 7c): Beiträge mit „Alle“ von anderen Konten, zuletzt geteilt zuerst.
 // Nur angemeldet – sonst kein Netz und ein Hinweis aufs Konto.
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
@@ -31,6 +31,9 @@ import { useHaptics } from '../haptics/useHaptics';
 import { CatchTag } from '../profile/CatchInfoFields';
 import { useSaves } from './useSaves';
 import { NotificationsButton } from '../notifications/NotificationsButton';
+import { nextAnchors } from '../../domain/suggestions';
+import { SuggestCarousel } from '../suggestions/SuggestCarousel';
+import { useSuggestions } from '../suggestions/useSuggestions';
 import styles from './Feed.module.css';
 
 const t = de.feed;
@@ -198,6 +201,7 @@ export function FeedList({
   empty,
   reloadKey = 0,
   onSettled,
+  suggestions = false,
 }: {
   load: (before?: string) => Promise<FeedPost[]>;
   cursorOf: (p: FeedPost) => string;
@@ -205,6 +209,8 @@ export function FeedList({
   reloadKey?: number;
   /** Das (Neu-)Laden ist fertig – mit Erfolg oder Fehler */
   onSettled?: () => void;
+  /** „Angler entdecken“ zwischen den Beiträgen (nur im Feed „Gefolgt“) */
+  suggestions?: boolean;
 }) {
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [tick, setTick] = useState(0);
@@ -219,6 +225,27 @@ export function FeedList({
   const reactions = useServerReactions(ids, true);
   const saves = useSaves(ids);
   const avatars = useAvatarUrls(state.kind === 'ready' ? state.posts.map((p) => p.authorId) : []);
+  // Profilvorschläge: erst nach dem ersten Laden des Feeds anfragen; die Plätze zwischen den Beiträgen bleiben fest
+  const sug = useSuggestions(suggestions && state.kind === 'ready');
+  const shown = state.kind === 'ready' ? visible(state.posts, hidden) : [];
+  const [anchors, setAnchors] = useState<number[]>([]);
+  const carouselCount = sug.carousels.length;
+  // ein einmal gesetzter Platz ändert sich nie; neue kommen nur dazu (Stand direkt beim Zeichnen angepasst)
+  const grown = nextAnchors(anchors, shown.length, carouselCount);
+  if (grown.length !== anchors.length) setAnchors(grown);
+  const carouselAt = (count: number) => {
+    const i = anchors.indexOf(count);
+    const list = i >= 0 ? sug.carousels[i] : undefined;
+    return list ? (
+      <SuggestCarousel
+        id={`suggest-${i}`}
+        list={list}
+        followState={sug.followState}
+        onFollow={sug.follow}
+        onDismiss={sug.dismiss}
+      />
+    ) : null;
+  };
 
   useEffect(() => {
     let live = true;
@@ -262,22 +289,35 @@ export function FeedList({
         </>
       )}
       {state.kind === 'ready' &&
-        (visible(state.posts, hidden).length === 0 ? (
-          empty
+        (shown.length === 0 ? (
+          <>
+            {empty}
+            {suggestions && sug.carousels[0] && (
+              <SuggestCarousel
+                id="suggest-0"
+                list={sug.carousels[0]}
+                followState={sug.followState}
+                onFollow={sug.follow}
+                onDismiss={sug.dismiss}
+              />
+            )}
+          </>
         ) : (
           <div className={styles.list}>
-            {visible(state.posts, hidden).map((p) => (
-              <FeedCard
-                key={p.id}
-                post={p}
-                onDone={setToast}
-                reactions={reactions.get(p.id)}
-                onLike={() => reactions.toggle(p.id)}
-                onCommentCount={(d) => reactions.addComments(p.id, d)}
-                avatarUrl={avatars.get(p.authorId)}
-                saved={saves.isSaved(p.id)}
-                onSave={() => saves.toggle(p.id)}
-              />
+            {shown.map((p, i) => (
+              <Fragment key={p.id}>
+                <FeedCard
+                  post={p}
+                  onDone={setToast}
+                  reactions={reactions.get(p.id)}
+                  onLike={() => reactions.toggle(p.id)}
+                  onCommentCount={(d) => reactions.addComments(p.id, d)}
+                  avatarUrl={avatars.get(p.authorId)}
+                  saved={saves.isSaved(p.id)}
+                  onSave={() => saves.toggle(p.id)}
+                />
+                {suggestions && carouselAt(i + 1)}
+              </Fragment>
             ))}
             {state.more ? (
               <div>
@@ -291,6 +331,7 @@ export function FeedList({
           </div>
         ))}
       {toast && <Toast onDismiss={() => setToast(undefined)}>{toast}</Toast>}
+      {sug.message && <Toast onDismiss={sug.clearMessage}>{sug.message}</Toast>}
       {reactions.error && <Toast onDismiss={reactions.clearError}>{reactions.error}</Toast>}
       {saves.error && <Toast onDismiss={saves.clearError}>{saves.error}</Toast>}
     </>
@@ -360,6 +401,7 @@ export function FeedPage({ mode = 'friends' }: { mode?: 'friends' | 'discover' }
         load={load}
         cursorOf={(p) => (mode === 'discover' ? (p.sharedAt ?? p.createdAt) : p.createdAt)}
         reloadKey={tick}
+        suggestions={mode === 'friends'}
         empty={
           mode === 'discover' ? (
             <EmptyState icon={<FeedIcon size={32} />} title={t.discoverEmptyTitle}>
