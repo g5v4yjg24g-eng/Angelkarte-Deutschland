@@ -16,6 +16,8 @@ import type { PlaceType } from '../../domain/schemas';
 import { waterFromTile, waterPlace, type WaterInfo, type WaterManifest } from '../../domain/water';
 import type { SearchResult } from '../../domain/search';
 import { IconButton, Button } from '../../design/components/Button';
+import { ShareIcon, TrashIcon } from '../../design/icons';
+import { CatchHead } from '../catches/CatchFacts';
 import { Sheet } from '../../design/components/Sheet';
 import { Toast } from '../../design/components/Toast';
 import { Notice } from '../../design/components/Notice';
@@ -46,11 +48,12 @@ import { WaterHero, WaterProfile } from './WaterProfile';
 import { SearchBox } from './SearchBox';
 import { DetailSearch } from './DetailSearch';
 import { useWaterPhotos } from './useWaterPhotos';
-import { CatchDetails, LayerSwitches, Legend, NewHere, PlaceDetails, PlaceForm } from './MapSheets';
+import { CatchDetails, LayerSwitches, Legend, NewHere, PlaceDetails, PlaceForm, PlaceHead } from './MapSheets';
 import { adoptedPlace, incomingSpots } from '../../domain/sharedSpots';
 import { adoptSharedSpot } from '../../data/sharedSpotService';
 import { userMessage } from '../../data/errors';
-import { SharedSpotDetails } from '../spots/SharedSpotDetails';
+import { SharedSpotBanner, SharedSpotSheetBody } from '../spots/SharedSpotDetails';
+import { SafetyMenu } from '../moderation/SafetyMenu';
 import { useSharedSpots } from '../spots/useSharedSpots';
 import { isHidden } from '../../domain/moderation';
 import { useHidden } from '../moderation/hiddenStore';
@@ -781,6 +784,8 @@ export default function MapView() {
   let sheetTitle = '';
   let sheetBody: React.ReactNode = null;
   let sheetHero: React.ReactNode = null;
+  let sheetBanner: React.ReactNode = null;
+  let sheetFooter: React.ReactNode = null;
   if (sheet?.kind === 'new') {
     sheetTitle = de.map.newHereTitle;
     sheetBody = (
@@ -879,19 +884,39 @@ export default function MapView() {
     );
   } else if (sheetPlace) {
     sheetTitle = de.map.placeTypes[sheetPlace.type];
+    sheetBanner = <PlaceHead place={sheetPlace} />;
+    sheetFooter = (
+      <>
+        <Button
+          onClick={() =>
+            setSheet({
+              kind: 'placeForm',
+              type: sheetPlace.type,
+              lat: sheetPlace.position.lat,
+              lng: sheetPlace.position.lng,
+              id: sheetPlace.id,
+            })
+          }
+        >
+          {de.map.edit}
+        </Button>
+        <IconButton
+          label={de.map.delete}
+          icon={<TrashIcon />}
+          onClick={() => void deletePlace(sheetPlace.id)}
+        />
+      </>
+    );
     sheetBody = (
       <PlaceDetails
         place={sheetPlace}
-        onEdit={() =>
-          setSheet({
-            kind: 'placeForm',
-            type: sheetPlace.type,
-            lat: sheetPlace.position.lat,
-            lng: sheetPlace.position.lng,
-            id: sheetPlace.id,
-          })
-        }
-        onDelete={() => void deletePlace(sheetPlace.id)}
+        onShowOnMap={() => {
+          setSheet(null);
+          mapRef.current?.easeTo({
+            center: [sheetPlace.position.lng, sheetPlace.position.lat],
+            zoom: Math.max(mapRef.current.getZoom(), 15),
+          });
+        }}
         {...(account.enabled
           ? {
               onToggleShared: (on: boolean) =>
@@ -919,25 +944,55 @@ export default function MapView() {
     );
   } else if (sheetShared) {
     sheetTitle = de.spots.sheetTitle;
-    sheetBody = (
-      <SharedSpotDetails
-        spot={sheetShared}
-        adopted={!!places && !!adoptedPlace(sheetShared, places)}
-        onAdopt={() => void adopt(sheetShared.id)}
-        onSafety={(text) => {
-          setSheet(null);
-          setToast({ text });
-        }}
-      />
+    sheetBanner = <SharedSpotBanner spot={sheetShared} />;
+    sheetBody = <SharedSpotSheetBody spot={sheetShared} />;
+    sheetFooter = (
+      <>
+        <Button
+          onClick={() => void adopt(sheetShared.id)}
+          disabled={!!places && !!adoptedPlace(sheetShared, places)}
+        >
+          {places && adoptedPlace(sheetShared, places) ? de.spots.adopted : de.spots.adopt}
+        </Button>
+        <SafetyMenu
+          kind="spot"
+          targetId={sheetShared.id}
+          owner={{ id: sheetShared.ownerId, name: sheetShared.ownerName }}
+          onDone={(text) => {
+            setSheet(null);
+            setToast({ text });
+          }}
+        />
+      </>
     );
   } else if (sheetCatch) {
     sheetTitle = de.map.outcomes[sheetCatch.outcome];
     sheetBody = (
       <CatchDetails
         item={sheetCatch}
-        onEdit={() => setSheet({ kind: 'catchForm', id: sheetCatch.id })}
         onDelete={() => void deleteCatch(sheetCatch.id)}
+        onShowOnMap={() => {
+          const pos = sheetCatch.position;
+          setSheet(null);
+          if (pos)
+            mapRef.current?.easeTo({
+              center: [pos.lng, pos.lat],
+              zoom: Math.max(mapRef.current.getZoom(), 15),
+            });
+        }}
+        onAssignWater={() => void navigate('/', { state: { assignWater: sheetCatch.id } })}
       />
+    );
+    sheetBanner = <CatchHead item={sheetCatch} />;
+    sheetFooter = (
+      <>
+        <Button onClick={() => setSheet({ kind: 'catchForm', id: sheetCatch.id })}>{de.map.edit}</Button>
+        <IconButton
+          label={de.catchView.share}
+          icon={<ShareIcon />}
+          onClick={() => void navigate(`/profil/neu?fang=${sheetCatch.id}`)}
+        />
+      </>
     );
   } else if (sheet?.kind === 'water') {
     const { info } = sheet;
@@ -1158,6 +1213,8 @@ export default function MapView() {
         open={!!sheet && !!sheetBody}
         title={sheetTitle}
         hero={sheetHero}
+        banner={sheetBanner}
+        footer={sheetFooter}
         onClose={() => setSheet(null)}
         returnFocus={fabRef}
       >

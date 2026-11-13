@@ -10,7 +10,7 @@ import { Notice } from '../../design/components/Notice';
 import { BookIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
 import { repo } from '../../data/repository';
-import { CatchFacts, CatchHead } from './CatchFacts';
+import { CatchBannerCard, CatchFacts } from './CatchFacts';
 import { CatchForm } from './CatchForm';
 import type { CatchesListState } from './CatchesPage';
 import styles from './CatchesPage.module.css';
@@ -57,8 +57,14 @@ export function CatchDetailPage() {
   return (
     <Page title={de.map.outcomes[item.outcome]} back="/fangbuch">
       <div className={styles.detail}>
-        <CatchHead item={item} />
-        <CatchFacts item={item} />
+        <CatchBannerCard item={item} />
+        <CatchFacts
+          item={item}
+          onShowOnMap={
+            item.position ? () => void navigate('/', { state: { focusCatch: item.id } }) : undefined
+          }
+          onAssignWater={item.position ? () => void navigate('/', { state: { assignWater: item.id } }) : undefined}
+        />
       </div>
       <div className={styles.actions}>
         <Button onClick={() => setEditing(true)}>{de.map.edit}</Button>

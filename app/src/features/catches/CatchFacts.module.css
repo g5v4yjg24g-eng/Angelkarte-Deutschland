@@ -1,14 +1,17 @@
-.head {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
+.bannerCard {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
 }
-.head p {
-  margin: 0;
-}
-.title {
-  font-weight: 650;
-  font-size: var(--text-lg);
+.details {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
 }
 .facts {
   display: grid;

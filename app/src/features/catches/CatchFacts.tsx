@@ -4,37 +4,58 @@ import type { Catch } from '../../domain/schemas';
 import { formatDateTime } from '../../lib/storage';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { getDb } from '../../data/db';
-import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
 import { CatchPhotos } from './CatchPhotos';
 import { CatchWeather } from '../weather/CatchWeather';
 import { CatchGauge } from '../weather/CatchGauge';
-import { LawCheckPanel } from '../law/LawCheckPanel';
+import { LawCheckCard } from '../law/LawCheckCard';
+import { SunsetScene } from '../../design/components/SunsetScene';
+import { EntryHead, EntryTiles } from '../map/EntryView';
+import { useStateCrests } from '../map/useStateCrests';
 import { useLawCheck, useStateResolution } from '../law/useLawCheck';
 import { repo } from '../../data/repository';
 import styles from './CatchFacts.module.css';
 
 const t = de.catchForm;
+const v = de.catchView;
 
+/** Kopf eines Fangs: Symbol im Kreis, Titel, Zeitpunkt – im Blatt in der Kopfkarte, auf der Seite darunter */
 export function CatchHead({ item }: { item: Catch }) {
   return (
-    <div className={styles.head}>
-      <img src={markerDataUrl(`catch-${item.outcome}`)} width={28} height={28} alt="" aria-hidden="true" />
-      <div>
-        <p className={styles.title}>{catchTitle(item)}</p>
-        <p className="muted">{de.map.catchAt(formatDateTime(item.at))}</p>
-      </div>
+    <EntryHead icon={`catch-${item.outcome}`} title={catchTitle(item)}>
+      {de.map.catchAt(formatDateTime(item.at))}
+    </EntryHead>
+  );
+}
+
+/** Kopfkarte mit Abendstimmung für die Seite (im Blatt übernimmt das `Sheet` mit `banner`) */
+export function CatchBannerCard({ item }: { item: Catch }) {
+  return (
+    <div className={styles.bannerCard}>
+      <SunsetScene />
+      <CatchHead item={item} />
     </div>
   );
 }
 
-export function CatchFacts({ item }: { item: Catch }) {
+export function CatchFacts({
+  item,
+  onShowOnMap,
+  onAssignWater,
+}: {
+  item: Catch;
+  /** Antippen der Positions-Kachel */
+  onShowOnMap?: (() => void) | undefined;
+  /** Antippen der Gewässer-Kachel */
+  onAssignWater?: (() => void) | undefined;
+}) {
   const session = useLiveQuery(
     async () => (item.sessionId ? await getDb().sessions.get(item.sessionId) : undefined),
     [item.sessionId],
   );
   const sessionLabel =
     session && !session.deletedAt ? de.sessions.inSession(formatDateTime(session.startAt)) : undefined;
+  const crests = useStateCrests();
   const lawCheck = useLawCheck(item, useStateResolution(item.position, item.stateCode));
   const c = item.conditions;
   const bait = [
@@ -53,6 +74,9 @@ export function CatchFacts({ item }: { item: Catch }) {
   ]
     .filter(Boolean)
     .join(' · ');
+  const waterName =
+    item.waterSnapshot?.name ??
+    (item.waterSnapshot?.customName && de.catches.customNameValue(item.waterSnapshot.customName));
   const rows: [string, string | undefined][] = [
     [
       de.map.length,
@@ -71,38 +95,37 @@ export function CatchFacts({ item }: { item: Catch }) {
     [t.fields.method, item.method && t.methods[item.method]],
     [t.fields.bait, bait || undefined],
     [t.fields.conditions, conditions || undefined],
-    [
-      t.fields.water,
-      item.waterSnapshot?.name ??
-        (item.waterSnapshot?.customName && de.catches.customNameValue(item.waterSnapshot.customName)),
-    ],
     [t.fields.session, sessionLabel],
-    [
-      t.fields.position,
-      item.position
-        ? `${t.positionSource[item.position.source]} · ${de.map.coords(item.position.lat, item.position.lng)}`
-        : undefined,
-    ],
+    [v.positionSource, item.position && t.positionSource[item.position.source]],
   ];
   const shown = rows.filter((r): r is [string, string] => !!r[1]);
   return (
     <>
+      <EntryTiles
+        water={waterName || null}
+        position={item.position}
+        onAssignWater={item.position ? onAssignWater : undefined}
+        onShowOnMap={onShowOnMap}
+      />
       <CatchPhotos ids={item.photoIds} />
       {shown.length > 0 && (
-        <dl className={styles.facts}>
-          {shown.map(([k, v]) => (
-            <div key={k}>
-              <dt>{k}</dt>
-              <dd>{v}</dd>
-            </div>
-          ))}
-        </dl>
+        <section className={styles.details} aria-label={v.details}>
+          <dl className={styles.facts}>
+            {shown.map(([k, val]) => (
+              <div key={k}>
+                <dt>{k}</dt>
+                <dd>{val}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
       )}
       {item.notes && <p className={styles.notes}>{item.notes}</p>}
-      <LawCheckPanel
+      <LawCheckCard
         check={lawCheck}
         hasPosition={!!item.position}
         waterId={item.waterId}
+        crests={crests}
         onChooseState={(code) => void repo('catches').update(item.id, { stateCode: code })}
       />
       <CatchWeather item={item} />

@@ -8,11 +8,12 @@ import { de } from '../../i18n/de';
 import { Button } from '../../design/components/Button';
 import { ChevronRightIcon } from '../../design/icons';
 import { osmUrl, type WaterInfo, type WaterManifest } from '../../domain/water';
-import { attribution, crestUrl, thumbUrl, type WaterPhoto } from '../../domain/waterPhotos';
+import { attribution, thumbUrl, type WaterPhoto } from '../../domain/waterPhotos';
 import { WaterPermitSection } from '../permits/WaterPermitSection';
 import { WaterRulesSection } from '../permits/WaterRulesSection';
 import { WaterMiniMap } from './WaterMiniMap';
 import { WaterThumb } from './WaterThumb';
+import { StateCrest } from './StateCrest';
 import styles from './WaterProfile.module.css';
 
 const fmtDate = (iso: string) =>
@@ -76,33 +77,6 @@ export function WaterHero({ info, photo }: { info: WaterInfo; photo?: WaterPhoto
   );
 }
 
-/** Landeswappen; ohne Datei oder bei Ladefehler ein neutrales Schild */
-function StateCrest({ crest }: { crest?: WaterPhoto | undefined }) {
-  const [failed, setFailed] = useState(false);
-  if (crest && !failed)
-    return (
-      <img
-        className={styles.crest}
-        src={crestUrl(crest, 120)}
-        srcSet={`${crestUrl(crest, 120)} 1x, ${crestUrl(crest, 250)} 2x`}
-        alt=""
-        referrerPolicy="no-referrer"
-        onError={() => setFailed(true)}
-      />
-    );
-  return (
-    <svg className={styles.crest} viewBox="0 0 34 40" aria-hidden="true" focusable="false">
-      <path
-        d="M3 3h28v17c0 9-7 15-14 17C10 35 3 29 3 20Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        opacity=".55"
-      />
-    </svg>
-  );
-}
-
 export function WaterProfile({
   info,
   manifest,
@@ -152,7 +126,7 @@ export function WaterProfile({
       </h3>
       {info.state && state ? (
         <Link to={`/mehr/recht/${info.state}`} className={styles.rowLink}>
-          <StateCrest crest={crest} />
+          <StateCrest crest={crest} className={styles.crest} />
           <span className={styles.rowText}>
             <strong>{t.rulesStateTitle(state)}</strong>
             <span className="muted">{t.rulesStateSub}</span>

@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-22',
+    title: 'Fang, Ort und Spot neu gestaltet',
+    items: [
+      'Fang: Kopfkarte, Kacheln für Gewässer und Position, Landesrecht mit Wappen, Wetter und Pegel als Karten.',
+      'Ort und geteilter Spot: gleicher Look, Bearbeiten und Löschen unten in der Leiste.',
+      'Teilen: Beitrag direkt aus dem Fang erstellen.',
+    ],
+  },
+  {
     id: '2026-12-21',
     title: 'Wetter neu gestaltet',
     items: [

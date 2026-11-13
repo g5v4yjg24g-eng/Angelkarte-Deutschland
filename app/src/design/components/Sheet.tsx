@@ -3,6 +3,7 @@ import { de } from '../../i18n/de';
 import { dragOffset, shouldClose } from '../../lib/sheetDrag';
 import { ChevronLeftIcon, CloseIcon } from '../icons';
 import { IconButton } from './Button';
+import { SunsetScene } from './SunsetScene';
 import styles from './Sheet.module.css';
 
 /**
@@ -16,6 +17,7 @@ export function Sheet({
   children,
   footer,
   hero,
+  banner,
   returnFocus,
 }: {
   open: boolean;
@@ -25,6 +27,8 @@ export function Sheet({
   footer?: ReactNode;
   /** Kopfbild über dem Inhalt (ersetzt Griff und Kopfzeile); Zurück-Knopf liegt fest oben links */
   hero?: ReactNode;
+  /** Kopfkarte mit Abendstimmung statt der einfachen Kopfzeile (z. B. Fang): Inhalt links, Schließen-Knopf rechts */
+  banner?: ReactNode;
   /** Ziel für den Fokus nach dem Schließen, falls der Auslöser inzwischen verschwunden ist */
   returnFocus?: RefObject<HTMLElement | null>;
 }) {
@@ -128,7 +132,7 @@ export function Sheet({
       }}
     >
       {open && (
-        <div className={[styles.inner, hero ? styles.withHero : ''].join(' ')}>
+        <div className={[styles.inner, hero ? styles.withHero : '', banner ? styles.withBanner : ''].join(' ')}>
           {hero ? (
             <>
               <h2 id={titleId} className="visually-hidden">
@@ -137,6 +141,25 @@ export function Sheet({
               <button type="button" className={styles.back} aria-label={de.common.close} onClick={onClose}>
                 <ChevronLeftIcon size={20} aria-hidden="true" />
               </button>
+            </>
+          ) : banner ? (
+            <>
+              <div className={styles.handle} aria-hidden="true" />
+              <header className={styles.banner}>
+                <SunsetScene />
+                <h2 id={titleId} className="visually-hidden">
+                  {title}
+                </h2>
+                <div className={styles.bannerContent}>{banner}</div>
+                <button
+                  type="button"
+                  className={styles.bannerClose}
+                  aria-label={de.common.close}
+                  onClick={onClose}
+                >
+                  <CloseIcon size={22} aria-hidden="true" />
+                </button>
+              </header>
             </>
           ) : (
             <>

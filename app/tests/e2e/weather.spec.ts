@@ -100,8 +100,10 @@ test('WX-1: Wetter ist standardmäßig an; offline erfasst, online nachgeladen, 
   await context.setOffline(false);
   await expect(box).toContainText('Bedeckt');
   await expect(box).toContainText('9,4 °C');
-  await expect(box).toContainText('3,8 m/s · aus O · Böen 7,4 m/s');
-  await expect(box).toContainText('1018 hPa · −3 hPa in 3 h');
+  await expect(box).toContainText('3,8 m/s (O)');
+  await expect(box).toContainText('Böen: 7,4 m/s');
+  await expect(box).toContainText('1018 hPa');
+  await expect(box).toContainText('−3 hPa in 3 h');
   await expect(box).toContainText('nicht am Gewässer gemessen');
   await expect(box).toContainText('Quelle: Open-Meteo.com, CC BY 4.0');
 
