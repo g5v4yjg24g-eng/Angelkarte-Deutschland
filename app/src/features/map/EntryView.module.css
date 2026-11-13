@@ -1,0 +1,103 @@
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.head p {
+  margin: 0;
+}
+.headText {
+  min-width: 0;
+}
+.badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border: 2px solid var(--color-accent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-accent) 14%, var(--color-surface));
+}
+.title {
+  font-weight: 700;
+  font-size: var(--text-xl, 1.35rem);
+  overflow-wrap: anywhere;
+}
+.sub {
+  overflow-wrap: anywhere;
+}
+.tiles {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.3fr);
+  gap: var(--space-2);
+}
+.tiles.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+.tile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3) var(--space-2) var(--space-3) var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 25%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+button.tile {
+  cursor: pointer;
+}
+button.tile:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.tile > svg:first-child {
+  flex: none;
+  color: var(--color-primary);
+}
+.tile > svg:last-child:not(:first-child) {
+  flex: none;
+  margin-left: auto;
+}
+.tileText {
+  display: grid;
+  min-width: 0;
+}
+.tileText strong {
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+.tileLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.coords {
+  white-space: nowrap;
+  font-size: 0.85rem !important;
+}
+.note {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.rowCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--touch);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 25%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+  font-weight: 600;
+}

@@ -7,7 +7,9 @@ import { formatDateTime } from '../../lib/storage';
 import { FounderBadge } from '../badges/FounderBadge';
 import { markerDataUrl, type MarkerKind } from '../map/markerIcons';
 import { SafetyMenu } from '../moderation/SafetyMenu';
+import { EntryHead, EntryTiles, NoteCard } from '../map/EntryView';
 import styles from './Spots.module.css';
+import spotStyles from './Spots.module.css';
 
 const t = de.spots;
 
@@ -94,5 +96,26 @@ export function SharedSpotDetails({
         </Button>
       </div>
     </>
+  );
+}
+
+/** Kopf des Spot-Blatts auf der Karte: Symbol im Kreis, Name, Art · von wem */
+export function SharedSpotBanner({ spot }: { spot: SharedSpot }) {
+  return (
+    <EntryHead icon="shared-spot" title={spot.name ?? de.map.placeTypes[spot.type]}>
+      {de.map.placeTypes[spot.type]} · {t.from(spot.ownerName)}
+      {spot.ownerBadges.includes('founder') && <FounderBadge />} {t.handle(spot.ownerUsername)}
+    </EntryHead>
+  );
+}
+
+/** Inhalt des Spot-Blatts auf der Karte; Übernehmen und Melden stehen in der unteren Leiste */
+export function SharedSpotSheetBody({ spot }: { spot: SharedSpot }) {
+  return (
+    <div className={spotStyles.sheetBody}>
+      <EntryTiles position={{ lat: spot.lat, lng: spot.lng }} />
+      {spot.note && <NoteCard>{spot.note}</NoteCard>}
+      <p className="muted">{t.sharedOn(formatDateTime(spot.updatedAt))}</p>
+    </div>
   );
 }

@@ -10,8 +10,7 @@ import { userMessage } from '../../data/errors';
 import { repo } from '../../data/repository';
 import type { Catch, Place, PlaceType } from '../../domain/schemas';
 import { CatchFacts } from '../catches/CatchFacts';
-import type { WaterPhoto } from '../../domain/waterPhotos';
-import { formatDateTime } from '../../lib/storage';
+import { EntryHead, EntryTiles, NoteCard, RowCard } from './EntryView';
 import { CATCH_OUTCOMES, markerDataUrl, PLACE_TYPES } from './markerIcons';
 import { ALL_LAYERS, isFiltered, type MapFilter, type MapLayerKey } from '../../domain/mapFilter';
 import styles from './MapView.module.css';
@@ -154,77 +153,67 @@ export function PlaceForm({
   );
 }
 
+/** Kopf des Ort-Blatts (Kopfkarte am `Sheet`): Symbol im Kreis, Bezeichnung, Art · angelegt am */
+export function PlaceHead({ place }: { place: Place }) {
+  return (
+    <EntryHead icon={`place-${place.type}`} title={place.name ?? de.map.unnamed}>
+      {de.map.placeTypes[place.type]} ·{' '}
+      {de.map.createdAt(new Date(place.createdAt).toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin' }))}
+    </EntryHead>
+  );
+}
+
 export function PlaceDetails({
   place,
-  onEdit,
-  onDelete,
   onAddCatch,
+  onShowOnMap,
   onToggleShared,
 }: {
   place: Place;
-  onEdit: () => void;
-  onDelete: () => void;
   onAddCatch: () => void;
+  onShowOnMap: () => void;
   /** nur wenn ein Konto möglich ist: Ort mit Freunden teilen ein/aus */
   onToggleShared?: ((on: boolean) => void) | undefined;
 }) {
   return (
-    <>
-      <div className={styles.detailHead}>
-        <Icon kind={`place-${place.type}`} />
-        <div>
-          <p className={styles.detailTitle}>{place.name ?? de.map.unnamed}</p>
-          <p className="muted">{de.map.placeTypes[place.type]}</p>
-        </div>
-      </div>
-      {place.notes && <p className={styles.notes}>{place.notes}</p>}
-      <p className="muted tabular">{de.map.coords(place.position.lat, place.position.lng)}</p>
-      <p className="muted">{de.map.createdAt(formatDateTime(place.createdAt))}</p>
+    <div className={styles.form}>
+      <EntryTiles
+        water={place.waterSnapshot?.name ?? null}
+        position={place.position}
+        onShowOnMap={onShowOnMap}
+      />
+      {place.notes && <NoteCard>{place.notes}</NoteCard>}
       <Button variant="secondary" onClick={onAddCatch}>
         {de.map.addCatchHere}
       </Button>
       {onToggleShared && (
-        <div className={styles.sharedRow}>
-          <span>{de.map.sharedWithFriends}</span>
+        <RowCard label={de.map.sharedWithFriends}>
           <Switch
             checked={place.sharedWithFriends !== false}
             onChange={onToggleShared}
             label={de.map.sharedWithFriends}
           />
-        </div>
+        </RowCard>
       )}
-      <div className={styles.formActions}>
-        <Button variant="danger" onClick={onDelete}>
-          {de.map.delete}
-        </Button>
-        <Button onClick={onEdit}>{de.map.edit}</Button>
-      </div>
-    </>
+    </div>
   );
 }
 
 /** Inhalt des Fang-Blatts; Kopf (`CatchHead`) und untere Leiste (Bearbeiten, Teilen) setzt `MapView` am `Sheet` */
 export function CatchDetails({
   item,
-  crests,
   onDelete,
   onShowOnMap,
   onAssignWater,
 }: {
   item: Catch;
-  crests?: Readonly<Record<string, WaterPhoto>> | undefined;
   onDelete: () => void;
   onShowOnMap: () => void;
   onAssignWater: () => void;
 }) {
   return (
     <div className={styles.form}>
-      <CatchFacts
-        item={item}
-        crests={crests}
-        onShowOnMap={onShowOnMap}
-        onAssignWater={onAssignWater}
-      />
+      <CatchFacts item={item} onShowOnMap={onShowOnMap} onAssignWater={onAssignWater} />
       <div className={styles.formActions}>
         <Button variant="danger" onClick={onDelete}>
           {de.map.delete}

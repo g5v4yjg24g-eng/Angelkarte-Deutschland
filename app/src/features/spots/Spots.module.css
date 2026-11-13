@@ -243,3 +243,11 @@
   grid-template-columns: 1fr auto;
   align-items: center;
 }
+
+.sheetBody {
+  display: grid;
+  gap: var(--space-3);
+}
+.sheetBody p {
+  margin: 0;
+}

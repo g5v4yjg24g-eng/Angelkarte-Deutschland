@@ -4,15 +4,14 @@ import type { Catch } from '../../domain/schemas';
 import { formatDateTime } from '../../lib/storage';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { getDb } from '../../data/db';
-import { markerDataUrl } from '../map/markerIcons';
 import { catchTitle } from './catchText';
 import { CatchPhotos } from './CatchPhotos';
 import { CatchWeather } from '../weather/CatchWeather';
 import { CatchGauge } from '../weather/CatchGauge';
 import { LawCheckCard } from '../law/LawCheckCard';
 import { SunsetScene } from '../../design/components/SunsetScene';
-import { ChevronRightIcon, PinIcon, WavesIcon } from '../../design/icons';
-import type { WaterPhoto } from '../../domain/waterPhotos';
+import { EntryHead, EntryTiles } from '../map/EntryView';
+import { useStateCrests } from '../map/useStateCrests';
 import { useLawCheck, useStateResolution } from '../law/useLawCheck';
 import { repo } from '../../data/repository';
 import styles from './CatchFacts.module.css';
@@ -20,18 +19,12 @@ import styles from './CatchFacts.module.css';
 const t = de.catchForm;
 const v = de.catchView;
 
-/** Kopf eines Eintrags: Fangsymbol im Kreis, Titel, Zeitpunkt – im Blatt in der Kopfkarte, auf der Seite darunter */
+/** Kopf eines Fangs: Symbol im Kreis, Titel, Zeitpunkt – im Blatt in der Kopfkarte, auf der Seite darunter */
 export function CatchHead({ item }: { item: Catch }) {
   return (
-    <div className={styles.head}>
-      <span className={styles.badge}>
-        <img src={markerDataUrl(`catch-${item.outcome}`)} width={30} height={30} alt="" aria-hidden="true" />
-      </span>
-      <div className={styles.headText}>
-        <p className={styles.title}>{catchTitle(item)}</p>
-        <p className="muted">{de.map.catchAt(formatDateTime(item.at))}</p>
-      </div>
-    </div>
+    <EntryHead icon={`catch-${item.outcome}`} title={catchTitle(item)}>
+      {de.map.catchAt(formatDateTime(item.at))}
+    </EntryHead>
   );
 }
 
@@ -47,13 +40,10 @@ export function CatchBannerCard({ item }: { item: Catch }) {
 
 export function CatchFacts({
   item,
-  crests,
   onShowOnMap,
   onAssignWater,
 }: {
   item: Catch;
-  /** Landeswappen je Bundesland, falls geladen (sonst Schild) */
-  crests?: Readonly<Record<string, WaterPhoto>> | undefined;
   /** Antippen der Positions-Kachel */
   onShowOnMap?: (() => void) | undefined;
   /** Antippen der Gewässer-Kachel */
@@ -65,6 +55,7 @@ export function CatchFacts({
   );
   const sessionLabel =
     session && !session.deletedAt ? de.sessions.inSession(formatDateTime(session.startAt)) : undefined;
+  const crests = useStateCrests();
   const lawCheck = useLawCheck(item, useStateResolution(item.position, item.stateCode));
   const c = item.conditions;
   const bait = [
@@ -108,46 +99,14 @@ export function CatchFacts({
     [v.positionSource, item.position && t.positionSource[item.position.source]],
   ];
   const shown = rows.filter((r): r is [string, string] => !!r[1]);
-  const waterTile = (
-    <>
-      <WavesIcon size={26} aria-hidden="true" />
-      <span className={styles.tileText}>
-        <span className={styles.tileLabel}>{v.water}</span>
-        <strong>{waterName || v.waterNone}</strong>
-      </span>
-    </>
-  );
-  const posTile = item.position && (
-    <>
-      <PinIcon size={26} aria-hidden="true" />
-      <span className={styles.tileText}>
-        <span className={styles.tileLabel}>{v.position}</span>
-        <strong className={`tabular ${styles.coords}`}>
-          {de.map.coords(item.position.lat, item.position.lng)}
-        </strong>
-      </span>
-      {onShowOnMap && <ChevronRightIcon size={20} aria-hidden="true" />}
-    </>
-  );
   return (
     <>
-      <div className={styles.tiles}>
-        {onAssignWater && item.position ? (
-          <button type="button" className={styles.tile} onClick={onAssignWater}>
-            {waterTile}
-          </button>
-        ) : (
-          <div className={styles.tile}>{waterTile}</div>
-        )}
-        {posTile &&
-          (onShowOnMap ? (
-            <button type="button" className={styles.tile} onClick={onShowOnMap} aria-label={v.positionOnMap}>
-              {posTile}
-            </button>
-          ) : (
-            <div className={styles.tile}>{posTile}</div>
-          ))}
-      </div>
+      <EntryTiles
+        water={waterName || null}
+        position={item.position}
+        onAssignWater={item.position ? onAssignWater : undefined}
+        onShowOnMap={onShowOnMap}
+      />
       <CatchPhotos ids={item.photoIds} />
       {shown.length > 0 && (
         <section className={styles.details} aria-label={v.details}>
