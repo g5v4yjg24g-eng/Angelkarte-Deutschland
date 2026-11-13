@@ -162,6 +162,16 @@ async function fakeSupabase(
     notificationDeletes: [] as string[],
     notificationClears: 0,
   };
+  // Angler entdecken (2026-11-13): Zeilen von suggest_anglers, Ausgeblendete, Einstellungen, Region und Gewässer auf dem Server
+  const suggest = {
+    list: [] as Record<string, unknown>[],
+    dismissed: [] as string[],
+    prefs: { discoverable: true, waters_on: true },
+    region: undefined as { lat: number; lng: number } | undefined,
+    waters: [] as { id: string; name: string }[],
+    waterUploads: 0,
+    asked: 0,
+  };
   // Paket 12: Profile anderer (per Nutzername), Suchtreffer, eigene Angaben auf dem Server
   const people = {
     profiles: new Map<string, Record<string, unknown>>(),
@@ -1379,6 +1389,36 @@ async function fakeSupabase(
       case 'POST /rest/v1/rpc/delete_my_account':
         profile = null;
         return route.fulfill({ status: 204 });
+      case 'POST /rest/v1/rpc/suggest_anglers':
+        suggest.asked += 1;
+        return json(
+          route,
+          suggest.list.filter((r) => !suggest.dismissed.includes(String(r.user_id))),
+        );
+      case 'POST /rest/v1/rpc/dismiss_suggestion': {
+        suggest.dismissed.push((req.postDataJSON() as { other: string }).other);
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/my_suggestion_prefs':
+        return json(route, [{ ...suggest.prefs, region_on: suggest.region !== undefined }]);
+      case 'POST /rest/v1/rpc/set_my_suggestion_prefs': {
+        const b = req.postDataJSON() as { discoverable: boolean; waters_on: boolean };
+        suggest.prefs = b;
+        if (!b.waters_on) suggest.waters = [];
+        return route.fulfill({ status: 204 });
+      }
+      case 'POST /rest/v1/rpc/set_my_region':
+        suggest.region = req.postDataJSON() as { lat: number; lng: number };
+        return route.fulfill({ status: 204 });
+      case 'POST /rest/v1/rpc/clear_my_region':
+        suggest.region = undefined;
+        return route.fulfill({ status: 204 });
+      case 'POST /rest/v1/rpc/set_my_waters': {
+        if (!suggest.prefs.waters_on) return json(route, 0);
+        suggest.waters = (req.postDataJSON() as { entries: { id: string; name: string }[] }).entries;
+        suggest.waterUploads += 1;
+        return json(route, suggest.waters.length);
+      }
       default:
         return json(route, { message: `nicht nachgebildet: ${key}` }, 404);
     }
@@ -1397,7 +1437,9 @@ async function fakeSupabase(
     saves: { value: saves },
     group: { value: group },
     people: { value: people },
+    suggest: { value: suggest },
   }) as string[] & {
+    suggest: typeof suggest;
     people: typeof people;
     group: typeof group;
     saves: typeof saves;
@@ -4992,7 +5034,9 @@ test('NOTIF-5: Session-Einladung in den Mitteilungen annehmen startet die Sessio
   expect(errors).toEqual([]);
 });
 
-test('SPOT-5: Seite „Geteilte Spots“ – Kopfkarte, leere Liste, Freund zum Anbieten wählen', async ({ page }) => {
+test('SPOT-5: Seite „Geteilte Spots“ – Kopfkarte, leere Liste, Freund zum Anbieten wählen', async ({
+  page,
+}) => {
   const errors = collectErrors(page);
   await fakeSupabase(page, [], [], [], []);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -5077,4 +5121,319 @@ test('NOTIF-6: Angebot zum Teilen von Spots – Visitenkarte mit Annehmen/Ablehn
   await expect(angebot.getByRole('button', { name: 'Annehmen' })).toHaveCount(0);
   expect(calls.group.spotLinkResponses).toEqual([{ link: 'l-anna', accept: true }]);
   expect(errors.filter((e) => !/status of 404/.test(e))).toEqual([]);
+});
+
+// ---------------------------------------------------------------------------------------------------------------
+// Angler entdecken (2026-11-13)
+const sugRow = (n: number, extra: Record<string, unknown> = {}) => ({
+  user_id: `u-s${n}`,
+  username: `angler${n}`,
+  display_name: `Angler ${n}`,
+  badges: [],
+  common_friends: 0,
+  shared_water: null,
+  same_region: true,
+  achievement_keys: null,
+  ...extra,
+});
+const feedRows = (n: number) =>
+  Array.from({ length: n }, (_, i) =>
+    feedRow({
+      id: `00000000-0000-4000-8000-${String(i + 1).padStart(12, '0')}`,
+      caption: `Beitrag ${i + 1}`,
+      photo_paths: [`u-anna/p${i + 1}/1.jpg`],
+      created_at: new Date(Date.UTC(2026, 10, 6, 18, 0) - i * 3_600_000).toISOString(),
+    }),
+  );
+/** Beiträge (Artikel) vor einem Bereich im Feed */
+const articlesBefore = (el: Element) => {
+  let n = 0;
+  for (let e = el.previousElementSibling; e; e = e.previousElementSibling)
+    if (e.tagName === 'ARTICLE') n += 1;
+  return n;
+};
+const mainTop = (page: Page) => page.locator('#main').evaluate((el) => el.scrollTop);
+
+test('SUG-1: Angler entdecken – Karussell nach 5 Beiträgen, zweites nach 12 weiteren, Karte, Folgen, Ausblenden', async ({
+  page,
+}) => {
+  test.slow();
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }], feedRows(20));
+  calls.suggest.list.push(
+    sugRow(1, {
+      common_friends: 3,
+      shared_water: 'De Wittsee',
+      badges: ['founder'],
+      achievement_keys: ['catches:gold', 'pike:silver', 'first', 'species:bronze'],
+    }),
+    sugRow(2, { same_region: false, shared_water: 'Rhein' }),
+    ...Array.from({ length: 18 }, (_, i) => sugRow(i + 3)),
+  );
+  calls.people.profiles.set('angler1', {
+    user_id: 'u-s1',
+    username: 'angler1',
+    display_name: 'Angler 1',
+    is_private: false,
+    relation: 'none',
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
+  await expect(page.getByText('Beitrag 1', { exact: true })).toBeVisible();
+
+  // zwei Bereiche: nach dem 5. und nach dem 17. Beitrag (5 + 12); die Beiträge selbst bleiben in Reihenfolge
+  const sections = page.getByRole('region', { name: 'Angler entdecken' });
+  await expect(sections).toHaveCount(2);
+  expect(await sections.nth(0).evaluate(articlesBefore)).toBe(5);
+  expect(await sections.nth(1).evaluate(articlesBefore)).toBe(17);
+  await expect(page.getByRole('article').filter({ hasText: /^Beitrag/ })).toHaveCount(0);
+  await expect(sections.first().getByText('Entdecke Angler, die zu dir passen.')).toBeVisible();
+  // 10 Karten je Karussell, keine Person doppelt
+  const first = sections.nth(0).getByRole('article');
+  await expect(first).toHaveCount(10);
+  await expect(sections.nth(1).getByRole('article')).toHaveCount(10);
+  expect(
+    await page
+      .getByRole('article')
+      .filter({ has: page.getByRole('button', { name: /folgen$/ }) })
+      .count(),
+  ).toBe(20);
+
+  // Karte: Name mit Founder-Abzeichen, Gründe (Kontakte, Gewässer), Erfolge; ohne Freigabe eine neutrale Zeile
+  const card1 = first.nth(0);
+  await card1.scrollIntoViewIfNeeded();
+  await expect(card1.getByRole('link', { name: 'Profil von Angler 1 öffnen' })).toHaveAttribute(
+    'href',
+    /\/profil\/nutzer\/angler1$/,
+  );
+  await expect(card1.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
+  await expect(card1.getByText('3 gemeinsame Freunde')).toBeVisible();
+  await expect(card1.getByText('Angelt ebenfalls an: De Wittsee')).toBeVisible();
+  await expect(card1.getByRole('list', { name: 'Erfolge' }).getByRole('listitem')).toHaveCount(3);
+  await expect(card1.getByRole('img', { name: 'Fänge: Gold' })).toBeVisible();
+  await expect(first.nth(2).getByText('Angler aus deiner Region')).toBeVisible();
+  await expect(first.nth(2).getByText('Noch keine Erfolge sichtbar')).toBeVisible();
+  // keine Entfernung, keine Koordinaten
+  await expect(sections.first()).not.toContainText(/\d+\s?km/);
+
+  // gleiche Größe; die nächste Karte schaut am rechten Rand hervor
+  const b0 = await first.nth(0).boundingBox();
+  const b1 = await first.nth(1).boundingBox();
+  const b2 = await first.nth(2).boundingBox();
+  expect(b0 && b1 && b2 && b0.width === b1.width && b1.width === b2.width && b0.height === b1.height).toBe(
+    true,
+  );
+  expect(b1 && b1.x < 390 && b1.x + b1.width > 390).toBe(true);
+  const track = sections.nth(0).getByRole('list', { name: 'Profilvorschläge' });
+  expect(await track.evaluate((el) => getComputedStyle(el).touchAction)).toBe('pan-y pinch-zoom');
+  expect(await track.evaluate((el) => getComputedStyle(el).scrollSnapType)).toContain('mandatory');
+
+  // waagerecht wischen: weiter zur nächsten Karte, senkrecht bleibt der Feed frei
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true });
+  const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', x: number, y: number) =>
+    cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+  const box = (await track.boundingBox()) as { x: number; y: number; width: number; height: number };
+  const y = box.y + box.height / 2;
+  expect(await track.evaluate((el) => el.scrollLeft)).toBe(0);
+  await touch('touchStart', 300, y);
+  for (const x of [280, 240, 200, 160, 120]) await touch('touchMove', x, y + 2);
+  await touch('touchEnd', 120, y + 2);
+  await expect.poll(() => track.evaluate((el) => el.scrollLeft)).toBeGreaterThan(100);
+  const topBefore = await mainTop(page);
+  expect(Math.abs(topBefore - (await mainTop(page)))).toBeLessThan(2);
+  // senkrechter Zug über dem Karussell: der Feed scrollt, das Karussell bleibt stehen
+  const left = await track.evaluate((el) => el.scrollLeft);
+  await touch('touchStart', 200, y);
+  for (const dy of [-30, -80, -140, -200]) await touch('touchMove', 202, y + dy);
+  await touch('touchEnd', 202, y - 200);
+  await expect.poll(() => mainTop(page)).toBeGreaterThan(topBefore + 50);
+  expect(await track.evaluate((el) => el.scrollLeft)).toBe(left);
+  // Rückwärts: nach rechts wischen
+  await track.scrollIntoViewIfNeeded();
+  const box2 = (await track.boundingBox()) as { x: number; y: number; height: number };
+  const y2 = box2.y + box2.height / 2;
+  await touch('touchStart', 100, y2);
+  for (const x of [130, 170, 210, 260, 300]) await touch('touchMove', x, y2 + 2);
+  await touch('touchEnd', 300, y2 + 2);
+  await expect.poll(() => track.evaluate((el) => el.scrollLeft)).toBeLessThan(left);
+
+  // Folgen: offenes Konto → „Gefolgt“, privates → „Angefragt“; Feed wird nicht neu geladen, Position bleibt
+  await first.nth(0).scrollIntoViewIfNeeded();
+  const feedCalls = () => calls.filter((c) => /rpc\/feed$/.test(c)).length;
+  const feedBefore = feedCalls();
+  const top = await mainTop(page);
+  await first.nth(0).getByRole('button', { name: 'Angler 1 folgen' }).click();
+  await expect(first.nth(0).getByRole('button', { name: 'Gefolgt' })).toBeVisible();
+  await first.nth(1).scrollIntoViewIfNeeded();
+  await first.nth(1).getByRole('button', { name: 'Angler 2 folgen' }).click();
+  await expect(first.nth(1).getByRole('button', { name: 'Angefragt' })).toBeVisible();
+  expect(calls.filter((c) => /rpc\/follow_user$/.test(c))).toHaveLength(2);
+  expect(feedCalls()).toBe(feedBefore);
+  expect(Math.abs((await mainTop(page)) - top)).toBeLessThan(80);
+  // Gefolgtes lässt sich nicht noch einmal „folgen“
+  await first.nth(0).getByRole('button', { name: 'Gefolgt' }).click({ force: true });
+  expect(calls.filter((c) => /rpc\/follow_user$/.test(c))).toHaveLength(2);
+
+  // Ausblenden: Karte weg, der Server merkt es; das zweite Karussell bleibt unverändert
+  await first.nth(4).scrollIntoViewIfNeeded();
+  await first.nth(4).getByRole('button', { name: 'Angler 5 ausblenden' }).click();
+  await expect(sections.nth(0).getByRole('article')).toHaveCount(9);
+  await expect(sections.nth(1).getByRole('article')).toHaveCount(10);
+  expect(calls.suggest.dismissed).toEqual(['u-s5']);
+
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  expect(errors).toEqual([]);
+});
+
+test('SUG-2: wenige Beiträge, zu wenige oder keine Vorschläge – der Feed bleibt, wie er ist', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [], feedRows(2));
+  calls.suggest.list.push(...Array.from({ length: 4 }, (_, i) => sugRow(i + 1)));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
+  await expect(page.getByText('Beitrag 2', { exact: true })).toBeVisible();
+  // bei nur 2 Beiträgen steht das Karussell am Ende der Beiträge
+  const section = page.getByRole('region', { name: 'Angler entdecken' });
+  await expect(section).toHaveCount(1);
+  expect(await section.evaluate(articlesBefore)).toBe(2);
+  await expect(section.getByRole('article')).toHaveCount(4);
+
+  // zu wenige Vorschläge (2): kein Karussell
+  calls.suggest.list.splice(2);
+  await page.goto('/feed/entdecken');
+  await page.goto('/feed');
+  await expect(page.getByText('Beitrag 2', { exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Angler entdecken' })).toHaveCount(0);
+  await expect(page.getByText('Das waren alle Beiträge.')).toBeVisible();
+  expect(errors).toEqual([]);
+});
+
+test('SUG-3: leerer Feed zeigt „Leute finden“ und darunter die Vorschläge; Entdecken-Reiter ohne Vorschläge', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [], []);
+  calls.suggest.list.push(...Array.from({ length: 5 }, (_, i) => sugRow(i + 1)));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
+  await expect(page.getByRole('link', { name: 'Leute finden' })).toBeVisible();
+  const section = page.getByRole('region', { name: 'Angler entdecken' });
+  await expect(section.getByRole('article')).toHaveCount(5);
+  await page.getByRole('link', { name: 'Entdecken' }).click();
+  await expect(page.getByRole('heading', { name: 'Noch nichts zu entdecken' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Angler entdecken' })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('SUG-4: Fehler beim Laden der Vorschläge stören den Feed nicht; ohne Anmeldung keine Anfrage', async ({
+  page,
+}) => {
+  const calls = await fakeSupabase(page, [], [], feedRows(6));
+  await page.route('**/rest/v1/rpc/suggest_anglers', (route) => route.fulfill({ status: 500, body: '{}' }));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
+  await expect(page.getByText('Beitrag 6', { exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Angler entdecken' })).toHaveCount(0);
+  expect(calls.suggest.asked).toBe(0);
+});
+
+test('SUG-5: Einstellungen – Auffindbarkeit, Gewässer (nur Kennung und Name), grobe Region nur nach Freigabe', async ({
+  page,
+  context,
+}) => {
+  test.slow();
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  // Fänge mit Gewässer, einer mit eigenem Namen: nur der Name aus den Gewässerdaten geht hoch
+  await page.evaluate(async () => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const r = indexedDB.open('fangpunkt');
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+    const now = new Date().toISOString();
+    const base = { createdAt: now, updatedAt: now, rev: 1, at: now, tz: 'Europe/Berlin', outcome: 'caught' };
+    const tx = db.transaction(['catches'], 'readwrite');
+    const store = tx.objectStore('catches');
+    store.put({
+      ...base,
+      id: 'w1',
+      waterId: 'osm:w35044256',
+      waterSnapshot: { name: 'De Wittsee', centroid: { lat: 51.3, lng: 6.2 }, place: 'Nettetal' },
+      position: { lat: 51.31234, lng: 6.21234, source: 'gps' },
+      notes: 'Geheimer Spot',
+    });
+    store.put({
+      ...base,
+      id: 'w2',
+      waterId: 'osm:w999',
+      waterSnapshot: { customName: 'Mein Geheimsee' },
+    });
+    await new Promise((resolve, reject) => {
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+    db.close();
+  });
+  await page.goto('/mehr/konto/privatsphaere');
+  await waitForApp(page);
+  const section = page.getByRole('region', { name: 'Angler entdecken' });
+  const discoverable = section.getByRole('checkbox', { name: 'In Vorschlägen anderer erscheinen' });
+  const waters = section.getByRole('checkbox', { name: 'Meine Gewässer für Vorschläge nutzen' });
+  const region = section.getByRole('checkbox', { name: 'Angler aus meiner Region vorschlagen' });
+  await expect(discoverable).toBeChecked();
+  await expect(waters).toBeChecked();
+  await expect(region).not.toBeChecked();
+  // Standard: Gewässer an – Kennung und Name, sonst nichts (keine Position, Notiz, kein eigener Name)
+  await expect.poll(() => calls.suggest.waters).toEqual([{ id: 'osm:w35044256', name: 'De Wittsee' }]);
+  expect(JSON.stringify(calls.suggest.waters)).not.toMatch(/Nettetal|51\.3|Geheim/);
+
+  // Region: ohne Standortfreigabe passiert nichts
+  await region.check();
+  await expect(
+    section.getByText('Ohne Standortfreigabe kann die Region nicht genutzt werden.'),
+  ).toBeVisible();
+  await expect(region).not.toBeChecked();
+  expect(calls.suggest.region).toBeUndefined();
+  // mit Freigabe: nur der gerundete Rasterpunkt geht hoch
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: 51.3263, longitude: 6.2418 });
+  await region.check();
+  await expect(region).toBeChecked();
+  expect(calls.suggest.region).toEqual({ lat: 51.3, lng: 6.2 });
+  await region.uncheck();
+  await expect.poll(() => calls.suggest.region).toBeUndefined();
+  await expect(region).not.toBeChecked();
+
+  // Gewässer aus: die Liste verschwindet vom Server und wird nicht wieder hochgeladen
+  await waters.uncheck();
+  await expect.poll(() => calls.suggest.waters).toEqual([]);
+  expect(calls.suggest.prefs).toEqual({ discoverable: true, waters_on: false });
+  const uploads = calls.suggest.waterUploads;
+  await page.reload();
+  await waitForApp(page);
+  await expect(
+    section.getByRole('checkbox', { name: 'Meine Gewässer für Vorschläge nutzen' }),
+  ).not.toBeChecked();
+  expect(calls.suggest.waterUploads).toBe(uploads);
+  // nicht auffindbar
+  await section.getByRole('checkbox', { name: 'In Vorschlägen anderer erscheinen' }).uncheck();
+  await expect.poll(() => calls.suggest.prefs.discoverable).toBe(false);
+  expect(errors).toEqual([]);
 });
