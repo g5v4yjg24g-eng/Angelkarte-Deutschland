@@ -10,9 +10,9 @@
 --  * user_waters        – höchstens 30 Gewässer je Konto: nur Kennung („osm:w123“) und Name aus den Gewässerdaten.
 --                         Keine Orte, Zeiten, Fänge, Spots, Sessions, eigene Namen.
 --  * suggestion_dismissals – ausgeblendete Vorschläge (zählt mit; je öfter, desto länger Pause und seltener danach).
--- Die Empfehlung rechnet nur der Server (suggest_anglers). Entfernungen, Koordinaten und fremde Gewässerlisten
--- verlassen ihn nie – die App erhält nur: Zahl gemeinsamer Kontakte, EIN gemeinsames Gewässer (Name aus der
--- eigenen Liste), „gleiche Region“ ja/nein und freigegebene Erfolgsstufen.
+-- Die Empfehlung rechnet nur der Server (suggest_anglers). Entfernungen, Koordinaten, Gewässer und fremde Listen
+-- verlassen ihn nie – die App erfährt nicht, WARUM jemand vorgeschlagen wird, außer bei gemeinsamen Kontakten (Wunsch
+-- Nutzer 2026-11-13): sie erhält nur die Zahl gemeinsamer Kontakte und freigegebene Erfolgsstufen.
 
 -- ---------------------------------------------------------------------------------------------------------
 -- 1. Tabellen
@@ -181,8 +181,7 @@ $$;
 create function public.suggest_anglers(max_rows integer default 20)
 returns table (
   user_id uuid, username text, display_name text, badges text[],
-  common_friends integer, shared_water text, same_region boolean,
-  achievement_keys text[], score numeric
+  common_friends integer, achievement_keys text[], score numeric
 )
 language plpgsql stable security definer set search_path = '' as $$
 declare
@@ -216,7 +215,7 @@ begin
     group by f.followee
   ),
   water as (
-    select ow.user_id as u, count(*)::integer as n, min(mw.name) as name
+    select ow.user_id as u, count(*)::integer as n
     from public.user_waters mw
     join public.user_waters ow on ow.water_id = mw.water_id and ow.user_id <> me
     left join public.suggestion_prefs op on op.user_id = ow.user_id
@@ -242,7 +241,7 @@ begin
   )
   select pr.id, pr.username, pr.display_name,
          coalesce((select array_agg(b.badge order by b.badge) from public.user_badges b where b.user_id = pr.id), '{}'),
-         coalesce(c.n, 0), w.name, n.u is not null,
+         coalesce(c.n, 0),
          case when ach.achievements_visibility = 'public'
               then (select array_agg(a.key order by a.unlocked_at) from public.user_achievements a where a.user_id = pr.id)
          end,
@@ -267,7 +266,7 @@ begin
     and not public.is_blocked_between(pr.id, me)
     and not public.is_banned(pr.id)
     and (d.n is null or d.last_at + interval '30 days' * least(power(2, d.n - 1), 12) <= now())
-  order by 9 desc, pr.username
+  order by 7 desc, pr.username
   limit cap;
 end;
 $$;

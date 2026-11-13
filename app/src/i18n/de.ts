@@ -2607,8 +2607,6 @@ export const de = {
     openProfile: (name: string) => `Profil von ${name} öffnen`,
     handle: (u: string) => `@${u}`,
     reasonFriends: (n: number) => (n === 1 ? '1 gemeinsamer Freund' : `${n} gemeinsame Freunde`),
-    reasonWater: (name: string) => `Angelt ebenfalls an: ${name}`,
-    reasonRegion: 'Angler aus deiner Region',
     achievements: 'Erfolge',
     noAchievements: 'Noch keine Erfolge sichtbar',
     followError: 'Folgen hat nicht geklappt. Bitte später erneut versuchen.',

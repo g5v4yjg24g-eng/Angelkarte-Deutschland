@@ -5208,10 +5208,12 @@ test('SUG-1: Angler entdecken – Karussell nach 5 Beiträgen, zweites nach 12 w
   );
   await expect(card1.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
   await expect(card1.getByText('3 gemeinsame Freunde')).toBeVisible();
-  await expect(card1.getByText('Angelt ebenfalls an: De Wittsee')).toBeVisible();
+  // Gewässer und Region werden nie als Grund genannt (Wunsch Nutzer 2026-11-13)
+  await expect(card1.getByText(/Angelt ebenfalls|Region/)).toHaveCount(0);
   await expect(card1.getByRole('list', { name: 'Erfolge' }).getByRole('listitem')).toHaveCount(3);
   await expect(card1.getByRole('img', { name: 'Fänge: Gold' })).toBeVisible();
-  await expect(first.nth(2).getByText('Angler aus deiner Region')).toBeVisible();
+  await expect(first.nth(2).getByText(/gemeinsam|Region|Angelt/)).toHaveCount(0);
+  await expect(sections.nth(0).getByText(/Region|Angelt ebenfalls/)).toHaveCount(0);
   await expect(first.nth(2).getByText('Noch keine Erfolge sichtbar')).toBeVisible();
   // keine Entfernung, keine Koordinaten
   await expect(sections.first()).not.toContainText(/\d+\s?km/);

@@ -8,7 +8,6 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     title: 'Angler entdecken',
     items: [
       'Feed: zwischen den Beiträgen schlagen wir Angler vor, die zu dir passen – wische seitwärts durch die Profile.',
-      'Gründe: gemeinsame Freunde, gleiches Gewässer oder Angler aus deiner Region (bis 100 km).',
       'Folgen direkt auf der Karte, X blendet einen Vorschlag aus.',
       'Privatsphäre: unter Mehr → Konto → Privatsphäre stellst du Auffindbarkeit, Gewässer und Region ein (Region nur auf Wunsch).',
     ],

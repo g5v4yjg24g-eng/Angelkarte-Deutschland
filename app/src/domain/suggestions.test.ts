@@ -20,8 +20,6 @@ const row = (n: number, extra: object = {}) => ({
   display_name: `User ${n}`,
   badges: [],
   common_friends: 0,
-  shared_water: null,
-  same_region: false,
   achievement_keys: null,
   ...extra,
 });
@@ -37,25 +35,23 @@ describe('parseSuggestionRows', () => {
     ]);
     expect(list.map((s) => s.userId)).toEqual(['u1', 'u2']);
     expect(list[0]).toMatchObject({ commonFriends: 3, badges: ['founder'], achievementKeys: ['first'] });
-    expect(list[1]).toMatchObject({ sameRegion: true, sharedWater: 'De Wittsee' });
+    // Gewässer und Region kennt die App nicht (selbst wenn eine ältere Antwort sie noch mitschickt)
+    expect(list[1]).not.toHaveProperty('sharedWater');
+    expect(list[1]).not.toHaveProperty('sameRegion');
     expect(list[1]).not.toHaveProperty('achievementKeys');
     expect(parseSuggestionRows(undefined)).toEqual([]);
   });
 });
 
 describe('reasonsOf', () => {
-  it('Kontakte vor Gewässer vor Region, höchstens zwei', () => {
+  it('nennt nur gemeinsame Kontakte', () => {
     const s = parseSuggestionRows([
       row(1, { common_friends: 2, shared_water: 'Rhein', same_region: true }),
     ])[0] as Suggestion;
-    expect(reasonsOf(s)).toEqual([
-      { kind: 'friends', count: 2 },
-      { kind: 'water', name: 'Rhein' },
-    ]);
-    expect(reasonsOf(s, 3)).toHaveLength(3);
+    expect(reasonsOf(s)).toEqual([{ kind: 'friends', count: 2 }]);
   });
-  it('ohne Grund nichts', () => {
-    const s = parseSuggestionRows([row(1)])[0] as Suggestion;
+  it('ohne gemeinsame Kontakte kein Grund – auch nicht Gewässer oder Region', () => {
+    const s = parseSuggestionRows([row(1, { shared_water: 'Rhein', same_region: true })])[0] as Suggestion;
     expect(reasonsOf(s)).toEqual([]);
   });
 });

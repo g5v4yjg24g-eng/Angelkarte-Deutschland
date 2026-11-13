@@ -14,12 +14,8 @@ export interface Suggestion {
   username: string;
   displayName: string;
   badges: Badge[];
-  /** Personen, denen ich folge und die ihr/ihm folgen */
+  /** Personen, denen ich folge und die ihr/ihm folgen – der einzige Grund, den die App nennt */
   commonFriends: number;
-  /** ein gemeinsames Gewässer (Name aus der eigenen Liste) */
-  sharedWater?: string | undefined;
-  /** gleiche Region (Umkreis 100 km) – nie eine Entfernung */
-  sameRegion: boolean;
   /** freigegebene Erfolgsstufen („catches:gold“ …); fehlt = nicht freigegeben */
   achievementKeys?: string[] | undefined;
 }
@@ -30,8 +26,6 @@ const RowSchema = z.object({
   display_name: z.string(),
   badges: z.array(z.unknown()).nullable().optional(),
   common_friends: z.number().int().min(0).nullable().optional(),
-  shared_water: z.string().nullable().optional(),
-  same_region: z.boolean().nullable().optional(),
   achievement_keys: z.array(z.string()).nullable().optional(),
 });
 
@@ -50,8 +44,6 @@ export function parseSuggestionRows(rows: readonly unknown[] | null | undefined)
       displayName: d.display_name,
       badges: parseBadges((d.badges ?? []).map((badge) => ({ badge }))),
       commonFriends: d.common_friends ?? 0,
-      ...(d.shared_water ? { sharedWater: d.shared_water } : {}),
-      sameRegion: d.same_region === true,
       ...(d.achievement_keys ? { achievementKeys: d.achievement_keys } : {}),
     });
   }
@@ -60,16 +52,17 @@ export function parseSuggestionRows(rows: readonly unknown[] | null | undefined)
 
 // ---------------------------------------------------------------------------------------------------------
 // Karte: Gründe und Erfolge
-export type Reason =
-  { kind: 'friends'; count: number } | { kind: 'water'; name: string } | { kind: 'region' };
+export interface Reason {
+  kind: 'friends';
+  count: number;
+}
 
-/** Gründe in fester Reihenfolge (Kontakte, Gewässer, Region); höchstens zwei – der stärkste zuerst */
-export function reasonsOf(s: Suggestion, limit = 2): Reason[] {
-  const all: Reason[] = [];
-  if (s.commonFriends > 0) all.push({ kind: 'friends', count: s.commonFriends });
-  if (s.sharedWater) all.push({ kind: 'water', name: s.sharedWater });
-  if (s.sameRegion) all.push({ kind: 'region' });
-  return all.slice(0, limit);
+/**
+ * Empfehlungsgrund für die Karte (Wunsch Nutzer 2026-11-13): nur gemeinsame Kontakte werden genannt. Warum sonst
+ * jemand vorgeschlagen wird (gemeinsames Gewässer, Region), erfährt niemand – der Server liefert es gar nicht erst.
+ */
+export function reasonsOf(s: Suggestion): Reason[] {
+  return s.commonFriends > 0 ? [{ kind: 'friends', count: s.commonFriends }] : [];
 }
 
 export interface ShownAchievement {

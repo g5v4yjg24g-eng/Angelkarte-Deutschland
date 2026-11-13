@@ -12,17 +12,6 @@ import styles from './Suggest.module.css';
 const t = de.suggest;
 const a = de.achievements;
 
-function reasonText(r: ReturnType<typeof reasonsOf>[number]) {
-  switch (r.kind) {
-    case 'friends':
-      return t.reasonFriends(r.count);
-    case 'water':
-      return t.reasonWater(r.name);
-    case 'region':
-      return t.reasonRegion;
-  }
-}
-
 export function SuggestCard({
   s,
   avatarUrl,
@@ -81,7 +70,7 @@ export function SuggestCard({
       <ul className={reasons.length ? styles.reasons : styles.reasonsNone} aria-label={t.title}>
         {reasons.map((r) => (
           <li key={r.kind} className={styles.reason}>
-            {reasonText(r)}
+            {t.reasonFriends(r.count)}
           </li>
         ))}
       </ul>

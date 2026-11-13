@@ -45,9 +45,10 @@ create function public.as_user(u text) returns void language sql as $$ select se
 grant execute on function public.as_user(text) to authenticated;
 set role authenticated;
 select as_user('a1') \g /dev/null
--- Alles, was der Server zurückgibt: Name:gemeinsame Kontakte:Gewässer:Region:Erfolge
-select 'Anna: Vorschläge', t($q$ select string_agg(username||':'||common_friends||':'||coalesce(shared_water,'-')||':'||same_region||':'||coalesce(array_to_string(achievement_keys,'+'),'-'), E'\n' order by username) from public.suggest_anglers(30) $q$);
+-- Alles, was der Server zurückgibt: Name:gemeinsame Kontakte:Erfolge – kein Grund Gewässer/Region, keine Entfernung
+select 'Anna: Vorschläge', t($q$ select string_agg(username||':'||common_friends||':'||coalesce(array_to_string(achievement_keys,'+'),'-'), E'\n' order by username) from public.suggest_anglers(30) $q$);
 select 'Anna: die ersten drei (Reihenfolge)', t($q$ select string_agg(username, ',' order by score desc) from (select * from public.suggest_anglers(3)) x $q$);
+select 'Anna: Spalten', t($q$ select string_agg(a.attname, ',' order by a.attnum) from pg_proc p, unnest(p.proargnames) with ordinality as a(attname, attnum) where p.proname = 'suggest_anglers' and a.attnum > 1 $q$);
 select 'Anna: höchstens', t($q$ select count(*)::text from public.suggest_anglers(2) $q$);
 select 'Anna: Einstellungen', t($q$ select concat_ws(' ', discoverable, waters_on, region_on) from public.my_suggestion_prefs() $q$);
 -- Ausblenden
@@ -66,7 +67,7 @@ select 'Dora nach der Pause', t($q$ select string_agg(username, ',') from public
 select 'Dora nach der Pause: Platz unter den ersten vier', t($q$ select (exists (select 1 from (select username from public.suggest_anglers(30) order by score desc limit 4) x where username = 'dora'))::text $q$);
 -- Finn: eine Region und ein Gewässer, folgt niemandem
 select as_user('f1') \g /dev/null
-select 'Finn: Vorschläge', t($q$ select string_agg(username||':'||common_friends||':'||coalesce(shared_water,'-')||':'||same_region, ', ' order by username) from public.suggest_anglers(30) $q$);
+select 'Finn: Vorschläge', t($q$ select string_agg(username||':'||common_friends, ', ' order by username) from public.suggest_anglers(30) $q$);
 -- Pia: nichts freigegeben, nichts gefolgt
 select as_user('d3') \g /dev/null
 select 'Pia: Vorschläge', t($q$ select count(*)::text from public.suggest_anglers(30) $q$);
@@ -76,7 +77,7 @@ select 'Mia: Vorschläge', t($q$ select string_agg(username, ',' order by userna
 -- Anna schaltet Region aus: Finn und Mia bleiben nur über andere Kriterien
 select as_user('a1') \g /dev/null
 select 'Region aus', t($q$ select public.clear_my_region()::text $q$);
-select 'Anna ohne Region', t($q$ select string_agg(username||':'||same_region, ',' order by username) from public.suggest_anglers(30) $q$);
+select 'Anna ohne Region', t($q$ select string_agg(username, ',' order by username) from public.suggest_anglers(30) $q$);
 -- Region setzen: wird gerundet, außerhalb von Deutschland und Umgebung abgelehnt
 select 'Region setzen', t($q$ select public.set_my_region(51.349, 6.251)::text $q$);
 select 'Region gerundet', t($q$ select region_on::text from public.my_suggestion_prefs() $q$);
