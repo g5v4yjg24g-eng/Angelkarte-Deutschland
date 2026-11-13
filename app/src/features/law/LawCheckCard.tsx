@@ -55,7 +55,7 @@ export function LawCheckCard({
   ];
   return (
     <section className={styles.card} aria-label={t.titleState(name)}>
-      <Link to={`/mehr/recht/${check.state}`} className={styles.head} aria-label={t.allRules(name)}>
+      <Link to={`/mehr/recht/${check.state}`} className={styles.head}>
         <StateCrest crest={crests?.[check.state]} className={styles.crest} />
         <span className={styles.headText}>
           <strong>{t.titleState(name)}</strong>

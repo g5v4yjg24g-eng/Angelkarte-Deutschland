@@ -38,14 +38,15 @@ function Tile({
   value,
   mono,
   onClick,
-  ariaLabel,
+  hint,
 }: {
   icon: ReactNode;
   label: string;
   value: string;
   mono?: boolean;
   onClick?: (() => void) | undefined;
-  ariaLabel?: string;
+  /** Zusatz nur für Screenreader (Name = sichtbarer Text + Zusatz) */
+  hint?: string;
 }) {
   const body = (
     <>
@@ -53,12 +54,13 @@ function Tile({
       <span className={styles.tileText}>
         <span className={styles.tileLabel}>{label}</span>
         <strong className={mono ? `tabular ${styles.coords}` : undefined}>{value}</strong>
+        {onClick && hint && <span className="visually-hidden">, {hint}</span>}
       </span>
       {onClick && mono && <ChevronRightIcon size={20} aria-hidden="true" />}
     </>
   );
   return onClick ? (
-    <button type="button" className={styles.tile} onClick={onClick} {...(ariaLabel ? { 'aria-label': ariaLabel } : {})}>
+    <button type="button" className={styles.tile} onClick={onClick}>
       {body}
     </button>
   ) : (
@@ -97,7 +99,7 @@ export function EntryTiles({
           value={de.map.coords(position.lat, position.lng)}
           mono
           onClick={onShowOnMap}
-          ariaLabel={v.positionOnMap}
+          hint={v.positionOnMap}
         />
       )}
     </div>

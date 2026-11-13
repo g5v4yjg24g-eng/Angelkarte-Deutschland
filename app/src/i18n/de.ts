@@ -2184,7 +2184,7 @@ export const de = {
     sizeUnchecked: 'Maß nicht geprüft (Länge fehlt)',
     violated: 'Verletzt',
     noMeasure: 'Keine Messwerte verfügbar',
-    positionOnMap: 'Position auf der Karte zeigen',
+    positionOnMap: 'öffnet die Karte am Fangort',
     share: 'Beitrag aus diesem Fang erstellen',
     pressureTrend: (delta: number) =>
       `${delta > 0 ? '+' : delta < 0 ? '−' : '±'}${Math.abs(delta).toLocaleString('de-DE', { maximumFractionDigits: 1 })} hPa in 3 h`,

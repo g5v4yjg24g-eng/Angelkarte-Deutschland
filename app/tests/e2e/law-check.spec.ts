@@ -111,7 +111,10 @@ test('LAW-5: Warnung bei Schonzeit und Mindestmaß, Bundesland aus dem Fangort, 
   await page.getByLabel('Datum').fill('2026-06-01');
   await expect(formPanel).toContainText('Nach den erfassten Regeln für Bayern');
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
-  await expect(panel).toContainText('Nach den erfassten Regeln für Bayern');
+  // Eintrag: Karte mit drei Prüfpunkten statt des Satzes
+  await expect(panel).toContainText('Keine Schonzeit');
+  await expect(panel).toContainText('Kein ganzjähriger Schutz');
+  await expect(panel).toContainText('Kein Maß verletzt');
 
   // NRW (gegengeprüft 2026-10-25): Hecht am 10.03. in der Schonzeit, 45 cm genau am Mindestmaß
   await open(page, 'nw');
