@@ -48,6 +48,18 @@ import { useFormWeather, weatherKey } from '../weather/useFormWeather';
 import { beaufort, skyFromCode, type WeatherSnapshot } from '../../domain/weather';
 import { useLawCheck, useStateResolution } from '../law/useLawCheck';
 import type { StateCode } from '../../domain/water';
+import { FormSection } from './FormSection';
+import {
+  CalendarIcon,
+  CameraIcon,
+  ChevronDownIcon,
+  ClockIcon,
+  FishIcon,
+  PinIcon,
+  SlidersIcon,
+  TargetIcon,
+  WavesIcon,
+} from '../../design/icons';
 import styles from './CatchForm.module.css';
 
 const t = de.catchForm;
@@ -293,7 +305,7 @@ export function CatchForm({
   return (
     <form onSubmit={(e) => void save(e)} className={styles.form} noValidate>
       <fieldset className={styles.outcomes}>
-        <legend>{t.outcome}</legend>
+        <legend className="visually-hidden">{t.outcome}</legend>
         {CatchOutcomeSchema.options.map((o: CatchOutcome) => (
           <label key={o} className={styles.outcome}>
             <input
@@ -304,60 +316,72 @@ export function CatchForm({
               onChange={() => set('outcome', o)}
             />
             <span>
-              <img src={markerDataUrl(`catch-${o}`)} width={28} height={28} alt="" aria-hidden="true" />
-              <span>
-                <strong>{de.map.outcomes[o]}</strong>
-                <small>{t.outcomeHints[o]}</small>
-              </span>
+              <img src={markerDataUrl(`catch-${o}`)} width={20} height={20} alt="" aria-hidden="true" />
+              <strong>{de.map.outcomes[o]}</strong>
+              <small className="visually-hidden">{t.outcomeHints[o]}</small>
             </span>
           </label>
         ))}
       </fieldset>
 
       {draft.outcome !== 'missed_bite' && (
-        <div className={styles.species}>
-          {recent.length > 0 && (
-            <div className={styles.chips} role="group" aria-label={`${t.species}: ${t.speciesRecent}`}>
-              {recent.map((id) => (
-                <button
-                  key={id}
-                  type="button"
-                  className={styles.chip}
-                  aria-pressed={draft.speciesId === id}
-                  onClick={() => set('speciesId', draft.speciesId === id ? '' : id)}
-                >
-                  {speciesById(id)?.de ?? id}
-                </button>
-              ))}
-            </div>
-          )}
-          <SelectField
-            label={t.species}
-            options={SPECIES_OPTIONS}
-            value={draft.speciesId}
-            onChange={(e) => set('speciesId', e.target.value)}
-          />
-        </div>
+        <FormSection icon={<FishIcon size={20} />} title={t.species}>
+          <div className={styles.speciesRow}>
+            <SelectField
+              label={t.species}
+              hideLabel
+              options={SPECIES_OPTIONS}
+              value={draft.speciesId}
+              onChange={(e) => set('speciesId', e.target.value)}
+            />
+            {recent.length > 0 && (
+              <div className={styles.chips} role="group" aria-label={`${t.species}: ${t.speciesRecent}`}>
+                {recent.map((id) => (
+                  <button
+                    key={id}
+                    type="button"
+                    className={styles.chip}
+                    aria-pressed={draft.speciesId === id}
+                    onClick={() => set('speciesId', draft.speciesId === id ? '' : id)}
+                  >
+                    {speciesById(id)?.de ?? id}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </FormSection>
       )}
 
-      <div className={styles.pair}>
-        <TextField
-          label={t.date}
-          type="date"
-          required
-          value={draft.date}
-          onChange={(e) => set('date', e.target.value)}
-          error={errorText('date')}
-        />
-        <TextField
-          label={t.time}
-          type="time"
-          required
-          value={draft.time}
-          onChange={(e) => set('time', e.target.value)}
-        />
-      </div>
+      <FormSection icon={<CalendarIcon size={20} />} title={t.dateTime}>
+        <div className={styles.dateTime}>
+          <span className={styles.dateTimeCell}>
+            <CalendarIcon size={18} aria-hidden="true" />
+            <TextField
+              label={t.date}
+              hideLabel
+              type="date"
+              required
+              value={draft.date}
+              onChange={(e) => set('date', e.target.value)}
+              error={errorText('date')}
+            />
+          </span>
+          <span className={styles.dateTimeCell}>
+            <ClockIcon size={18} aria-hidden="true" />
+            <TextField
+              label={t.time}
+              hideLabel
+              type="time"
+              required
+              value={draft.time}
+              onChange={(e) => set('time', e.target.value)}
+            />
+          </span>
+        </div>
+      </FormSection>
 
+      <FormSection icon={<CameraIcon size={20} />} title={t.photos}>
       <PhotoPicker
         existingIds={existingPhotos}
         pending={pending}
@@ -367,37 +391,43 @@ export function CatchForm({
         onRemoveExisting={(id) => setRemovedPhotos((r) => [...r, id])}
         onRemovePending={(key) => setPending((p) => p.filter((x) => x.key !== key))}
       />
+      </FormSection>
 
-      <div className={styles.where}>
-        <p>
-          <strong>{t.position}: </strong>
-          {position ? (
-            <>
-              {t.positionSource[position.source]}{' '}
-              <span className="muted tabular">{de.map.coords(position.lat, position.lng)}</span>
-            </>
-          ) : (
-            t.positionNone
+      <FormSection icon={<PinIcon size={20} />} title={t.position}>
+        <div className={styles.positionRow}>
+          <p>
+            {position ? (
+              <>
+                {t.positionSource[position.source]}{' '}
+                <span className="muted tabular">· {de.map.coords(position.lat, position.lng)}</span>
+              </>
+            ) : (
+              t.positionNone
+            )}
+          </p>
+          {myLocation && position?.source !== 'gps' && (
+            <Button
+              variant="secondary"
+              onClick={() =>
+                setPosition({
+                  lat: myLocation.lat,
+                  lng: myLocation.lng,
+                  accuracyM: Math.round(myLocation.accuracy),
+                  source: 'gps',
+                })
+              }
+            >
+              <TargetIcon size={18} aria-hidden="true" /> {t.useMyLocation}
+            </Button>
           )}
-        </p>
-        {myLocation && position?.source !== 'gps' && (
-          <Button
-            variant="secondary"
-            onClick={() =>
-              setPosition({
-                lat: myLocation.lat,
-                lng: myLocation.lng,
-                accuracyM: Math.round(myLocation.accuracy),
-                source: 'gps',
-              })
-            }
-          >
-            {t.useMyLocation}
-          </Button>
-        )}
+        </div>
+      </FormSection>
+
+      <FormSection icon={<WavesIcon size={20} />} title={t.water}>
         {!initial && options.length > 1 ? (
           <SelectField
             label={t.waterChoose}
+            hideLabel
             options={[
               ...options.map((o) => ({
                 value: o.wid,
@@ -411,19 +441,21 @@ export function CatchForm({
             onChange={(e) => setWaterWid(e.target.value)}
           />
         ) : (
-          <p>
-            <strong>{t.water}: </strong>
+          <p className={styles.waterBox}>
             {water ? (water.name ?? de.water.unnamed) : <span className="muted">{t.waterUnknown}</span>}
           </p>
         )}
-      </div>
+      </FormSection>
 
       {!initial && running && (
         <p className="muted">{de.sessions.assignHint(running.startAt.slice(11, 16))}</p>
       )}
 
       <details ref={details} className={styles.details} open={openDetails || undefined}>
-        <summary>{t.more}</summary>
+        <summary>
+          <SlidersIcon size={20} aria-hidden="true" /> {t.more}
+          <ChevronDownIcon size={20} aria-hidden="true" className={styles.summaryChevron} />
+        </summary>
         <div className={styles.detailBody}>
           {sized && (
             <fieldset className={styles.group}>

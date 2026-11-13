@@ -195,6 +195,7 @@ export const de = {
     species: 'Fischart',
     speciesRecent: 'Zuletzt',
     speciesNone: 'Keine Angabe',
+    dateTime: 'Datum & Uhrzeit',
     date: 'Datum',
     time: 'Uhrzeit',
     position: 'Ort',
