@@ -8,6 +8,7 @@ import { useProviders } from '../../ports/providersContext';
 import { AchievementVisibility } from '../achievements/AchievementVisibility';
 import { storedUserId } from '../badges/badgeStore';
 import { PrivateAccountSwitch } from '../friends/PrivateAccountSwitch';
+import { SuggestionSettings } from '../suggestions/SuggestionSettings';
 
 const t = de.account;
 
@@ -20,6 +21,7 @@ export function PrivacySettingsPage() {
         <>
           <PrivateAccountSwitch title={t.privacyFollowTitle} />
           <AchievementVisibility />
+          <SuggestionSettings />
         </>
       ) : (
         <Notice>
