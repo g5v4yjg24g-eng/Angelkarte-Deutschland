@@ -29,7 +29,7 @@ function findingText(f: Finding): string {
   }
 }
 
-function FindingItem({ f, set }: { f: Finding; set: RegulationSet }) {
+export function FindingItem({ f, set }: { f: Finding; set: RegulationSet }) {
   const basis = set.legalBasis.find((b) => b.id === f.rule.basisId);
   return (
     <li>

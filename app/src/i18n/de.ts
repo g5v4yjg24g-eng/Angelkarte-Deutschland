@@ -2170,6 +2170,27 @@ export const de = {
     sourceNrw:
       'Quelle: Landesamt für Natur, Umwelt und Klima NRW (LANUK), OpenHygon über OpenGeoData.NRW (DL-DE->Zero-2.0) – ungeprüfte Rohdaten.',
   },
+  catchView: {
+    water: 'Gewässer',
+    position: 'Position',
+    positionSource: 'Fangort',
+    waterNone: 'Nicht zugeordnet',
+    details: 'Angaben',
+    rulesSub: 'Gültige Regeln & Bestimmungen',
+    openRules: 'Alle Regeln öffnen',
+    checkClosed: 'Keine Schonzeit',
+    checkProtected: 'Kein ganzjähriger Schutz',
+    checkSize: 'Kein Maß verletzt',
+    sizeUnchecked: 'Maß nicht geprüft (Länge fehlt)',
+    violated: 'Verletzt',
+    noMeasure: 'Keine Messwerte verfügbar',
+    positionOnMap: 'Position auf der Karte zeigen',
+    share: 'Beitrag aus diesem Fang erstellen',
+    pressureTrend: (delta: number) =>
+      `${delta > 0 ? '+' : delta < 0 ? '−' : '±'}${Math.abs(delta).toLocaleString('de-DE', { maximumFractionDigits: 1 })} hPa in 3 h`,
+    gust: (ms: number) => `Böen: ${ms.toLocaleString('de-DE', { maximumFractionDigits: 1 })} m/s`,
+    precipSub: '(Std. davor)',
+  },
   catchGauge: {
     title: 'Pegel am Fang',
     pending: 'Wird gesucht, sobald eine Verbindung besteht.',
@@ -2410,6 +2431,7 @@ export const de = {
     pressure: 'Luftdruck',
     clouds: 'Bewölkung',
     precip: 'Niederschlag (Stunde davor)',
+    precipShort: 'Niederschlag',
     sky: 'Wetterlage',
     tempValue: (c: number) => `${c.toLocaleString('de-DE', { maximumFractionDigits: 1 })} °C`,
     windValue: (ms: number, dir?: string, gust?: number) =>

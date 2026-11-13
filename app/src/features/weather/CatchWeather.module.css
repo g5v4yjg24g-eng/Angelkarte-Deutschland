@@ -1,17 +1,82 @@
 .box {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 .box p {
   margin: 0;
 }
 .title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   margin: 0;
-  font-size: var(--text-md);
+  font-size: var(--text-lg);
   font-weight: 650;
 }
+.title svg {
+  color: var(--color-primary);
+}
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.5fr);
+  gap: var(--space-2);
+}
+.small {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-2);
+}
+.tile {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 25%, var(--color-border));
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+  min-width: 0;
+}
+.tile svg {
+  color: var(--color-primary);
+}
+.tile strong {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+.tile small,
+.label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+.big {
+  place-items: center;
+  align-content: center;
+  text-align: center;
+}
+.sky {
+  font-weight: 650;
+}
+.temp {
+  font-size: 1.35rem !important;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.row > div {
+  display: grid;
+}
 .note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
   font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+.note svg {
+  flex: none;
+  margin-top: 2px;
 }
 .formBox {
   display: grid;

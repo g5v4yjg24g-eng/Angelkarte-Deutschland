@@ -113,3 +113,49 @@
   backdrop-filter: blur(6px);
   cursor: pointer;
 }
+
+/* Kopfkarte mit Abendstimmung (Fang) */
+.banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-2) var(--space-3) 0;
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, var(--color-border));
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--color-surface));
+}
+.bannerContent {
+  flex: 1;
+  min-width: 0;
+}
+.bannerClose {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--touch);
+  height: var(--touch);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.bannerClose:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Fang: Bearbeiten links, Teilen rechts */
+.withBanner .footer {
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+.withBanner .footer > :first-child {
+  flex: 0 1 auto;
+  min-width: 9rem;
+}

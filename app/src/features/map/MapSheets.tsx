@@ -9,7 +9,8 @@ import { TextArea, TextField } from '../../design/components/Field';
 import { userMessage } from '../../data/errors';
 import { repo } from '../../data/repository';
 import type { Catch, Place, PlaceType } from '../../domain/schemas';
-import { CatchFacts, CatchHead } from '../catches/CatchFacts';
+import { CatchFacts } from '../catches/CatchFacts';
+import type { WaterPhoto } from '../../domain/waterPhotos';
 import { formatDateTime } from '../../lib/storage';
 import { CATCH_OUTCOMES, markerDataUrl, PLACE_TYPES } from './markerIcons';
 import { ALL_LAYERS, isFiltered, type MapFilter, type MapLayerKey } from '../../domain/mapFilter';
@@ -202,24 +203,32 @@ export function PlaceDetails({
   );
 }
 
+/** Inhalt des Fang-Blatts; Kopf (`CatchHead`) und untere Leiste (Bearbeiten, Teilen) setzt `MapView` am `Sheet` */
 export function CatchDetails({
   item,
-  onEdit,
+  crests,
   onDelete,
+  onShowOnMap,
+  onAssignWater,
 }: {
   item: Catch;
-  onEdit: () => void;
+  crests?: Readonly<Record<string, WaterPhoto>> | undefined;
   onDelete: () => void;
+  onShowOnMap: () => void;
+  onAssignWater: () => void;
 }) {
   return (
     <div className={styles.form}>
-      <CatchHead item={item} />
-      <CatchFacts item={item} />
+      <CatchFacts
+        item={item}
+        crests={crests}
+        onShowOnMap={onShowOnMap}
+        onAssignWater={onAssignWater}
+      />
       <div className={styles.formActions}>
         <Button variant="danger" onClick={onDelete}>
           {de.map.delete}
         </Button>
-        <Button onClick={onEdit}>{de.map.edit}</Button>
       </div>
     </div>
   );

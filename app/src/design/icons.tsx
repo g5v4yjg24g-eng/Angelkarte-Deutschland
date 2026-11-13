@@ -426,3 +426,19 @@ export const WarningIcon = (p: IconProps) => (
     <path d="M12 4 2.8 19.5h18.4L12 4ZM12 10v4.500M12 17v.2" />
   </Icon>
 );
+
+export const CloudIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M7 18h10.5a3.500 3.500 0 0 0 .5-6.970A5.500 5.500 0 0 0 7.400 9.600 4.200 4.200 0 0 0 7 18Z" />
+  </Icon>
+);
+export const WavesIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3 8c2.500-2 4.500-2 7 0s4.500 2 7 0c1.500-1.200 2.800-1.500 4-1M3 13c2.500-2 4.500-2 7 0s4.500 2 7 0c1.500-1.200 2.800-1.500 4-1M3 18c2.500-2 4.500-2 7 0s4.500 2 7 0c1.500-1.200 2.800-1.500 4-1" />
+  </Icon>
+);
+export const ExternalIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+  </Icon>
+);

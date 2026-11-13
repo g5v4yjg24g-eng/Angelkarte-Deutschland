@@ -16,6 +16,8 @@ import type { PlaceType } from '../../domain/schemas';
 import { waterFromTile, waterPlace, type WaterInfo, type WaterManifest } from '../../domain/water';
 import type { SearchResult } from '../../domain/search';
 import { IconButton, Button } from '../../design/components/Button';
+import { ShareIcon } from '../../design/icons';
+import { CatchHead } from '../catches/CatchFacts';
 import { Sheet } from '../../design/components/Sheet';
 import { Toast } from '../../design/components/Toast';
 import { Notice } from '../../design/components/Notice';
@@ -781,6 +783,8 @@ export default function MapView() {
   let sheetTitle = '';
   let sheetBody: React.ReactNode = null;
   let sheetHero: React.ReactNode = null;
+  let sheetBanner: React.ReactNode = null;
+  let sheetFooter: React.ReactNode = null;
   if (sheet?.kind === 'new') {
     sheetTitle = de.map.newHereTitle;
     sheetBody = (
@@ -935,9 +939,30 @@ export default function MapView() {
     sheetBody = (
       <CatchDetails
         item={sheetCatch}
-        onEdit={() => setSheet({ kind: 'catchForm', id: sheetCatch.id })}
+        crests={waterMedia.crests}
         onDelete={() => void deleteCatch(sheetCatch.id)}
+        onShowOnMap={() => {
+          const pos = sheetCatch.position;
+          setSheet(null);
+          if (pos)
+            mapRef.current?.easeTo({
+              center: [pos.lng, pos.lat],
+              zoom: Math.max(mapRef.current.getZoom(), 15),
+            });
+        }}
+        onAssignWater={() => void navigate('/', { state: { assignWater: sheetCatch.id } })}
       />
+    );
+    sheetBanner = <CatchHead item={sheetCatch} />;
+    sheetFooter = (
+      <>
+        <Button onClick={() => setSheet({ kind: 'catchForm', id: sheetCatch.id })}>{de.map.edit}</Button>
+        <IconButton
+          label={de.catchView.share}
+          icon={<ShareIcon />}
+          onClick={() => void navigate(`/profil/neu?fang=${sheetCatch.id}`)}
+        />
+      </>
     );
   } else if (sheet?.kind === 'water') {
     const { info } = sheet;
@@ -1158,6 +1183,8 @@ export default function MapView() {
         open={!!sheet && !!sheetBody}
         title={sheetTitle}
         hero={sheetHero}
+        banner={sheetBanner}
+        footer={sheetFooter}
         onClose={() => setSheet(null)}
         returnFocus={fabRef}
       >
