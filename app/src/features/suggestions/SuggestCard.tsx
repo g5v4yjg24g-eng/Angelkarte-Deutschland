@@ -6,6 +6,7 @@ import { CloseIcon } from '../../design/icons';
 import { initialOf } from '../../domain/feed';
 import { reasonsOf, topAchievements, type FollowState, type Suggestion } from '../../domain/suggestions';
 import { AchievementBadge } from '../achievements/AchievementBadge';
+import { useAvatarZoom } from '../profile/AvatarZoom';
 import { FounderBadge } from '../badges/FounderBadge';
 import styles from './Suggest.module.css';
 
@@ -26,6 +27,7 @@ export function SuggestCard({
   onDismiss: () => void;
 }) {
   const reasons = reasonsOf(s);
+  const zoom = useAvatarZoom(avatarUrl);
   const wins = topAchievements(s.achievementKeys);
   const done = state === 'requested' || state === 'following';
   const label =
@@ -51,11 +53,13 @@ export function SuggestCard({
         className={styles.avatarLink}
         tabIndex={-1}
         aria-hidden="true"
+        {...zoom.handlers}
       >
         <span className={styles.avatar}>
-          {avatarUrl ? <img src={avatarUrl} alt="" /> : initialOf(s.displayName)}
+          {avatarUrl ? <img src={avatarUrl} alt="" draggable={false} /> : initialOf(s.displayName)}
         </span>
       </Link>
+      {zoom.lightbox}
       <span className={styles.names}>
         <Link
           to={`/profil/nutzer/${s.username}`}

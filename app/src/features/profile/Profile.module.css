@@ -18,6 +18,12 @@
 .avatar {
   position: relative;
 }
+/* Langes Drücken zeigt das Bild groß: kein Markieren, keine Systemvorschau */
+.zoomable {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
 /* Bild füllt den Kreis immer vollständig, nie verzerrt (Fehler Nutzer 2026-11-10) */
 .avatar img {
   position: absolute;
