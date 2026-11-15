@@ -14,6 +14,7 @@ import { parseFriendRows } from '../domain/friends';
 import { FollowResultSchema, parseFollowCounts, parseFollowRows } from '../domain/follows';
 import { photoPath, thumbPath } from '../domain/postSync';
 import { FEED_PAGE, parseFeedRows, type FeedPost } from '../domain/feed';
+import { parsePrefs, parseSuggestionRows } from '../domain/suggestions';
 import { parseUserHits, parseUserProfile } from '../domain/userProfile';
 import { isAchVisibility, parseRemoteAchievements } from '../domain/sharedAchievements';
 import { parseSharedSpotRows } from '../domain/sharedSpots';
@@ -628,6 +629,39 @@ export function supabaseAccount(
       const { data, error } = await (await get()).rpc('search_users_v2', { q: term });
       if (error) fail(error);
       return parseUserHits(data as unknown[] | null);
+    },
+    async suggestAnglers(max = 20) {
+      const { data, error } = await (await get()).rpc('suggest_anglers', { max_rows: max });
+      if (error) fail(error);
+      return parseSuggestionRows(data as unknown[] | null);
+    },
+    async dismissSuggestion(userId) {
+      const { error } = await (await get()).rpc('dismiss_suggestion', { other: userId });
+      if (error) fail(error);
+    },
+    async suggestionPrefs() {
+      const { data, error } = await (await get()).rpc('my_suggestion_prefs');
+      if (error) fail(error);
+      return parsePrefs(data as unknown[] | null);
+    },
+    async setSuggestionPrefs(prefs) {
+      const { error } = await (
+        await get()
+      ).rpc('set_my_suggestion_prefs', { discoverable: prefs.discoverable, waters_on: prefs.watersOn });
+      if (error) fail(error);
+    },
+    async setMyRegion(cell) {
+      const { error } = await (await get()).rpc('set_my_region', { lat: cell.lat, lng: cell.lng });
+      if (error) fail(error);
+    },
+    async clearMyRegion() {
+      const { error } = await (await get()).rpc('clear_my_region');
+      if (error) fail(error);
+    },
+    async setMyWaters(list) {
+      const { data, error } = await (await get()).rpc('set_my_waters', { entries: list });
+      if (error) fail(error);
+      return typeof data === 'number' ? data : 0;
     },
     async sharedSpots() {
       const { data, error } = await (await get()).rpc('my_shared_spots');

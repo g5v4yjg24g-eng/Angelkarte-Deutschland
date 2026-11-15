@@ -12,12 +12,21 @@ interface Drag {
   axis?: 'x' | 'y' | undefined;
 }
 
-export function useSwipeCarousel(ref: RefObject<HTMLElement | null>, count: number) {
+/**
+ * `step` = Breite eines Schritts in Pixeln; ohne Angabe ist es die Breite des Karussells (ein Foto je Seite). Karten, die
+ * schmaler als das Karussell sind (Profilvorschläge), geben ihre Breite samt Abstand an.
+ */
+export function useSwipeCarousel(
+  ref: RefObject<HTMLElement | null>,
+  count: number,
+  step?: (el: HTMLElement) => number,
+) {
   const drag = useRef<Drag | undefined>(undefined);
+  const unit = (el: HTMLElement) => Math.max(1, step?.(el) ?? el.clientWidth);
 
   const settle = (el: HTMLElement, index: number) => {
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    el.scrollTo({ left: index * el.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
+    el.scrollTo({ left: index * unit(el), behavior: reduce ? 'auto' : 'smooth' });
     // Einrasten erst wieder einschalten, wenn das Gleiten fertig ist
     const restore = () => {
       el.style.scrollSnapType = '';
@@ -48,15 +57,15 @@ export function useSwipeCarousel(ref: RefObject<HTMLElement | null>, count: numb
       const d = drag.current;
       drag.current = undefined;
       if (!el || !d || d.axis !== 'x') return;
-      const w = el.clientWidth;
-      const start = Math.round(d.left / Math.max(1, w));
+      const w = unit(el);
+      const start = Math.round(d.left / w);
       settle(el, swipeTarget(start, count, e.clientX - d.x, w, e.timeStamp - d.t));
     },
     onPointerCancel: () => {
       const el = ref.current;
       const d = drag.current;
       drag.current = undefined;
-      if (el && d?.axis === 'x') settle(el, Math.round(d.left / Math.max(1, el.clientWidth)));
+      if (el && d?.axis === 'x') settle(el, Math.round(d.left / unit(el)));
     },
   };
 }

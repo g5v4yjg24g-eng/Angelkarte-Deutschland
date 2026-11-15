@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-24',
+    title: 'Angler entdecken',
+    items: [
+      'Feed: zwischen den Beiträgen schlagen wir Angler vor, die zu dir passen – wische seitwärts durch die Profile.',
+      'Folgen direkt auf der Karte, X blendet einen Vorschlag aus.',
+      'Privatsphäre: unter Mehr → Konto → Privatsphäre stellst du Auffindbarkeit, Gewässer und Region ein (Region nur auf Wunsch).',
+    ],
+  },
+  {
     id: '2026-12-23',
     title: 'Fang erfassen neu gestaltet',
     items: [

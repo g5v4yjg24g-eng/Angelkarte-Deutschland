@@ -14,6 +14,7 @@ import { ProfileExtrasSync } from '../features/profile/ProfileExtrasSync';
 import { AppLinkHandler } from '../features/links/AppLinkHandler';
 import { AchievementSync } from '../features/achievements/AchievementSync';
 import { AchievementUpload } from '../features/achievements/AchievementUpload';
+import { WaterShareSync } from '../features/suggestions/WaterShareSync';
 import { SpotSync } from '../features/spots/SpotSync';
 import { PushSetup } from '../features/push/PushSetup';
 import { WhatsNew } from '../features/whatsNew/WhatsNew';
@@ -68,6 +69,7 @@ export function RootLayout() {
       <AppLinkHandler />
       <AchievementSync />
       <AchievementUpload />
+      <WaterShareSync />
       <SpotSync />
       <PushSetup />
       <WhatsNew />
@@ -111,7 +113,8 @@ export function AppShell() {
   const { account } = useProviders();
   const userId = useStoredUserId();
   const unread = useUnreadNotifications(account, account.enabled && !!userId);
-  const items = unread > 0 ? NAV.map((n) => (n.to === '/feed' ? { ...n, dot: de.notifications.navDot } : n)) : NAV;
+  const items =
+    unread > 0 ? NAV.map((n) => (n.to === '/feed' ? { ...n, dot: de.notifications.navDot } : n)) : NAV;
   return (
     <div className={styles.shell}>
       <ShellHeader end={<SessionChip />} />

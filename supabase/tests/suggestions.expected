@@ -1,0 +1,49 @@
+Anna: Vorschläge|dora:2:-
+eva:1:-
+finn:0:-
+mia:0:-
+otto:1:first+catches:gold
+Anna: die ersten drei (Reihenfolge)|eva,finn,dora
+Anna: Spalten|user_id,username,display_name,badges,common_friends,achievement_keys,score
+Anna: höchstens|2
+Anna: Einstellungen|t t t
+Dora ausblenden|
+Anna ohne Dora|∅
+Sich selbst ausblenden|FEHLER: not_found
+Unbekannte ausblenden|FEHLER: not_found
+Dora nochmal ausblenden|
+Dora Zähler|2
+Dora nach der Pause|dora
+Dora nach der Pause: Platz unter den ersten vier|false
+Finn: Vorschläge|anna:0, eva:0, mia:0, nora:0
+Pia: Vorschläge|0
+Mia: Vorschläge|anna,finn,nora
+Region aus|
+Anna ohne Region|dora,eva,finn,otto
+Region setzen|
+Region gerundet|true
+Region außerhalb|FEHLER: bad_region
+Region leer|FEHLER: bad_region
+Gespeichert|51.3 / 6.3
+Anna nicht auffindbar|
+Finn sieht Anna nicht|0
+Anna wieder auffindbar|
+Finn sieht Anna wieder|1
+Gewässer ersetzen|2
+Gewässer Kennung falsch|FEHLER: bad_waters
+Gewässer ohne Namen|FEHLER: bad_waters
+Gewässer zu viele|FEHLER: bad_waters
+Gewässer kein Array|FEHLER: bad_waters
+Annas Gewässer|osm:w1=De Wittsee, osm:r77=Niers
+Gewässer aus|
+Annas Gewässer nach Aus|0
+Gewässer bei Aus senden|0
+Direkt lesen: Einstellungen|FEHLER: permission denied for table suggestion_prefs
+Direkt lesen: Gewässer|FEHLER: permission denied for table user_waters
+Direkt lesen: Ausgeblendet|FEHLER: permission denied for table suggestion_dismissals
+Direkt schreiben|FEHLER: permission denied for table suggestion_prefs
+Anon: Vorschläge|FEHLER: permission denied for function suggest_anglers
+Anon: Einstellungen|FEHLER: permission denied for function my_suggestion_prefs
+Anon: Region|FEHLER: permission denied for function set_my_region
+Anon: Gewässer|FEHLER: permission denied for function set_my_waters
+Anon: Ausblenden|FEHLER: permission denied for function dismiss_suggestion

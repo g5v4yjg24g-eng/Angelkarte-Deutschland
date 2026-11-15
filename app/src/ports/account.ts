@@ -12,6 +12,7 @@ import type { FeedPost } from '../domain/feed';
 import type { ProfileExtrasPayload, PublicProfile, UserHit } from '../domain/userProfile';
 import type { AchVisibility, RemoteAchievements } from '../domain/sharedAchievements';
 import type { SharedSpot, ShareSpotInput } from '../domain/sharedSpots';
+import type { RegionCell, ShareWater, Suggestion, SuggestionPrefs } from '../domain/suggestions';
 import type { SpotLink } from '../domain/spotLinks';
 import type { BlockedUser, ReportInput } from '../domain/moderation';
 import type { ServerComment, ServerReactions } from '../domain/reactions';
@@ -226,6 +227,18 @@ export interface AccountProvider {
   searchUsers(term: string): Promise<UserHit[]>;
   /** Entdecken (Paket 7c): Beiträge mit „Alle“ von anderen Konten, zuletzt geteilt zuerst; `before` = sharedAt */
   discoverFeed(before?: string): Promise<FeedPost[]>;
+  /** „Angler entdecken“: Profilvorschläge, vom Server berechnet (suggest_anglers), beste zuerst */
+  suggestAnglers(max?: number): Promise<Suggestion[]>;
+  /** Vorschlag ausblenden (der Server merkt es sich; wiederholt = längere Pause) */
+  dismissSuggestion(userId: string): Promise<void>;
+  suggestionPrefs(): Promise<SuggestionPrefs>;
+  /** Auffindbarkeit und Gewässer-Nutzung; „Gewässer aus“ löscht die Liste auf dem Server */
+  setSuggestionPrefs(prefs: { discoverable: boolean; watersOn: boolean }): Promise<void>;
+  /** Grobe Region (Rasterpunkt) freigeben – schaltet das Kriterium „Region“ ein */
+  setMyRegion(cell: RegionCell): Promise<void>;
+  clearMyRegion(): Promise<void>;
+  /** Eigene Gewässer (Kennung + Name) für Vorschläge ersetzen; liefert die Zahl auf dem Server */
+  setMyWaters(list: readonly ShareWater[]): Promise<number>;
   /** Geteilte Spots: eigene Freigaben und die von Freunden (Server-Funktion my_shared_spots) */
   sharedSpots(): Promise<SharedSpot[]>;
   /** Ort teilen; derselbe Ort an denselben Empfänger erneut = Stand aktualisieren */
