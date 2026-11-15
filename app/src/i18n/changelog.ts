@@ -4,6 +4,11 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-27',
+    title: 'Profilbild groß',
+    items: ['Profilbild: Halte ein Profilbild gedrückt, dann siehst du es groß. Tippen schließt es wieder.'],
+  },
+  {
     id: '2026-12-26',
     title: 'Live Activity',
     items: [
