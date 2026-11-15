@@ -321,6 +321,13 @@ export const routes = [
                 ),
               },
               {
+                path: 'mehr/anleitung',
+                lazy: page(
+                  () => import('../features/guide/GuidePage'),
+                  (m) => m.GuidePage,
+                ),
+              },
+              {
                 path: 'mehr/koeder',
                 lazy: page(
                   () => import('../features/baits/BaitPresetsPage'),

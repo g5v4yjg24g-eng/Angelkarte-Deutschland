@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-25',
+    title: 'Anleitung',
+    items: [
+      'Anleitung: Mehr → Anleitung erklärt alle Angel-Funktionen Schritt für Schritt, mit „Probier’s aus“ zur jeweiligen Funktion.',
+      'Kurztour: sieben kurze Schritte, jederzeit wiederholbar – auch unter Einstellungen → Anleitung & Tour.',
+      'Neue Nutzer sehen beim ersten Start ein Willkommensblatt mit der Tour.',
+    ],
+  },
+  {
     id: '2026-12-24',
     title: 'Angler entdecken',
     items: [

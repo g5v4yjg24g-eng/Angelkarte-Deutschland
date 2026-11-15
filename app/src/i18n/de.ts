@@ -639,6 +639,7 @@ export const de = {
     groupAccount: 'Konto & Daten',
     groupApp: 'App',
     calendar: 'Angelkalender',
+    guide: 'Anleitung',
     communityRules: 'Regeln der Community',
     regulations: 'Angelrecht der Länder',
     backup: 'Daten & Sicherung',
@@ -2588,6 +2589,168 @@ export const de = {
         x
           ? `startet „${x}“ jetzt – bestätige, um dabei zu sein.`
           : 'startet jetzt eine gemeinsame Session – bestätige, um dabei zu sein.',
+    },
+  },
+  // Anleitung (Wunsch Nutzer 2026-11-15): Kurztour für neue Nutzer, nachlesbar unter Mehr und in den Einstellungen
+  guide: {
+    title: 'Anleitung',
+    settingsTitle: 'Anleitung & Tour',
+    tourCard: 'Kurztour noch einmal ansehen',
+    tourStart: 'Tour starten',
+    tryIt: 'Probier’s aus',
+    groups: {
+      start: 'Los geht’s',
+      review: 'Auswerten',
+      plan: 'Planen',
+      learn: 'Lernen',
+      more: 'Mehr',
+    },
+    welcome: {
+      title: 'Willkommen bei Fangpunkt',
+      text: 'Karte, Fangbuch, Wetter und Recht an einem Ort. Zeigen wir dir kurz, wie alles zusammenspielt?',
+      start: 'Kurze Tour starten · 1 Min.',
+      later: 'Später · du findest sie unter Mehr → Anleitung',
+    },
+    tour: {
+      label: 'Kurztour',
+      count: (i: number, n: number) => `${i} von ${n}`,
+      skip: 'Überspringen',
+      prev: 'Zurück',
+      next: 'Weiter',
+      done: 'Los geht’s',
+      steps: 'Schritte der Tour',
+    },
+    topics: {
+      map: {
+        title: 'Karte und Gewässer',
+        sub: 'Suchen, Detailsuche, Gewässerprofil, Ebenen',
+        intro:
+          'Suche ein Gewässer oder tippe es auf der Karte an. Das Profil zeigt Lage, Regeln und Verbände.',
+        tips: [
+          'Filter-Symbol in der Suche: Gewässer in deiner Nähe',
+          'Orte markierst du mit einem Tipp auf die Karte',
+        ],
+        steps: [
+          'Tippe ein Gewässer an: Das Profil zeigt Lage, Fläche, deine Fänge und Orte, Regeln und Verbände.',
+          'Das Filter-Symbol in der Suchleiste öffnet die Detailsuche: nach Name, Gewässerart und Entfernung.',
+          'Tippe auf eine freie Stelle der Karte: dort legst du einen Ort an oder erfasst einen Fang.',
+          'Unter „Ebenen & Legende“ blendest du Orte und Fänge ein oder aus und schaltest die Heatmap zu.',
+        ],
+        note: 'Die Gewässerdaten stammen aus OpenStreetMap.',
+        go: 'Karte öffnen',
+      },
+      catch: {
+        title: 'Fang erfassen',
+        sub: 'Fang, Fischkontakt, Fehlbiss, Beobachtung',
+        intro: 'Fang, Fischkontakt, Fehlbiss oder Beobachtung. Wetter und Pegel kommen von selbst dazu.',
+        tips: [
+          'Der Knopf „Fang erfassen“ auf der Karte genügt',
+          'Länge, Gewicht, Fotos und Köder sind freiwillig',
+        ],
+        steps: [
+          'Tippe auf der Karte auf „Fang erfassen“ und wähle oben Fang, Fischkontakt, Fehlbiss oder Beobachtung.',
+          'Fischart, Datum und Ort: Den Ort nimmst du vom Standort oder tippst ihn auf der Karte an.',
+          'Länge, Gewicht, Köder und Fotos sind freiwillig; unter „Mehr Details“ findest du den Rest.',
+          'Wetter und Pegel zum Fangzeitpunkt werden automatisch mitgespeichert.',
+        ],
+        note: 'Fotos verlieren beim Speichern ihre Kamera- und Ortsangaben.',
+        go: 'Zur Karte',
+      },
+      book: {
+        title: 'Fangbuch und Statistik',
+        sub: 'Nach Gewässern, Erfolge, CSV',
+        intro: 'Alle Einträge nach Gewässern, dazu Statistik, Erfolge und Sicherung.',
+        tips: ['Die Statistik wächst mit jedem Eintrag', 'Erfolge findest du im Profil'],
+        steps: [
+          'Im Fangbuch stehen alle Einträge, nach Gewässern gruppiert, mit Fotos und Wetter.',
+          'Tippe einen Eintrag an, um ihn zu ändern oder zu teilen.',
+          'Die Statistik zeigt Muster erst, wenn genug Einträge da sind.',
+          'Erfolge in Bronze, Silber und Gold sammelst du automatisch.',
+        ],
+        go: 'Fangbuch öffnen',
+      },
+      sessions: {
+        title: 'Sessions',
+        sub: 'Pausen, Route, Rückblick, gemeinsam angeln',
+        intro:
+          'Starte eine Session für deinen Angeltag, mit Pausen und auf Wunsch mit GPS-Route. Danach gibt es einen Rückblick.',
+        tips: ['Gemeinsam angeln mit Freunden', 'Die Route zeichnest du nur mit deiner Erlaubnis auf'],
+        steps: [
+          'Session starten, bei Bedarf pausieren und beenden: So misst Fangpunkt deine Angelzeit.',
+          'Die Route (GPS) schaltest du in der Session ein, wenn du sie im Rückblick sehen willst.',
+          'Der Rückblick zeigt Karte, Kennzahlen, Highlights und eine Chronik.',
+          'Gemeinsam angeln: Freunde einladen; geteilt werden nur Kennzahlen, keine Orte oder Routen.',
+        ],
+        note: 'In der Web-App läuft die Aufzeichnung nur, solange die App offen ist.',
+        go: 'Sessions öffnen',
+      },
+      weather: {
+        title: 'Wetter und Beißprognose',
+        sub: 'Vorhersage, Warnungen, Pegel, Kalender',
+        intro: 'Vorhersage für 10 Tage, Luftdruck, Wasserstand und Beißprognose. Dazu der Angelkalender.',
+        tips: ['Die Prognose ist eine Faustregel', 'Amtliche Warnungen stehen oben'],
+        steps: [
+          'Wähle oben den Ort; die Vorhersage zeigt jetzt, stündlich und für 10 Tage.',
+          'Tippe einen Tag an: Details, Beißprognose, Sonne und Mondzeiten.',
+          'Beißfenster zeigen, wann deine eigenen Bisse besonders oft kamen (ab 20 Bissen).',
+          'Der Angelkalender plant Termine; Freunde kannst du einladen.',
+        ],
+        note: 'Wasserstand ist keine Wassertiefe.',
+        go: 'Wetter öffnen',
+      },
+      law: {
+        title: 'Recht und Regeln',
+        sub: 'Schonzeit, Mindestmaß, Fischereischein',
+        intro: 'Beim Erfassen warnt Fangpunkt bei Schonzeit oder Mindestmaß. Es blockiert nie.',
+        tips: ['Landesrecht aller Bundesländer unter Mehr', 'Keine Rechtsauskunft'],
+        steps: [
+          'Mehr → Angelrecht der Länder: Schonzeiten, Mindestmaße und Fischereischein je Bundesland.',
+          'Suche dort nach einer Fischart oder zeige nur Fische in der Schonzeit.',
+          'Beim Erfassen erscheint eine Warnung, wenn Schonzeit oder Mindestmaß verletzt sein könnten.',
+          'Eigene Notizen zu Gewässerregeln speicherst du im Gewässerprofil.',
+        ],
+        note: 'Das ist keine Rechtsauskunft. Maßgeblich sind Gesetz und Gewässerordnung.',
+        go: 'Angelrecht öffnen',
+      },
+      knots: {
+        title: 'Knoten, Montagen, Köder',
+        sub: 'Animiert, Schritt für Schritt',
+        intro:
+          'Animierte Anleitungen zu Knoten, Montagen und Köderführung. Eigene Köder speicherst du als Favoriten.',
+        tips: ['Schritt für Schritt, auch langsam', 'Favoriten füllen das Fangformular vor'],
+        steps: [
+          'Mehr → Knoten, Montagen & Köderführung: drei Reiter mit animierten Zeichnungen.',
+          'Mit Zurück und Weiter gehst du jeden Schritt einzeln durch.',
+          'Köder-Favoriten legst du einmal an und übernimmst sie beim Erfassen eines Fangs.',
+        ],
+        go: 'Knoten ansehen',
+      },
+      community: {
+        title: 'Community',
+        sub: 'Feed, Folgen, Angler entdecken',
+        intro:
+          'Beiträge teilen, Anglern folgen und Neues entdecken. Ein Konto ist dafür nötig und freiwillig.',
+        tips: ['Du bestimmst, wer deine Beiträge sieht', 'Vorschläge kannst du ausblenden'],
+        steps: [
+          'Mit einem Konto teilst du Beiträge: nur für dich, für Follower oder für alle.',
+          'Im Feed siehst du Beiträge der Angler, denen du folgst; bei privaten Konten bestätigt die Person.',
+          '„Angler entdecken“ schlägt im Feed passende Profile vor; das X blendet einen Vorschlag aus.',
+          'Unter Mehr → Konto → Privatsphäre stellst du ein, was andere sehen.',
+        ],
+        go: 'Feed öffnen',
+      },
+      backup: {
+        title: 'Sicherung und Datenschutz',
+        sub: 'Was auf dem Gerät bleibt',
+        intro: 'Fänge, Orte und Routen bleiben auf deinem Gerät. Sichere sie regelmäßig.',
+        tips: ['Ein Konto ist freiwillig', 'Sicherung als Datei unter Mehr → Daten'],
+        steps: [
+          'Fänge, Orte, Sessions und Routen liegen nur auf deinem Gerät.',
+          'Mehr → Daten & Sicherung: Datei speichern und später wieder einlesen.',
+          'Der Browser kann gespeicherte Daten löschen; eine Sicherung schützt davor.',
+        ],
+        go: 'Sicherung öffnen',
+      },
     },
   },
   // „Angler entdecken“ (Wunsch Nutzer 2026-11-13): Profilvorschläge im Feed und die zugehörigen Einstellungen

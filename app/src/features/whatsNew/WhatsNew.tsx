@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { de } from '../../i18n/de';
 import { CHANGELOG } from '../../i18n/changelog';
 import { Button } from '../../design/components/Button';
-import { getDb } from '../../data/db';
 import { getSetting, setSetting } from '../../data/settings';
+import { hasUserData } from '../../data/hasUserData';
+import { afterIntro } from '../../lib/afterIntro';
 import { latestId, unseenEntries, type ChangelogEntry } from '../../domain/whatsNew';
 import styles from './WhatsNew.module.css';
 
@@ -18,34 +19,6 @@ function testsAllowed(): boolean {
   } catch {
     return false;
   }
-}
-
-/** Wartet, bis das Intro (index.html) weg ist. */
-function afterIntro(cb: () => void): () => void {
-  const root = document.documentElement;
-  if (root.dataset.intro !== 'shown') {
-    cb();
-    return () => undefined;
-  }
-  const obs = new MutationObserver(() => {
-    if (root.dataset.intro !== 'shown') {
-      obs.disconnect();
-      cb();
-    }
-  });
-  obs.observe(root, { attributes: true, attributeFilter: ['data-intro'] });
-  return () => obs.disconnect();
-}
-
-async function hasUserData(): Promise<boolean> {
-  const db = getDb();
-  const counts = await Promise.all([
-    db.catches.count(),
-    db.places.count(),
-    db.sessions.count(),
-    db.trips.count(),
-  ]);
-  return counts.some((n) => n > 0);
 }
 
 /** „Stichwort: Text“ → Stichwort fett */

@@ -6,6 +6,7 @@ import { ListLink } from '../../design/components/ListLink';
 import {
   CalendarIcon,
   DatabaseIcon,
+  BookIcon,
   FeedIcon,
   HookIcon,
   InfoIcon,
@@ -48,6 +49,7 @@ export function MorePage() {
       <Section title={t.groupPlan}>
         <div className={styles.card}>
           <ListLink to="/wetter/kalender" icon={<CalendarIcon />} title={t.calendar} />
+          <ListLink to="/mehr/anleitung" icon={<BookIcon />} title={t.guide} />
           <ListLink to="/mehr/knoten" icon={<KnotIcon />} title={t.knots} />
           <ListLink to="/mehr/koeder" icon={<HookIcon />} title={t.baits} />
         </div>
