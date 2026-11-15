@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D5D9CB923EF5FCBAB4F9BFB /* FangpunktLiveBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAAAACA482310BBBBB521E6 /* FangpunktLiveBundle.swift */; };
+		0E3EDD78F81E4FBE6D9A4AB2 /* FangpunktSessionLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB9EB304FD63040DECDFA64 /* FangpunktSessionLive.swift */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
+		46CEE74A1611F1A60B9B4D2F /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEBC087967EC66070972F582 /* SwiftUI.framework */; };
 		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
@@ -15,12 +18,48 @@
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
-		F17A0B022FF0A00100C0FFEE /* RoutePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17A0B012FF0A00100C0FFEE /* RoutePlugin.swift */; };
+		5D035A339DAD1C527DC401A7 /* FangpunktLiveAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B8C72444082D0E97B109033 /* FangpunktLiveAttributes.swift */; };
+		743775543AB7C043356E6FA2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 377109B362AC3EDBF036D9A0 /* Foundation.framework */; };
+		79648F769706CA11D37A3D66 /* FangpunktLive.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = EC1C71372128C1407A4BCC0C /* FangpunktLive.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9582B6822FE993A50072D4E8 /* SceneDelegate.swift */; };
+		ADC9733DCBD79514FB11E808 /* FangpunktLiveAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B8C72444082D0E97B109033 /* FangpunktLiveAttributes.swift */; };
+		ED2A6DBC857CC7EE2FE6CA36 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C6C2ABF481350ACFAB268F /* WidgetKit.framework */; };
+		F17A0B022FF0A00100C0FFEE /* RoutePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17A0B012FF0A00100C0FFEE /* RoutePlugin.swift */; };
+		FAB39AFDFFAE29AD2E093E95 /* LiveActivityPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDC4F36462DF47F8740295B /* LiveActivityPlugin.swift */; };
+		FE7EFF545DF3D2AE2ACF250B /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E42D915C27CD165962E5D87 /* ActivityKit.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		B7B349BD6747A1E72EB0A81D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 19C2B6E8631AEEE3BDCCAEF8;
+			remoteInfo = FangpunktLive;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A9DF1B2B511481AB52810C7B /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				79648F769706CA11D37A3D66 /* FangpunktLive.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		0E42D915C27CD165962E5D87 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
+		2BDC4F36462DF47F8740295B /* LiveActivityPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LiveActivityPlugin.swift; sourceTree = "<group>"; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
+		377109B362AC3EDBF036D9A0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		48A9DBF376ADCE7BD2FD8749 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4AAAAACA482310BBBBB521E6 /* FangpunktLiveBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FangpunktLiveBundle.swift; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -29,9 +68,14 @@
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
-		F17A0B012FF0A00100C0FFEE /* RoutePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePlugin.swift; sourceTree = "<group>"; };
+		57C6C2ABF481350ACFAB268F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		5B8C72444082D0E97B109033 /* FangpunktLiveAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FangpunktLiveAttributes.swift; sourceTree = "<group>"; };
 		9582B6822FE993A50072D4E8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		CEBC087967EC66070972F582 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		EC1C71372128C1407A4BCC0C /* FangpunktLive.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FangpunktLive.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F17A0B012FF0A00100C0FFEE /* RoutePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePlugin.swift; sourceTree = "<group>"; };
+		FAB9EB304FD63040DECDFA64 /* FangpunktSessionLive.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FangpunktSessionLive.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,15 +87,57 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5B0E06B1A10BB686632ED3C8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				743775543AB7C043356E6FA2 /* Foundation.framework in Frameworks */,
+				46CEE74A1611F1A60B9B4D2F /* SwiftUI.framework in Frameworks */,
+				ED2A6DBC857CC7EE2FE6CA36 /* WidgetKit.framework in Frameworks */,
+				FE7EFF545DF3D2AE2ACF250B /* ActivityKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0125F92D15759EF34E6C0D54 /* FangpunktLive */ = {
+			isa = PBXGroup;
+			children = (
+				4AAAAACA482310BBBBB521E6 /* FangpunktLiveBundle.swift */,
+				FAB9EB304FD63040DECDFA64 /* FangpunktSessionLive.swift */,
+				48A9DBF376ADCE7BD2FD8749 /* Info.plist */,
+			);
+			name = FangpunktLive;
+			path = FangpunktLive;
+			sourceTree = "<group>";
+		};
+		0DB5FB5E363BF0FAA1DD799C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E4AA172BFD0470E0B3415ADB /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		443ECF78A4BC8564E57A1297 /* LiveActivity */ = {
+			isa = PBXGroup;
+			children = (
+				5B8C72444082D0E97B109033 /* FangpunktLiveAttributes.swift */,
+				2BDC4F36462DF47F8740295B /* LiveActivityPlugin.swift */,
+			);
+			name = LiveActivity;
+			path = LiveActivity;
+			sourceTree = "<group>";
+		};
 		504EC2FB1FED79650016851F = {
 			isa = PBXGroup;
 			children = (
 				958DCC722DB07C7200EA8C5F /* debug.xcconfig */,
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
+				0125F92D15759EF34E6C0D54 /* FangpunktLive */,
+				0DB5FB5E363BF0FAA1DD799C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -59,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
+				EC1C71372128C1407A4BCC0C /* FangpunktLive.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -76,13 +163,42 @@
 				504EC3131FED79650016851F /* Info.plist */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
+				443ECF78A4BC8564E57A1297 /* LiveActivity */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		E4AA172BFD0470E0B3415ADB /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				377109B362AC3EDBF036D9A0 /* Foundation.framework */,
+				CEBC087967EC66070972F582 /* SwiftUI.framework */,
+				57C6C2ABF481350ACFAB268F /* WidgetKit.framework */,
+				0E42D915C27CD165962E5D87 /* ActivityKit.framework */,
+			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		19C2B6E8631AEEE3BDCCAEF8 /* FangpunktLive */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C4A37EE13E67EB8D1B4DA334 /* Build configuration list for PBXNativeTarget "FangpunktLive" */;
+			buildPhases = (
+				452B03147575799851ACB74A /* Sources */,
+				5B0E06B1A10BB686632ED3C8 /* Frameworks */,
+				FA419AD2646E81399220599A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FangpunktLive;
+			productName = FangpunktLive;
+			productReference = EC1C71372128C1407A4BCC0C /* FangpunktLive.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		504EC3031FED79650016851F /* App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "App" */;
@@ -90,10 +206,12 @@
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
+				A9DF1B2B511481AB52810C7B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D908634A92225CA51D832159 /* PBXTargetDependency */,
 			);
 			name = App;
 			packageProductDependencies = (
@@ -136,6 +254,7 @@
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
+				19C2B6E8631AEEE3BDCCAEF8 /* FangpunktLive */,
 			);
 		};
 /* End PBXProject section */
@@ -154,9 +273,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FA419AD2646E81399220599A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		452B03147575799851ACB74A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0D5D9CB923EF5FCBAB4F9BFB /* FangpunktLiveBundle.swift in Sources */,
+				0E3EDD78F81E4FBE6D9A4AB2 /* FangpunktSessionLive.swift in Sources */,
+				5D035A339DAD1C527DC401A7 /* FangpunktLiveAttributes.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		504EC3001FED79650016851F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -164,10 +300,21 @@
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */,
 				F17A0B022FF0A00100C0FFEE /* RoutePlugin.swift in Sources */,
+				ADC9733DCBD79514FB11E808 /* FangpunktLiveAttributes.swift in Sources */,
+				FAB39AFDFFAE29AD2E093E95 /* LiveActivityPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D908634A92225CA51D832159 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FangpunktLive;
+			target = 19C2B6E8631AEEE3BDCCAEF8 /* FangpunktLive */;
+			targetProxy = B7B349BD6747A1E72EB0A81D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		504EC30B1FED79650016851F /* Main.storyboard */ = {
@@ -313,6 +460,11 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-weak_framework",
+					ActivityKit,
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.fangpunkt.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -336,11 +488,69 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-weak_framework",
+					ActivityKit,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.fangpunkt.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		54F89F7F17B775594844D9EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FangpunktLive/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fangpunkt.app.FangpunktLive;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		668640DBCF2E31DF0FD08D1A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = FangpunktLive/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fangpunkt.app.FangpunktLive;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -361,6 +571,15 @@
 			buildConfigurations = (
 				504EC3171FED79650016851F /* Debug */,
 				504EC3181FED79650016851F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C4A37EE13E67EB8D1B4DA334 /* Build configuration list for PBXNativeTarget "FangpunktLive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				668640DBCF2E31DF0FD08D1A /* Release */,
+				54F89F7F17B775594844D9EF /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
