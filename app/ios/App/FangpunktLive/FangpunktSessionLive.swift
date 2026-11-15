@@ -84,13 +84,13 @@ private struct StatChip: View {
     let label: String
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 6) {
-            Text(value).font(.system(size: 20, weight: .bold)).monospacedDigit()
-            Text(label).font(.system(size: 12)).opacity(0.75)
+            Text(value).font(.system(size: 16, weight: .bold)).monospacedDigit()
+            Text(label).font(.system(size: 11)).opacity(0.75)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 7)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Palette.chip, in: RoundedRectangle(cornerRadius: 14))
+        .background(Palette.chip, in: RoundedRectangle(cornerRadius: 10))
     }
 }
 
@@ -102,8 +102,8 @@ private struct ActionButton: View {
 
     private var label: some View {
         Text(title)
-            .font(.system(size: 15, weight: .bold))
-            .frame(maxWidth: .infinity, minHeight: 40)
+            .font(.system(size: 14, weight: .bold))
+            .frame(maxWidth: .infinity, minHeight: 32)
             .foregroundColor(primary ? Palette.onOrange : .white)
             .background(primary ? Palette.orange : Color.white.opacity(0.16), in: Capsule())
     }
@@ -184,38 +184,40 @@ private struct LockScreenView: View {
         }
     }
 
+    /// Der Sperrbildschirm lässt nur etwa 160 pt Höhe zu (sonst wird die Karte abgeschnitten): eine Kopfzeile mit
+    /// Titel, Status und Zeit, darunter die Kennzahlen und die Knöpfe – alles dicht gesetzt.
     var body: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 8) {
-                FishMark(size: 26)
-                Text("Fangpunkt").font(.system(size: 13, weight: .medium)).opacity(0.75)
-                Spacer()
-                Circle().fill(statusColor).frame(width: 8, height: 8)
-                Text(statusText).font(.system(size: 12.5, weight: .semibold)).foregroundColor(statusColor)
-            }
-            HStack(alignment: .bottom) {
-                VStack(alignment: .leading, spacing: 2) {
-                    if !state.title.isEmpty {
-                        Text(state.title).font(.system(size: 19, weight: .bold)).lineLimit(1)
-                    }
-                    if state.state == "ended", let biggest = state.biggest {
-                        Text("Größter Fisch: \(biggest)").font(.system(size: 13)).opacity(0.7).lineLimit(1)
+        VStack(spacing: 8) {
+            HStack(alignment: .center, spacing: 8) {
+                FishMark(size: 24)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(state.title.isEmpty ? "Fangpunkt" : state.title)
+                        .font(.system(size: 16, weight: .bold)).lineLimit(1)
+                    HStack(spacing: 5) {
+                        Circle().fill(statusColor).frame(width: 6, height: 6)
+                        Text(statusLine).font(.system(size: 11.5, weight: .semibold))
+                            .foregroundColor(statusColor).lineLimit(1)
                     }
                 }
-                Spacer(minLength: 8)
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("ANGELZEIT").font(.system(size: 11, weight: .medium)).tracking(0.6).opacity(0.65)
+                Spacer(minLength: 6)
+                VStack(alignment: .trailing, spacing: 0) {
+                    Text("ANGELZEIT").font(.system(size: 9.5, weight: .medium)).tracking(0.5).opacity(0.65)
                     ElapsedText(state: state)
-                        .font(.system(size: 36, weight: .bold))
-                        .frame(width: 170, alignment: .trailing)
+                        .font(.system(size: 28, weight: .bold))
+                        .frame(width: 130, alignment: .trailing)
                 }
             }
             if state.state != "paused" { Stats(state: state) }
             Buttons(state: state, sessionId: sessionId)
         }
         .foregroundColor(.white)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+    }
+
+    private var statusLine: String {
+        if state.state == "ended", let biggest = state.biggest { return "\(statusText) · Größter Fisch: \(biggest)" }
+        return statusText
     }
 }
 
