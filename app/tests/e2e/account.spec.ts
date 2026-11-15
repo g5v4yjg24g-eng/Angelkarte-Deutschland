@@ -5466,8 +5466,14 @@ test('AVA-3: langes Drücken auf ein Profilbild zeigt es groß; kurzes Tippen ö
 
   const cdp = await page.context().newCDPSession(page);
   await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true });
-  const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd') =>
-    cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+  const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', at = { x, y }) =>
+    cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [at] });
+  // kurzes Antippen an einer Stelle (ohne page.touchscreen: das Desktop-Projekt hat keinen Touch-Kontext)
+  const tap = async (at: { x: number; y: number }) => {
+    await touch('touchStart', at);
+    await page.waitForTimeout(60);
+    await touch('touchEnd', at);
+  };
 
   // kurz drücken: nichts Großes
   await touch('touchStart');
@@ -5510,12 +5516,12 @@ test('AVA-3: langes Drücken auf ein Profilbild zeigt es groß; kurzes Tippen ö
   await touch('touchEnd');
   await page.waitForTimeout(900); // auch nach längerem Halten schließt das Loslassen nicht
   await expect(big).toBeVisible();
-  await page.touchscreen.tap(20, 20);
+  await tap({ x: 20, y: 20 });
   await expect(big).toHaveCount(0);
 
   // kurzes Tippen: weiter zum Profil
   await expect(avatar).toBeVisible();
-  await page.touchscreen.tap(x, y);
+  await tap({ x, y });
   await expect(page).toHaveURL(/\/profil\/nutzer\/anna$/);
   expect(errors).toEqual([]);
 });
