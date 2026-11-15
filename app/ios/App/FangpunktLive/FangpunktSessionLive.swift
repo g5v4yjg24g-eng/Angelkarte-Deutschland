@@ -1,5 +1,6 @@
 // Darstellung der Live Activity: Sperrbildschirm, Dynamic Island (kompakt, minimal, aufgeklappt). Die Knöpfe sind
-// Links auf `fangpunkt://session/…`; die App öffnet sich und führt die Aktion aus (AppLinkHandler). Die Angelzeit
+// App Intents (iOS 17, ohne die App zu öffnen) bzw. Links auf `fangpunkt://session/…` (davor, und für „Fang erfassen“); die
+// App führt die Aktion aus (LiveActivityPlugin, AppLinkHandler). Die Angelzeit
 // läuft über `Text(timerInterval:)` von selbst; bei Pause und Ende steht die feste Zeit da.
 import ActivityKit
 import SwiftUI
@@ -96,14 +97,34 @@ private struct StatChip: View {
 private struct ActionButton: View {
     let title: String
     let action: String
+    var sessionId: String?
     var primary = false
+
+    private var label: some View {
+        Text(title)
+            .font(.system(size: 15, weight: .bold))
+            .frame(maxWidth: .infinity, minHeight: 40)
+            .foregroundColor(primary ? Palette.onOrange : .white)
+            .background(primary ? Palette.orange : Color.white.opacity(0.16), in: Capsule())
+    }
+
+    /// Ab iOS 17 führt der Knopf die Aktion aus, ohne die App zu öffnen; davor (und für „Fang erfassen“, „Rückblick“)
+    /// öffnet ein Link die App, die die Aktion ausführt.
+    @ViewBuilder
     var body: some View {
-        Link(destination: url(action)) {
-            Text(title)
-                .font(.system(size: 15, weight: .bold))
-                .frame(maxWidth: .infinity, minHeight: 40)
-                .foregroundColor(primary ? Palette.onOrange : .white)
-                .background(primary ? Palette.orange : Color.white.opacity(0.16), in: Capsule())
+        if #available(iOS 17.0, *), let id = sessionId {
+            switch action {
+            case "pause":
+                Button(intent: PauseSessionIntent(sessionId: id)) { label }.buttonStyle(.plain)
+            case "resume":
+                Button(intent: ResumeSessionIntent(sessionId: id)) { label }.buttonStyle(.plain)
+            case "end":
+                Button(intent: EndSessionIntent(sessionId: id)) { label }.buttonStyle(.plain)
+            default:
+                Link(destination: url(action)) { label }
+            }
+        } else {
+            Link(destination: url(action)) { label }
         }
     }
 }
@@ -125,15 +146,16 @@ private struct Stats: View {
 @available(iOS 16.2, *)
 private struct Buttons: View {
     let state: FangpunktLiveAttributes.ContentState
+    let sessionId: String
     var body: some View {
         HStack(spacing: 8) {
             switch state.state {
             case "running":
-                ActionButton(title: "Pause", action: "pause")
+                ActionButton(title: "Pause", action: "pause", sessionId: sessionId)
                 ActionButton(title: "+ Fang erfassen", action: "catch", primary: true)
             case "paused":
-                ActionButton(title: "Beenden", action: "end")
-                ActionButton(title: "Weiter angeln", action: "resume", primary: true)
+                ActionButton(title: "Beenden", action: "end", sessionId: sessionId)
+                ActionButton(title: "Weiter angeln", action: "resume", sessionId: sessionId, primary: true)
             default:
                 ActionButton(title: "Rückblick ansehen", action: "review", primary: true)
             }
@@ -144,6 +166,7 @@ private struct Buttons: View {
 @available(iOS 16.2, *)
 private struct LockScreenView: View {
     let state: FangpunktLiveAttributes.ContentState
+    let sessionId: String
 
     private var statusText: String {
         switch state.state {
@@ -188,7 +211,7 @@ private struct LockScreenView: View {
                 }
             }
             if state.state != "paused" { Stats(state: state) }
-            Buttons(state: state)
+            Buttons(state: state, sessionId: sessionId)
         }
         .foregroundColor(.white)
         .padding(.horizontal, 16)
@@ -200,7 +223,7 @@ private struct LockScreenView: View {
 struct FangpunktSessionLive: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: FangpunktLiveAttributes.self) { context in
-            LockScreenView(state: context.state)
+            LockScreenView(state: context.state, sessionId: context.attributes.sessionId)
                 .activityBackgroundTint(Color(red: 0.08, green: 0.11, blue: 0.13).opacity(0.72))
                 .activitySystemActionForegroundColor(.white)
                 .widgetURL(url("open"))
@@ -222,7 +245,7 @@ struct FangpunktSessionLive: Widget {
                 DynamicIslandExpandedRegion(.bottom) {
                     VStack(spacing: 8) {
                         if context.state.state != "paused" { Stats(state: context.state) }
-                        Buttons(state: context.state)
+                        Buttons(state: context.state, sessionId: context.attributes.sessionId)
                     }
                 }
             } compactLeading: {

@@ -132,3 +132,36 @@ export function nextLiveAction(
   }
   return { action: undefined, memory };
 }
+
+// ---------------------------------------------------------------------------------------------------------
+// Knöpfe ohne App-Öffnen (iOS 17, App Intents): die Aktionen kommen vorgemerkt mit Zeitpunkt aus dem Swift-Modul
+
+export type PendingKind = 'pause' | 'resume' | 'end';
+export interface PendingLiveAction {
+  action: PendingKind;
+  sessionId: string;
+  /** Wann der Knopf gedrückt wurde (ms seit 1970) – so wird pausiert/beendet, auch wenn die App später dazukommt */
+  atMs: number;
+}
+
+/** Älter als das sind sie nicht mehr sinnvoll (eine vergessene Aktion soll keine Session nachträglich beenden) */
+export const PENDING_MAX_AGE_MS = 12 * 3600e3;
+
+/** Antwort des Plugins prüfen: unbekannte Aktionen und kaputte Zeilen fallen weg, Reihenfolge nach Zeitpunkt */
+export function parsePendingActions(raw: unknown): PendingLiveAction[] {
+  if (!Array.isArray(raw)) return [];
+  const out: PendingLiveAction[] = [];
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') continue;
+    const { action, sessionId, atMs } = r as Record<string, unknown>;
+    if (action !== 'pause' && action !== 'resume' && action !== 'end') continue;
+    if (typeof sessionId !== 'string' || !sessionId || typeof atMs !== 'number' || !Number.isFinite(atMs))
+      continue;
+    out.push({ action, sessionId, atMs });
+  }
+  return out.sort((a, b) => a.atMs - b.atMs);
+}
+
+/** Aktionen, die noch gelten: nicht zu alt und nicht aus der Zukunft (Uhr falsch gestellt) */
+export const freshPendingActions = (list: readonly PendingLiveAction[], nowMs: number) =>
+  list.filter((a) => nowMs - a.atMs <= PENDING_MAX_AGE_MS && a.atMs <= nowMs + 60_000);

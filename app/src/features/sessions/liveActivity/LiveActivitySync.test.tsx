@@ -17,6 +17,8 @@ function fake() {
     start: vi.fn<LiveActivityProvider['start']>(() => Promise.resolve()),
     update: vi.fn<LiveActivityProvider['update']>(() => Promise.resolve()),
     end: vi.fn<LiveActivityProvider['end']>(() => Promise.resolve()),
+    takeActions: vi.fn<LiveActivityProvider['takeActions']>(() => Promise.resolve([])),
+    onAction: vi.fn<LiveActivityProvider['onAction']>(() => () => undefined),
   };
   return p satisfies LiveActivityProvider;
 }

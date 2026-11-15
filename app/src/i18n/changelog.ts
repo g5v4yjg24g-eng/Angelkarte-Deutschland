@@ -8,7 +8,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     title: 'Live Activity',
     items: [
       'Sperrbildschirm: Deine Session erscheint mit Angelzeit, Fängen, Bissen und Strecke – auch in der Dynamic Island (iPhone-App, ab iOS 16.2).',
-      'Knöpfe: Pause, Weiter angeln, Beenden und „Fang erfassen“ führen aus, was draufsteht, und öffnen dazu die App.',
+      'Knöpfe: Pause, Weiter angeln und Beenden wirken direkt auf dem Sperrbildschirm (ab iOS 17), „Fang erfassen“ öffnet die App.',
       'Einstellungen: Live Activity und Gewässername lassen sich unter Einstellungen ausschalten.',
     ],
   },

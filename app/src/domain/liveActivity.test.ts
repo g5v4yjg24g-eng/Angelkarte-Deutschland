@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   biggestFish,
+  freshPendingActions,
+  parsePendingActions,
+  PENDING_MAX_AGE_MS,
   distanceKmOf,
   KEEP_ENDED_SECONDS,
   liveKey,
@@ -164,5 +167,29 @@ describe('nextLiveAction', () => {
     const ended = nextLiveAction(shown, done.p, done.key, true).memory;
     const next = run(session({ id: 's2' }));
     expect(nextLiveAction(ended, next.p, next.key, true).action?.kind).toBe('start');
+  });
+});
+
+describe('Aktionen der Knöpfe (App Intents)', () => {
+  it('prüft die Antwort des Plugins und sortiert nach Zeitpunkt', () => {
+    const list = parsePendingActions([
+      { action: 'end', sessionId: 's1', atMs: 3000 },
+      { action: 'pause', sessionId: 's1', atMs: 1000 },
+      { action: 'loeschen', sessionId: 's1', atMs: 2000 },
+      { action: 'resume', sessionId: '', atMs: 2000 },
+      { action: 'resume', sessionId: 's1', atMs: 'x' },
+      null,
+      'kaputt',
+    ]);
+    expect(list.map((a) => a.action)).toEqual(['pause', 'end']);
+    expect(parsePendingActions(undefined)).toEqual([]);
+    expect(parsePendingActions({})).toEqual([]);
+  });
+  it('zu alte oder aus der Zukunft kommende Aktionen gelten nicht', () => {
+    const now = 10_000_000_000;
+    const a = (atMs: number) => ({ action: 'end' as const, sessionId: 's1', atMs });
+    expect(freshPendingActions([a(now - 1000)], now)).toHaveLength(1);
+    expect(freshPendingActions([a(now - PENDING_MAX_AGE_MS - 1)], now)).toHaveLength(0);
+    expect(freshPendingActions([a(now + 10 * 60_000)], now)).toHaveLength(0);
   });
 });

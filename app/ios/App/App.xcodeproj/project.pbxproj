@@ -10,6 +10,7 @@
 		0D5D9CB923EF5FCBAB4F9BFB /* FangpunktLiveBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AAAAACA482310BBBBB521E6 /* FangpunktLiveBundle.swift */; };
 		0E3EDD78F81E4FBE6D9A4AB2 /* FangpunktSessionLive.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB9EB304FD63040DECDFA64 /* FangpunktSessionLive.swift */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
+		3AE4D1061EA108BD207F3A60 /* FangpunktLiveIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D2291EB69F21DC67AD107B /* FangpunktLiveIntents.swift */; };
 		46CEE74A1611F1A60B9B4D2F /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEBC087967EC66070972F582 /* SwiftUI.framework */; };
 		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
@@ -23,6 +24,7 @@
 		79648F769706CA11D37A3D66 /* FangpunktLive.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = EC1C71372128C1407A4BCC0C /* FangpunktLive.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9582B6822FE993A50072D4E8 /* SceneDelegate.swift */; };
 		ADC9733DCBD79514FB11E808 /* FangpunktLiveAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B8C72444082D0E97B109033 /* FangpunktLiveAttributes.swift */; };
+		BEE195409871842700A4701A /* FangpunktLiveIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5D2291EB69F21DC67AD107B /* FangpunktLiveIntents.swift */; };
 		ED2A6DBC857CC7EE2FE6CA36 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C6C2ABF481350ACFAB268F /* WidgetKit.framework */; };
 		F17A0B022FF0A00100C0FFEE /* RoutePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17A0B012FF0A00100C0FFEE /* RoutePlugin.swift */; };
 		FAB39AFDFFAE29AD2E093E95 /* LiveActivityPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDC4F36462DF47F8740295B /* LiveActivityPlugin.swift */; };
@@ -72,6 +74,7 @@
 		5B8C72444082D0E97B109033 /* FangpunktLiveAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FangpunktLiveAttributes.swift; sourceTree = "<group>"; };
 		9582B6822FE993A50072D4E8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		B5D2291EB69F21DC67AD107B /* FangpunktLiveIntents.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FangpunktLiveIntents.swift; sourceTree = "<group>"; };
 		CEBC087967EC66070972F582 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		EC1C71372128C1407A4BCC0C /* FangpunktLive.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FangpunktLive.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F17A0B012FF0A00100C0FFEE /* RoutePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePlugin.swift; sourceTree = "<group>"; };
@@ -125,6 +128,7 @@
 			children = (
 				5B8C72444082D0E97B109033 /* FangpunktLiveAttributes.swift */,
 				2BDC4F36462DF47F8740295B /* LiveActivityPlugin.swift */,
+				B5D2291EB69F21DC67AD107B /* FangpunktLiveIntents.swift */,
 			);
 			name = LiveActivity;
 			path = LiveActivity;
@@ -290,6 +294,7 @@
 				0D5D9CB923EF5FCBAB4F9BFB /* FangpunktLiveBundle.swift in Sources */,
 				0E3EDD78F81E4FBE6D9A4AB2 /* FangpunktSessionLive.swift in Sources */,
 				5D035A339DAD1C527DC401A7 /* FangpunktLiveAttributes.swift in Sources */,
+				BEE195409871842700A4701A /* FangpunktLiveIntents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,6 +307,7 @@
 				F17A0B022FF0A00100C0FFEE /* RoutePlugin.swift in Sources */,
 				ADC9733DCBD79514FB11E808 /* FangpunktLiveAttributes.swift in Sources */,
 				FAB39AFDFFAE29AD2E093E95 /* LiveActivityPlugin.swift in Sources */,
+				3AE4D1061EA108BD207F3A60 /* FangpunktLiveIntents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,6 +470,8 @@
 					"$(inherited)",
 					"-weak_framework",
 					ActivityKit,
+					"-weak_framework",
+					AppIntents,
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.fangpunkt.app;
@@ -492,6 +500,8 @@
 					"$(inherited)",
 					"-weak_framework",
 					ActivityKit,
+					"-weak_framework",
+					AppIntents,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.fangpunkt.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";

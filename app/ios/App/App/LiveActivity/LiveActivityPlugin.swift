@@ -14,7 +14,22 @@ public class LiveActivityPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "start", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "update", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "end", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "takeActions", returnType: CAPPluginReturnPromise),
     ]
+
+    /// Ein Knopf der Live Activity hat eine Aktion vorgemerkt: die Web-App holt sie mit `takeActions` ab
+    override public func load() {
+        NotificationCenter.default.addObserver(
+            forName: .fangpunktLiveAction, object: nil, queue: .main
+        ) { [weak self] _ in
+            self?.notifyListeners("liveAction", data: [:])
+        }
+    }
+
+    /// Vorgemerkte Aktionen der Knöpfe (Pause, Weiter, Beenden) mit Zeitpunkt, älteste zuerst; leert die Liste
+    @objc func takeActions(_ call: CAPPluginCall) {
+        call.resolve(["actions": PendingLiveActions.take()])
+    }
 
     /// Verfügbar, wenn das System Live Activities kennt und die Person sie nicht abgeschaltet hat
     @objc func isAvailable(_ call: CAPPluginCall) {
