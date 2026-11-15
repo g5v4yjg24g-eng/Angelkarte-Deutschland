@@ -29,6 +29,7 @@ import { useAvatarUrls } from '../profile/avatarUrls';
 import { usePikeLike } from '../reactions/usePikeLike';
 import { useHaptics } from '../haptics/useHaptics';
 import { CatchTag } from '../profile/CatchInfoFields';
+import { useAvatarZoom } from '../profile/AvatarZoom';
 import { useSaves } from './useSaves';
 import { NotificationsButton } from '../notifications/NotificationsButton';
 import { nextAnchors } from '../../domain/suggestions';
@@ -72,6 +73,7 @@ function FeedCard({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const likeIconRef = useRef<HTMLSpanElement>(null);
   const haptics = useHaptics();
+  const avatarZoom = useAvatarZoom(avatarUrl);
   // Doppeltipp aufs Foto: Hecht schwimmt zum Daumen und setzt „Gefällt mir“ (nie zurücknehmen)
   const pike = usePikeLike({
     frame: frameRef,
@@ -96,11 +98,13 @@ function FeedCard({
           className={styles.avatarLink}
           tabIndex={-1}
           aria-hidden="true"
+          {...avatarZoom.handlers}
         >
           <span className={styles.avatar}>
-            {avatarUrl ? <img src={avatarUrl} alt="" /> : initialOf(post.displayName)}
+            {avatarUrl ? <img src={avatarUrl} alt="" draggable={false} /> : initialOf(post.displayName)}
           </span>
         </Link>
+        {avatarZoom.lightbox}
         <span className={styles.who}>
           <strong>
             <Link to={`/profil/nutzer/${post.username}`} className={styles.authorLink}>

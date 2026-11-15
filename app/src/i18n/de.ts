@@ -790,6 +790,7 @@ export const de = {
     linkCopied: 'Link zu deinem Profil kopiert.',
     placeholderName: 'Dein Name',
     avatarAlt: 'Profilbild',
+    avatarZoom: 'Profilbild groß',
     catchInfo: {
       title: 'Angaben zum Fang (freiwillig)',
       species: 'Fischart',

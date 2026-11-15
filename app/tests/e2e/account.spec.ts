@@ -5446,3 +5446,82 @@ test('SUG-5: Einstellungen – Auffindbarkeit, Gewässer (nur Kennung und Name),
   await expect.poll(() => calls.suggest.prefs.discoverable).toBe(false);
   expect(errors).toEqual([]);
 });
+
+test('AVA-3: langes Drücken auf ein Profilbild zeigt es groß; kurzes Tippen öffnet weiter das Profil', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [], [feedRow({})]);
+  calls.avatars.set('u-anna', 'u-anna/0123456789abcdef0123456789abcdef.jpg');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.getByRole('navigation', { name: 'Hauptnavigation' }).getByRole('link', { name: 'Feed' }).click();
+  const anna = page.getByRole('article', { name: /^Beitrag von Anna/ });
+  const avatar = anna.locator('header img');
+  await expect(avatar).toHaveJSProperty('naturalWidth', 1);
+  const box = (await avatar.boundingBox()) as { x: number; y: number; width: number; height: number };
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  const big = page.getByRole('dialog', { name: 'Profilbild groß' });
+
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true });
+  const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', at = { x, y }) =>
+    cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [at] });
+  // kurzes Antippen an einer Stelle (ohne page.touchscreen: das Desktop-Projekt hat keinen Touch-Kontext)
+  const tap = async (at: { x: number; y: number }) => {
+    await touch('touchStart', at);
+    await page.waitForTimeout(60);
+    await touch('touchEnd', at);
+  };
+
+  // kurz drücken: nichts Großes
+  await touch('touchStart');
+  await page.waitForTimeout(150);
+  await touch('touchEnd');
+  await page.waitForTimeout(500);
+  await expect(big).toHaveCount(0);
+
+  // lang drücken (ohne Bewegung): großes Bild, kein Wechsel ins Profil
+  await page.goto('/feed');
+  await waitForApp(page);
+  await expect(avatar).toHaveJSProperty('naturalWidth', 1);
+  await touch('touchStart');
+  await expect(big).toBeVisible({ timeout: 3000 });
+  await touch('touchEnd');
+  await expect(big).toBeVisible();
+  await expect(page).toHaveURL(/\/feed$/);
+  const img = big.getByRole('img', { name: 'Profilbild' });
+  await expect(img).toHaveJSProperty('naturalWidth', 1);
+  const size = (await img.boundingBox()) as { width: number; height: number };
+  expect(size.width).toBeGreaterThan(300);
+  expect(Math.abs(size.width - size.height)).toBeLessThan(2);
+  // nicht breiter als der Bildschirm, rund
+  expect(size.width).toBeLessThanOrEqual(390);
+  expect(await img.evaluate((el) => getComputedStyle(el).borderRadius)).toBe('50%');
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  // Escape schließt
+  await page.keyboard.press('Escape');
+  await expect(big).toHaveCount(0);
+
+  // lang drücken, dann Tippen schließt (nach kurzer Schutzzeit)
+  await touch('touchStart');
+  await expect(big).toBeVisible({ timeout: 3000 });
+  await touch('touchEnd');
+  await page.waitForTimeout(900); // auch nach längerem Halten schließt das Loslassen nicht
+  await expect(big).toBeVisible();
+  await tap({ x: 20, y: 20 });
+  await expect(big).toHaveCount(0);
+
+  // kurzes Tippen: weiter zum Profil
+  await expect(avatar).toBeVisible();
+  await tap({ x, y });
+  await expect(page).toHaveURL(/\/profil\/nutzer\/anna$/);
+  expect(errors).toEqual([]);
+});
