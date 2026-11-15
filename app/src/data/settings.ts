@@ -15,6 +15,10 @@ export interface Settings {
   usageCount: boolean;
   /** Vibration bei Speichern, „Gefällt mir“ und Wischen über die Leiste (nur iPhone-App); Standard: an */
   haptics: boolean;
+  /** Live Activity der Session auf dem Sperrbildschirm (nur iPhone-App); Standard: an */
+  liveActivity: boolean;
+  /** Gewässername auf dem Sperrbildschirm zeigen (sichtbar für jeden, der das Handy sieht); Standard: an */
+  liveActivityTitle: boolean;
   /** Erreichte Erfolgs-Stufen (Schlüssel → Datum); Variante A: werden nie entfernt */
   achievements: Record<string, string>;
   /** Neu erreichte, noch nicht angesehene Stufen (bis die Erfolge-Übersicht geöffnet wird) */

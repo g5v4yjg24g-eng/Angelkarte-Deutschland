@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-26',
+    title: 'Live Activity',
+    items: [
+      'Sperrbildschirm: Deine Session erscheint mit Angelzeit, Fängen, Bissen und Strecke – auch in der Dynamic Island (iPhone-App, ab iOS 16.2).',
+      'Knöpfe: Pause, Weiter angeln und Beenden wirken direkt auf dem Sperrbildschirm (ab iOS 17), „Fang erfassen“ öffnet die App.',
+      'Einstellungen: Live Activity und Gewässername lassen sich unter Einstellungen ausschalten.',
+    ],
+  },
+  {
     id: '2026-12-24',
     title: 'Angler entdecken',
     items: [

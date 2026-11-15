@@ -11,6 +11,8 @@ import UIKit
 class FangpunktBridgeViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         bridge?.registerPluginInstance(RoutePlugin())
+        // Live Activity der Session (Sperrbildschirm, Dynamic Island): App/LiveActivity/LiveActivityPlugin.swift
+        bridge?.registerPluginInstance(LiveActivityPlugin())
     }
 }
 

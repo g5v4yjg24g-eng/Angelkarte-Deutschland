@@ -1946,6 +1946,10 @@ export const de = {
     weatherOn: 'Automatisch laden',
     haptics: 'Vibration',
     hapticsOff: 'Aus',
+    liveActivity: 'Live Activity',
+    liveActivityOff: 'Aus',
+    liveActivityOn: 'An',
+    liveActivityTitle: 'Gewässername auf dem Sperrbildschirm',
     hapticsOn: 'An',
     location: 'Standort',
     locationOff: 'Nur auf Knopfdruck',
@@ -3525,6 +3529,7 @@ export const de = {
     local: [
       'Fänge, Kontakte, Beobachtungen, Orte, Sessions mit ihren GPS-Routen, Köder-Favoriten, dein Profil mit seinen Beiträgen und Einstellungen liegen nur im Speicher dieses Browsers.',
       'Fotos werden beim Speichern neu kodiert; dabei fallen Kamera- und Ortsangaben (EXIF) weg.',
+      'Die Live Activity (iPhone-App) zeigt auf dem Sperrbildschirm Gewässername, Angelzeit, Fänge, Bisse und Strecke deiner Session; sie wird nur auf dem Gerät erzeugt. Der Gewässername lässt sich in den Einstellungen ausblenden.',
       'Sicherungen und CSV-Dateien entstehen nur, wenn du sie selbst erstellst, und landen dort, wo du sie speicherst.',
       'Löschen: über die Browser-Einstellungen („Websitedaten löschen“). Vorher sichern, sonst sind die Daten weg.',
     ],

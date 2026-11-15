@@ -11,6 +11,7 @@ import type { PushProvider } from './push';
 import type { HapticsProvider } from './haptics';
 import type { BackgroundRoute } from './backgroundRoute';
 import type { AppLinks } from './appLinks';
+import type { LiveActivityProvider } from './liveActivity';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
@@ -29,6 +30,8 @@ export interface Providers {
   route?: BackgroundRoute | undefined;
   /** Universal Links (geteilte Profile) – nur in der iPhone-App */
   links?: AppLinks | undefined;
+  /** Live Activity der Session auf dem Sperrbildschirm – nur in der iPhone-App */
+  liveActivity?: LiveActivityProvider | undefined;
 }
 
 export const ProvidersContext = createContext<Providers | null>(null);
