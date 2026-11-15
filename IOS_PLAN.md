@@ -86,6 +86,20 @@ dem Nutzer beendet, endet die Aufzeichnung (Lücke, nicht verbunden); gepufferte
 Offen [O]: Übersetzen (erst im Workflow `ios.yml`), Verhalten und Akku am iPhone, Zweck im Prüfhinweis an Apple
 erklären. Datenschutzseite der App und Website ergänzt.
 
+**Live Activity auf dem Sperrbildschirm** (Wunsch Nutzer 2026-11-15, Vorschau freigegeben): Session mit Angelzeit, Fängen, Bisse,
+Strecke und Knöpfen auf dem Sperrbildschirm und in der Dynamic Island (ab iOS 16.2; die App selbst läuft weiter ab iOS 15, ActivityKit
+wird schwach gebunden). **Gebaut 2026-11-15, am iPhone ungeprüft [O]; Swift wird erst beim Bau in `ios.yml` übersetzt.**
+Teile: Widget-Erweiterung `ios/App/FangpunktLive` (SwiftUI, Bundle-ID `com.fangpunkt.app.FangpunktLive`, Ziel im Projekt per Skript angelegt,
+eingebettet in „App“), gemeinsame Datenform `App/LiveActivity/FangpunktLiveAttributes.swift` (in beiden Zielen), Plugin
+`App/LiveActivity/LiveActivityPlugin.swift` (`FangpunktLive`: `isAvailable`/`start`/`update`/`end`, in `FangpunktBridgeViewController`
+angemeldet), `Info.plist` (`NSSupportsLiveActivities`, URL-Schema `fangpunkt`). Die Angelzeit zählt das System über
+`Text(timerInterval:)`; Fänge, Bisse, Strecke und Pausen meldet die Web-App (`LiveActivitySync`). **Knöpfe sind Links**
+`fangpunkt://session/<pause|resume|end|catch|review|open>` – die App öffnet sich und führt die Aktion aus (`AppLinkHandler` → `liveLinks.ts`);
+ein Pause-Knopf ohne App-Öffnen bräuchte App Intents (iOS 17) und eine Brücke in die laufende Web-App – späterer Ausbau. Keine
+Push-Updates, kein Server. Workflow: Archiv prüft, dass `PlugIns/FangpunktLive.appex` da ist, und signiert sie vorläufig ad hoc;
+die App-ID der Erweiterung legt `-allowProvisioningUpdates` beim Export selbst an (**[O]**, falls Apple das ablehnt: App-ID
+`com.fangpunkt.app.FangpunktLive` im Entwicklerkonto von Hand anlegen).
+
 **Moderationsbereich** (Wunsch Nutzer 2026-11-04, Variante A, `MODERATION_PLAN.md`): gebaut 2026-11-05 (Mehr →
 Moderation, nur für Moderatoren) – Meldungen ansehen, Inhalte löschen, Nutzer sperren/entsperren mit Mail.
 
