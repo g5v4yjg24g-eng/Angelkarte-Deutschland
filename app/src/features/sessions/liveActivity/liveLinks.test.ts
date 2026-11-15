@@ -26,14 +26,31 @@ describe('Knöpfe der Live Activity', () => {
     await runLiveAction('resume', nav());
     expect((await db.sessions.get(s.id))?.pauses?.at(-1)?.to).toBeDefined();
   });
-  it('Beenden öffnet nur die Session (dort mit Rückfrage), beendet aber nichts', async () => {
+  it('Beenden beendet die Session, beendet die gemeinsame auf dem Server und öffnet den Rückblick', async () => {
     const db = freshDb();
     setDb(db);
     const s = await startSession(db);
+    await db.sessions.update(s.id, { groupId: 'g1' });
     const go = nav();
-    await runLiveAction('end', go);
-    expect(go).toHaveBeenCalledWith(`/fangbuch/sessions/${s.id}`);
-    expect((await db.sessions.get(s.id))?.endAt).toBeUndefined();
+    const endGroup = vi.fn(() => Promise.resolve());
+    await runLiveAction('end', go, endGroup);
+    expect((await db.sessions.get(s.id))?.endAt).toBeDefined();
+    expect(endGroup).toHaveBeenCalledWith('g1');
+    expect(go).toHaveBeenCalledWith(`/fangbuch/sessions/${s.id}/rueckblick`);
+    // ohne laufende Session passiert nichts weiter
+    const go2 = nav();
+    await runLiveAction('end', go2, endGroup);
+    expect(go2).toHaveBeenCalledWith('/fangbuch/sessions');
+    expect(endGroup).toHaveBeenCalledTimes(1);
+  });
+  it('Beenden: Fehler beim Server stört nicht', async () => {
+    const db = freshDb();
+    setDb(db);
+    const s = await startSession(db);
+    await db.sessions.update(s.id, { groupId: 'g1' });
+    const go = nav();
+    await runLiveAction('end', go, () => Promise.reject(new Error('offline')));
+    expect(go).toHaveBeenCalledWith(`/fangbuch/sessions/${s.id}/rueckblick`);
   });
   it('Fang erfassen öffnet die Karte im Wahlmodus', async () => {
     const go = nav();

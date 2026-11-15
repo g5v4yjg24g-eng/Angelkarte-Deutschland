@@ -8,7 +8,7 @@ import { runLiveAction } from '../sessions/liveActivity/liveLinks';
 import { useProviders } from '../../ports/providersContext';
 
 export function AppLinkHandler() {
-  const { links } = useProviders();
+  const { links, account } = useProviders();
   const navigate = useNavigate();
   useEffect(() => {
     if (!links) return;
@@ -18,7 +18,11 @@ export function AppLinkHandler() {
       // Knöpfe der Live Activity (fangpunkt://session/…)
       const action = liveLinkAction(url);
       if (action) {
-        void runLiveAction(action, (to, options) => navigate(to, options)).catch(() => undefined);
+        void runLiveAction(
+          action,
+          (to, options) => navigate(to, options),
+          account.enabled ? (id) => account.endGroupSession(id) : undefined,
+        ).catch(() => undefined);
         return;
       }
       const to = profileLinkTarget(url);
@@ -30,6 +34,6 @@ export function AppLinkHandler() {
       live = false;
       off();
     };
-  }, [links, navigate]);
+  }, [links, account, navigate]);
   return null;
 }

@@ -95,7 +95,7 @@ eingebettet in „App“), gemeinsame Datenform `App/LiveActivity/FangpunktLiveA
 angemeldet), `Info.plist` (`NSSupportsLiveActivities`, URL-Schema `fangpunkt`). Die Angelzeit zählt das System über
 `Text(timerInterval:)`; Fänge, Bisse, Strecke und Pausen meldet die Web-App (`LiveActivitySync`). **Knöpfe sind Links**
 `fangpunkt://session/<pause|resume|end|catch|review|open>` – die App öffnet sich und führt die Aktion aus (`AppLinkHandler` → `liveLinks.ts`);
-ein Pause-Knopf ohne App-Öffnen bräuchte App Intents (iOS 17) und eine Brücke in die laufende Web-App – späterer Ausbau. Keine
+die Knöpfe führen aus, was draufsteht, öffnen dabei aber die App; ein Pause-Knopf ohne App-Öffnen bräuchte App Intents (iOS 17) und eine Brücke in die laufende Web-App – späterer Ausbau. Keine
 Push-Updates, kein Server. Workflow: Archiv prüft, dass `PlugIns/FangpunktLive.appex` da ist, und signiert sie vorläufig ad hoc;
 die App-ID der Erweiterung legt `-allowProvisioningUpdates` beim Export selbst an (**[O]**, falls Apple das ablehnt: App-ID
 `com.fangpunkt.app.FangpunktLive` im Entwicklerkonto von Hand anlegen).
