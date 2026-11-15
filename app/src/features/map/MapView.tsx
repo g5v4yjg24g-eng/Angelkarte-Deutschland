@@ -48,7 +48,15 @@ import { WaterHero, WaterProfile } from './WaterProfile';
 import { SearchBox } from './SearchBox';
 import { DetailSearch } from './DetailSearch';
 import { useWaterPhotos } from './useWaterPhotos';
-import { CatchDetails, LayerSwitches, Legend, NewHere, PlaceDetails, PlaceForm, PlaceHead } from './MapSheets';
+import {
+  CatchDetails,
+  LayerSwitches,
+  Legend,
+  NewHere,
+  PlaceDetails,
+  PlaceForm,
+  PlaceHead,
+} from './MapSheets';
 import { adoptedPlace, incomingSpots } from '../../domain/sharedSpots';
 import { adoptSharedSpot } from '../../data/sharedSpotService';
 import { userMessage } from '../../data/errors';
@@ -139,6 +147,8 @@ export interface MapFocusState {
   assignWater?: string;
   /** Aus „Geteilte Spots“: Spot eines Freundes zeigen (Etappe 4) */
   focusShared?: string;
+  /** Aus der Live Activity („+ Fang erfassen“): gleich den Modus „Fangstelle wählen“ einschalten */
+  startCatch?: boolean;
 }
 
 /** Gewässer an einem Bildschirmpunkt: Fläche unter dem Finger, sonst Fließgewässer im Umkreis. */
@@ -260,6 +270,13 @@ export default function MapView() {
   useEffect(() => {
     themeRef.current = theme;
   }, [theme]);
+  // Live Activity: „+ Fang erfassen“ öffnet die Karte gleich im Modus „Fangstelle wählen“
+  const startCatch = (location.state as MapFocusState | null)?.startCatch;
+  useEffect(() => {
+    if (!startCatch) return;
+    queueMicrotask(() => setPicking(true));
+    void navigate('.', { replace: true, state: null });
+  }, [startCatch, navigate]);
 
   const places = useLiveQuery(() => getDb().places.toArray(), []);
   const catches = useCatches();

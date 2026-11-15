@@ -5242,6 +5242,14 @@ test('SUG-1: Angler entdecken – Karussell nach 5 Beiträgen, zweites nach 12 w
   for (const x of [280, 240, 200, 160, 120]) await touch('touchMove', x, y + 2);
   await touch('touchEnd', 120, y + 2);
   await expect.poll(() => track.evaluate((el) => el.scrollLeft)).toBeGreaterThan(100);
+  // das Einrasten (sanftes Gleiten) abwarten, bevor der Stand gemessen wird
+  await expect
+    .poll(async () => {
+      const a = await track.evaluate((el) => el.scrollLeft);
+      await page.waitForTimeout(250);
+      return a === (await track.evaluate((el) => el.scrollLeft));
+    })
+    .toBe(true);
   const topBefore = await mainTop(page);
   expect(Math.abs(topBefore - (await mainTop(page)))).toBeLessThan(2);
   // senkrechter Zug über dem Karussell: der Feed scrollt, das Karussell bleibt stehen

@@ -28,6 +28,19 @@
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Fangpunkt zeigt deinen Standort auf der Karte, speichert ihn bei einem Fang und – während einer laufenden Session, auch bei gesperrtem Bildschirm – als Route auf deinem Gerät. Für das Wetter wird nur eine auf etwa 100 m gerundete Position übertragen.</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.fangpunkt.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fangpunkt</string>
+			</array>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

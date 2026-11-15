@@ -15,6 +15,8 @@ import { AppLinkHandler } from '../features/links/AppLinkHandler';
 import { AchievementSync } from '../features/achievements/AchievementSync';
 import { AchievementUpload } from '../features/achievements/AchievementUpload';
 import { WaterShareSync } from '../features/suggestions/WaterShareSync';
+import { LiveActivitySync } from '../features/sessions/liveActivity/LiveActivitySync';
+import { LiveActionSync } from '../features/sessions/liveActivity/LiveActionSync';
 import { SpotSync } from '../features/spots/SpotSync';
 import { PushSetup } from '../features/push/PushSetup';
 import { WhatsNew } from '../features/whatsNew/WhatsNew';
@@ -78,6 +80,8 @@ export function RootLayout() {
       <UsageTracker />
       <AuthRedirect />
       <SessionTracker />
+      <LiveActivitySync />
+      <LiveActionSync />
       <GaugeSync />
       <RulesSync />
       <TripStartHost />

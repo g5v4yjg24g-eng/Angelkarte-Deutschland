@@ -86,6 +86,24 @@ dem Nutzer beendet, endet die Aufzeichnung (Lücke, nicht verbunden); gepufferte
 Offen [O]: Übersetzen (erst im Workflow `ios.yml`), Verhalten und Akku am iPhone, Zweck im Prüfhinweis an Apple
 erklären. Datenschutzseite der App und Website ergänzt.
 
+**Live Activity auf dem Sperrbildschirm** (Wunsch Nutzer 2026-11-15, Vorschau freigegeben): Session mit Angelzeit, Fängen, Bisse,
+Strecke und Knöpfen auf dem Sperrbildschirm und in der Dynamic Island (ab iOS 16.2; die App selbst läuft weiter ab iOS 15, ActivityKit
+wird schwach gebunden). **Gebaut 2026-11-15, am iPhone ungeprüft [O]; Swift wird erst beim Bau in `ios.yml` übersetzt.**
+Teile: Widget-Erweiterung `ios/App/FangpunktLive` (SwiftUI, Bundle-ID `com.fangpunkt.app.FangpunktLive`, Ziel im Projekt per Skript angelegt,
+eingebettet in „App“), gemeinsame Datenform `App/LiveActivity/FangpunktLiveAttributes.swift` (in beiden Zielen), Plugin
+`App/LiveActivity/LiveActivityPlugin.swift` (`FangpunktLive`: `isAvailable`/`start`/`update`/`end`, in `FangpunktBridgeViewController`
+angemeldet), `Info.plist` (`NSSupportsLiveActivities`, URL-Schema `fangpunkt`). Die Angelzeit zählt das System über
+`Text(timerInterval:)`; Fänge, Bisse, Strecke und Pausen meldet die Web-App (`LiveActivitySync`). **Knöpfe (Wunsch Nutzer 2026-11-15: sie führen aus, was draufsteht)**: ab iOS 17 App Intents ohne App-Öffnen
+(`App/LiveActivity/FangpunktLiveIntents.swift`, in beiden Zielen): Pause, Weiter angeln und Beenden ändern die Anzeige sofort, merken die
+Aktion samt Zeitpunkt in `UserDefaults` vor und wecken die Web-App (`LiveActivityPlugin`: `takeActions`, Ereignis `liveAction`); die
+Web-App führt sie zum Zeitpunkt des Knopfdrucks aus (`pendingActions.ts`, `LiveActionSync.tsx`: beim Start, bei einem Knopfdruck und beim
+Zurückkehren; Aktionen älter als 12 h verfallen). Läuft die Web-App im Hintergrund nicht, stimmt die Anzeige trotzdem, und die Session wird
+beim nächsten Öffnen nachgezogen **[O]** (ob iOS die Web-App dafür weckt, ist nur am iPhone prüfbar). Davor (iOS 16.2–16.x) und für „Fang
+erfassen“ und „Rückblick“ sind die Knöpfe Links `fangpunkt://session/<pause|resume|end|catch|review|open>`; die App öffnet sich und führt die
+Aktion aus (`AppLinkHandler` → `liveLinks.ts`). Keine Push-Updates, kein Server. Workflow: Archiv prüft, dass `PlugIns/FangpunktLive.appex` da ist, und signiert sie vorläufig ad hoc;
+die App-ID der Erweiterung legt `-allowProvisioningUpdates` beim Export selbst an (**[O]**, falls Apple das ablehnt: App-ID
+`com.fangpunkt.app.FangpunktLive` im Entwicklerkonto von Hand anlegen).
+
 **Moderationsbereich** (Wunsch Nutzer 2026-11-04, Variante A, `MODERATION_PLAN.md`): gebaut 2026-11-05 (Mehr →
 Moderation, nur für Moderatoren) – Meldungen ansehen, Inhalte löschen, Nutzer sperren/entsperren mit Mail.
 

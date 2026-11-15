@@ -98,6 +98,10 @@ jobs:
       - name: Berechtigungen ins Archiv
         run: |
           app="$RUNNER_TEMP/Fangpunkt.xcarchive/Products/Applications/App.app"
+          # Live Activity (Widget-Erweiterung) muss im Archiv liegen; sie bekommt zunächst auch eine Ad-hoc-Signatur
+          ls "$app/PlugIns"
+          test -d "$app/PlugIns/FangpunktLive.appex" || { echo "::error::Die Live-Activity-Erweiterung FangpunktLive fehlt im Archiv."; exit 1; }
+          codesign --force --sign - "$app/PlugIns/FangpunktLive.appex"
           codesign --force --sign - --entitlements app/ios/App/App/App.entitlements "$app"
           codesign -d --entitlements - "$app"
       # Erst nur exportieren und die endgültigen Berechtigungen prüfen: fehlt „aps-environment“, kann sich kein
