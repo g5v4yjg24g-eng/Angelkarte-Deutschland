@@ -9,6 +9,9 @@ import { useBoolSetting } from './useBoolSetting';
 import { SyncStatusSection } from '../sharing/SyncStatus';
 import { PushSettings } from '../push/PushSettings';
 import { useProviders } from '../../ports/providersContext';
+import { ListLink } from '../../design/components/ListLink';
+import { BookIcon } from '../../design/icons';
+import cardStyles from '../../design/components/Page.module.css';
 import { useLiveAvailable } from '../sessions/liveActivity/useLiveAvailable';
 
 const OPTIONS = [
@@ -146,6 +149,11 @@ export function SettingsPage() {
             onChange={(v) => void setSetting('weatherEnabled', v === 'on')}
           />
         )}
+      </Section>
+      <Section title={de.guide.settingsTitle}>
+        <div className={cardStyles.card}>
+          <ListLink to="/mehr/anleitung" icon={<BookIcon />} title={de.guide.settingsTitle} />
+        </div>
       </Section>
     </Page>
   );

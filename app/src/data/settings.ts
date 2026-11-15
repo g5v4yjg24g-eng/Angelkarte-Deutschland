@@ -25,6 +25,8 @@ export interface Settings {
   achievementsNew: string[];
   /** ID des zuletzt gesehenen Neuigkeiten-Eintrags (Fenster „Neu in Fangpunkt“) */
   lastSeenChangelog: string;
+  /** Stand der Anleitung (GUIDE_VERSION), den die Person schon gesehen oder übersprungen hat */
+  guideSeen: number;
 }
 
 export async function getSetting<K extends keyof Settings>(
