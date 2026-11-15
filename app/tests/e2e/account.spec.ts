@@ -5508,7 +5508,8 @@ test('AVA-3: langes Drücken auf ein Profilbild zeigt es groß; kurzes Tippen ö
   await touch('touchStart');
   await expect(big).toBeVisible({ timeout: 3000 });
   await touch('touchEnd');
-  await page.waitForTimeout(450);
+  await page.waitForTimeout(900); // auch nach längerem Halten schließt das Loslassen nicht
+  await expect(big).toBeVisible();
   await page.touchscreen.tap(20, 20);
   await expect(big).toHaveCount(0);
 

@@ -3,28 +3,26 @@ import { useEffect, useRef } from 'react';
 import { de } from '../../i18n/de';
 import styles from './AvatarZoom.module.css';
 
-/** Ein Tippen direkt nach dem Öffnen (der noch drückende Finger) darf das Fenster nicht gleich wieder schließen */
-const IGNORE_CLOSE_MS = 350;
-
 export function AvatarLightbox({ url, onClose }: { url: string; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
-  const openedAt = useRef(0);
+  // Das Loslassen des Fingers, der das Fenster geöffnet hat, erzeugt ein Antippen – das darf nicht schließen, egal wie
+  // lange gedrückt wurde. Geschlossen wird nur nach einem neuen Druck auf das Fenster selbst.
+  const armed = useRef(false);
   useEffect(() => {
     const d = ref.current;
-    if (d && !d.open) {
-      openedAt.current = Date.now();
-      d.showModal();
-    }
+    if (d && !d.open) d.showModal();
   }, []);
   const close = () => {
-    if (Date.now() - openedAt.current < IGNORE_CLOSE_MS) return;
-    onClose();
+    if (armed.current) onClose();
   };
   return (
     <dialog
       ref={ref}
       className={styles.dialog}
       aria-label={de.profile.avatarZoom}
+      onPointerDown={() => {
+        armed.current = true;
+      }}
       onClick={close}
       onCancel={(e) => {
         e.preventDefault();
