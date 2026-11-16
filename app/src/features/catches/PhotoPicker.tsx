@@ -25,6 +25,7 @@ export function PhotoPicker({
   onPick,
   onRemoveExisting,
   onRemovePending,
+  max = MAX_PHOTOS_PER_CATCH,
 }: {
   existingIds: readonly string[];
   pending: readonly PendingPhoto[];
@@ -33,6 +34,8 @@ export function PhotoPicker({
   onPick: (files: File[]) => void;
   onRemoveExisting: (id: string) => void;
   onRemovePending: (key: string) => void;
+  /** Höchstzahl Fotos (Standard: Fang) */
+  max?: number;
 }) {
   const existing = useLiveQuery(
     async () =>
@@ -42,7 +45,7 @@ export function PhotoPicker({
     [existingIds.join(',')],
   );
   const count = existingIds.length + pending.length;
-  const full = count >= MAX_PHOTOS_PER_CATCH;
+  const full = count >= max;
   const items = [
     ...(existing ?? []).map((p) => ({
       key: p.id,
@@ -95,7 +98,7 @@ export function PhotoPicker({
         {input(false)}
       </div>
       {processing && <p className="muted">{t.photoProcessing}</p>}
-      {full && <p className="muted">{t.photoLimit(MAX_PHOTOS_PER_CATCH)}</p>}
+      {full && <p className="muted">{t.photoLimit(max)}</p>}
       {error && <Notice tone="error">{error}</Notice>}
     </fieldset>
   );

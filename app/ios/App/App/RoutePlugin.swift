@@ -13,6 +13,8 @@ class FangpunktBridgeViewController: CAPBridgeViewController {
         bridge?.registerPluginInstance(RoutePlugin())
         // Live Activity der Session (Sperrbildschirm, Dynamic Island): App/LiveActivity/LiveActivityPlugin.swift
         bridge?.registerPluginInstance(LiveActivityPlugin())
+        // Erinnerungen als lokale Mitteilungen (ablaufende Angelpapiere): App/RemindersPlugin.swift
+        bridge?.registerPluginInstance(RemindersPlugin())
     }
 }
 

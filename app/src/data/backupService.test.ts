@@ -393,3 +393,52 @@ describe('Änderungen seit der letzten Sicherung', () => {
     expect((await changesSince(exp.backup.exportedAt, db)).count).toBe(0);
   });
 });
+
+describe('PAP-3: Angelpapiere gehören zur Sicherung', () => {
+  it('Papier samt Foto übersteht Export → leeres Gerät → Import', async () => {
+    const a = freshDb();
+    const paper = await repo('papers', a).create({
+      kind: 'permit',
+      title: 'Jahreskarte Baggersee',
+      validUntil: '2027-03-31',
+      photoIds: ['foto-p'],
+    });
+    await a.photos.add({
+      id: 'foto-p',
+      createdAt: at,
+      updatedAt: at,
+      rev: 0,
+      mime: 'image/jpeg',
+      bytes: jpeg.length,
+      ownerType: 'paper',
+      ownerId: paper.id,
+      blob: new Blob([jpeg], { type: 'image/jpeg' }),
+    });
+    const exp = await exportBackup({ withPhotos: true }, a);
+    expect(exp.backup.counts.papers).toBe(1);
+
+    const b = freshDb();
+    await importFile(exp.blob, b);
+    expect(await b.papers.toArray()).toEqual([paper]);
+    expect((await b.photos.get('foto-p'))?.ownerType).toBe('paper');
+  });
+
+  it('Sicherung ohne Papiere (vor DB v8) lässt sich importieren', async () => {
+    const a = freshDb();
+    await seed(a);
+    const exp = await exportBackup({ withPhotos: false }, a);
+    const old = JSON.parse(strFromU8(new Uint8Array(await exp.blob.arrayBuffer()))) as Record<
+      string,
+      unknown
+    >;
+    const data = old.data as Record<string, unknown>;
+    delete data.papers;
+    const counts = old.counts as Record<string, unknown>;
+    delete counts.papers;
+    old.checksum = await checksumOf(data);
+    const b = freshDb();
+    await importFile(new Blob([JSON.stringify(old)], { type: 'application/json' }), b);
+    expect(await b.papers.count()).toBe(0);
+    expect(await b.catches.count()).toBe(1);
+  });
+});

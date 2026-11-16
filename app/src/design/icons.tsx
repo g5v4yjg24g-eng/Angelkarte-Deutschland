@@ -36,6 +36,13 @@ export const BookIcon = (p: IconProps) => (
     <path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19M9 7.5h6" />
   </Icon>
 );
+export const IdCardIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="2.2" />
+    <circle cx="8.5" cy="11" r="1.8" />
+    <path d="M5.8 16c.5-1.5 1.6-2.2 2.7-2.2s2.2.7 2.7 2.2M14 9.5h4M14 12.5h4M14 15.5h2.5" />
+  </Icon>
+);
 export const ChartIcon = (p: IconProps) => (
   <Icon {...p}>
     <path d="M4 20h16" />

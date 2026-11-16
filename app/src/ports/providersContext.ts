@@ -12,6 +12,7 @@ import type { HapticsProvider } from './haptics';
 import type { BackgroundRoute } from './backgroundRoute';
 import type { AppLinks } from './appLinks';
 import type { LiveActivityProvider } from './liveActivity';
+import type { RemindersProvider } from './reminders';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
@@ -32,6 +33,8 @@ export interface Providers {
   links?: AppLinks | undefined;
   /** Live Activity der Session auf dem Sperrbildschirm – nur in der iPhone-App */
   liveActivity?: LiveActivityProvider | undefined;
+  /** Erinnerungen auf dem Gerät (nur iPhone-App) */
+  reminders?: RemindersProvider | undefined;
 }
 
 export const ProvidersContext = createContext<Providers | null>(null);

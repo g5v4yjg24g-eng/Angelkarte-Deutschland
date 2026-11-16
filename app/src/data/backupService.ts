@@ -31,6 +31,7 @@ async function collect(
     tracks,
     waterLinks,
     waterRules,
+    papers,
     profiles,
     posts,
     postLikes,
@@ -45,6 +46,7 @@ async function collect(
     db.tracks.toArray(),
     db.waterLinks.toArray(),
     db.waterRules.toArray(),
+    db.papers.toArray(),
     db.profiles.toArray(),
     db.posts.toArray(),
     db.postLikes.toArray(),
@@ -67,6 +69,7 @@ async function collect(
       tracks,
       waterLinks,
       waterRules,
+      papers,
       profiles,
       posts,
       postLikes,
@@ -217,6 +220,7 @@ export async function applyImport(
       db.tracks,
       db.waterLinks,
       db.waterRules,
+      db.papers,
       db.profiles,
       db.posts,
       db.postLikes,
@@ -281,6 +285,7 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
       db.tracks,
       db.waterLinks,
       db.waterRules,
+      db.papers,
       db.profiles,
       db.posts,
       db.postLikes,
@@ -297,6 +302,7 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
         db.tracks.clear(),
         db.waterLinks.clear(),
         db.waterRules.clear(),
+        db.papers.clear(),
         db.profiles.clear(),
         db.posts.clear(),
         db.postLikes.clear(),
@@ -315,6 +321,8 @@ export async function restoreSnapshot(id: string, db: FangpunktDB = getDb()): Pr
       await db.waterLinks.bulkPut(d.waterLinks ?? []);
       // Snapshots vor DB v7 haben keine eigenen Gewässerregeln
       await db.waterRules.bulkPut(d.waterRules ?? []);
+      // Snapshots vor DB v8 haben keine Angelpapiere
+      await db.papers.bulkPut(d.papers ?? []);
       // Snapshots vor DB v5 haben kein Profil und keine Beiträge
       await db.profiles.bulkPut(d.profiles ?? []);
       await db.posts.bulkPut(d.posts ?? []);

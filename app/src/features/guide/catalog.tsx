@@ -6,6 +6,7 @@ import {
   DatabaseIcon,
   FeedIcon,
   FishIcon,
+  IdCardIcon,
   KnotIcon,
   MapIcon,
   ParagraphIcon,
@@ -20,6 +21,7 @@ export const GUIDE_ROUTE: Record<GuideId, string> = {
   sessions: '/fangbuch/sessions',
   weather: '/wetter',
   law: '/mehr/recht',
+  papers: '/mehr/papiere',
   knots: '/mehr/knoten',
   community: '/feed',
   backup: '/mehr/daten',
@@ -39,6 +41,8 @@ export function guideIcon(id: GuideId, size = 24): ReactNode {
       return <WeatherIcon size={size} />;
     case 'law':
       return <ParagraphIcon size={size} />;
+    case 'papers':
+      return <IdCardIcon size={size} />;
     case 'knots':
       return <KnotIcon size={size} />;
     case 'community':

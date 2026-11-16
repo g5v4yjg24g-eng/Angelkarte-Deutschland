@@ -3,6 +3,7 @@ import Dexie, { type EntityTable as DexieTable } from 'dexie';
 import type {
   BaitPreset,
   Catch,
+  Paper,
   Photo,
   Place,
   Post,
@@ -72,6 +73,8 @@ export const SCHEMA_VERSIONS: {
   },
   // v7 (2026-11-06): eigene Regeln je Gewässer (Paket 9A); neue Tabelle, vorhandene Daten bleiben unverändert
   { version: 7, stores: { waterRules: 'id, waterId, updatedAt, deletedAt' } },
+  // v8 (2026-11-16): Angelpapiere (Wallet mit Ablaufdatum und Erinnerung); neue Tabelle, vorhandene Daten bleiben unverändert
+  { version: 8, stores: { papers: 'id, kind, validUntil, updatedAt, deletedAt' } },
 ];
 export const SCHEMA_VERSION = SCHEMA_VERSIONS[SCHEMA_VERSIONS.length - 1]?.version ?? 1;
 
@@ -85,6 +88,7 @@ export class FangpunktDB extends Dexie {
   tracks!: DexieTable<Track, 'id'>;
   waterLinks!: DexieTable<WaterLink, 'id'>;
   waterRules!: DexieTable<WaterRules, 'id'>;
+  papers!: DexieTable<Paper, 'id'>;
   profiles!: DexieTable<Profile, 'id'>;
   posts!: DexieTable<Post, 'id'>;
   postLikes!: DexieTable<PostLike, 'id'>;

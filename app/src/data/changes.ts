@@ -17,6 +17,7 @@ export async function changesSince(
     db.tracks,
     db.waterLinks,
     db.waterRules,
+    db.papers,
     db.profiles,
     db.posts,
     db.postLikes,
