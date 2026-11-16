@@ -12,6 +12,7 @@ private enum Palette {
     static let orange = Color(red: 0.949, green: 0.600, blue: 0.290)
     static let onOrange = Color(red: 0.169, green: 0.086, blue: 0.0)
     static let green = Color(red: 0.482, green: 0.878, blue: 0.631)
+    static let red = Color(red: 1.0, green: 0.56, blue: 0.56)
     static let chip = Color.white.opacity(0.12)
 }
 
@@ -99,13 +100,17 @@ private struct ActionButton: View {
     let action: String
     var sessionId: String?
     var primary = false
+    var destructive = false
 
     private var label: some View {
         Text(title)
             .font(.system(size: 14, weight: .bold))
             .frame(maxWidth: .infinity, minHeight: 32)
-            .foregroundColor(primary ? Palette.onOrange : .white)
-            .background(primary ? Palette.orange : Color.white.opacity(0.16), in: Capsule())
+            .foregroundColor(primary ? Palette.onOrange : (destructive ? Palette.red : .white))
+            .background(
+                primary ? Palette.orange : (destructive ? Palette.red.opacity(0.2) : Color.white.opacity(0.16)),
+                in: Capsule()
+            )
     }
 
     /// Ab iOS 17 führt der Knopf die Aktion aus, ohne die App zu öffnen; davor (und für „Fang erfassen“, „Rückblick“)
@@ -152,9 +157,10 @@ private struct Buttons: View {
             switch state.state {
             case "running":
                 ActionButton(title: "Pause", action: "pause", sessionId: sessionId)
-                ActionButton(title: "+ Fang erfassen", action: "catch", primary: true)
+                ActionButton(title: "Beenden", action: "end", sessionId: sessionId, destructive: true)
+                ActionButton(title: "+ Fang", action: "catch", primary: true)
             case "paused":
-                ActionButton(title: "Beenden", action: "end", sessionId: sessionId)
+                ActionButton(title: "Beenden", action: "end", sessionId: sessionId, destructive: true)
                 ActionButton(title: "Weiter angeln", action: "resume", sessionId: sessionId, primary: true)
             default:
                 ActionButton(title: "Rückblick ansehen", action: "review", primary: true)
