@@ -180,7 +180,7 @@ export const PhotoMetaSchema = MetaSchema.extend({
   width: z.number().int().positive().optional(),
   height: z.number().int().positive().optional(),
   bytes: z.number().int().min(0),
-  ownerType: z.enum(['catch', 'place', 'post', 'profile']),
+  ownerType: z.enum(['catch', 'place', 'post', 'profile', 'paper']),
   ownerId: id,
 });
 export const PhotoSchema = PhotoMetaSchema.extend({
@@ -262,6 +262,28 @@ export const WaterLinkSchema = MetaSchema.extend({
 export const WaterRulesSchema = MetaSchema.extend({
   waterId: id,
   text: z.string().trim().min(1).max(2000),
+});
+
+/**
+ * Angelpapier im Wallet (Wunsch Nutzer 2026-11-16): Fischereischein, Erlaubnisschein/Jahreskarte, Vereinsausweis o. Ä.
+ * Bleibt auf dem Gerät und ist Teil der Sicherung. Ohne Ablaufdatum = unbefristet (z. B. Fischereischein auf Lebenszeit).
+ * `remind` fehlt = Erinnerung an.
+ */
+export const PaperKindSchema = z.enum(['license', 'permit', 'membership', 'other']);
+export const MAX_PHOTOS_PER_PAPER = 4;
+export const PaperSchema = MetaSchema.extend({
+  kind: PaperKindSchema,
+  title: z.string().trim().min(1).max(120),
+  issuer: text(120).optional(),
+  number: text(60).optional(),
+  validFrom: localDate.optional(),
+  validUntil: localDate.optional(),
+  remind: z.boolean().optional(),
+  notes: text(2000).optional(),
+  photoIds: z.array(id).max(MAX_PHOTOS_PER_PAPER).optional(),
+}).refine((p) => !p.validFrom || !p.validUntil || p.validUntil >= p.validFrom, {
+  message: 'Das Ablaufdatum liegt vor dem Beginn.',
+  path: ['validUntil'],
 });
 
 /** Höchstzahl Fotos je Beitrag (wie ein Karussell) */
@@ -360,6 +382,8 @@ export type Trip = z.infer<typeof TripSchema>;
 export type Track = z.infer<typeof TrackSchema>;
 export type WaterLink = z.infer<typeof WaterLinkSchema>;
 export type WaterRules = z.infer<typeof WaterRulesSchema>;
+export type Paper = z.infer<typeof PaperSchema>;
+export type PaperKind = z.infer<typeof PaperKindSchema>;
 export type TrackPoint = z.infer<typeof TrackPointSchema>;
 export type Profile = z.infer<typeof ProfileSchema>;
 export type Post = z.infer<typeof PostSchema>;
@@ -376,6 +400,7 @@ export const ENTITY_SCHEMAS = {
   tracks: TrackSchema,
   waterLinks: WaterLinkSchema,
   waterRules: WaterRulesSchema,
+  papers: PaperSchema,
   profiles: ProfileSchema,
   posts: PostSchema,
   postLikes: PostLikeSchema,
@@ -391,6 +416,7 @@ export interface EntityMap {
   tracks: Track;
   waterLinks: WaterLink;
   waterRules: WaterRules;
+  papers: Paper;
   profiles: Profile;
   posts: Post;
   postLikes: PostLike;

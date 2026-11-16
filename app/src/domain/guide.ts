@@ -7,6 +7,7 @@ export const GUIDE_IDS = [
   'sessions',
   'weather',
   'law',
+  'papers',
   'knots',
   'community',
   'backup',
@@ -21,7 +22,7 @@ export type GroupId = (typeof GROUP_IDS)[number];
 export const GROUPS: readonly { id: GroupId; topics: readonly GuideId[] }[] = [
   { id: 'start', topics: ['map', 'catch'] },
   { id: 'review', topics: ['book', 'sessions'] },
-  { id: 'plan', topics: ['weather', 'law'] },
+  { id: 'plan', topics: ['weather', 'law', 'papers'] },
   { id: 'learn', topics: ['knots'] },
   { id: 'more', topics: ['community', 'backup'] },
 ];

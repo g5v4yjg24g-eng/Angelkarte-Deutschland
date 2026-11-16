@@ -263,6 +263,23 @@ interface WaterLink extends Meta {
 // Daten in app/data/permits (Schemas in domain/permits.ts), siehe DATA_SOURCES §6b.
 ```
 
+### 5.5b1 Paper (Angelpapier im Wallet, DB v8, seit 2026-11-16)
+```ts
+interface Paper extends Meta {
+  kind: 'license' | 'permit' | 'membership' | 'other'; // Fischereischein, Erlaubnisschein/Jahreskarte, Vereinsausweis, Sonstiges
+  title: string;        // 1–120 Zeichen
+  issuer?: string;      // ausgestellt von (≤ 120)
+  number?: string;      // ≤ 60
+  validFrom?: string;   // JJJJ-MM-TT
+  validUntil?: string;  // JJJJ-MM-TT; fehlt = unbefristet; nicht vor validFrom
+  remind?: boolean;     // fehlt = Erinnerung an
+  notes?: string;       // ≤ 2000
+  photoIds?: string[];  // höchstens 4, Tabelle photos mit ownerType 'paper'
+}
+// Bleibt auf dem Gerät, Teil der Sicherung (backup `papers`). Regeln rein in domain/papers.ts (Stand, Erinnerungsplan
+// 30/14/7/1/0 Tage vorher um 9 Uhr Ortszeit, höchstens 60), Speichern data/paperService.ts.
+```
+
 ### 5.5b2 Profile und Post (Profilseite, DB v5, seit 2026-10-27)
 Wunsch Nutzer 2026-10-27. Bleiben auf dem Gerät und sind Teil der Sicherung; später mit dem Konto verknüpft.
 - `Profile` (Tabelle `profiles`, genau ein Datensatz `id = 'me'`): `name` (1–40), `bio?` (≤ 300), `avatarPhotoId?` (Photo mit `ownerType: 'profile'`).
@@ -406,4 +423,5 @@ Umsetzung (M6, 2026-10-22):
 - **v4 (2026-10-25):** neue Tabelle `waterLinks` (eigene Links zur Angelkarte), keine Umwandlung bestehender Daten; Test `db.test.ts`. Sicherungen und Snapshots ohne `waterLinks` bleiben gültig.
 - **v6 (2026-10-27):** neue Tabellen `postLikes` und `postComments`, keine Umwandlung; Test `db.test.ts`.
 - **v5 (2026-10-27):** neue Tabellen `profiles` und `posts` (Profilseite), keine Umwandlung bestehender Daten; Test `db.test.ts`. Sicherungen und Snapshots ohne beide bleiben gültig.
+- **v8 (2026-11-16):** neue Tabelle `papers` (Angelpapiere), keine Umwandlung bestehender Daten; Test `db.test.ts`. Sicherungen und Snapshots ohne `papers` bleiben gültig (Test `backupService.test.ts`).
 - Exportformat und DB-Schema sind **getrennt versioniert** (`formatVersion` ≠ `schemaVersion`).

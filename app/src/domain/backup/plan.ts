@@ -13,6 +13,7 @@ export const PLAN_TABLES: PlanTable[] = [
   'tracks',
   'waterLinks',
   'waterRules',
+  'papers',
   'profiles',
   'posts',
   'postLikes',

@@ -183,7 +183,10 @@ describe('Migrationen', () => {
     const l = await repo('waterLinks', v6).create({ waterId: 'osm:r1', url: 'https://verein.example/' });
     v6.close();
 
-    const v7 = new FangpunktDB(name);
+    const v7 = new FangpunktDB(
+      name,
+      SCHEMA_VERSIONS.filter((v) => v.version <= 7),
+    );
     await v7.open();
     expect(v7.verno).toBe(7);
     expect(await v7.waterLinks.get(l.id)).toEqual(l);
@@ -194,5 +197,23 @@ describe('Migrationen', () => {
     });
     expect(await v7.waterRules.where('waterId').equals('osm:r1').first()).toEqual(r);
     v7.close();
+  });
+  it('Upgrade v7 → v8 (Angelpapiere): Daten bleiben, Papiere sind speicherbar', async () => {
+    const v7 = freshDb(SCHEMA_VERSIONS.filter((v) => v.version <= 7));
+    const name = v7.name;
+    const r = await repo('waterRules', v7).create({
+      id: 'waterrules-osm:r1',
+      waterId: 'osm:r1',
+      text: 'Hecht ab 60 cm',
+    });
+    v7.close();
+
+    const v8 = new FangpunktDB(name);
+    await v8.open();
+    expect(v8.verno).toBe(8);
+    expect(await v8.waterRules.get(r.id)).toEqual(r);
+    const p = await repo('papers', v8).create({ kind: 'license', title: 'Fischereischein' });
+    expect(await v8.papers.where('kind').equals('license').first()).toEqual(p);
+    v8.close();
   });
 });

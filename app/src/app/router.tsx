@@ -328,6 +328,13 @@ export const routes = [
                 ),
               },
               {
+                path: 'mehr/papiere',
+                lazy: page(
+                  () => import('../features/papers/PapersPage'),
+                  (m) => m.PapersPage,
+                ),
+              },
+              {
                 path: 'mehr/koeder',
                 lazy: page(
                   () => import('../features/baits/BaitPresetsPage'),

@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-28',
+    title: 'Angelpapiere',
+    items: [
+      'Wallet: Lege Fischereischein, Erlaubnisscheine und Ausweise mit Foto und Ablaufdatum unter Mehr → Angelpapiere ab.',
+      'Erinnerung: Fangpunkt erinnert dich 30, 14, 7 und 1 Tag vor dem Ablauf und am Tag selbst (Mitteilung in der iPhone-App).',
+      'Verlängert: Mit einem Fingertipp trägst du das neue Ablaufdatum ein, die Erinnerungen werden neu geplant.',
+    ],
+  },
+  {
     id: '2026-12-27',
     title: 'Profilbild groß',
     items: ['Profilbild: Halte ein Profilbild gedrückt, dann siehst du es groß. Tippen schließt es wieder.'],

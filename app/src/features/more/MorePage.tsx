@@ -9,6 +9,7 @@ import {
   BookIcon,
   FeedIcon,
   HookIcon,
+  IdCardIcon,
   InfoIcon,
   KnotIcon,
   LockIcon,
@@ -18,6 +19,8 @@ import {
   UserIcon,
 } from '../../design/icons';
 import { ACCOUNT_STORAGE_KEY } from '../../ports/account';
+import { usePapers } from '../papers/usePapers';
+import { localToday, needAttention } from '../../domain/papers';
 import { useIsModerator } from '../moderation/admin/useIsModerator';
 import styles from '../../design/components/Page.module.css';
 
@@ -34,6 +37,8 @@ function hasStoredSession(): boolean {
 
 export function MorePage() {
   const moderator = useIsModerator();
+  const papers = usePapers();
+  const due = papers ? needAttention(papers, localToday(new Date())).length : 0;
   return (
     <Page title={t.title}>
       {moderator && (
@@ -52,6 +57,12 @@ export function MorePage() {
           <ListLink to="/mehr/anleitung" icon={<BookIcon />} title={t.guide} />
           <ListLink to="/mehr/knoten" icon={<KnotIcon />} title={t.knots} />
           <ListLink to="/mehr/koeder" icon={<HookIcon />} title={t.baits} />
+          <ListLink
+            to="/mehr/papiere"
+            icon={<IdCardIcon />}
+            title={t.papers}
+            {...(due > 0 ? { hint: de.papers.moreHint(due) } : {})}
+          />
         </div>
       </Section>
       <Section title={t.groupRules}>
