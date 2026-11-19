@@ -20,6 +20,7 @@ import { LiveActionSync } from '../features/sessions/liveActivity/LiveActionSync
 import { SpotSync } from '../features/spots/SpotSync';
 import { PushSetup } from '../features/push/PushSetup';
 import { WhatsNew } from '../features/whatsNew/WhatsNew';
+import { SessionSignalSync } from '../features/sessions/signals/SessionSignalSync';
 import { PaperReminderSync } from '../features/papers/PaperReminderSync';
 import { GuideWelcome } from '../features/guide/GuideWelcome';
 import { UsageTracker } from '../features/usage/UsageTracker';
@@ -83,6 +84,7 @@ export function RootLayout() {
       <SessionTracker />
       <LiveActivitySync />
       <PaperReminderSync />
+      <SessionSignalSync />
       <LiveActionSync />
       <GaugeSync />
       <RulesSync />

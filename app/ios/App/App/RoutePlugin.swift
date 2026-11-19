@@ -17,6 +17,8 @@ class FangpunktBridgeViewController: CAPBridgeViewController {
         bridge?.registerPluginInstance(RemindersPlugin())
         // Standort im Vordergrund über CoreLocation (fragt nur einmal nach der Erlaubnis): App/LocationPlugin.swift
         bridge?.registerPluginInstance(LocationPlugin())
+        // Knöpfe an Session-Mitteilungen (Annehmen/Ablehnen am Sperrbildschirm): App/SessionSignalPlugin.swift
+        bridge?.registerPluginInstance(SessionSignalPlugin())
     }
 }
 

@@ -16,6 +16,7 @@ import { capacitorLiveActivity } from '../adapters/capacitorLiveActivity';
 import { capacitorReminders } from '../adapters/capacitorReminders';
 import { browserLocation } from '../adapters/browserLocation';
 import { capacitorLocation } from '../adapters/capacitorLocation';
+import { capacitorSignalActions } from '../adapters/capacitorSignalActions';
 import type { Providers } from '../ports/providersContext';
 
 /** Zusammenstecken der Anbieter (einzige Stelle, die Adapter kennt). */
@@ -49,6 +50,8 @@ export const providers: Providers = {
   links: capacitorAppLinks(),
   // Live Activity der Session auf dem Sperrbildschirm und in der Dynamic Island (nur iPhone-App, ab iOS 16.2)
   liveActivity: capacitorLiveActivity(),
+  // Knöpfe „Annehmen“/„Ablehnen“ an Session-Mitteilungen (nur iPhone-App)
+  signalActions: capacitorSignalActions(),
   // Standort: in der iPhone-App über CoreLocation (nur eine Abfrage der Erlaubnis), sonst über den Browser
   location: capacitorLocation() ?? browserLocation(),
   // Erinnerungen (ablaufende Angelpapiere) als lokale Mitteilungen – nur iPhone-App

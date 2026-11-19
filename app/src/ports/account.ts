@@ -4,6 +4,7 @@ import type { Badge } from '../domain/badges';
 import type { FriendEntry } from '../domain/friends';
 import type { FollowCounts, FollowEntry, FollowResult } from '../domain/follows';
 import type { GroupMember, GroupSession } from '../domain/groupSessions';
+import type { SessionSignal, SignalKind } from '../domain/sessionSignals';
 import type { GroupStats, GroupStatsEntry } from '../domain/groupStats';
 import type { StartRequest } from '../domain/tripStart';
 import type { AppNotification } from '../domain/notifications';
@@ -166,6 +167,12 @@ export interface AccountProvider {
   /** nur Gastgeber */
   endGroupSession(groupId: string): Promise<void>;
   myGroupSessions(): Promise<GroupSession[]>;
+  /** Pause, Weiter oder Ende meiner Session den anderen Teilnehmern melden (Mitteilung); liefert die Kennung der Meldung */
+  signalSession(groupId: string, kind: SignalKind): Promise<string>;
+  /** Meldungen anderer Teilnehmer, die ich noch nicht beantwortet habe */
+  sessionSignals(): Promise<SessionSignal[]>;
+  /** Auf eine Meldung antworten: angenommen (die eigene Session folgt) oder abgelehnt */
+  answerSessionSignal(signalId: string, accept: boolean): Promise<void>;
   groupSessionMembers(groupId: string): Promise<GroupMember[]>;
   /** Angeltermin: Freunde zum Termin einladen (nur eine Mitteilung); `trip` = ID des Termins; liefert die Zahl Eingeladener */
   inviteToTrip(input: {

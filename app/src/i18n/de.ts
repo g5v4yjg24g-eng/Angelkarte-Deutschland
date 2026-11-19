@@ -2334,6 +2334,17 @@ export const de = {
     tripWarning: (n: number) =>
       n === 1 ? 'Amtliche Warnung für diesen Tag:' : `${n} amtliche Warnungen für diesen Tag:`,
   },
+  sessionSignal: {
+    title: 'Gemeinsame Session',
+    text: {
+      pause: (name: string) => `${name} macht Pause. Auch pausieren?`,
+      resume: (name: string) => `${name} angelt weiter. Auch weiter angeln?`,
+      end: (name: string) => `${name} beendet die Session. Auch beenden?`,
+    },
+    accept: { pause: 'Pausieren', resume: 'Weiter angeln', end: 'Session beenden' },
+    decline: 'Nein',
+    error: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
+  },
   tripStart: {
     waitTitle: 'Session startet',
     waiting: (names: string) => `Warte auf ${names} …`,
@@ -2685,6 +2696,9 @@ export const de = {
       spot: (x?: string) => (x ? `hat einen Spot mit dir geteilt: ${x}` : 'hat einen Spot mit dir geteilt.'),
       spot_link: () => 'möchte Spots mit dir teilen.',
       spot_link_accepted: () => 'teilt jetzt Spots mit dir.',
+      session_pause: () => 'macht Pause in der gemeinsamen Session.',
+      session_resume: () => 'angelt in der gemeinsamen Session weiter.',
+      session_end: () => 'beendet die gemeinsame Session.',
       session_invite: (x?: string) =>
         x ? `lädt dich zur Session „${x}“ ein.` : 'lädt dich zu einer gemeinsamen Session ein.',
       session_joined: (x?: string) =>

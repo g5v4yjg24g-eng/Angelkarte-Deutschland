@@ -1,0 +1,24 @@
+Session|true
+Bert sagt zu|
+Anna meldet Pause|true
+Mitteilung an Bert|trip_start:Abendansitz,session_pause:Abendansitz
+Keine Mitteilung an Carl|∅
+Keine Mitteilung an Anna|∅
+Bert sieht die Pause|pause/Anna/Abendansitz
+Carl sieht nichts|0
+Carl kann nicht antworten|FEHLER: not_found
+Carl kann nichts melden|FEHLER: not_found
+Anna meldet Weiter|true
+Bert sieht nur Weiter|resume
+Anna antwortet auf eigene|FEHLER: not_found
+Bert nimmt an|
+Bert antwortet nochmal (ändert nichts)|
+Antworten sind nicht direkt lesbar|FEHLER: permission denied for table session_signal_answers
+Nichts mehr offen|0
+Unbekannte Art|FEHLER: not_found
+Viele Meldungen|28
+Die 31. wird abgelehnt|FEHLER: too_many
+Pause nach dem Ende|FEHLER: ended
+Ende melden|true
+Anna sieht Ende (Session beendet)|end/Bert/true
+Ohne Anmeldung|FEHLER: not signed in

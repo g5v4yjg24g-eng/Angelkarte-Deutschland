@@ -13,6 +13,8 @@ import { createClient } from "npm:@supabase/supabase-js@2.49.1";
 
 const TOPIC = "com.fangpunkt.app";
 
+const SIGNAL_KINDS = ["session_pause", "session_resume", "session_end"];
+
 type Kind =
   | "friend_request"
   | "friend_accepted"
@@ -29,6 +31,9 @@ type Kind =
   | "trip_start"
   | "spot_link"
   | "spot_link_accepted"
+  | "session_pause"
+  | "session_resume"
+  | "session_end"
   | "test";
 
 function secretKey(): string {
@@ -159,6 +164,31 @@ function message(
         title: "Spots teilen",
         body: `${name} hat angenommen – ihr teilt jetzt eure Spots.`,
         path: "/profil/spots",
+      };
+    // Pause, Weiter und Ende in einer gemeinsamen Session: mit Knöpfen „Annehmen“/„Ablehnen“ (Kategorie unten)
+    case "session_pause":
+      return {
+        title: "Gemeinsame Session",
+        body: excerpt
+          ? `${name} macht Pause bei „${excerpt}“ – auch pausieren?`
+          : `${name} macht Pause – auch pausieren?`,
+        path: "/fangbuch/sessions",
+      };
+    case "session_resume":
+      return {
+        title: "Gemeinsame Session",
+        body: excerpt
+          ? `${name} angelt bei „${excerpt}“ weiter – auch weiter angeln?`
+          : `${name} angelt weiter – auch weiter angeln?`,
+        path: "/fangbuch/sessions",
+      };
+    case "session_end":
+      return {
+        title: "Gemeinsame Session",
+        body: excerpt
+          ? `${name} beendet „${excerpt}“ – auch beenden?`
+          : `${name} beendet die Session – auch beenden?`,
+        path: "/fangbuch/sessions",
       };
     case "test":
       return {
@@ -294,8 +324,12 @@ Deno.serve(async (req) => {
             alert: { title: msg.title, body: msg.body },
             sound: "default",
             "thread-id": row.kind,
+            // Knöpfe auf dem Sperrbildschirm (in der App unter dieser Kennung angemeldet: SessionSignalPlugin.swift)
+            ...(SIGNAL_KINDS.includes(row.kind) ? { category: "SESSION_SIGNAL" } : {}),
           },
           path: msg.path,
+          // Kennung der Meldung (push_outbox.ref = session_signals.id), damit die App antworten kann
+          ...(SIGNAL_KINDS.includes(row.kind) && row.ref ? { signal: row.ref } : {}),
         }),
       });
       if (res.ok) continue;

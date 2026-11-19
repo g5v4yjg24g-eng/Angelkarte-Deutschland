@@ -17,6 +17,9 @@ export const NOTIFICATION_KINDS = [
   'trip_start',
   'spot_link',
   'spot_link_accepted',
+  'session_pause',
+  'session_resume',
+  'session_end',
 ] as const;
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 
@@ -173,6 +176,9 @@ export function notificationPath(n: AppNotification): string | undefined {
     case 'session_joined':
     case 'session_highlight':
     case 'trip_start':
+    case 'session_pause':
+    case 'session_resume':
+    case 'session_end':
       return '/fangbuch/sessions';
     case 'trip_invite':
       return '/wetter/kalender';
