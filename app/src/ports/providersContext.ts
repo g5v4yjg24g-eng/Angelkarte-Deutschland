@@ -15,6 +15,7 @@ import type { AppLinks } from './appLinks';
 import type { LiveActivityProvider } from './liveActivity';
 import type { RemindersProvider } from './reminders';
 import type { LocationProvider } from './location';
+import type { SignalActionsProvider } from './signalActions';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
@@ -39,6 +40,8 @@ export interface Providers {
   liveActivity?: LiveActivityProvider | undefined;
   /** Standort: Browser-Funktion bzw. in der iPhone-App CoreLocation (fragt nur einmal um Erlaubnis) */
   location?: LocationProvider | undefined;
+  /** Antworten von den Knöpfen an Session-Mitteilungen (nur iPhone-App) */
+  signalActions?: SignalActionsProvider | undefined;
   /** Erinnerungen auf dem Gerät (nur iPhone-App) */
   reminders?: RemindersProvider | undefined;
 }

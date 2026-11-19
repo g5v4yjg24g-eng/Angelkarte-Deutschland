@@ -7,7 +7,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // Knöpfe „Annehmen“/„Ablehnen“ an Session-Mitteilungen auch bei einem Start im Hintergrund (SessionSignalPlugin.swift)
+        SignalNotificationDelegate.install()
         return true
     }
 

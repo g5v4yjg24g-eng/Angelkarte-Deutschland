@@ -3,6 +3,7 @@
 // Server: supabase/migrations/*_profiles.sql (Tabelle profiles mit RLS, Funktionen username_available,
 // delete_my_account), *_user_badges.sql (nur lesbar) und *_friendships.sql (nur über Funktionen), *_posts.sql (Beiträge, Fotos im Speicher „post-photos“), *_feed.sql (Funktion feed), *_shared_spots.sql (nur über Funktionen), *_moderation.sql (Melden/Blockieren, nur über Funktionen), *_reactions.sql (Likes/Kommentare, nur über Funktionen), *_push.sql (Geräte und Einstellungen für Mitteilungen), *_moderators.sql (Moderationsbereich, jede Funktion prüft is_moderator), *_avatars.sql (Profilbild im Speicher „avatars“, nur über Funktionen), *_post_saves.sql (Lesezeichen), *_discover.sql (Entdecken, höchstens 20 neue Beiträge in 24 h), *_group_sessions.sql (gemeinsame Sessions, nur über Funktionen), *_group_highlights.sql (Highlights nur für Teilnehmer). Nur der öffentliche Schlüssel steht in der App.
 import { parseGroupMembers, parseGroupSessions } from '../domain/groupSessions';
+import { parseSessionSignals } from '../domain/sessionSignals';
 import { parseGroupStats, statsPayload } from '../domain/groupStats';
 import { parseStartRequests } from '../domain/tripStart';
 import { NOTIFICATIONS_PAGE, parseNotifications, parseUnreadCount } from '../domain/notifications';
@@ -471,6 +472,21 @@ export function supabaseAccount(
       const { data, error } = await (await get()).rpc('my_group_sessions');
       if (error) fail(error);
       return parseGroupSessions(data as unknown[] | null);
+    },
+    async signalSession(groupId, kind) {
+      const { data, error } = await (await get()).rpc('signal_session', { session: groupId, what: kind });
+      if (error) fail(error);
+      if (typeof data !== 'string') throw new AccountError('Keine Meldungs-ID');
+      return data;
+    },
+    async sessionSignals() {
+      const { data, error } = await (await get()).rpc('my_session_signals');
+      if (error) fail(error);
+      return parseSessionSignals(data as unknown[] | null);
+    },
+    async answerSessionSignal(signalId, accept) {
+      const { error } = await (await get()).rpc('answer_session_signal', { signal: signalId, accept });
+      if (error) fail(error);
     },
     async groupSessionMembers(groupId) {
       const { data, error } = await (await get()).rpc('group_session_members_list', { session: groupId });
