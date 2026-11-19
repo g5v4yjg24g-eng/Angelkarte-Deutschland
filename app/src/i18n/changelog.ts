@@ -4,6 +4,13 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-29',
+    title: 'Mehr Fischarten',
+    items: [
+      'Fischarten: Über 40 neue Arten zur Auswahl, darunter Huchen, Elritze, Zwergwels, Dorsch, Scholle, Flunder, Makrele und Wolfsbarsch.',
+    ],
+  },
+  {
     id: '2026-12-28',
     title: 'Angelpapiere',
     items: [

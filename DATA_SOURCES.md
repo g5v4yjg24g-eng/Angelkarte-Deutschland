@@ -76,6 +76,8 @@ Es gibt **keine** bundesweite, offen lizenzierte Quelle für Seentiefen in Deuts
 
 ## 4. Fischarten je Gewässer
 
+> Artenliste der App (`app/src/domain/species.ts`): 2026-11-19 um 43 Süßwasser- und Meeresarten auf 79 Einträge erweitert (Wunsch Nutzer). Deutsche und wissenschaftliche Namen **[A]** noch nicht gegen das GBIF-Backbone geprüft. Zu den neuen Arten gibt es keine Rechtsdaten, die Rechts-Warnung beim Fang bleibt dort still.
+
 | Quelle | Inhalt | Lizenz | Bewertung |
 |---|---|---|---|
 | **GBIF: „Harmonised freshwater fish occurrence and abundance data for 12 federal states in Germany"** | 72 Süßwasserfischarten, 12 007 Probestellen aus WRRL-/FFH-Monitoring in BE, BB, HE, MV, NI, HB, NW, SL, ST, SN, SH, TH; 174 897 Nachweise; veröffentlicht 2026-06-22 | **CC BY 4.0** [V: api.gbif.org/v1/dataset/e0908eee-ad49-4e91-b4d0-1f05dd17b291] | **Kandidat Stufe 2 (P2).** Probestellen liegen überwiegend an Fließgewässern [A]. Zuordnung über Punkt-in-Polygon/Pufferabstand. Anzeige nur als „Nachweis bei Monitoring <Jahr>", **nicht** als Bestandsaussage. Fehlende Länder: BY, BW, RP, HH. |
