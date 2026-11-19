@@ -382,15 +382,15 @@ export function CatchForm({
       </FormSection>
 
       <FormSection icon={<CameraIcon size={20} />} title={t.photos}>
-      <PhotoPicker
-        existingIds={existingPhotos}
-        pending={pending}
-        processing={processing}
-        error={photoError}
-        onPick={(files) => void addPhotos(files)}
-        onRemoveExisting={(id) => setRemovedPhotos((r) => [...r, id])}
-        onRemovePending={(key) => setPending((p) => p.filter((x) => x.key !== key))}
-      />
+        <PhotoPicker
+          existingIds={existingPhotos}
+          pending={pending}
+          processing={processing}
+          error={photoError}
+          onPick={(files) => void addPhotos(files)}
+          onRemoveExisting={(id) => setRemovedPhotos((r) => [...r, id])}
+          onRemovePending={(key) => setPending((p) => p.filter((x) => x.key !== key))}
+        />
       </FormSection>
 
       <FormSection icon={<PinIcon size={20} />} title={t.position}>
