@@ -1,7 +1,7 @@
 // Knöpfe „Annehmen“ und „Ablehnen“ an Mitteilungen zu gemeinsamen Sessions (Wunsch Nutzer 2026-11-21). Macht eine Person
 // in einer gemeinsamen Session Pause, geht weiter oder beendet sie, kommt bei den anderen eine Mitteilung; ein langes
 // Drücken am Sperrbildschirm zeigt die beiden Knöpfe. Die Antwort wird mit Zeitpunkt vorgemerkt (UserDefaults) und von der
-// Web-App abgeholt (`takeAnswers`), die die eigene Session ändert. „Annehmen“ öffnet die App, „Ablehnen“ nicht.
+// Web-App abgeholt (`takeAnswers`), die die eigene Session ändert. Beide Knöpfe laufen im Hintergrund, ohne die App zu öffnen.
 // Nichts verlässt das Gerät. Die Kennung der Kategorie steht auch in der Edge Function `send-push`.
 import Capacitor
 import Foundation
@@ -51,7 +51,7 @@ final class SignalNotificationDelegate: NSObject, UNUserNotificationCenterDelega
     /// seinen eigenen Empfänger später, dann wird er hier umhüllt.
     static func install() {
         let center = UNUserNotificationCenter.current()
-        let accept = UNNotificationAction(identifier: acceptId, title: "Annehmen", options: [.foreground])
+        let accept = UNNotificationAction(identifier: acceptId, title: "Annehmen", options: [])
         let decline = UNNotificationAction(identifier: declineId, title: "Ablehnen", options: [])
         let mine = UNNotificationCategory(
             identifier: category, actions: [accept, decline], intentIdentifiers: [], options: []
@@ -78,7 +78,15 @@ final class SignalNotificationDelegate: NSObject, UNUserNotificationCenterDelega
                 SignalAnswerStore.add(signal: signal, accept: action == Self.acceptId)
                 NotificationCenter.default.post(name: .fangpunktSignalAnswer, object: nil)
             }
-            completionHandler()
+            // Die App bleibt im Hintergrund kurz wach, damit die Web-Ansicht die Antwort verarbeiten kann
+            var task = UIBackgroundTaskIdentifier.invalid
+            task = UIApplication.shared.beginBackgroundTask(withName: "fp.signal.answer") {
+                UIApplication.shared.endBackgroundTask(task)
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                completionHandler()
+                if task != .invalid { UIApplication.shared.endBackgroundTask(task) }
+            }
             return
         }
         if let previous, previous.responds(to: #selector(

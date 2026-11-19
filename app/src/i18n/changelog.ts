@@ -9,7 +9,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     items: [
       'Mitteilung: Macht jemand in einer gemeinsamen Session Pause, setzt sie fort oder beendet sie, bekommst du eine Mitteilung.',
       'Bestätigen: Beim Öffnen fragt die App, ob deine Session auch pausieren oder enden soll – erst nach deiner Zustimmung.',
-      'Sperrbildschirm: Halte die Mitteilung gedrückt, um direkt anzunehmen oder abzulehnen.',
+      'Sperrbildschirm: Halte die Mitteilung gedrückt, um direkt anzunehmen oder abzulehnen – ohne die App zu öffnen.',
     ],
   },
   {

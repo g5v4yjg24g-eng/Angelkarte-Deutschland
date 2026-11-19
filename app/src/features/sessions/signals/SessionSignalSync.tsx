@@ -168,7 +168,8 @@ export function SessionSignalSync() {
     const timer = window.setInterval(load, POLL_MS);
     document.addEventListener('visibilitychange', load);
     window.addEventListener('focus', load);
-    const off = signalActions?.onAnswer(load);
+    // Antwort vom Sperrbildschirm: auch im Hintergrund sofort verarbeiten (nicht nur bei sichtbarer App)
+    const off = signalActions?.onAnswer(() => void refresh().catch(() => undefined));
     return () => {
       window.clearInterval(timer);
       document.removeEventListener('visibilitychange', load);
