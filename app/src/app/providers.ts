@@ -1,5 +1,6 @@
 import { openFreeMap } from '../adapters/openfreemap';
 import { openMeteo, openMeteoForecast } from '../adapters/openMeteo';
+import { openMeteoGeocoding } from '../adapters/openMeteoGeocoding';
 import { staticWaterData } from '../adapters/staticWaterData';
 import { brightSkyAlerts } from '../adapters/brightSky';
 import { pegelonline } from '../adapters/pegelonline';
@@ -23,6 +24,8 @@ export const providers: Providers = {
   // VITE_WATER_BASE_URL erlaubt externes Hosting (z. B. Objektspeicher); Standard: mit der App ausgeliefert.
   weather: openMeteo(),
   forecast: openMeteoForecast(),
+  // Ortssuche im Wetter-Bereich: nur der getippte Suchbegriff geht an Open-Meteo (Freigabe Nutzer 2026-11-20)
+  geocoding: openMeteoGeocoding(),
   alerts: brightSkyAlerts(),
   gauges: pegelonline(),
   gaugesNrw: hygonNrw(),

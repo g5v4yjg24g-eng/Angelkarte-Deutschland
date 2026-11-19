@@ -138,9 +138,12 @@ test('FC-1: Wetter-Bereich mit Vorhersage, Luftdruck-Verlauf, Ortswahl, Zwischen
   await expect(page.getByRole('img', { name: /Luftdruck-Verlauf von/ })).toBeVisible();
   // Stundenleiste und Tagesliste wie beim iPhone-Wetter
   await expect(page.getByRole('list', { name: 'Vorhersage der nächsten 24 Stunden' })).toContainText('Jetzt');
-  await expect(page.getByRole('region', { name: /-Tage-Vorhersage/ }).locator('ul').getByRole('button')).toHaveCount(
-    8,
-  );
+  await expect(
+    page
+      .getByRole('region', { name: /-Tage-Vorhersage/ })
+      .locator('ul')
+      .getByRole('button'),
+  ).toHaveCount(8);
   await expect(page.getByRole('button', { name: /^Heute.*Leichter Regen.*5°.*12°/ })).toBeVisible();
   await expect(page.getByText(/Quelle: Open-Meteo\.com \(CC BY 4\.0\)/)).toBeVisible();
   expect(api.requests.at(-1)?.searchParams.get('latitude')).toBe('51.326');
@@ -155,11 +158,11 @@ test('FC-1: Wetter-Bereich mit Vorhersage, Luftdruck-Verlauf, Ortswahl, Zwischen
   await expect(page.getByRole('region', { name: 'Solunar-Zeiten (Theorie)' })).toHaveCount(0);
 
   // Gewässer aus dem Fangbuch wählen → Vorhersage dort; Wahl bleibt
-  await page.getByLabel('Ort').selectOption({ label: 'De Wittsee (Nettetal)' });
+  await page.getByLabel('Ort', { exact: true }).selectOption({ label: 'De Wittsee (Nettetal)' });
   await expect.poll(() => api.requests.at(-1)?.searchParams.get('latitude')).toBe('51.319');
   await page.reload();
   await waitForApp(page);
-  await expect(page.getByLabel('Ort')).toHaveValue(/^w:/);
+  await expect(page.getByLabel('Ort', { exact: true })).toHaveValue(/^w:/);
 
   // Dienst nicht erreichbar → letzte Vorhersage mit Hinweis
   api.setFail(true);
@@ -767,4 +770,84 @@ test('FC-6: Tag antippen öffnet die Wetterlage – Datumsleiste, Temperatur tat
   await page.keyboard.press('Escape');
   await expect(sheet).toBeHidden();
   expect(errors).toEqual([]);
+});
+
+const KOELN = {
+  id: 2886242,
+  name: 'Köln',
+  latitude: 50.93333,
+  longitude: 6.95,
+  country_code: 'DE',
+  admin1: 'Nordrhein-Westfalen',
+  admin2: 'Regierungsbezirk Köln',
+};
+
+test('GEO-1: Ort im Wetter-Bereich suchen – Vorhersage für den Treffer, Ort bleibt gemerkt, nur der Suchbegriff geht raus', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await useLocalExternals(page);
+  await stubGeolocation(page);
+  const api = await fakeForecast(page);
+  const searches: URL[] = [];
+  let down = false;
+  await page.route('https://geocoding-api.open-meteo.com/**', (route) => {
+    const u = new URL(route.request().url());
+    searches.push(u);
+    if (down) return route.abort();
+    const name = u.searchParams.get('name') ?? '';
+    return route.fulfill({ json: name.startsWith('Kö') ? { results: [KOELN] } : {} });
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/wetter');
+  await waitForApp(page);
+  await expect(page.getByRole('region', { name: 'Jetzt' })).toContainText('9°');
+
+  // Suche öffnen; ein Zeichen reicht noch nicht für einen Abruf
+  await page.getByRole('button', { name: 'Ort suchen' }).click();
+  const box = page.getByRole('searchbox', { name: 'Ort in Deutschland' });
+  await expect(box).toBeFocused();
+  await box.fill('K');
+  await page.waitForTimeout(600);
+  expect(searches).toHaveLength(0);
+
+  // Kein Treffer
+  await box.fill('Nirgendwo');
+  await expect(page.getByText('Kein Ort gefunden.')).toBeVisible();
+
+  // Treffer wählen: Vorhersage kommt für Köln (gerundete Koordinaten), Auswahl zeigt den Ort
+  await box.fill('Köln');
+  await page.getByRole('button', { name: /^Köln\s*Nordrhein-Westfalen$/ }).click();
+  await expect(page.getByRole('searchbox')).toBeHidden();
+  await expect(page.getByRole('combobox', { name: 'Ort' })).toHaveValue('s:2886242');
+  await expect.poll(() => api.requests.some((u) => u.searchParams.get('latitude') === '50.933')).toBe(true);
+  await expect(page.getByRole('region', { name: 'Jetzt' })).toContainText('9°');
+  // Gesendet wurde nur der Suchbegriff – keine Position
+  for (const u of searches) {
+    expect([...u.searchParams.keys()].sort()).toEqual(['count', 'countryCode', 'format', 'language', 'name']);
+  }
+
+  // Bleibt nach dem Neuladen gewählt und steht in der Liste
+  await page.reload();
+  await waitForApp(page);
+  await expect(page.getByRole('combobox', { name: 'Ort' })).toHaveValue('s:2886242');
+  await expect(
+    page.getByRole('combobox', { name: 'Ort' }).getByRole('option', { name: 'Köln (Nordrhein-Westfalen)' }),
+  ).toHaveCount(1);
+
+  // Ohne Verbindung zum Suchdienst: Hinweis statt Absturz
+  down = true;
+  await page.getByRole('button', { name: 'Ort suchen' }).click();
+  await page.getByRole('searchbox', { name: 'Ort in Deutschland' }).fill('Hamburg');
+  await expect(page.getByRole('status').filter({ hasText: /Suche/ })).toBeVisible();
+
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  expect(errors.filter((e) => !/geocoding|Failed to load resource|ERR_FAILED/.test(e))).toEqual([]);
 });
