@@ -15,6 +15,8 @@ class FangpunktBridgeViewController: CAPBridgeViewController {
         bridge?.registerPluginInstance(LiveActivityPlugin())
         // Erinnerungen als lokale Mitteilungen (ablaufende Angelpapiere): App/RemindersPlugin.swift
         bridge?.registerPluginInstance(RemindersPlugin())
+        // Standort im Vordergrund über CoreLocation (fragt nur einmal nach der Erlaubnis): App/LocationPlugin.swift
+        bridge?.registerPluginInstance(LocationPlugin())
     }
 }
 

@@ -13,6 +13,7 @@ import type { BackgroundRoute } from './backgroundRoute';
 import type { AppLinks } from './appLinks';
 import type { LiveActivityProvider } from './liveActivity';
 import type { RemindersProvider } from './reminders';
+import type { LocationProvider } from './location';
 
 /** Externe Anbieter, die die App-Schicht einsteckt. Features kennen nur diese Schnittstellen. */
 export interface Providers {
@@ -33,6 +34,8 @@ export interface Providers {
   links?: AppLinks | undefined;
   /** Live Activity der Session auf dem Sperrbildschirm – nur in der iPhone-App */
   liveActivity?: LiveActivityProvider | undefined;
+  /** Standort: Browser-Funktion bzw. in der iPhone-App CoreLocation (fragt nur einmal um Erlaubnis) */
+  location?: LocationProvider | undefined;
   /** Erinnerungen auf dem Gerät (nur iPhone-App) */
   reminders?: RemindersProvider | undefined;
 }
