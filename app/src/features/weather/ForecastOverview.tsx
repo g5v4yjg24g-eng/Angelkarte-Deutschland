@@ -53,7 +53,7 @@ export function ForecastOverview({
         <h2 id="wx-hourly" className={styles.cardTitle}>
           <ClockIcon size={20} /> {t.hourly}
         </h2>
-        <ol className={styles.strip} aria-label={t.hourlyLabel}>
+        <ol className={styles.strip} aria-label={t.hourlyLabel} tabIndex={0}>
           {strip.map((s) =>
             s.kind === 'hour' ? (
               <li key={s.t} className={`${styles.stripItem} ${s.now ? styles.stripNow : ''}`}>

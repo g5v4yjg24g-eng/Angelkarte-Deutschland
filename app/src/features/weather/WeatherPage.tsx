@@ -6,7 +6,7 @@ import { de } from '../../i18n/de';
 import { Page } from '../../design/components/Page';
 import { Notice } from '../../design/components/Notice';
 import { Button } from '../../design/components/Button';
-import { ChartIcon, PinIcon } from '../../design/icons';
+import { ChartIcon, CloseIcon, PinIcon, SearchIcon } from '../../design/icons';
 import { WxSection } from './WxSection';
 import { compassIndex } from '../../domain/weather';
 import {
@@ -19,7 +19,14 @@ import {
 } from '../../domain/forecast';
 import { useWeatherEnabled } from './useWeatherEnabled';
 import { useForecast } from './useForecast';
-import { useCurrentPosition, useForecastChoice, useWaterOptions } from './useForecastPlace';
+import { hitLabel, searchedKey } from '../../domain/placeSearch';
+import {
+  useCurrentPosition,
+  useForecastChoice,
+  useSearchedPlaces,
+  useWaterOptions,
+} from './useForecastPlace';
+import { PlaceSearch } from './PlaceSearch';
 import { PressureChart } from './PressureChart';
 import { BiteWindows } from './BiteWindows';
 import { WeatherTabs } from './WeatherTabs';
@@ -72,10 +79,14 @@ export function WeatherPage() {
   const enabled = useWeatherEnabled();
   const waters = useWaterOptions();
   const [choice, setChoice] = useForecastChoice();
+  const [searched, addSearched] = useSearchedPlaces();
+  const [searching, setSearching] = useState(false);
   const water = waters?.find((o) => o.key === choice);
-  const useMe = choice === 'me' || (waters !== undefined && !water);
+  const found = searched.find((h) => searchedKey(h.id) === choice);
+  const picked = found ?? water;
+  const useMe = choice === 'me' || (waters !== undefined && !picked);
   const geo = useCurrentPosition(!!enabled && useMe);
-  const pos = useMe ? (geo.status === 'ok' ? geo : undefined) : water;
+  const pos = useMe ? (geo.status === 'ok' ? geo : undefined) : picked;
   const lat = pos?.lat;
   const lng = pos?.lng;
   const q = useMemo(
@@ -87,6 +98,7 @@ export function WeatherPage() {
 
   const options = [
     { value: 'me', label: t.myLocationRounded },
+    ...searched.map((h) => ({ value: searchedKey(h.id), label: hitLabel(h) })),
     ...(waters ?? []).map((o) => ({ value: o.key, label: o.sub ? `${o.label} (${o.sub})` : o.label })),
   ];
 
@@ -133,8 +145,27 @@ export function WeatherPage() {
                 ))}
               </select>
             </span>
+            <button
+              type="button"
+              className={wx.placeSearchButton}
+              aria-expanded={searching}
+              aria-label={searching ? t.search.close : t.search.open}
+              title={searching ? t.search.close : t.search.open}
+              onClick={() => setSearching((v) => !v)}
+            >
+              {searching ? <CloseIcon size={20} /> : <SearchIcon size={20} />}
+            </button>
           </div>
-          {waters?.length === 0 && <p className="muted">{t.noPlaces}</p>}
+          {searching && (
+            <PlaceSearch
+              onPick={(hit) => {
+                addSearched(hit);
+                setChoice(searchedKey(hit.id));
+                setSearching(false);
+              }}
+            />
+          )}
+          {waters?.length === 0 && useMe && <p className="muted">{t.noPlaces}</p>}
         </>
       )}
       {/* Warnungen zuerst: Sicherheit vor allem anderen */}

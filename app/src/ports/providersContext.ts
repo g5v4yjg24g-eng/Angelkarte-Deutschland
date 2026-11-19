@@ -3,6 +3,7 @@ import type { BasemapProvider } from './basemap';
 import type { WaterDataProvider } from './waterData';
 import type { WeatherProvider } from './weather';
 import type { ForecastProvider } from './forecast';
+import type { GeocodingProvider } from './geocoding';
 import type { AlertsProvider } from './alerts';
 import type { GaugesProvider, NrwGaugesProvider } from './gauges';
 import type { UsageCounter } from './usage';
@@ -21,6 +22,8 @@ export interface Providers {
   water: WaterDataProvider;
   weather: WeatherProvider;
   forecast: ForecastProvider;
+  /** Ortssuche im Wetter-Bereich (Name → Koordinaten) */
+  geocoding?: GeocodingProvider | undefined;
   alerts: AlertsProvider;
   gauges: GaugesProvider;
   gaugesNrw: NrwGaugesProvider;

@@ -74,6 +74,10 @@ Es gibt **keine** bundesweite, offen lizenzierte Quelle für Seentiefen in Deuts
 
 ---
 
+## 4b. Ortssuche im Wetter-Bereich (seit 2026-11-20)
+
+Open-Meteo Geocoding (`geocoding-api.open-meteo.com/v1/search`, Parameter `name`, `count`, `language=de`, `format=json`, `countryCode=DE`), **[V]** Abruf 2026-11-20 (Treffer für „Köln“ mit `latitude`, `longitude`, `admin1`, `country_code`). Gesendet wird nur der Suchbegriff. Die Daten stammen laut Open-Meteo aus GeoNames; Lizenz CC BY 4.0 **[A]**, vor dem Einreichen gegen die Open-Meteo-Dokumentation prüfen. Nur Deutschland (Warnungen, Pegel, Zeitzone).
+
 ## 4. Fischarten je Gewässer
 
 > Artenliste der App (`app/src/domain/species.ts`): 2026-11-19 um 43 Süßwasser- und Meeresarten auf 79 Einträge erweitert (Wunsch Nutzer). Deutsche und wissenschaftliche Namen **[A]** noch nicht gegen das GBIF-Backbone geprüft. Zu den neuen Arten gibt es keine Rechtsdaten, die Rechts-Warnung beim Fang bleibt dort still.

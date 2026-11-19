@@ -2143,6 +2143,17 @@ export const de = {
     place: 'Ort',
     myLocation: 'Mein Standort',
     myLocationRounded: 'Mein Standort (ca. 100 m)',
+    search: {
+      open: 'Ort suchen',
+      close: 'Suche schließen',
+      label: 'Ort in Deutschland',
+      placeholder: 'z. B. Köln oder Wittsee',
+      searching: 'Suche …',
+      noHits: 'Kein Ort gefunden.',
+      error: 'Die Suche ist gerade nicht möglich.',
+      offline: 'Ohne Verbindung ist keine Suche möglich.',
+      results: 'Treffer',
+    },
     locating: 'Standort wird bestimmt …',
     locationDenied: 'Der Standort ist nicht verfügbar. Wähle ein Gewässer aus deinem Fangbuch.',
     noPlaces: 'Noch keine Gewässer im Fangbuch – die Vorhersage gilt für deinen Standort.',
@@ -2599,6 +2610,10 @@ export const de = {
         license: 'freie Lizenzen (CC0, CC BY, CC BY-SA, gemeinfrei)',
       },
       { name: 'Wetter am Fang: Open-Meteo.com', license: 'CC BY 4.0' },
+      {
+        name: 'Ortssuche im Wetter-Bereich: Open-Meteo Geocoding (Daten von GeoNames)',
+        license: 'CC BY 4.0',
+      },
       {
         name: 'Amtliche Warnungen: Deutscher Wetterdienst, abgerufen über Bright Sky (brightsky.dev)',
         license: 'CC BY 4.0',
@@ -3814,6 +3829,10 @@ export const de = {
       {
         name: 'Open-Meteo',
         what: 'nur wenn „Wetter am Fang“ an ist (Standard: an): Datum, Stunde und die auf etwa 100 m gerundete Position eines Fangs (schon beim Erfassen); im Bereich „Wetter“ die auf etwa 100 m gerundete Position des gewählten Orts (dein Standort oder ein Gewässer) für die Vorhersage. Abschalten: Mehr → Einstellungen.',
+      },
+      {
+        name: 'Open-Meteo Ortssuche (geocoding-api.open-meteo.com)',
+        what: 'nur wenn du im Bereich „Wetter“ einen Ort suchst: der getippte Suchbegriff (z. B. „Köln“). Es wird keine Position übertragen. Die Treffer (Ortsname und Koordinaten) merkt sich Fangpunkt als zuletzt gesuchte Orte auf deinem Gerät.',
       },
       {
         name: 'PEGELONLINE (www.pegelonline.wsv.de)',

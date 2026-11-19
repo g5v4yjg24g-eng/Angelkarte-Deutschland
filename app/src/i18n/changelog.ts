@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-30',
+    title: 'Ortssuche im Wetter',
+    items: [
+      'Wetter: Suche mit der Lupe einen beliebigen Ort in Deutschland. Vorhersage, Warnungen, Pegel und Beißfenster zeigen dann diesen Ort.',
+      'Zuletzt gesucht: Die letzten fünf Orte stehen in der Auswahl.',
+    ],
+  },
+  {
     id: '2026-12-29',
     title: 'Mehr Fischarten',
     items: [

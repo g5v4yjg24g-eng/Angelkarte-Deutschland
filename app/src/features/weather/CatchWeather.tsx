@@ -6,7 +6,14 @@ import type { Catch } from '../../domain/schemas';
 import { compassIndex, nearestHour, WEATHER_FROM } from '../../domain/weather';
 import { weatherIcon } from '../../domain/forecastView';
 import { formatDateTime } from '../../lib/storage';
-import { CloudIcon, DropIcon, GaugeIcon, InfoIcon, WeatherIcon as SkyIcon, WindIcon } from '../../design/icons';
+import {
+  CloudIcon,
+  DropIcon,
+  GaugeIcon,
+  InfoIcon,
+  WeatherIcon as SkyIcon,
+  WindIcon,
+} from '../../design/icons';
 import { useWeatherEnabled } from './useWeatherEnabled';
 import { WeatherIcon } from './WeatherIcon';
 import styles from './CatchWeather.module.css';
@@ -14,7 +21,9 @@ import styles from './CatchWeather.module.css';
 const t = de.weather;
 const v = de.catchView;
 const hourBerlin = (iso: string) =>
-  Number(new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', hour12: false, timeZone: 'Europe/Berlin' }));
+  Number(
+    new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', hour12: false, timeZone: 'Europe/Berlin' }),
+  );
 
 export function CatchWeather({ item }: { item: Catch }) {
   const enabled = useWeatherEnabled();

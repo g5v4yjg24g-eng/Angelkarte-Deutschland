@@ -3,6 +3,7 @@ import { useCatches } from '../../data/useCatches';
 import { useEffect, useMemo, useState } from 'react';
 import { groupByWater } from '../../domain/waterGroups';
 import { de } from '../../i18n/de';
+import { addRecent, parseRecents, type PlaceHit } from '../../domain/placeSearch';
 import { NO_LOCATION } from '../../ports/location';
 import { useProviders } from '../../ports/providersContext';
 
@@ -43,6 +44,30 @@ export function useWaterOptions(): PlaceOption[] | undefined {
     }
     return out;
   }, [catches]);
+}
+
+const RECENT_KEY = 'fangpunkt.forecastSearched';
+
+/** Zuletzt gesuchte Orte (höchstens 5, pro Gerät gemerkt) */
+export function useSearchedPlaces() {
+  const [list, setList] = useState<PlaceHit[]>(() => {
+    try {
+      return parseRecents(JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]'));
+    } catch {
+      return [];
+    }
+  });
+  const add = (hit: PlaceHit) =>
+    setList((cur) => {
+      const next = addRecent(cur, hit);
+      try {
+        localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+      } catch {
+        // nur Komfort
+      }
+      return next;
+    });
+  return [list, add] as const;
 }
 
 export function useForecastChoice() {
