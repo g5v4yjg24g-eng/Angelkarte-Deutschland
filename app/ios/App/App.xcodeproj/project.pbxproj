@@ -28,6 +28,7 @@
 		ED2A6DBC857CC7EE2FE6CA36 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 57C6C2ABF481350ACFAB268F /* WidgetKit.framework */; };
 		F17A0B022FF0A00100C0FFEE /* RoutePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17A0B012FF0A00100C0FFEE /* RoutePlugin.swift */; };
 		F17A0B042FF0A00100C0FFEE /* RemindersPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17A0B032FF0A00100C0FFEE /* RemindersPlugin.swift */; };
+		F17A0B062FF0A00100C0FFEE /* LocationPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17A0B052FF0A00100C0FFEE /* LocationPlugin.swift */; };
 		FAB39AFDFFAE29AD2E093E95 /* LiveActivityPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BDC4F36462DF47F8740295B /* LiveActivityPlugin.swift */; };
 		FE7EFF545DF3D2AE2ACF250B /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0E42D915C27CD165962E5D87 /* ActivityKit.framework */; };
 /* End PBXBuildFile section */
@@ -80,6 +81,7 @@
 		EC1C71372128C1407A4BCC0C /* FangpunktLive.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FangpunktLive.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F17A0B012FF0A00100C0FFEE /* RoutePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePlugin.swift; sourceTree = "<group>"; };
 		F17A0B032FF0A00100C0FFEE /* RemindersPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersPlugin.swift; sourceTree = "<group>"; };
+		F17A0B052FF0A00100C0FFEE /* LocationPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPlugin.swift; sourceTree = "<group>"; };
 		FAB9EB304FD63040DECDFA64 /* FangpunktSessionLive.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FangpunktSessionLive.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -162,6 +164,7 @@
 				9582B6822FE993A50072D4E8 /* SceneDelegate.swift */,
 				F17A0B012FF0A00100C0FFEE /* RoutePlugin.swift */,
 				F17A0B032FF0A00100C0FFEE /* RemindersPlugin.swift */,
+				F17A0B052FF0A00100C0FFEE /* LocationPlugin.swift */,
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
@@ -309,6 +312,7 @@
 				9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */,
 				F17A0B022FF0A00100C0FFEE /* RoutePlugin.swift in Sources */,
 				F17A0B042FF0A00100C0FFEE /* RemindersPlugin.swift in Sources */,
+				F17A0B062FF0A00100C0FFEE /* LocationPlugin.swift in Sources */,
 				ADC9733DCBD79514FB11E808 /* FangpunktLiveAttributes.swift in Sources */,
 				FAB39AFDFFAE29AD2E093E95 /* LiveActivityPlugin.swift in Sources */,
 				3AE4D1061EA108BD207F3A60 /* FangpunktLiveIntents.swift in Sources */,

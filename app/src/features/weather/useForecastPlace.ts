@@ -3,6 +3,8 @@ import { useCatches } from '../../data/useCatches';
 import { useEffect, useMemo, useState } from 'react';
 import { groupByWater } from '../../domain/waterGroups';
 import { de } from '../../i18n/de';
+import { NO_LOCATION } from '../../ports/location';
+import { useProviders } from '../../ports/providersContext';
 
 const KEY = 'fangpunkt.forecastPlace';
 
@@ -60,23 +62,23 @@ export type GeoState =
 
 /** Standort einmalig (nur solange `active`). Der Browser fragt ggf. um Erlaubnis. */
 export function useCurrentPosition(active: boolean): GeoState {
+  const loc = useProviders().location ?? NO_LOCATION;
   const [state, setState] = useState<GeoState>({ status: 'idle' });
   useEffect(() => {
     if (!active) return;
-    if (!('geolocation' in navigator)) {
+    if (!loc.supported) {
       queueMicrotask(() => setState({ status: 'denied' }));
       return;
     }
     let alive = true;
     queueMicrotask(() => alive && setState({ status: 'locating' }));
-    navigator.geolocation.getCurrentPosition(
-      (p) => alive && setState({ status: 'ok', lat: p.coords.latitude, lng: p.coords.longitude }),
+    loc.current({ highAccuracy: false, maxAgeMs: 10 * 60_000, timeoutMs: 20_000 }).then(
+      (p) => alive && setState({ status: 'ok', lat: p.lat, lng: p.lng }),
       () => alive && setState({ status: 'denied' }),
-      { enableHighAccuracy: false, maximumAge: 10 * 60_000, timeout: 20_000 },
     );
     return () => {
       alive = false;
     };
-  }, [active]);
+  }, [active, loc]);
   return state;
 }

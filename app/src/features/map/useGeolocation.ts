@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { NO_LOCATION, type LocationProvider } from '../../ports/location';
+import { useProviders } from '../../ports/providersContext';
 
 export interface GeoFix {
   lng: number;
@@ -7,16 +9,9 @@ export interface GeoFix {
 }
 export type GeoError = 'denied' | 'unavailable' | 'timeout' | 'unsupported';
 
-const supported = typeof navigator !== 'undefined' && 'geolocation' in navigator;
-
-/** Hat der Browser den Standortzugriff schon dauerhaft verweigert? (ohne Permissions-API: unbekannt → false) */
-export async function geolocationDenied(): Promise<boolean> {
-  try {
-    const p = await navigator.permissions?.query({ name: 'geolocation' });
-    return p?.state === 'denied';
-  } catch {
-    return false;
-  }
+/** Hat das Gerät den Standortzugriff schon dauerhaft verweigert? (ohne Auskunft: unbekannt → false) */
+export async function geolocationDenied(loc: LocationProvider = NO_LOCATION): Promise<boolean> {
+  return (await loc.permission()) === 'denied';
 }
 
 /**
@@ -24,6 +19,7 @@ export async function geolocationDenied(): Promise<boolean> {
  * Der Standort verlässt das Gerät nicht.
  */
 export function useGeolocation(active: boolean, onError?: (e: GeoError) => void) {
+  const loc = useProviders().location ?? NO_LOCATION;
   const onErrorRef = useRef(onError);
   useEffect(() => {
     onErrorRef.current = onError;
@@ -39,22 +35,19 @@ export function useGeolocation(active: boolean, onError?: (e: GeoError) => void)
   }, []);
 
   useEffect(() => {
-    if (!active || !visible || !supported) return;
-    const id = navigator.geolocation.watchPosition(
+    if (!active || !visible || !loc.supported) return;
+    return loc.watch(
+      { highAccuracy: true, maxAgeMs: 10_000, timeoutMs: 20_000 },
       (p) => {
         setError(undefined);
-        setFix({ lng: p.coords.longitude, lat: p.coords.latitude, accuracy: p.coords.accuracy });
+        setFix({ lng: p.lng, lat: p.lat, accuracy: p.accuracy });
       },
-      (e) => {
-        const err: GeoError =
-          e.code === e.PERMISSION_DENIED ? 'denied' : e.code === e.TIMEOUT ? 'timeout' : 'unavailable';
+      (err) => {
         setError(err);
         onErrorRef.current?.(err);
       },
-      { enableHighAccuracy: true, maximumAge: 10_000, timeout: 20_000 },
     );
-    return () => navigator.geolocation.clearWatch(id);
-  }, [active, visible]);
+  }, [active, visible, loc]);
 
   /** Beim Ausschalten aufrufen (Ereignis-Handler), damit kein alter Standort stehen bleibt. */
   const reset = useCallback(() => {
@@ -64,7 +57,7 @@ export function useGeolocation(active: boolean, onError?: (e: GeoError) => void)
 
   return {
     fix: active ? fix : undefined,
-    error: active ? (supported ? error : 'unsupported') : undefined,
+    error: active ? (loc.supported ? error : 'unsupported') : undefined,
     reset,
   } as { fix: GeoFix | undefined; error: GeoError | undefined; reset: () => void };
 }

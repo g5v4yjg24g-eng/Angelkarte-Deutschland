@@ -224,7 +224,7 @@ declare global {
 }
 
 export default function MapView() {
-  const { basemap, water, account } = useProviders();
+  const { basemap, water, account, location: locationProvider } = useProviders();
   const theme = useEffectiveTheme();
   const online = useOnline();
   const container = useRef<HTMLDivElement>(null);
@@ -630,12 +630,12 @@ export default function MapView() {
     const st = location.state as MapFocusState | null;
     // Mit Ziel aus dem Fangbuch nicht vom Ziel wegspringen
     if (st?.focusCatch || st?.assignWater) centeredOnFix.current = true;
-    void geolocationDenied().then((denied) => {
+    void geolocationDenied(locationProvider).then((denied) => {
       if (denied) return;
       autoLocated.current = true;
       setLocating(true);
     });
-  }, [locateOnStart, location.state]);
+  }, [locateOnStart, location.state, locationProvider]);
 
   // Beim ersten Standort hinzoomen
   useEffect(() => {

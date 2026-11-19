@@ -6,6 +6,7 @@ import { de } from '../../i18n/de';
 import { Section } from '../../design/components/Page';
 import { Notice } from '../../design/components/Notice';
 import { roundRegion, type SuggestionPrefs } from '../../domain/suggestions';
+import { NO_LOCATION } from '../../ports/location';
 import { useProviders } from '../../ports/providersContext';
 import { storedUserId } from '../badges/badgeStore';
 import styles from '../friends/Friends.module.css';
@@ -13,19 +14,8 @@ import { localWaters, pushWaters, setWatersOn, writeWatersKey } from './waterSha
 
 const t = de.suggest.settings;
 
-function locate(): Promise<GeolocationPosition> {
-  return new Promise((resolve, reject) => {
-    if (!('geolocation' in navigator)) return reject(new Error('denied'));
-    navigator.geolocation.getCurrentPosition(resolve, reject, {
-      enableHighAccuracy: false,
-      maximumAge: 10 * 60_000,
-      timeout: 20_000,
-    });
-  });
-}
-
 export function SuggestionSettings() {
-  const { account } = useProviders();
+  const { account, location: loc = NO_LOCATION } = useProviders();
   const [prefs, setPrefs] = useState<SuggestionPrefs>();
   const [busy, setBusy] = useState<string>();
   const [error, setError] = useState<string>();
@@ -90,10 +80,12 @@ export function SuggestionSettings() {
         await account.clearMyRegion();
         return { ...prefs, regionOn: false };
       }
-      const pos = await locate().catch(() => {
-        throw new Error('denied');
-      });
-      const cell = roundRegion(pos.coords.latitude, pos.coords.longitude);
+      const pos = await loc
+        .current({ highAccuracy: false, maxAgeMs: 10 * 60_000, timeoutMs: 20_000 })
+        .catch(() => {
+          throw new Error('denied');
+        });
+      const cell = roundRegion(pos.lat, pos.lng);
       if (!cell) throw new Error('outside');
       await account.setMyRegion(cell);
       return { ...prefs, regionOn: true };

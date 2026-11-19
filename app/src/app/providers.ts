@@ -13,6 +13,8 @@ import { capacitorRoute } from '../adapters/capacitorRoute';
 import { capacitorAppLinks } from '../adapters/capacitorAppLinks';
 import { capacitorLiveActivity } from '../adapters/capacitorLiveActivity';
 import { capacitorReminders } from '../adapters/capacitorReminders';
+import { browserLocation } from '../adapters/browserLocation';
+import { capacitorLocation } from '../adapters/capacitorLocation';
 import type { Providers } from '../ports/providersContext';
 
 /** Zusammenstecken der Anbieter (einzige Stelle, die Adapter kennt). */
@@ -44,6 +46,8 @@ export const providers: Providers = {
   links: capacitorAppLinks(),
   // Live Activity der Session auf dem Sperrbildschirm und in der Dynamic Island (nur iPhone-App, ab iOS 16.2)
   liveActivity: capacitorLiveActivity(),
+  // Standort: in der iPhone-App über CoreLocation (nur eine Abfrage der Erlaubnis), sonst über den Browser
+  location: capacitorLocation() ?? browserLocation(),
   // Erinnerungen (ablaufende Angelpapiere) als lokale Mitteilungen – nur iPhone-App
   reminders: capacitorReminders(),
   water: staticWaterData(import.meta.env.VITE_WATER_BASE_URL ?? `${import.meta.env.BASE_URL}data/water/`),
