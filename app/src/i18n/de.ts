@@ -132,6 +132,9 @@ export const de = {
   catches: {
     title: 'Fangbuch',
     entriesTab: 'Einträge',
+    summaryLabel: 'Überblick',
+    filters: 'Filter',
+    summary: { landed: 'Fänge', biggest: 'Größter', waters: 'Gewässer', none: '–' },
     emptyTitle: 'Noch keine Einträge',
     emptyText:
       'Tippe auf der Karte auf die Stelle, an der du angelst, und wähle „Fang oder Kontakt erfassen“. Das geht auch ohne Internet.',

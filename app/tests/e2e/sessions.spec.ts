@@ -60,7 +60,7 @@ test('SES-1/SES-2: Session starten, Einträge zuordnen, beenden; keine zweite gl
 
   // Eintrag zeigt seine Session
   await nav(page, 'Fangbuch');
-  await page.getByRole('link', { name: /Fang · Hecht/ }).click();
+  await page.getByRole('link', { name: /Fang\s+Hecht/ }).click();
   await expect(page.getByText(/^Session vom /)).toBeVisible();
 });
 

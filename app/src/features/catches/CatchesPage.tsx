@@ -1,6 +1,6 @@
 // Fangbuch: alle Einträge nach Tagen, mit Suche und Filtern (M5.3); Reiter je Gewässer (P1, 2026-10-22).
 import { useCatches } from '../../data/useCatches';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { de } from '../../i18n/de';
@@ -10,18 +10,18 @@ import { Button } from '../../design/components/Button';
 import { SelectField, TextField } from '../../design/components/Field';
 import { Notice } from '../../design/components/Notice';
 import { Toast } from '../../design/components/Toast';
-import { BookIcon, ChevronRightIcon } from '../../design/icons';
+import { BookIcon, SlidersIcon } from '../../design/icons';
 import { getDb } from '../../data/db';
 import { repo } from '../../data/repository';
 import { CatchOutcomeSchema, type Catch } from '../../domain/schemas';
 import { SPECIES, speciesById } from '../../domain/species';
 import { filterCatches, groupByDay, NO_FILTER, type CatchFilter } from '../../domain/catchDraft';
 import { groupByWater } from '../../domain/waterGroups';
+import { catchbookSummary, type CatchbookSummary } from '../../domain/catchbookSummary';
 import { WaterHeader, WaterTabs } from './WaterTabs';
 import { CatchbookTabs } from './CatchbookTabs';
 import { useWaterPlaces } from './useWaterPlaces';
 import { markerDataUrl } from '../map/markerIcons';
-import { catchTitle } from './catchText';
 import { PhotoThumb } from './CatchPhotos';
 import { ListLink } from '../../design/components/ListLink';
 import { useRunningSession } from '../sessions/useSessions';
@@ -52,42 +52,94 @@ function SessionsLink() {
         to={running ? `/fangbuch/sessions/${running.id}` : '/fangbuch/sessions'}
         icon={<BookIcon />}
         title={running ? de.sessions.running : de.sessions.listLink}
-        hint={running ? de.sessions.since(running.startAt.slice(11, 16)) : de.sessions.listHint}
+        {...(running ? { hint: de.sessions.since(running.startAt.slice(11, 16)) } : {})}
       />
     </div>
   );
 }
 
-/** Vorschaubild des ersten Fotos in der Liste */
-function RowPhoto({ id }: { id: string }) {
-  const photo = useLiveQuery(() => getDb().photos.get(id), [id]);
+/** Großes Foto der Karte; wird erst geladen, wenn die Karte in die Nähe des Bildschirms kommt */
+function CardPhoto({ id }: { id: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || near) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      // ohne Beobachter sofort laden
+      queueMicrotask(() => setNear(true));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => entries.some((e) => e.isIntersecting) && setNear(true), {
+      rootMargin: '400px',
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [near]);
+  const photo = useLiveQuery(() => (near ? getDb().photos.get(id) : undefined), [id, near]);
   return (
-    <span className={styles.rowPhoto} aria-hidden="true">
-      <PhotoThumb blob={photo?.thumb ?? photo?.blob} alt="" />
+    <span ref={ref} className={styles.cardPhoto} aria-hidden="true">
+      <PhotoThumb blob={photo?.blob} alt="" />
     </span>
   );
 }
 
-function CatchRow({ item }: { item: Catch }) {
-  const details = [
-    item.at.slice(11, 16),
-    item.waterSnapshot?.name ?? item.waterSnapshot?.customName,
-    item.lengthCm !== undefined && de.map.lengthValue(item.lengthCm, item.lengthMethod === 'measured'),
-  ]
-    .filter(Boolean)
-    .join(' · ');
+function CatchCard({ item }: { item: Catch }) {
+  const species = speciesById(item.speciesId);
+  const outcome = de.map.outcomes[item.outcome];
+  const water = item.waterSnapshot?.name ?? item.waterSnapshot?.customName;
+  const place = item.waterSnapshot?.place;
+  const bait = item.bait?.name ?? (item.bait?.type ? de.catchForm.baitTypes[item.bait.type] : undefined);
+  const where = [water, place && place !== water ? place : undefined].filter(Boolean).join(' · ');
+  const when = [item.at.slice(11, 16), bait].filter(Boolean).join(' · ');
+  const length =
+    item.lengthCm !== undefined
+      ? de.map.lengthValue(item.lengthCm, item.lengthMethod === 'measured')
+      : undefined;
+  const photoId = item.photoIds?.[0];
   return (
     <li>
-      <Link to={`/fangbuch/${item.id}`} className={styles.row}>
-        <img src={markerDataUrl(`catch-${item.outcome}`)} width={28} height={28} alt="" aria-hidden="true" />
-        {item.photoIds?.[0] && <RowPhoto id={item.photoIds[0]} />}
-        <span className={styles.rowText}>
-          <span className={styles.rowTitle}>{catchTitle(item)}</span>
-          <span className="muted tabular">{details}</span>
+      <Link to={`/fangbuch/${item.id}`} className={styles.card}>
+        {photoId ? (
+          <CardPhoto id={photoId} />
+        ) : (
+          <span className={styles.cardBanner} aria-hidden="true">
+            <img src={markerDataUrl(`catch-${item.outcome}`)} width={32} height={32} alt="" />
+          </span>
+        )}
+        <span className={styles.cardBody}>
+          <span className={styles.cardHead}>
+            <span className={styles.cardTitle}>
+              {species && <span className={styles.cardKicker}>{outcome}</span>}
+              <span>{species ? species.de : outcome}</span>
+            </span>
+            {length && <span className={styles.lengthChip}>{length}</span>}
+          </span>
+          {where && <span className={styles.cardMeta}>{where}</span>}
+          <span className={styles.cardMeta}>{when}</span>
         </span>
-        <ChevronRightIcon />
       </Link>
     </li>
+  );
+}
+
+/** Kennzahlen über der Liste: gelandete Fische, größter Fisch, Gewässer */
+function Summary({ landed, biggestCm, waters }: CatchbookSummary) {
+  const s = t.summary;
+  const items = [
+    { label: s.landed, value: String(landed) },
+    { label: s.biggest, value: biggestCm !== undefined ? de.map.lengthValue(biggestCm, true) : s.none },
+    { label: s.waters, value: String(waters) },
+  ];
+  return (
+    <dl className={styles.summary} aria-label={t.summaryLabel}>
+      {items.map((i) => (
+        <div key={i.label} className={styles.summaryTile}>
+          <dd>{i.value}</dd>
+          <dt>{i.label}</dt>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -124,12 +176,20 @@ export function CatchesPage() {
     [list, selectedWater],
   );
   const groups = useMemo(() => groupByDay(inWater), [inWater]);
+  const summary = useMemo(() => catchbookSummary(active, waterGroups.length), [active, waterGroups]);
   const usedSpecies = useMemo(() => {
     const ids = new Set(active.map((c) => c.speciesId).filter(Boolean));
     return SPECIES.filter((s) => ids.has(s.id)).sort((a, b) => a.de.localeCompare(b.de, 'de'));
   }, [active]);
   const set = <K extends keyof CatchFilter>(k: K, v: CatchFilter[K]) => setFilter((f) => ({ ...f, [k]: v }));
   const filtered = JSON.stringify(filter) !== JSON.stringify(NO_FILTER);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  // Gewählte Filter (ohne Suchtext, der steht immer sichtbar im Feld)
+  const activeFilters =
+    (filter.outcome ? 1 : 0) +
+    (filter.period !== NO_FILTER.period ? 1 : 0) +
+    (filter.speciesId ? 1 : 0) +
+    (selectedWater ? 1 : 0);
 
   const toast = (undoId || restored) && (
     <Toast
@@ -189,16 +249,32 @@ export function CatchesPage() {
     <Page title={t.title}>
       <CatchbookTabs />
       <SessionsLink />
-      <WaterTabs groups={waterGroups} selected={selectedWater ? waterKey : ''} onSelect={setWaterKey} />
-      {selectedWater && <WaterHeader key={selectedWater.key} group={selectedWater} />}
-      <div className={styles.filters}>
-        <TextField
-          label={t.search}
-          type="search"
-          placeholder={t.searchPlaceholder}
-          value={filter.text}
-          onChange={(e) => set('text', e.target.value)}
-        />
+      <Summary {...summary} />
+      <div className={styles.searchRow}>
+        <span className={styles.searchField}>
+          <TextField
+            label={t.search}
+            hideLabel
+            type="search"
+            placeholder={t.searchPlaceholder}
+            value={filter.text}
+            onChange={(e) => set('text', e.target.value)}
+          />
+        </span>
+        <button
+          type="button"
+          className={styles.filterButton}
+          aria-expanded={filtersOpen}
+          aria-controls="catch-filters"
+          onClick={() => setFiltersOpen((v) => !v)}
+        >
+          <SlidersIcon size={20} aria-hidden="true" />
+          <span>{t.filters}</span>
+          {activeFilters > 0 && <span className={styles.filterCount}>{activeFilters}</span>}
+        </button>
+      </div>
+      <div id="catch-filters" className={styles.filterPanel} hidden={!filtersOpen}>
+        <WaterTabs groups={waterGroups} selected={selectedWater ? waterKey : ''} onSelect={setWaterKey} />
         <div className={styles.filterGrid}>
           <SelectField
             label={t.filterOutcome}
@@ -230,12 +306,11 @@ export function CatchesPage() {
             />
           )}
         </div>
-        <p className="muted" aria-live="polite">
-          {filtered || selectedWater
-            ? t.filteredCount(inWater.length, active.length)
-            : t.count(active.length)}
-        </p>
       </div>
+      {selectedWater && <WaterHeader key={selectedWater.key} group={selectedWater} />}
+      <p className="muted" aria-live="polite">
+        {filtered || selectedWater ? t.filteredCount(inWater.length, active.length) : t.count(active.length)}
+      </p>
 
       {groups.length === 0 ? (
         <EmptyState
@@ -261,9 +336,9 @@ export function CatchesPage() {
             <h2 id={`tag-${g.day}`} className={styles.dayTitle}>
               {dayLabel(g.day)}
             </h2>
-            <ul className={styles.rows}>
+            <ul className={styles.cards}>
               {g.items.map((c) => (
-                <CatchRow key={c.id} item={c} />
+                <CatchCard key={c.id} item={c} />
               ))}
             </ul>
           </section>

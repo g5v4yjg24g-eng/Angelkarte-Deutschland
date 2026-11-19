@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31',
+    title: 'Neues Fangbuch',
+    items: [
+      'Fangbuch: Jeder Eintrag ist jetzt eine Karte mit großem Foto, Fischart und Länge.',
+      'Kennzahlen: Über der Liste siehst du deine Fänge, den größten Fisch und die Zahl der Gewässer.',
+      'Filter: Die Suche bleibt oben, Gewässer, Ergebnis, Zeitraum und Fischart liegen hinter dem Knopf „Filter“.',
+    ],
+  },
+  {
     id: '2026-12-30',
     title: 'Ortssuche im Wetter',
     items: [

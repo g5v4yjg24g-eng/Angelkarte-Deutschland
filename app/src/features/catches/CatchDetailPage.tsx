@@ -63,7 +63,9 @@ export function CatchDetailPage() {
           onShowOnMap={
             item.position ? () => void navigate('/', { state: { focusCatch: item.id } }) : undefined
           }
-          onAssignWater={item.position ? () => void navigate('/', { state: { assignWater: item.id } }) : undefined}
+          onAssignWater={
+            item.position ? () => void navigate('/', { state: { assignWater: item.id } }) : undefined
+          }
         />
       </div>
       <div className={styles.actions}>

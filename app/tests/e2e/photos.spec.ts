@@ -128,7 +128,7 @@ test('CAT-2: Fang mit Foto komplett offline erfassen; nach Neustart vorhanden, F
     .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('link', { name: 'Fangbuch' })
     .click();
-  await page.getByRole('link', { name: /Fang · Hecht/ }).click();
+  await page.getByRole('link', { name: /Fang\s+Hecht/ }).click();
   await page.getByRole('button', { name: 'Foto 1 groß anzeigen' }).click();
   const big = page.getByRole('dialog', { name: 'Foto 1' });
   await expect(big.getByRole('img', { name: 'Foto 1' })).toBeVisible();

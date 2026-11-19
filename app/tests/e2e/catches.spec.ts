@@ -113,7 +113,7 @@ test('CAT-1/M5.3: Fang erfassen, im Fangbuch ansehen, bearbeiten, löschen und w
     .getByRole('link', { name: 'Fangbuch' })
     .click();
   await expect(page.getByText('1 Eintrag', { exact: true })).toBeVisible();
-  await page.getByRole('link', { name: /Fang · Zander/ }).click();
+  await page.getByRole('link', { name: /Fang\s+Zander/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Fang' })).toBeVisible();
   await page.getByRole('button', { name: 'Bearbeiten' }).click();
   await page.getByText('Mehr Details').click();
@@ -133,12 +133,12 @@ test('CAT-1/M5.3: Fang erfassen, im Fangbuch ansehen, bearbeiten, löschen und w
     .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('link', { name: 'Fangbuch' })
     .click();
-  await page.getByRole('link', { name: /Fang · Zander/ }).click();
+  await page.getByRole('link', { name: /Fang\s+Zander/ }).click();
   await page.getByRole('button', { name: 'Löschen' }).click();
   await expect(page.getByText('Eintrag gelöscht.')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Noch keine Einträge' })).toBeVisible();
   await page.getByRole('button', { name: 'Rückgängig' }).click();
-  await expect(page.getByRole('link', { name: /Fang · Zander/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Fang\s+Zander/ })).toBeVisible();
 
   // Köder taucht beim nächsten Fang als Schnellauswahl auf
   await page
@@ -219,7 +219,8 @@ test('„Fang erfassen" am Gewässer ordnet den See zu; Filter im Fangbuch', asy
 
   await page.goto('/fangbuch');
   await expect(page.getByText('2 Einträge', { exact: true })).toBeVisible();
-  // Reiter je Gewässer: Name und Ort; „Alle" ist Standard
+  // Reiter je Gewässer (im Filter-Bereich): Name und Ort; „Alle" ist Standard
+  await page.getByRole('button', { name: 'Filter' }).click();
   const tabs = page.getByRole('group', { name: 'Gewässer' });
   await expect(tabs.getByRole('button', { name: /^Alle/ })).toHaveAttribute('aria-pressed', 'true');
   const wittsee = tabs.getByRole('button', { name: /De Wittsee/ });
@@ -232,7 +233,7 @@ test('„Fang erfassen" am Gewässer ordnet den See zu; Filter im Fangbuch', asy
   await expect(page.getByRole('button', { name: 'Namen ändern' })).toHaveCount(0);
   // Unbekanntes Gewässer: eigener Name, gilt nur im Fangbuch
   await tabs.getByRole('button', { name: /Unbekanntes Gewässer/ }).click();
-  await expect(page.getByRole('link', { name: /Fang · Hecht/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Fang\s+Hecht/ })).toBeVisible();
   await page.getByRole('button', { name: 'Namen ändern' }).click();
   await page.getByLabel('Eigener Name (gilt nur im Fangbuch)').fill('Mein Platz am Wald');
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
@@ -245,7 +246,7 @@ test('„Fang erfassen" am Gewässer ordnet den See zu; Filter im Fangbuch', asy
   await page.getByLabel('Gewässer oder Ort suchen').fill('');
   await tabs.getByRole('button', { name: /^Alle/ }).click();
   await page.getByLabel('Suchen', { exact: true }).fill('hecht');
-  await expect(page.getByRole('link', { name: /Fang · Hecht/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Fang\s+Hecht/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /Fehlbiss/ })).toHaveCount(0);
   await page.getByLabel('Suchen', { exact: true }).fill('gibt es nicht');
   await expect(page.getByRole('heading', { name: 'Keine passenden Einträge' })).toBeVisible();
@@ -267,7 +268,7 @@ test('Ohne Netz erfassen: Eintrag wird gespeichert und erscheint im Fangbuch', a
     .getByRole('navigation', { name: 'Hauptnavigation' })
     .getByRole('link', { name: 'Fangbuch' })
     .click();
-  await expect(page.getByRole('link', { name: /Fang · Flussbarsch/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Fang\s+Flussbarsch/ })).toBeVisible();
 });
 
 test('Fang an einem gespeicherten Ort übernimmt Ort und Bezug', async ({ page }) => {
