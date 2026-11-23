@@ -374,6 +374,7 @@
         "de": "Moderlieschen",
         "sci": "Leucaspius delineatus"
       },
+      "speciesId": "belica",
       "basisId": "ThürFischAVO",
       "basisRef": "§ 1 Abs. 1"
     },
@@ -400,6 +401,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "basisId": "ThürFischAVO",
       "basisRef": "§ 1 Abs. 1"
     },
@@ -408,6 +410,7 @@
         "de": "Schneider",
         "sci": "Alburnoides bipunctatus"
       },
+      "speciesId": "spirlin",
       "basisId": "ThürFischAVO",
       "basisRef": "§ 1 Abs. 1"
     },
@@ -416,6 +419,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia"
       },
+      "speciesId": "spined_loach",
       "basisId": "ThürFischAVO",
       "basisRef": "§ 1 Abs. 1"
     },
@@ -424,6 +428,7 @@
         "de": "Stichling, Neunstachliger",
         "sci": "Pungitius pungitius"
       },
+      "speciesId": "ninespine_stickleback",
       "basisId": "ThürFischAVO",
       "basisRef": "§ 1 Abs. 1"
     },
@@ -440,6 +445,7 @@
         "de": "Westgroppe",
         "sci": "Cottus gobio"
       },
+      "speciesId": "bullhead",
       "basisId": "ThürFischAVO",
       "basisRef": "§ 1 Abs. 1"
     },
@@ -448,6 +454,7 @@
         "de": "Zährte",
         "sci": "Vimba vimba"
       },
+      "speciesId": "vimba",
       "basisId": "ThürFischAVO",
       "basisRef": "§ 1 Abs. 1"
     },

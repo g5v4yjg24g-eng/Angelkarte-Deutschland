@@ -229,6 +229,7 @@
         "de": "Zährte",
         "sci": "Vimba vimba"
       },
+      "speciesId": "vimba",
       "minCm": 30,
       "basisId": "FischO LSA",
       "basisRef": "§ 4 Abs. 1 Nr. 19"
@@ -266,6 +267,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus"
       },
+      "speciesId": "minnow",
       "basisId": "FischO LSA",
       "basisRef": "§ 2 Abs. 1 Nr. 4"
     },
@@ -274,6 +276,7 @@
         "de": "Finte",
         "sci": "Alosa fallax"
       },
+      "speciesId": "twaite_shad",
       "basisId": "FischO LSA",
       "basisRef": "§ 2 Abs. 1 Nr. 5"
     },
@@ -290,6 +293,7 @@
         "de": "Groppe",
         "sci": "Cottus gobio"
       },
+      "speciesId": "bullhead",
       "basisId": "FischO LSA",
       "basisRef": "§ 2 Abs. 1 Nr. 7"
     },
@@ -307,6 +311,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa"
       },
+      "speciesId": "allis_shad",
       "basisId": "FischO LSA",
       "basisRef": "§ 2 Abs. 1 Nr. 10"
     },
@@ -332,6 +337,7 @@
         "de": "Moderlieschen",
         "sci": "Leucaspius delineatus"
       },
+      "speciesId": "belica",
       "basisId": "FischO LSA",
       "basisRef": "§ 2 Abs. 1 Nr. 13"
     },
@@ -349,6 +355,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "basisId": "FischO LSA",
       "basisRef": "§ 2 Abs. 1 Nr. 16"
     },
@@ -357,6 +364,7 @@
         "de": "Schmerle",
         "sci": "Barbatula barbatula"
       },
+      "speciesId": "stone_loach",
       "basisId": "FischO LSA",
       "basisRef": "§ 2 Abs. 1 Nr. 17"
     },
@@ -365,6 +373,7 @@
         "de": "Schneider",
         "sci": "Alburnoides bipunctatus"
       },
+      "speciesId": "spirlin",
       "basisId": "FischO LSA",
       "basisRef": "§ 2 Abs. 1 Nr. 18"
     },
@@ -373,6 +382,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis spec."
       },
+      "speciesId": "spined_loach",
       "basisId": "FischO LSA",
       "basisRef": "§ 2 Abs. 1 Nr. 19"
     },

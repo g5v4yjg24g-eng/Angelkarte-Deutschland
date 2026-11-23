@@ -128,6 +128,7 @@
         "de": "Moderlieschen",
         "sci": "Leucaspius delineatus (HECKEL, 1843)"
       },
+      "speciesId": "belica",
       "basisId": "HFischV",
       "basisRef": "§ 2 Abs. 1",
       "from": {
@@ -333,6 +334,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus (LINNAEUS, 1758)"
       },
+      "speciesId": "minnow",
       "basisId": "HFischV",
       "basisRef": "§ 1"
     },
@@ -341,6 +343,7 @@
         "de": "Flunder",
         "sci": "Platichthys flesus (LINNAEUS, 1758)"
       },
+      "speciesId": "flounder",
       "basisId": "HFischV",
       "basisRef": "§ 1"
     },
@@ -358,6 +361,7 @@
         "de": "Koppe (Groppe), alle heimischen Arten",
         "sci": "Cottus spp."
       },
+      "speciesId": "bullhead",
       "basisId": "HFischV",
       "basisRef": "§ 1"
     },
@@ -366,6 +370,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa (LINNAEUS, 1758)"
       },
+      "speciesId": "allis_shad",
       "basisId": "HFischV",
       "basisRef": "§ 1"
     },
@@ -391,6 +396,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis (LINNAEUS, 1758)"
       },
+      "speciesId": "weatherfish",
       "basisId": "HFischV",
       "basisRef": "§ 1"
     },
@@ -399,6 +405,7 @@
         "de": "Schneider",
         "sci": "Alburnoides bipunctatus (BLOCH, 1782)"
       },
+      "speciesId": "spirlin",
       "basisId": "HFischV",
       "basisRef": "§ 1"
     },
@@ -407,6 +414,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia (LINNAEUS, 1758) und natürliche Hybriden dieser Art"
       },
+      "speciesId": "spined_loach",
       "basisId": "HFischV",
       "basisRef": "§ 1"
     },
@@ -423,6 +431,7 @@
         "de": "Zährte",
         "sci": "Vimba vimba (LINNAEUS, 1758)"
       },
+      "speciesId": "vimba",
       "basisId": "HFischV",
       "basisRef": "§ 1"
     },
@@ -431,6 +440,7 @@
         "de": "Zwergstichling",
         "sci": "Pungitius pungitius (LINNAEUS, 1758)"
       },
+      "speciesId": "ninespine_stickleback",
       "basisId": "HFischV",
       "basisRef": "§ 1"
     },

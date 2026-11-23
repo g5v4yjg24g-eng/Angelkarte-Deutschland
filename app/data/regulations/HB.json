@@ -249,6 +249,7 @@
         "de": "Flunder",
         "sci": "Platichthys flesus"
       },
+      "speciesId": "flounder",
       "minCm": 25,
       "basisId": "BremBiFischVO",
       "basisRef": "§ 3 Abs. 2 Nr. 5"
@@ -324,6 +325,7 @@
         "de": "Finte",
         "sci": "Alosa fallax"
       },
+      "speciesId": "twaite_shad",
       "basisId": "BremBiFischVO",
       "basisRef": "§ 2 Nr. 4"
     },
@@ -332,6 +334,7 @@
         "de": "Groppe",
         "sci": "Cottus gobio"
       },
+      "speciesId": "bullhead",
       "basisId": "BremBiFischVO",
       "basisRef": "§ 2 Nr. 5"
     },
@@ -340,6 +343,7 @@
         "de": "Maifisch (Alse)",
         "sci": "Alosa alosa"
       },
+      "speciesId": "allis_shad",
       "basisId": "BremBiFischVO",
       "basisRef": "§ 2 Nr. 6"
     },
@@ -364,6 +368,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "basisId": "BremBiFischVO",
       "basisRef": "§ 2 Nr. 9"
     },
@@ -372,6 +377,7 @@
         "de": "Schmerle",
         "sci": "Barbatula barbatula"
       },
+      "speciesId": "stone_loach",
       "basisId": "BremBiFischVO",
       "basisRef": "§ 2 Nr. 10"
     },
@@ -380,6 +386,7 @@
         "de": "Schneider",
         "sci": "Alburnoides bipunctatus"
       },
+      "speciesId": "spirlin",
       "basisId": "BremBiFischVO",
       "basisRef": "§ 2 Nr. 11"
     },
@@ -388,6 +395,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia"
       },
+      "speciesId": "spined_loach",
       "basisId": "BremBiFischVO",
       "basisRef": "§ 2 Nr. 12"
     },
@@ -404,6 +412,7 @@
         "de": "Zährte",
         "sci": "Vimba vimba"
       },
+      "speciesId": "vimba",
       "basisId": "BremBiFischVO",
       "basisRef": "§ 2 Nr. 14"
     },
