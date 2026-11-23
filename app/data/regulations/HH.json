@@ -1,9 +1,11 @@
 {
   "stateCode": "HH",
   "status": "partial",
-  "missing": ["HmbFAnGDVO: Schon- und Sperrgebiete (§ 9)", "HmbFAnGDVO: Ausnahmen (§ 10)"],
-  "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Quelle HmbFAnG mit Gesamtausgabe abgeglichen (Claude), gegengeprüft vom Nutzer am 2026-10-22",
+  "missing": [
+    "Änderungen der HmbFAnGDVO nach der Gesamtausgabe vom 25.09.2023 nicht geprüft (Portal gesperrt; die abrufbare PDF-Fassung stammt von diesem Stand)"
+  ],
+  "checkedAt": "2026-11-23",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Quelle HmbFAnG mit Gesamtausgabe abgeglichen (Claude), gegengeprüft vom Nutzer am 2026-10-22; § 9 und § 10 HmbFAnGDVO aus dem amtlichen PDF (dokumente.hamburg.de) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft",
   "legalBasis": [
     {
       "id": "HmbFAnGDVO",
@@ -495,6 +497,24 @@
       "text": "Bei geführten Angeltouren oder Veranstaltungen von Ausbildungsvereinen an ihren eigenen oder Pachtgewässern besteht keine Fischereischeinpflicht, sofern bis zu drei Teilnehmende ohne Fischereischein von mindestens einer Person mit Fischereischein unmittelbar betreut werden und eine Ausbilderin oder ein Ausbilder anwesend ist.",
       "basisId": "HmbFAnG",
       "basisRef": "§ 9 Abs. 5"
+    },
+    {
+      "topic": "Ganzjähriges Fangverbot (Schongebiete)",
+      "text": "In folgenden Gewässern ist der Fischfang ganzjährig verboten: Kleine Alster; Binnenalster vom Alsterpavillon über den Anleger Jungfernstieg, die Reesendammbrücke bis zum nördlichen Ende der Ballindammpromenade; Eppendorfer Mühlenteich mit Unterlauf der Tarpenbek bis einschließlich Rosenbrookbrücke; Stadtparksee mit Zulauf vom Goldbekkanal; Dove-Elbe oberhalb Neuengammer Stichkanal einschließlich Schlenze; Gose-Elbe oberhalb der Brücke Alte Twiete einschließlich Gose-Elbe-Graben; Südlicher Kirchwerder Sammelgraben vom Sandbrack bis zur Brücke Kirchenheerweg; Seevekanal von Kanzlershof bis Karnappwehr; Moorwettern von der Landesgrenze bis zum Schöpfwerk Hohenwisch einschließlich der Nebengewässer bis zur Bahnlinie Harburg - Neugraben sowie Moorburger Landscheide bis zum Bahndamm; Mühlenberger Loch innerhalb der in der Naturschutzkarte der Verordnung über das Naturschutzgebiet Mühlenberger Loch/Neßsand dargestellten Teilfläche des Europäischen Vogelschutzgebietes; die nach § 3 Absätze 1 und 2 des Gesetzes über den Nationalpark Hamburgisches Wattenmeer geschützten Bereiche.",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 9 Abs. 1"
+    },
+    {
+      "topic": "Ganzjähriges Fangverbot (Laich- und Aufwuchsgebiete)",
+      "text": "Zum Schutz von Laich- und Aufwuchsgebieten ist der Fischfang ganzjährig verboten in: Kampbille zwischen Bille und Schleusengraben; Bille zwischen Sander Damm und Rückhaltebecken an der Stadtteilschule; Bornmühlenbach; Schleemer Bach einschließlich seiner Zuflüsse; Wandse oberhalb der Stein-Hardenberg-Straße einschließlich ihrer Zuflüsse; Rahlau einschließlich ihrer Zuflüsse; Berner Au einschließlich ihrer Zuflüsse; Osterbek oberhalb Osterbekkanal einschließlich ihrer Zuflüsse; sämtliche Alsterzuflüsse oberhalb der Winterhuder Brücke; Luruper Moorgraben einschließlich seiner Zuflüsse; Düpenau bis zur Mündung in den Helmuth-Schack-See; Wedeler Au einschließlich ihrer Zuflüsse; Flottbek; Kleine Flottbek; Engelbek.",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 9 Abs. 2"
+    },
+    {
+      "topic": "Ausnahmen",
+      "text": "Die zuständige Behörde kann von den Beschränkungen der §§ 6 bis 9 Ausnahmen zulassen, soweit dies für wissenschaftliche Zwecke, zur nachhaltigen Bewirtschaftung eines Fischgewässers, für Hegemaßnahmen (insbesondere zur Gewinnung von Fischlaich, Fischbrut oder Satzfisch), zum Schutz der Fische, aufgrund einer gesetzlichen Verpflichtung oder behördlichen Überwachungsaufgabe, zur Umsiedlung oder im Zuge von Maßnahmen gegen invasive gebietsfremde Arten erforderlich ist. Für bestimmte Gewässer kann die Inhaberin oder der Inhaber des Fischereirechts bei der zuständigen Behörde eine Ausnahme von den Regelungen zum Entnahmefenster des § 7 beantragen.",
+      "basisId": "HmbFAnGDVO",
+      "basisRef": "§ 10 Abs. 1 und 2"
     }
   ]
 }
