@@ -2,7 +2,6 @@
   "stateCode": "HE",
   "status": "partial",
   "missing": [
-    "Hessische Fischereiverordnung: Es liegt nur die Erstfassung vom 14.04.2023 vor. Ob es spätere Änderungen gibt, ist amtlich nicht ausgeschlossen (Landesrechtsportal gesperrt; im Netz keine Änderung gefunden)",
     "Atlantische Forelle (§ 2 Abs. 1, Bachforellen, Meerforellen, Seeforellen): Regel ist keiner einzelnen Fangbuch-Art zugeordnet, die Prüfung beim Fang schweigt dazu"
   ],
   "checkedAt": "2026-11-23",
@@ -11,7 +10,7 @@
     {
       "id": "HFischV",
       "title": "Hessische Fischereiverordnung",
-      "version": "vom 14. April 2023, verkündet im GVBl. 2023 Nr. 15 vom 28. April 2023 (Erstfassung; am 2026-11-23 erneut als PDF vom Nutzer bereitgestellt und mit den erfassten Regeln abgeglichen, unverändert; spätere Änderungen sind nicht bekannt, aber nicht amtlich ausgeschlossen)",
+      "version": "vom 14. April 2023 (GVBl. 2023 S. 318), Text der Erstfassung (GVBl. 2023 Nr. 15 vom 28. April 2023); einzige Änderung seither: Artikel 37 des Ersten Bürokratieabbaugesetzes vom 16. Dezember 2025 (GVBl. 2025 Nr. 110) – betrifft nur § 18 Abs. 3 Satz 2 und 3 (Fischereiaufsicht, aufgehoben) und § 34 Abs. 1 („Einvernehmen“ → „Benehmen“), nicht die erfassten Regeln; Stand der Gesamtausgabe laut Deckblatt vom Nutzer, am 2026-11-23 abgeglichen",
       "url": "https://starweb.hessen.de/cache/GVBL/2023/00015.pdf",
       "retrievedAt": "2026-11-23"
     },
