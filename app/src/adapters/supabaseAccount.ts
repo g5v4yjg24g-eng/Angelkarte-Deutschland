@@ -73,6 +73,7 @@ const fail = (
 };
 
 const POST_BUCKET = 'post-photos';
+const BACKUP_BUCKET = 'backups';
 /** Gültigkeit der Foto-Adressen: nach „Nur ich“ ist ein Bild höchstens so lange über eine alte Adresse abrufbar */
 const PHOTO_URL_SECONDS = 600;
 
@@ -366,6 +367,58 @@ export function supabaseAccount(
       // Gegenprobe: Ist das Foto für den Eigentümer abrufbar?
       const { error: checkError } = await c.storage.from(POST_BUCKET).createSignedUrl(paths[0] ?? '', 60);
       if (checkError) fail(checkError);
+    },
+    async backupPut(items) {
+      const { data, error } = await (await get()).rpc('backup_put', { items });
+      if (error) fail(error);
+      return ((data ?? []) as { kind: string; item_id: string; rev: number | string }[]).map((r) => ({
+        kind: r.kind,
+        itemId: r.item_id,
+        rev: Number(r.rev),
+      }));
+    },
+    async backupList(since, max = 500) {
+      const { data, error } = await (await get()).rpc('backup_list', { since, max_rows: max });
+      if (error) fail(error);
+      // rev und Größen kommen als bigint, ggf. als Text: in Zahlen umwandeln
+      return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+        ...r,
+        rev: Number(r['rev']),
+        file_bytes: Number(r['file_bytes'] ?? 0),
+      }));
+    },
+    async backupUsage() {
+      const { data, error } = await (await get()).rpc('backup_usage');
+      if (error) fail(error);
+      const r = (Array.isArray(data) ? data[0] : data) as Record<string, unknown> | undefined;
+      if (!r) return undefined;
+      return {
+        itemCount: Number(r['item_count']),
+        fileBytes: Number(r['file_bytes']),
+        dataBytes: Number(r['data_bytes']),
+        limitBytes: Number(r['limit_bytes']),
+        lastRev: Number(r['last_rev']),
+      };
+    },
+    async backupDeleteAll() {
+      const { data, error } = await (await get()).rpc('backup_delete_all');
+      if (error) fail(error);
+      return ((data ?? []) as unknown[]).filter((p): p is string => typeof p === 'string');
+    },
+    async backupUploadFile(path, blob, contentType) {
+      const { error } = await (await get()).storage
+        .from(BACKUP_BUCKET)
+        .upload(path, blob, { contentType, upsert: true });
+      if (error) fail(error);
+    },
+    async backupDownloadFile(ref, path) {
+      const { data, error } = await (await get()).storage.from(ref === 'backups' ? BACKUP_BUCKET : POST_BUCKET).download(path);
+      return error || !data ? undefined : data;
+    },
+    async backupRemoveFiles(paths) {
+      if (!paths.length) return;
+      const { error } = await (await get()).storage.from(BACKUP_BUCKET).remove(paths);
+      if (error) fail(error);
     },
     async downloadPostPhotos(paths) {
       const c = await get();

@@ -9,6 +9,7 @@ import { BackupReminder } from '../features/backup/BackupReminder';
 import { SessionChip } from '../features/sessions/SessionChip';
 import { WeatherSync } from '../features/weather/WeatherSync';
 import { PostSync } from '../features/sharing/PostSync';
+import { CloudBackupSync } from '../features/backup/CloudBackupSync';
 import { AvatarSync } from '../features/profile/AvatarSync';
 import { ProfileExtrasSync } from '../features/profile/ProfileExtrasSync';
 import { AppLinkHandler } from '../features/links/AppLinkHandler';
@@ -70,6 +71,7 @@ export function RootLayout() {
       <UpdatePrompt />
       <WeatherSync />
       <PostSync />
+      <CloudBackupSync />
       <AvatarSync />
       <ProfileExtrasSync />
       <AppLinkHandler />

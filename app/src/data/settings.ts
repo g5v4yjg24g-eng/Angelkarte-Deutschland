@@ -1,3 +1,4 @@
+import type { CloudDeviceState } from '../domain/cloudBackup';
 import { getDb, type FangpunktDB } from './db';
 
 /** Typisierte Einstellungen (DATA_MODEL §5.6). */
@@ -27,6 +28,8 @@ export interface Settings {
   lastSeenChangelog: string;
   /** Stand der Anleitung (GUIDE_VERSION), den die Person schon gesehen oder übersprungen hat */
   guideSeen: number;
+  /** Cloud-Sicherung je Konto-ID: Zustimmung, Stand dieses Geräts (nicht Teil der Sicherung) */
+  cloudBackup: Record<string, CloudDeviceState>;
 }
 
 export async function getSetting<K extends keyof Settings>(
