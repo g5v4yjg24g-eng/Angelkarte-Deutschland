@@ -7,7 +7,7 @@ import { formatDateTime } from '../../lib/storage';
 import { FounderBadge } from '../badges/FounderBadge';
 import { markerDataUrl, type MarkerKind } from '../map/markerIcons';
 import { SafetyMenu } from '../moderation/SafetyMenu';
-import { EntryHead, EntryTiles, NoteCard } from '../map/EntryView';
+import { EntryHead, EntryTiles, NoteCard, RouteButton } from '../map/EntryView';
 import styles from './Spots.module.css';
 import spotStyles from './Spots.module.css';
 
@@ -115,6 +115,7 @@ export function SharedSpotSheetBody({ spot }: { spot: SharedSpot }) {
     <div className={spotStyles.sheetBody}>
       <EntryTiles position={{ lat: spot.lat, lng: spot.lng }} />
       {spot.note && <NoteCard>{spot.note}</NoteCard>}
+      <RouteButton position={{ lat: spot.lat, lng: spot.lng }} />
       <p className="muted">{t.sharedOn(formatDateTime(spot.updatedAt))}</p>
     </div>
   );
