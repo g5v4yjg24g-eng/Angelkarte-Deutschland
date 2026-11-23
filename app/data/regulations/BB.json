@@ -165,6 +165,7 @@
         "de": "Seeforelle",
         "sci": "Salmo trutta f.lacustris"
       },
+      "speciesId": "lake_trout",
       "scope": "als Satzfisch eingebracht",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)",
@@ -200,6 +201,7 @@
         "de": "Zope",
         "sci": "Abramis ballerus"
       },
+      "speciesId": "blue_bream",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)",
       "from": {
@@ -370,6 +372,7 @@
         "de": "Seeforelle",
         "sci": "Salmo trutta f.lacustris"
       },
+      "speciesId": "lake_trout",
       "scope": "als Satzfisch eingebracht",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)",
@@ -391,6 +394,7 @@
         "de": "Zope",
         "sci": "Abramis ballerus"
       },
+      "speciesId": "blue_bream",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)",
       "minCm": 20
@@ -418,6 +422,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus"
       },
+      "speciesId": "minnow",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -426,6 +431,7 @@
         "de": "Finte",
         "sci": "Alosa fallax"
       },
+      "speciesId": "twaite_shad",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -459,6 +465,7 @@
         "de": "Groppe",
         "sci": "Cottus spec."
       },
+      "speciesId": "bullhead",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -476,6 +483,7 @@
         "de": "Kleiner Stichling",
         "sci": "Pungitius pungitius"
       },
+      "speciesId": "ninespine_stickleback",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -493,6 +501,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa"
       },
+      "speciesId": "allis_shad",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -518,6 +527,7 @@
         "de": "Moderlieschen",
         "sci": "Leucaspius delineatus"
       },
+      "speciesId": "belica",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -543,6 +553,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -551,6 +562,7 @@
         "de": "Schmerle",
         "sci": "Barbatula barbatula"
       },
+      "speciesId": "stone_loach",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -559,6 +571,7 @@
         "de": "Schneider",
         "sci": "Alburnoides bipunctatus"
       },
+      "speciesId": "spirlin",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -567,6 +580,7 @@
         "de": "Seeforelle",
         "sci": "Salmo trutta f. lacustris"
       },
+      "speciesId": "lake_trout",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -575,6 +589,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis spec."
       },
+      "speciesId": "spined_loach",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -583,6 +598,7 @@
         "de": "Stint",
         "sci": "Osmerus eperlanus"
       },
+      "speciesId": "smelt",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
@@ -607,6 +623,7 @@
         "de": "Zährte",
         "sci": "Vimba vimba"
       },
+      "speciesId": "vimba",
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },

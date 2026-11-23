@@ -251,6 +251,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus"
       },
+      "speciesId": "minnow",
       "note": "darf nicht gezielt befischt und getötet werden",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 6 Abs. 1"
@@ -260,6 +261,7 @@
         "de": "Finte",
         "sci": "Alosa fallax"
       },
+      "speciesId": "twaite_shad",
       "note": "darf nicht gezielt befischt und getötet werden",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 6 Abs. 1"
@@ -278,6 +280,7 @@
         "de": "Groppe",
         "sci": "Cottus gobio"
       },
+      "speciesId": "bullhead",
       "note": "darf nicht gezielt befischt und getötet werden",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 6 Abs. 1"
@@ -307,6 +310,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa"
       },
+      "speciesId": "allis_shad",
       "note": "darf nicht gezielt befischt und getötet werden",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 6 Abs. 1"
@@ -325,6 +329,7 @@
         "de": "Moderlieschen",
         "sci": "Leucaspius delineatus"
       },
+      "speciesId": "belica",
       "note": "darf nicht gezielt befischt und getötet werden",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 6 Abs. 1"
@@ -334,6 +339,7 @@
         "de": "Neunstachliger Stichling",
         "sci": "Pungitius pungitius"
       },
+      "speciesId": "ninespine_stickleback",
       "note": "darf nicht gezielt befischt und getötet werden",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 6 Abs. 1"
@@ -343,6 +349,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "note": "darf nicht gezielt befischt und getötet werden",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 6 Abs. 1"
@@ -352,6 +359,7 @@
         "de": "Schmerle",
         "sci": "Noemacheilus barbatulus"
       },
+      "speciesId": "stone_loach",
       "note": "darf nicht gezielt befischt und getötet werden",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 6 Abs. 1"
@@ -379,6 +387,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia"
       },
+      "speciesId": "spined_loach",
       "note": "darf nicht gezielt befischt und getötet werden",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 6 Abs. 1"
@@ -406,6 +415,7 @@
         "de": "Zährte",
         "sci": "Vimba vimba"
       },
+      "speciesId": "vimba",
       "note": "darf nicht gezielt befischt und getötet werden",
       "basisId": "HmbFAnGDVO",
       "basisRef": "§ 6 Abs. 1"

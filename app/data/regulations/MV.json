@@ -72,6 +72,7 @@
         "de": "Bachschmerle",
         "sci": "Noemacheilus barbatulus"
       },
+      "speciesId": "stone_loach",
       "from": {
         "month": 3,
         "day": 1
@@ -123,6 +124,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus"
       },
+      "speciesId": "minnow",
       "from": {
         "month": 4,
         "day": 1
@@ -229,6 +231,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "from": {
         "month": 4,
         "day": 1
@@ -246,6 +249,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia"
       },
+      "speciesId": "spined_loach",
       "from": {
         "month": 4,
         "day": 1
@@ -281,6 +285,7 @@
         "de": "Zährte",
         "sci": "Vimba vimba"
       },
+      "speciesId": "vimba",
       "from": {
         "month": 5,
         "day": 1
@@ -298,6 +303,7 @@
         "de": "Zope",
         "sci": "Abramis ballerus"
       },
+      "speciesId": "blue_bream",
       "from": {
         "month": 4,
         "day": 1
@@ -638,6 +644,7 @@
         "de": "Flunder",
         "sci": "Platichthys flesus"
       },
+      "speciesId": "flounder",
       "minCm": 25,
       "scope": "Küstengewässer",
       "basisId": "KüFVO M-V",
@@ -648,6 +655,7 @@
         "de": "Glattbutt",
         "sci": "Scophthalmus rhombus"
       },
+      "speciesId": "brill",
       "minCm": 30,
       "scope": "Küstengewässer",
       "basisId": "KüFVO M-V",
@@ -669,6 +677,7 @@
         "de": "Kliesche",
         "sci": "Limanda limanda"
       },
+      "speciesId": "dab",
       "minCm": 25,
       "scope": "Küstengewässer",
       "basisId": "KüFVO M-V",
@@ -722,6 +731,7 @@
         "de": "Scholle",
         "sci": "Pleuronectes platessa"
       },
+      "speciesId": "plaice",
       "minCm": 25,
       "scope": "Küstengewässer",
       "basisId": "KüFVO M-V",
@@ -732,6 +742,7 @@
         "de": "Steinbutt",
         "sci": "Scophthalmus maximus"
       },
+      "speciesId": "turbot",
       "minCm": 30,
       "scope": "Küstengewässer",
       "basisId": "KüFVO M-V",
@@ -850,6 +861,7 @@
         "de": "Finte",
         "sci": "Alosa fallax"
       },
+      "speciesId": "twaite_shad",
       "scope": "Binnengewässer",
       "basisId": "BiFVO M-V",
       "basisRef": "§ 3 Nr. 4"
@@ -868,6 +880,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa"
       },
+      "speciesId": "allis_shad",
       "scope": "Binnengewässer",
       "basisId": "BiFVO M-V",
       "basisRef": "§ 3 Nr. 6"
@@ -941,6 +954,7 @@
         "de": "Finte",
         "sci": "Alosa fallax"
       },
+      "speciesId": "twaite_shad",
       "scope": "Küstengewässer",
       "basisId": "KüFVO M-V",
       "basisRef": "§ 3 Nr. 1"
@@ -959,6 +973,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa"
       },
+      "speciesId": "allis_shad",
       "scope": "Küstengewässer",
       "basisId": "KüFVO M-V",
       "basisRef": "§ 3 Nr. 3"
@@ -995,6 +1010,7 @@
         "de": "Zährte",
         "sci": "Vimba vimba"
       },
+      "speciesId": "vimba",
       "scope": "Küstengewässer",
       "basisId": "KüFVO M-V",
       "basisRef": "§ 3 Nr. 7"

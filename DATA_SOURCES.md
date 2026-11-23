@@ -80,7 +80,7 @@ Open-Meteo Geocoding (`geocoding-api.open-meteo.com/v1/search`, Parameter `name`
 
 ## 4. Fischarten je Gewässer
 
-> Artenliste der App (`app/src/domain/species.ts`): 2026-11-19 um 43 Süßwasser- und Meeresarten auf 79 Einträge erweitert (Wunsch Nutzer). Deutsche und wissenschaftliche Namen **[A]** noch nicht gegen das GBIF-Backbone geprüft. Zu den neuen Arten gibt es keine Rechtsdaten, die Rechts-Warnung beim Fang bleibt dort still.
+> Artenliste der App (`app/src/domain/species.ts`): 2026-11-19 um 43 Süßwasser- und Meeresarten auf 79 Einträge erweitert (Wunsch Nutzer). Deutsche und wissenschaftliche Namen **[A]** noch nicht gegen das GBIF-Backbone geprüft. Rechtsdaten (2026-11-23): 178 bereits erfasste Regeln der 16 Länder wurden mit den neuen Arten verknüpft (`speciesId`), und zwar nur dort, wo der wissenschaftliche Name im amtlichen Text eindeutig zur Art passt (Seeforelle, Huchen, Sterlet, Elritze, Schneider, Moderlieschen, Zährte, Zope, Zobel, Schmerle, Steinbeißer, Schlammpeitzger, Groppe, Stichlinge, Stint, Maifisch, Finte, Dorsch, Flunder, Scholle, Kliesche, Steinbutt, Glattbutt). Der Rechtsinhalt selbst ist unverändert. Bewusst **nicht** verknüpft: Stör (Gattung, Regeln meinen meist nur den Europäischen Stör), Regeln mit mehreren Arten in einem Eintrag (z. B. „Alosa spec.“, „alle Arten der Familie Acipenseridae“), Unterarten wie Binnenstint, Cottus rhenanus/poecilopus sowie Maräne/Renke und Seesaibling. Zu den übrigen neuen Arten gibt es keine Landesregeln, die Rechts-Warnung bleibt dort still.
 
 | Quelle | Inhalt | Lizenz | Bewertung |
 |---|---|---|---|

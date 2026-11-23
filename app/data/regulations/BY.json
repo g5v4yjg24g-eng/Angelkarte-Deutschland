@@ -95,6 +95,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus"
       },
+      "speciesId": "minnow",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.34",
       "from": {
@@ -145,6 +146,7 @@
         "de": "Huchen",
         "sci": "Hucho hucho"
       },
+      "speciesId": "huchen",
       "scope": "nur Flussgebietseinheit Donau",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.37",
@@ -162,6 +164,7 @@
         "de": "Koppe",
         "sci": "Cottus gobio"
       },
+      "speciesId": "bullhead",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.39",
       "from": {
@@ -297,6 +300,7 @@
         "de": "Seeforelle",
         "sci": "Salmo trutta forma lacustris"
       },
+      "speciesId": "lake_trout",
       "scope": "nur Flussgebietseinheit Donau, Rhein",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.48",
@@ -418,6 +422,7 @@
         "de": "Huchen",
         "sci": "Hucho hucho"
       },
+      "speciesId": "huchen",
       "scope": "nur Flussgebietseinheit Donau",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.37",
@@ -508,6 +513,7 @@
         "de": "Seeforelle",
         "sci": "Salmo trutta forma lacustris"
       },
+      "speciesId": "lake_trout",
       "scope": "nur Flussgebietseinheit Donau, Rhein",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.48",
@@ -684,6 +690,7 @@
         "de": "Europäischer Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.11 (ganzjährige Schonzeit)"
     },
@@ -710,6 +717,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa"
       },
+      "speciesId": "allis_shad",
       "scope": "nur Flussgebietseinheit Elbe, Rhein, Weser",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.14 (ganzjährige Schonzeit)"
@@ -729,6 +737,7 @@
         "de": "Neunstachliger Stichling",
         "sci": "Pungitius pungitius"
       },
+      "speciesId": "ninespine_stickleback",
       "scope": "nur Flussgebietseinheit Elbe, Rhein, Weser",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.16 (ganzjährige Schonzeit)"
@@ -756,6 +765,7 @@
         "de": "Schneider",
         "sci": "Alburnoides bipunctatus"
       },
+      "speciesId": "spirlin",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.19 (ganzjährige Schonzeit)"
     },
@@ -773,6 +783,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia"
       },
+      "speciesId": "spined_loach",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.21 (ganzjährige Schonzeit)"
     },
@@ -790,6 +801,7 @@
         "de": "Sterlet",
         "sci": "Acipenser ruthenus"
       },
+      "speciesId": "sterlet",
       "scope": "nur Flussgebietseinheit Donau",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.23 (ganzjährige Schonzeit)"
@@ -835,6 +847,7 @@
         "de": "Zobel",
         "sci": "Ballerus sapa"
       },
+      "speciesId": "white_eyed_bream",
       "scope": "nur Flussgebietseinheit Donau",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.28 (ganzjährige Schonzeit)"
@@ -844,6 +857,7 @@
         "de": "Zope",
         "sci": "Ballerus ballerus"
       },
+      "speciesId": "blue_bream",
       "scope": "nur Flussgebietseinheit Donau",
       "basisId": "AVBayFiG",
       "basisRef": "Anlage Nr. 2.29 (ganzjährige Schonzeit)"

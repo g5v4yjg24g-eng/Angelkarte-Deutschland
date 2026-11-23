@@ -26,6 +26,7 @@
         "de": "Seeforelle",
         "sci": "Salmo trutta f. lacustris L"
       },
+      "speciesId": "lake_trout",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 1",
       "from": {
@@ -110,6 +111,7 @@
         "de": "Huchen",
         "sci": "Hucho hucho L"
       },
+      "speciesId": "huchen",
       "scope": "gilt nur in der Donau und ihrem Gewässersystem",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 1",
@@ -420,6 +422,7 @@
         "de": "Seeforelle",
         "sci": "Salmo trutta f. lacustris L"
       },
+      "speciesId": "lake_trout",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 1",
       "minCm": 50
@@ -459,6 +462,7 @@
         "de": "Huchen",
         "sci": "Hucho hucho L"
       },
+      "speciesId": "huchen",
       "scope": "gilt nur in der Donau und ihrem Gewässersystem",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 1",
@@ -685,6 +689,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa Cuvier"
       },
+      "speciesId": "allis_shad",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 2"
     },
@@ -693,6 +698,7 @@
         "de": "Finte",
         "sci": "Alosa fallax Lacépède"
       },
+      "speciesId": "twaite_shad",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 2"
     },
@@ -717,6 +723,7 @@
         "de": "Schneider",
         "sci": "Alburnoides bipunctatus Bloch"
       },
+      "speciesId": "spirlin",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 2"
     },
@@ -725,6 +732,7 @@
         "de": "Zährte",
         "sci": "Vimba vimba L."
       },
+      "speciesId": "vimba",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 2"
     },
@@ -741,6 +749,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis L."
       },
+      "speciesId": "weatherfish",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 2"
     },
@@ -749,6 +758,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia L."
       },
+      "speciesId": "spined_loach",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 2"
     },
@@ -781,6 +791,7 @@
         "de": "Groppe",
         "sci": "Cottus gobio L."
       },
+      "speciesId": "bullhead",
       "basisId": "LFischVO",
       "basisRef": "§ 1 Abs. 2"
     },

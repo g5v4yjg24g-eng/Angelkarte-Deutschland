@@ -328,6 +328,7 @@
         "de": "Bachschmerle",
         "sci": "Noemacheilus barbatulus"
       },
+      "speciesId": "stone_loach",
       "basisId": "BiFischO",
       "basisRef": "§ 2 Abs. 1"
     },
@@ -344,6 +345,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus"
       },
+      "speciesId": "minnow",
       "basisId": "BiFischO",
       "basisRef": "§ 2 Abs. 1"
     },
@@ -360,6 +362,7 @@
         "de": "Groppe (Koppe, Mühlkoppe)",
         "sci": "Cottus gobio"
       },
+      "speciesId": "bullhead",
       "basisId": "BiFischO",
       "basisRef": "§ 2 Abs. 1"
     },
@@ -416,6 +419,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "basisId": "BiFischO",
       "basisRef": "§ 2 Abs. 1"
     },
@@ -424,6 +428,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia"
       },
+      "speciesId": "spined_loach",
       "basisId": "BiFischO",
       "basisRef": "§ 2 Abs. 1"
     },

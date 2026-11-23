@@ -231,6 +231,7 @@
         "de": "Dorsch",
         "sci": "Gadus morhua"
       },
+      "speciesId": "cod",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)",
       "minCm": 35
@@ -240,6 +241,7 @@
         "de": "Finte",
         "sci": "Alosa fallax"
       },
+      "speciesId": "twaite_shad",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)",
       "minCm": 30
@@ -383,6 +385,7 @@
         "de": "Alse, Maifisch",
         "sci": "Alosa alosa"
       },
+      "speciesId": "allis_shad",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)"
     },
@@ -391,6 +394,7 @@
         "de": "Bachschmerle",
         "sci": "Barbatula barbatula"
       },
+      "speciesId": "stone_loach",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)"
     },
@@ -416,6 +420,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus"
       },
+      "speciesId": "minnow",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)"
     },
@@ -424,6 +429,7 @@
         "de": "Groppe",
         "sci": "Cottus gobio"
       },
+      "speciesId": "bullhead",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)"
     },
@@ -441,6 +447,7 @@
         "de": "Moderlieschen",
         "sci": "Leucaspius delineatus"
       },
+      "speciesId": "belica",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)"
     },
@@ -465,6 +472,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)"
     },
@@ -473,6 +481,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia"
       },
+      "speciesId": "spined_loach",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)"
     },
@@ -498,6 +507,7 @@
         "de": "Zährte",
         "sci": "Vimba vimba"
       },
+      "speciesId": "vimba",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)"
     },
@@ -506,6 +516,7 @@
         "de": "Zope",
         "sci": "Abramis ballerus"
       },
+      "speciesId": "blue_bream",
       "basisId": "BiFVO",
       "basisRef": "Anlage 1 (zu § 2 Abs. 1)"
     },

@@ -147,6 +147,7 @@
         "de": "Seeforelle",
         "sci": "Salmo trutta forma lacustris L."
       },
+      "speciesId": "lake_trout",
       "minCm": 60,
       "basisId": "LFischO RP",
       "basisRef": "§ 17"
@@ -339,6 +340,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus [L.]"
       },
+      "speciesId": "minnow",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },
@@ -347,6 +349,7 @@
         "de": "Moderlieschen",
         "sci": "Leucaspius delineatus [Heckel]"
       },
+      "speciesId": "belica",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },
@@ -373,6 +376,7 @@
         "de": "Schneider",
         "sci": "Alburnoides bipunctatus [Bloch]"
       },
+      "speciesId": "spirlin",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },
@@ -390,6 +394,7 @@
         "de": "Flunder",
         "sci": "Pleuronectes flesus L."
       },
+      "speciesId": "flounder",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },
@@ -398,6 +403,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis [L.]"
       },
+      "speciesId": "weatherfish",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },
@@ -406,6 +412,7 @@
         "de": "Bachschmerle",
         "sci": "Barbatula barbatula [L.]"
       },
+      "speciesId": "stone_loach",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },
@@ -414,6 +421,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia L."
       },
+      "speciesId": "spined_loach",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },
@@ -422,6 +430,7 @@
         "de": "Koppe",
         "sci": "Cottus gobio L."
       },
+      "speciesId": "bullhead",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },
@@ -430,6 +439,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa [L.]"
       },
+      "speciesId": "allis_shad",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },
@@ -438,6 +448,7 @@
         "de": "Finte",
         "sci": "Alosa fallax [Lacépède]"
       },
+      "speciesId": "twaite_shad",
       "basisId": "LFischO RP",
       "basisRef": "§ 20 Abs. 2"
     },

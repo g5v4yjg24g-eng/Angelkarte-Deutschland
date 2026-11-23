@@ -30,6 +30,7 @@
         "de": "Seeforelle",
         "sci": "Salmo trutta forma lacustris"
       },
+      "speciesId": "lake_trout",
       "from": {
         "month": 10,
         "day": 20
@@ -255,6 +256,7 @@
         "de": "Seeforelle",
         "sci": "Salmo trutta forma lacustris"
       },
+      "speciesId": "lake_trout",
       "minCm": 50,
       "basisId": "LFischVO",
       "basisRef": "§ 3"
@@ -314,6 +316,7 @@
         "de": "Schneider",
         "sci": "Alburnoides bipunctatus"
       },
+      "speciesId": "spirlin",
       "basisId": "LFischVO",
       "basisRef": "§ 1"
     },
@@ -322,6 +325,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa"
       },
+      "speciesId": "allis_shad",
       "basisId": "LFischVO",
       "basisRef": "§ 1"
     },
@@ -330,6 +334,7 @@
         "de": "Finte",
         "sci": "Alosa fallax"
       },
+      "speciesId": "twaite_shad",
       "basisId": "LFischVO",
       "basisRef": "§ 1"
     },
@@ -338,6 +343,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis sp."
       },
+      "speciesId": "spined_loach",
       "note": "In NRW: Cobitis taenia mit Hybriden aus C. taenia und C. elongatoides (Fußnote 1).",
       "basisId": "LFischVO",
       "basisRef": "§ 1"
@@ -355,6 +361,7 @@
         "de": "Groppe, Koppe",
         "sci": "Cottus sp."
       },
+      "speciesId": "bullhead",
       "note": "In NRW: Cottus gobio, C. perifretum und C. rhenanus (Fußnote 2).",
       "basisId": "LFischVO",
       "basisRef": "§ 1"
@@ -364,6 +371,7 @@
         "de": "Moderlieschen",
         "sci": "Leucaspius delineatus"
       },
+      "speciesId": "belica",
       "basisId": "LFischVO",
       "basisRef": "§ 1"
     },
@@ -381,6 +389,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "basisId": "LFischVO",
       "basisRef": "§ 1"
     },
@@ -389,6 +398,7 @@
         "de": "Schmerle",
         "sci": "Barbatula barbatula"
       },
+      "speciesId": "stone_loach",
       "basisId": "LFischVO",
       "basisRef": "§ 1"
     },
@@ -397,6 +407,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus"
       },
+      "speciesId": "minnow",
       "basisId": "LFischVO",
       "basisRef": "§ 1"
     },
@@ -405,6 +416,7 @@
         "de": "Zwergstichling",
         "sci": "Pungitius pungitius"
       },
+      "speciesId": "ninespine_stickleback",
       "basisId": "LFischVO",
       "basisRef": "§ 1"
     },

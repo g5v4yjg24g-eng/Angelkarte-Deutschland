@@ -216,6 +216,7 @@
         "de": "Bachschmerle",
         "sci": "Barbatula barbatula"
       },
+      "speciesId": "stone_loach",
       "basisId": "LFO",
       "basisRef": "§ 5"
     },
@@ -232,6 +233,7 @@
         "de": "Dreistacheliger Stichling",
         "sci": "Gasterosteus aculeatus"
       },
+      "speciesId": "stickleback",
       "basisId": "LFO",
       "basisRef": "§ 5"
     },
@@ -240,6 +242,7 @@
         "de": "Elritze",
         "sci": "Phoxinus phoxinus"
       },
+      "speciesId": "minnow",
       "basisId": "LFO",
       "basisRef": "§ 5"
     },
@@ -266,6 +269,7 @@
         "de": "Maifisch",
         "sci": "Alosa alosa"
       },
+      "speciesId": "allis_shad",
       "basisId": "LFO",
       "basisRef": "§ 5"
     },
@@ -274,6 +278,7 @@
         "de": "Moderlieschen",
         "sci": "Leucaspius delineatus"
       },
+      "speciesId": "belica",
       "basisId": "LFO",
       "basisRef": "§ 5"
     },
@@ -299,6 +304,7 @@
         "de": "Schlammpeitzger",
         "sci": "Misgurnus fossilis"
       },
+      "speciesId": "weatherfish",
       "basisId": "LFO",
       "basisRef": "§ 5"
     },
@@ -307,6 +313,7 @@
         "de": "Schneider",
         "sci": "Alburnoides bipunctatus"
       },
+      "speciesId": "spirlin",
       "basisId": "LFO",
       "basisRef": "§ 5"
     },
@@ -315,6 +322,7 @@
         "de": "Steinbeißer",
         "sci": "Cobitis taenia"
       },
+      "speciesId": "spined_loach",
       "basisId": "LFO",
       "basisRef": "§ 5"
     },
