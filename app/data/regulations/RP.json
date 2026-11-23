@@ -6,7 +6,7 @@
     "Allgemeinverfügungen der oberen Fischereibehörde (§§ 21, 22)"
   ],
   "checkedAt": "2026-11-23",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; § 18 Abs. 1 und 2 (Gewässer der Frühjahrsschonzeit) aus der Gesamtausgabe ergänzt (Claude, 2026-11-23, noch nicht vom Nutzer gegengeprüft)",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; § 18 Abs. 1 und 2 (Gewässer der Frühjahrsschonzeit) aus der Gesamtausgabe ergänzt (Claude, 2026-11-23, noch nicht vom Nutzer gegengeprüft); Fischereiabgabe und Gebühren aus der Landesverordnung über die Gebühren der Fischereiverwaltung §§ 3 und Anlage Nr. 1.5 (PDF vom Nutzer) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft",
   "legalBasis": [
     {
       "id": "LFischO RP",
@@ -21,6 +21,13 @@
       "version": "zuletzt geändert durch Artikel 1 des Gesetzes vom 11.02.2026 (GVBl. S. 44), §§ 33–38, 41 neu gefasst, gültig ab 19.02.2026; Gesamtausgabe Stand 22.10.2026",
       "url": "https://landesrecht.rlp.de/",
       "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "FischVwGebV RP",
+      "title": "Landesverordnung über die Gebühren der Fischereiverwaltung (Besonderes Gebührenverzeichnis) und über die Fischereiabgabe",
+      "version": "vom 8. Juni 2002 (GVBl. 2002, 313), § 3 geändert und § 4 aufgehoben durch Artikel 3 der Verordnung vom 11.02.2026 (GVBl. S. 44, 50); Gesamtausgabe, am 23.11.2026 aktuellste Fassung; vom Nutzer als PDF bereitgestellt",
+      "url": "https://landesrecht.rlp.de/",
+      "retrievedAt": "2026-11-23"
     }
   ],
   "closedSeasons": [
@@ -583,6 +590,18 @@
       "text": "Wer in einem Gewässer, in dem er nicht Fischereiberechtigter oder Fischereipächter ist, den Fischfang ausübt, muss unbeschadet des § 33 einen Erlaubnisschein des Fischereiberechtigten oder des Fischereipächters digital oder in Papierform bei sich führen, den Fischfang nach Maßgabe des Erlaubnisscheines ausüben und ihn auf Verlangen vorzeigen.",
       "basisId": "LFischG RP",
       "basisRef": "§ 41 Abs. 1"
+    },
+    {
+      "kind": "levy",
+      "text": "Die Fischereiabgabe beträgt für Personen im Sinne des § 33 Abs. 4 Satz 1 Alternative 1 des Landesfischereigesetzes 3,60 Euro und bei einem Sonderfischereischein 6,00 Euro. Bei einem Fischereischein beträgt sie für die Dauer eines Jahres 8,40 Euro, gegen Vorlage eines Nachweises für Schülerinnen und Schüler, Auszubildende, Studierende, Ableistende eines Jugendfreiwilligendienstes, Menschen mit Behinderungen sowie Empfängerinnen und Empfänger von Leistungen nach dem Zweiten, Dritten oder Zwölften Buch Sozialgesetzbuch oder dem Asylbewerberleistungsgesetz 7,00 Euro; für die Dauer von fünf Jahren 30 Euro, mit diesem Nachweis 25,00 Euro. In der Bundesrepublik Deutschland stationierte Mitglieder ausländischer Streitkräfte sind befreit.",
+      "basisId": "FischVwGebV RP",
+      "basisRef": "§ 3 Abs. 1 und 2"
+    },
+    {
+      "kind": "levy",
+      "text": "Gebühren für den Fischereischein: Jugendfischereischein 4,00 Euro, Sonderfischereischein 6,20 Euro, Jahresfischereischein 8,50 Euro (mit dem genannten Nachweis 7,00 Euro), Fünfjahresfischereischein 25,00 Euro (mit dem genannten Nachweis 20,50 Euro), Zweitausfertigung für abhanden gekommene oder unbrauchbar gewordene Fischereischeine 4,00 Euro.",
+      "basisId": "FischVwGebV RP",
+      "basisRef": "Anlage lfd. Nr. 1.5"
     }
   ],
   "otherRules": [
