@@ -1,23 +1,25 @@
 {
   "stateCode": "HE",
   "status": "partial",
-  "missing": ["Änderungen nach der Verkündung am 28.04.2023 nicht geprüft (Landesrechtsportal gesperrt)"],
-  "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, GVBl. Hessen 2023 Nr. 15 von starweb.hessen.de); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
+  "missing": [
+    "Atlantische Forelle (§ 2 Abs. 1, Bachforellen, Meerforellen, Seeforellen): Regel ist keiner einzelnen Fangbuch-Art zugeordnet, die Prüfung beim Fang schweigt dazu"
+  ],
+  "checkedAt": "2026-11-23",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, GVBl. Hessen 2023 Nr. 15 von starweb.hessen.de); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Abgleich mit den vom Nutzer gelieferten PDFs (HFischV Erstfassung, HFischG Gesamtausgabe bis 23.12.2025) am 2026-11-23 durch Claude: Schonzeiten, Entnahmemaße und Fischereischein-Regeln unverändert, noch nicht vom Nutzer gegengeprüft",
   "legalBasis": [
     {
       "id": "HFischV",
       "title": "Hessische Fischereiverordnung",
-      "version": "vom 14. April 2023, verkündet im GVBl. 2023 Nr. 15 vom 28. April 2023 (Erstfassung; spätere Änderungen nicht berücksichtigt)",
+      "version": "vom 14. April 2023 (GVBl. 2023 S. 318), Text der Erstfassung (GVBl. 2023 Nr. 15 vom 28. April 2023); einzige Änderung seither: Artikel 37 des Ersten Bürokratieabbaugesetzes vom 16. Dezember 2025 (GVBl. 2025 Nr. 110) – betrifft nur § 18 Abs. 3 Satz 2 und 3 (Fischereiaufsicht, aufgehoben) und § 34 Abs. 1 („Einvernehmen“ → „Benehmen“), nicht die erfassten Regeln; Stand der Gesamtausgabe laut Deckblatt vom Nutzer, am 2026-11-23 abgeglichen",
       "url": "https://starweb.hessen.de/cache/GVBL/2023/00015.pdf",
-      "retrievedAt": "2026-10-22"
+      "retrievedAt": "2026-11-23"
     },
     {
       "id": "HFischG",
       "title": "Hessisches Fischereigesetz",
-      "version": "vom 17. November 2022 (GVBl. S. 576), geändert durch Artikel 36 des Gesetzes vom 16. Dezember 2025; gültig bis 31.12.2029; Gesamtausgabe Stand 22.10.2026",
+      "version": "vom 17. November 2022 (GVBl. S. 576), Gesamtausgabe in der Gültigkeit vom 23.12.2025 bis 31.12.2029 (letzte berücksichtigte Änderung: Artikel 36 des Gesetzes vom 16. Dezember 2025, GVBl. 2025 Nr. 110, ber. Nr. 117); Text vom Nutzer als PDF bereitgestellt und am 2026-11-23 mit den erfassten Regeln abgeglichen",
       "url": "https://www.rv.hessenrecht.hessen.de/",
-      "retrievedAt": "2026-10-22"
+      "retrievedAt": "2026-11-23"
     }
   ],
   "closedSeasons": [
