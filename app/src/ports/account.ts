@@ -34,6 +34,7 @@ import type {
   ModUserRow,
   ModWarning,
 } from '../domain/modAdmin';
+import type { ModAlertSummary } from '../domain/modAlerts';
 import type {
   BlockedName,
   BlockedNameKind,
@@ -301,6 +302,8 @@ export interface AccountProvider {
   modPostState(postId: string): Promise<ModPostState | undefined>;
   /** Kennzahlen der Admin-Übersicht (mod_overview); fehlt die Funktion noch, nur die offenen Meldungen */
   modOverview(): Promise<ModOverview>;
+  /** Zusammenfassung offener Meldungen für das Pop-up (mod_alert_summary); fehlt die Funktion noch: undefined */
+  modAlertSummary(): Promise<ModAlertSummary | undefined>;
   modContent(kind: 'post' | 'comment' | 'spot', id: string): Promise<ModContent | undefined>;
   modUser(userId: string): Promise<ModUser | undefined>;
   modUserContent(userId: string): Promise<ModUserItem[]>;

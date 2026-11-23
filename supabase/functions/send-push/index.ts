@@ -13,6 +13,14 @@ import { createClient } from "npm:@supabase/supabase-js@2.49.1";
 
 const TOPIC = "com.fangpunkt.app";
 
+const REPORT_REASONS: Record<string, string> = {
+  spam: "Spam",
+  abuse: "Beleidigung",
+  nudity: "Nacktheit",
+  violence: "Gewalt",
+  privacy: "Privatsphäre",
+  other: "Sonstiges",
+};
 const SIGNAL_KINDS = ["session_pause", "session_resume", "session_end"];
 
 type Kind =
@@ -31,6 +39,7 @@ type Kind =
   | "trip_start"
   | "spot_link"
   | "spot_link_accepted"
+  | "report_new"
   | "session_pause"
   | "session_resume"
   | "session_end"
@@ -189,6 +198,13 @@ function message(
           ? `${name} beendet „${excerpt}“ – auch beenden?`
           : `${name} beendet die Session – auch beenden?`,
         path: "/fangbuch/sessions",
+      };
+    // Meldung für Moderatoren: nur der Grund, nie die meldende Person oder Inhalte (excerpt = Grund-Schlüssel)
+    case "report_new":
+      return {
+        title: "Neue Meldung",
+        body: `Grund: ${REPORT_REASONS[excerpt ?? ""] ?? "Sonstiges"} – bitte im Admin-Bereich ansehen.`,
+        path: "/moderation/meldungen",
       };
     case "test":
       return {

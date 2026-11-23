@@ -65,7 +65,7 @@ Eigener Bereich unter `/moderation` mit eigener Leiste **Übersicht · Meldungen
   Nutzung bis zur Zustimmung nur auf Wunsch.
 - Ältere Sperren (vor #150) haben keinen Einspruchs-Link; Einsprüche dazu per Mail.
 - Wirkung am iPhone (Passwort-Abfrage mit Schlüsselbund, Mails) prüft der Nutzer im TestFlight-Bau 16.
-- **Vorgemerkte Idee (Wunsch Nutzer 2026-11-23): Pop-up bei neuer Meldung.** Sobald jemand jemanden meldet, soll der
+- **Umgesetzt (2026-11-23): Pop-up bei neuer Meldung** (Band + Vollbild bei > 20 h offen, Push `report_new`; siehe CLAUDE.md). Ursprünglicher Wunsch: Sobald jemand jemanden meldet, soll der
   Nutzer (Moderator) eine Pop-up-Benachrichtigung bekommen, um die Meldung zu bearbeiten. **Umsetzen, sobald die
   Gesetze/Rechtsdaten abgeschlossen sind** (Reihenfolge vom Nutzer festgelegt). Anknüpfungspunkte: Trigger
   `reports_notify` und Edge Function `notify-report` (schicken bisher nur die Mail an moderation@), Push-Pipeline
