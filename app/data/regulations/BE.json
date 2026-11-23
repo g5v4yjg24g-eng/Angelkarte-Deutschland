@@ -2,11 +2,11 @@
   "stateCode": "BE",
   "status": "partial",
   "missing": [
-    "Beträge der Gebühren und der Fischereiabgabe (das Gesetz nennt nur die Berechnung, § 7 und § 8 Abs. 4; die Beträge stehen in den gebührenrechtlichen Vorschriften)",
+    "Rechtsgrundlage der Gebührenbeträge: Die Beträge stammen von der Seite des Fischereiamts, die kein Gebührenverzeichnis nennt (Freigabe Nutzer 2026-11-23); Zweitschrift und Beträge für Folgejahre nicht genannt",
     "Anordnungen der unteren Fischereibehörde (§ 8 Abs. 2 und 3)"
   ],
   "checkedAt": "2026-11-23",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln aus LFischScheinG § 1 und DVO-LFischScheinG (PDFs vom Nutzer) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft; Landesfischereischeingesetz §§ 2–4, 8 (PDF vom Nutzer) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln aus LFischScheinG § 1 und DVO-LFischScheinG (PDFs vom Nutzer) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft; Landesfischereischeingesetz §§ 2–4, 8 (PDF vom Nutzer) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft; Gebühren und Fischereiabgabe 2026 von der Seite des Fischereiamts Berlin übernommen (Freigabe Nutzer 2026-11-23, Behördenseite ohne Rechtsgrundlage), Claude, noch nicht vom Nutzer gegengeprüft",
   "legalBasis": [
     {
       "id": "LFischO",
@@ -34,6 +34,13 @@
       "title": "Verordnung über die Durchführung des Landesfischereischeingesetzes (DVO-LFischScheinG)",
       "version": "vom 25. September 1997 (GVBl. 1997 S. 491), zuletzt geändert durch Artikel 45 der Verordnung vom 01.09.2020 (GVBl. S. 683); Gesamtausgabe, am 23.11.2026 aktuellste Fassung; vom Nutzer als PDF bereitgestellt",
       "url": "https://gesetze.berlin.de/perma?j=FischScheinGDV_BE",
+      "retrievedAt": "2026-11-23"
+    },
+    {
+      "id": "Fischereiamt BE",
+      "title": "Fischereiamt Berlin – Seite „Fischereischein“, Tabelle „Kosten der Fischereischeine“ (Behördenseite, keine Rechtsgrundlage genannt)",
+      "version": "ohne Datumsangabe der Seite, Abrufstand 23.11.2026; Abgabe als „Fischereiabgabe 2026“ ausgewiesen",
+      "url": "https://www.berlin.de/fischereiamt/angelfischen/fischereischein/",
       "retrievedAt": "2026-11-23"
     }
   ],
@@ -769,6 +776,12 @@
       "text": "Neben der Gebühr für die Erteilung wird kalenderjährlich eine Fischereiabgabe erhoben. Sie beträgt für den Fischereischein A drei Viertel der Gebühr für die Neuerteilung des Fischereischeins A für fünf Jahre, für den Jugendfischereischein ein Drittel der Gebühr für die Neuerteilung. Von der Abgabe befreit ist, wer den Fischereischein eines anderen Bundeslandes besitzt und seinen Hauptwohnsitz nicht im Land Berlin hat; dies muss durch eine Meldebescheinigung nachgewiesen werden.",
       "basisId": "LFischScheinG",
       "basisRef": "§ 8 Abs. 4 und 5"
+    },
+    {
+      "kind": "levy",
+      "text": "Hinweis des Fischereiamts Berlin, ohne genannte Rechtsgrundlage für die Gebühr: Fischereischein A für 5 Jahre kostet 27,00 Euro Gebühr, für 1 Jahr 18,00 Euro; der Fischereischein B (nur für Berufsfischer) für 5 Jahre 27,00 Euro; der Jugendfischereischein für 1 Jahr 10,00 Euro. Die Fischereiabgabe 2026 beträgt für den Fischereischein A 21,00 Euro, für den Fischereischein B 135,00 Euro und für den Jugendfischereischein 4,00 Euro. Die Gebühr einer einmaligen Verlängerung beträgt die Hälfte der Gebühr einer Neuausstellung. Die Abgabe berechnet sich nach dem Gesetz aus der Gebühr (Fischereischein A drei Viertel, B das Fünffache, Jugendfischereischein ein Drittel der Gebühr für die Neuerteilung, aufgerundet auf volle Euro; LFischScheinG § 8 Abs. 4).",
+      "basisId": "Fischereiamt BE",
+      "basisRef": "Tabelle „Kosten der Fischereischeine“"
     }
   ],
   "otherRules": [
