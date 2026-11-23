@@ -3,10 +3,10 @@
   "status": "partial",
   "missing": [
     "zeitlich befristeter Fischereischein (Verordnung)",
-    "Fisch- und Laichschonbezirke (§§ 11, 12 KüFVO, Anlage 1)"
+    "Küstenfischereiverordnung: Koordinaten und Grenzen der Schon- und Laichschonbezirke (§ 11 Abs. 1, Anlage 1) nicht übertragen; Beschränkungen der Berufsfischerei (§ 13 ff.) nicht erfasst"
   ],
-  "checkedAt": "2026-10-22",
-  "checkedBy": "Fischereigesetz vom Nutzer gegengeprüft am 2026-10-22; Binnen- und Küstenfischereiverordnung maschinell übertragen (Claude), vom Nutzer gegengeprüft am 2026-10-22",
+  "checkedAt": "2026-11-23",
+  "checkedBy": "Fischereigesetz vom Nutzer gegengeprüft am 2026-10-22; Binnen- und Küstenfischereiverordnung maschinell übertragen (Claude), vom Nutzer gegengeprüft am 2026-10-22; Fisch- und Laichschonbezirke (§§ 11, 12 KüFVO M-V) zusammengefasst ergänzt (Claude, 2026-11-23, noch nicht vom Nutzer gegengeprüft)",
   "legalBasis": [
     {
       "id": "LFischG M-V",
@@ -1105,6 +1105,42 @@
       "text": "Zusammengefasst: In den Fischereibezirken ist das Angeln vom fahrenden Boot verboten; in einigen Seegebieten (u. a. zwischen Hiddensee und Rügen, Tromper und Prorer Wiek) vom 15. September bis 15. März mit Motor- oder Windantrieb. In Strelasund, Rassower Strom/Wieker Bodden und am Having sind Boote beim Angeln zu verankern (Driftangeln mit Treibanker ausgenommen). Genaue Abgrenzungen in § 9 Abs. 7 bis 9.",
       "basisId": "KüFVO M-V",
       "basisRef": "§ 9 Abs. 7 bis 9"
+    },
+    {
+      "topic": "Fischschonbezirke (ganzjährig)",
+      "text": "Zusammengefasst: In den Fischschonbezirken „Bock“, „Libben“, „Peenemündung“, „Usedomer Kehle“, „Nordteil Kleiner Jasmunder Bodden“ sowie an den Künstlichen Riffen „Nienhagen“ und „Rosenort“ ist die Ausübung der Fischerei verboten. Die Grenzen sind in § 11 Abs. 1 durch Koordinaten bzw. Uferlinien beschrieben.",
+      "basisId": "KüFVO M-V",
+      "basisRef": "§ 11 Abs. 1"
+    },
+    {
+      "topic": "Fischschonbezirke (zeitweise)",
+      "text": "Zusammengefasst: Vom 1. August bis 28. Februar (soweit nicht im Einzelfall zeitlich anders bestimmt) ist die Fischerei verboten in der „Warnowmündung“, im „Yachthafen Kühlungsborn – Bollhäger Fließ/Fulgen“ und im Gebiet bis 500 m seitlich und seewärts der Mündungen von Harkenbeck, Klützer Bach, Tarnewitzer Bach, Wallensteingraben, Abfluss des Stausees Farpen/Plastbach, Hellbach, Mühlenfließ (Schleuse Jemnitz), Recknitz, Saaler Bach, Rosengartener Beek, Barthe, Ziese, Ryck, Brebowbach, Zarow, Uecker (500-m-Kreis um die Spitze der Nordmole), Köppernitz, Blowatzer Bach, Zierower Bach, Redentiner Bach, Körkwitzer Wallbach und Neuendorfer Hechtgraben. Abweichende Zeiten: Recknitz, Saaler Bach, Rosengartener Beek, Barthe, Ziese, Ryck und Brebowbach 1. August bis 30. April; Köppernitz 1. August bis 15. März; Körkwitzer Wallbach und Neuendorfer Hechtgraben 1. Februar bis 30. April. Ausnahme: Im Fischschonbezirk „Warnowmündung“ sind die Fischerei mit der Handangel sowie mit der Langleine und Aalkörben auf Aal vom Verbot ausgenommen.",
+      "basisId": "KüFVO M-V",
+      "basisRef": "§ 11 Abs. 2 und 3"
+    },
+    {
+      "topic": "Unterwarnow",
+      "text": "In der Unterwarnow von der Petribrücke bis zum Unterhaupt der Schifffahrtsschleuse sowie bis zum Wehr am Mühlendamm, einschließlich des Altarmes Fischergraben, ist die Fischerei mit Stellnetzen und Aalkörben ganzjährig verboten. Bei der Fischerei mit der Handangel sind dort nur natürliche oder künstliche Köder mit einem Einfachhaken zulässig. Vom Wehr am Mühlendamm, der Schifffahrtsschleuse und vom Durchlass unter der Straße Mühlendamm zum Altarm Fischergraben ist mit jedem Fanggerät in Richtung Petribrücke ein Abstand von mindestens 100 Metern einzuhalten.",
+      "basisId": "KüFVO M-V",
+      "basisRef": "§ 11 Abs. 5"
+    },
+    {
+      "topic": "Salzhaff und Halbinsel Wustrow",
+      "text": "Vom 15. September bis 14. Dezember ist die Fischerei verboten im Uferbereich vom Boiensdorfer Werder bis zur Hellbachmündung (geographische Länge 11° 31,00' E bis 11° 37,00' E) bis 500 m seewärts sowie in Gebieten mit 500 m Radius um die Landdurchbrüche zwischen der Halbinsel Wustrow und dem Kieler Ort. Vom 15. September bis 30. November ist die Fischerei mit Aalkörben und Langleinen zwischen den Inseln Ummanz und Rügen im in § 11 Abs. 7 beschriebenen Gebiet nicht zulässig.",
+      "basisId": "KüFVO M-V",
+      "basisRef": "§ 11 Abs. 6 und 7"
+    },
+    {
+      "topic": "Laichschonbezirke (1. April bis 31. Mai)",
+      "text": "Vom 1. April bis 31. Mai ist jede Fischerei verboten in den Laichschonbezirken: Stettiner Haff (Göschenbrinksfläche, Anklamer Fähre, Borkenhaken, Usedomer See); Peenestrom (Jamitzower Hard, Balmer See, Hohendorfer See, Sauziner Bucht, Mahlzower Bucht, Rohrplan bei Zecherin, Bucht südlich Kuhler Ort (Alter Acker), Krösliner See einschließlich Alte Peene, Freester Hock, Freesendorfer See); Darßer Boddenkette (Flemendorfer Baek, Barther Strom, Fitt, Prerower Strom, Saaler Riff, Saaler Bodden, Recknitz, Küstensaum zwischen Kinnbackenhagen und Wendisch-Langendorf).",
+      "basisId": "KüFVO M-V",
+      "basisRef": "§ 12 Abs. 1"
+    },
+    {
+      "topic": "Laichschonbezirke (1. März bis 31. Mai)",
+      "text": "Vom 1. März bis 31. Mai ist jede Fischerei verboten in den Laichschonbezirken: Greifswalder Bodden (Abfluss Freesendorfer See, Dänisch Wiek, Gristower Wiek, Puddeminer Wiek, Schoritzer Wiek, Wreechener See, Neuensiener See, Selliner See, Zicker See); Strelasund (Deviner See, Kemlade, Gustower Wiek, Wamper Wiek, Kubitzer Bodden); Gewässer zwischen Hiddensee und Rügen (zwischen Ummanz und Rügen, Nordteil des Wieker Boddens, Neuendorfer Wiek, Breeger Bodden nördlich der Saalsteine, Mittelsee und Spyker See, Westteil der Lietzower Bucht). Die Fischerei mit genehmigten Kumm- und Bügelreusen bleibt vom 1. bis 31. März in den Laichschonbezirken „Kubitzer Bodden“, „Gewässer zwischen Ummanz und Rügen“ und „Neuendorfer Wiek“ zulässig. Die räumliche Begrenzung ergibt sich aus Anlage 1.",
+      "basisId": "KüFVO M-V",
+      "basisRef": "§ 12 Abs. 2 bis 4, Anlage 1"
     }
   ]
 }
