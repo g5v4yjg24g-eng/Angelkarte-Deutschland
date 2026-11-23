@@ -2,17 +2,17 @@
   "stateCode": "TH",
   "status": "partial",
   "missing": [
-    "Beträge nach § 37 ThürFischAVO liegen nur in der Fassung vom 11.08.2020 vor (PDF mit nur § 37); ob spätere Änderungen (zuletzt Artikel 55 des Gesetzes vom 2. Juli 2024) die Beträge berühren, ist nicht geprüft"
+    "Ausnahmegenehmigungen der obersten Fischereibehörde im Einzelfall von Schonzeiten, Mindestmaßen und Fangverboten (§ 2 und § 5 ThürFischAVO)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Beträge aus ThürFischAVO § 37 (PDF vom Nutzer) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Beträge aus ThürFischAVO § 37 (PDF vom Nutzer) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft; Beträge nach § 37 ThürFischAVO und Prüfungsgebühr (§ 29) mit der vollständigen Gesamtausgabe (PDF vom Nutzer) abgeglichen durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft",
   "legalBasis": [
     {
       "id": "ThürFischAVO",
       "title": "Ausführungsverordnung zum Thüringer Fischereigesetz",
-      "version": "vom 11. August 2020 (GVBl. S. 457), geändert durch Artikel 55 des Gesetzes vom 2. Juli 2024 (GVBl. S. 277, 292); Gesamtausgabe Stand 22.10.2026",
+      "version": "vom 11. August 2020 (GVBl. 2020, 457), Gesamtausgabe, am 23.11.2026 aktuellste Fassung (letzte berücksichtigte Änderung: Artikel 55 des Gesetzes vom 2. Juli 2024, GVBl. S. 277, 292); vom Nutzer als vollständige PDF bereitgestellt",
       "url": "https://landesrecht.thueringen.de/",
-      "retrievedAt": "2026-10-22"
+      "retrievedAt": "2026-11-23"
     },
     {
       "id": "ThürFischG",
@@ -581,6 +581,12 @@
       "text": "Die Fischereischeingebühr beträgt für den Jahresfischereischein 8,00 Euro, den Fünfjahresfischereischein 15,00 Euro, den Zehnjahresfischereischein 20,00 Euro, den Fischereischein auf Lebenszeit 45,00 Euro, den Jugendfischereischein 5,00 Euro, den Vierteljahresfischereischein 10,00 Euro und die Ausstellung einer Zweitschrift 8,00 Euro. Die Fischereiabgabe beträgt für den Jahresfischereischein 10,00 Euro, den Fünfjahresfischereischein 30,00 Euro, den Zehnjahresfischereischein 50,00 Euro, den Fischereischein auf Lebenszeit 200,00 Euro, den Jugendfischereischein 7,00 Euro und den Vierteljahresfischereischein 15,00 Euro.",
       "basisId": "ThürFischAVO",
       "basisRef": "§ 37 Abs. 1 und 2"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Für die Teilnahme an der Fischerprüfung wird eine Prüfungsgebühr von 35 Euro erhoben. Der Betrag ist spätestens vier Wochen vor Prüfungsbeginn bei der zuständigen unteren Fischereibehörde zu entrichten.",
+      "basisId": "ThürFischAVO",
+      "basisRef": "§ 29 Abs. 1"
     }
   ],
   "otherRules": [
