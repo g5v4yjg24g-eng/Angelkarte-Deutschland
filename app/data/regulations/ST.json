@@ -2,11 +2,10 @@
   "stateCode": "ST",
   "status": "partial",
   "missing": [
-    "besonders geschützte Krebse und Muscheln (Verweis auf § 7 Abs. 2 Nr. 13 BNatSchG, nicht einzeln aufgezählt)",
-    "Anerkennung von Fischereischeinen anderer Länder und Höhe der Fischereiabgabe (Verordnungen nach § 28 Abs. 4 und § 30 Abs. 4 FischG LSA)"
+    "besonders geschützte Krebse und Muscheln (Verweis auf § 7 Abs. 2 Nr. 13 BNatSchG, nicht einzeln aufgezählt)"
   ],
   "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Gleichstellung, Ausnahmen und Fischereiabgabe aus DVO-FischG §§ 4a–7 (PDF vom Nutzer) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft",
   "legalBasis": [
     {
       "id": "FischO LSA",
@@ -21,6 +20,13 @@
       "version": "zuletzt geändert durch § 1 des Gesetzes vom 21. März 2026 (GVBl. LSA S. 103, 104); Gesamtausgabe Stand 22.10.2026",
       "url": "https://www.landesrecht.sachsen-anhalt.de/",
       "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "DVO-FischG",
+      "title": "Verordnung zur Durchführung des Fischereigesetzes (DVO-FischG)",
+      "version": "vom 11. Januar 1994 (GVBl. LSA 1994, 8), zuletzt geändert durch Verordnung vom 8. April 2026 (GVBl. LSA S. 126); Gesamtausgabe, am 23.11.2026 aktuellste Fassung; vom Nutzer als PDF bereitgestellt",
+      "url": "https://www.landesrecht.sachsen-anhalt.de/",
+      "retrievedAt": "2026-11-23"
     }
   ],
   "closedSeasons": [
@@ -441,6 +447,36 @@
       "text": "Übt ein Erlaubnisinhaber die Fischerei ohne Anwesenheit des Fischereiausübungsberechtigten aus, hat er eine schriftliche Fischereierlaubnis (Fischereierlaubnisschein/Angelkarte) mit sich zu führen und auf Verlangen vorzuzeigen. Fischereierlaubnisse gelten höchstens ein Jahr.",
       "basisId": "FischG LSA",
       "basisRef": "§ 26 Abs. 1 und 4"
+    },
+    {
+      "kind": "tourist",
+      "text": "Die staatlich erteilten oder staatlich anerkannten Fischereischeine der anderen Bundesländer werden für Personen, die ihre Hauptwohnung nicht in Sachsen-Anhalt haben, als Fischereischein nach dem Fischereigesetz anerkannt. Das gilt nicht für Inhaber, die das achte Lebensjahr noch nicht vollendet haben. Wer mit gleichgestelltem Fischereischein das achte, aber noch nicht das zwölfte Lebensjahr vollendet hat, darf nur den Friedfischfang ausüben.",
+      "basisId": "DVO-FischG",
+      "basisRef": "§ 5 Abs. 1 und 3"
+    },
+    {
+      "kind": "tourist",
+      "text": "Die obere Fischereibehörde kann im Einzelfall staatlich erteilte oder staatlich anerkannte Fischereischeine anderer Staaten gleichstellen, sofern die Voraussetzungen ihrer Erteilung denen in Sachsen-Anhalt entsprechen. Die Gleichstellung ist mit Dienstsiegel zu bescheinigen; der Schein ist nur in Verbindung mit der Bescheinigung gültig.",
+      "basisId": "DVO-FischG",
+      "basisRef": "§ 5 Abs. 2"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Die staatlich abgenommenen oder staatlich anerkannten Fischerprüfungen der anderen Bundesländer werden als Fischerprüfung nach dem Fischereigesetz anerkannt, wenn der Antragsteller zum Zeitpunkt der Prüfung seine Hauptwohnung in diesem Land hatte.",
+      "basisId": "DVO-FischG",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Die Fischereibehörde kann auf Antrag im besonderen Einzelfall die Fischereiausübung ohne Fischereischein befristet genehmigen, wenn die Einhaltung des Fischerei-, Tierschutz-, Naturschutz- und Wasserrechts ausreichend gewährleistet ist. Die Genehmigung ist schriftlich zu erteilen und nur wirksam, wenn sie bei der Fischereiausübung mitgeführt und auf Verlangen vorgezeigt wird.",
+      "basisId": "DVO-FischG",
+      "basisRef": "§ 4a Abs. 2"
+    },
+    {
+      "kind": "levy",
+      "text": "Die Fischereiabgabe beträgt für jedes Jahr der Geltungsdauer für Fischereischeine und Friedfischfischereischeine nach vollendetem 18. Lebensjahr 6 Euro, bis zum vollendeten 18. Lebensjahr sowie für Sonderfischereischeine 1 Euro. Für Fischereischeine und Friedfischfischereischeine auf Lebenszeit beträgt sie 125 Euro, für Sonderfischereischeine auf Lebenszeit 20 Euro.",
+      "basisId": "DVO-FischG",
+      "basisRef": "§ 7 Abs. 1"
     }
   ],
   "otherRules": [
