@@ -1,0 +1,34 @@
+Ohne Anmeldung|FEHLER: permission denied for function backup_put
+Tabelle direkt lesen|FEHLER: permission denied for table backup_items
+Tabelle direkt schreiben|FEHLER: permission denied for table backup_items
+Leere Liste|0
+Fang + Foto + Verweis + Route|catch:c1:true, photo:f1:true, photo:p1:true, track:s1:true
+rev wächst|4
+Verbrauch (Verweis zählt nicht)|4 Einträge, Dateien 500000 B, limit 524288000
+Fremde Datei|FEHLER: bad_file
+Datei fehlt|FEHLER: file_missing
+Pfad mit ..|FEHLER: bad_file
+Falscher Speicher|FEHLER: bad_file
+Art ungültig|FEHLER: bad_items
+Daten fehlen|FEHLER: bad_items
+Zu großer Eintrag|FEHLER: item_too_large
+Zu viele Einträge|FEHLER: too_many_items
+Grenze 500 MB|FEHLER: backup_quota
+Nach Fehlern unverändert|4
+Fang ändern|1
+Änderung angekommen|90
+Zeilen insgesamt|4
+Löschmarke|1
+Gelöscht ohne Daten|true,true
+Seit letzter rev|0
+Seit vorletzter rev|1
+Verbrauch nach Löschen|3 Einträge, Dateien 500000
+Seitengröße|2
+B sieht nichts|0
+B Verbrauch|0,0
+B löscht nur eigenes|0
+A unverändert|4
+Gesperrt|FEHLER: banned
+Alles löschen|00000000-0000-0000-0000-0000000000a1/photos/f1.jpg, 00000000-0000-0000-0000-0000000000a1/routes/s1.json
+Danach leer|0
+Beitragsfoto bleibt im Speicher|1
