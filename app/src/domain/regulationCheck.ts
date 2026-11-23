@@ -5,6 +5,7 @@ import {
   berlinDay,
   inClosedSeason,
   isShown,
+  ruleCovers,
   type ClosedSeasonRule,
   type MinSizeRule,
   type RegulationSet,
@@ -55,11 +56,11 @@ export function findings(set: RegulationSet, c: CatchInput): Finding[] {
   if (!id) return [];
   const day = berlinDay(Date.parse(c.at));
   const out: Finding[] = [];
-  for (const rule of set.protectedSpecies) if (rule.speciesId === id) out.push({ kind: 'protected', rule });
+  for (const rule of set.protectedSpecies) if (ruleCovers(rule, id)) out.push({ kind: 'protected', rule });
   for (const rule of set.closedSeasons)
-    if (rule.speciesId === id && inClosedSeason(rule, day)) out.push({ kind: 'closed', rule });
+    if (ruleCovers(rule, id) && inClosedSeason(rule, day)) out.push({ kind: 'closed', rule });
   for (const rule of set.minSizes) {
-    if (rule.speciesId !== id || (rule.minCm === undefined && rule.maxCm === undefined)) continue;
+    if (!ruleCovers(rule, id) || (rule.minCm === undefined && rule.maxCm === undefined)) continue;
     const len = c.lengthCm;
     if (len === undefined) out.push({ kind: 'needsLength', rule });
     else if (rule.minCm !== undefined && len < rule.minCm)

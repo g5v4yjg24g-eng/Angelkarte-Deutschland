@@ -26,13 +26,19 @@ describe('Landesdateien app/data/regulations', () => {
   }
 
   it('Lachs und Meerforelle sind mit der Fangbuch-Art verknüpft, Stör nicht (Gattung ≠ Europäischer Stör)', () => {
-    type Rule = { taxon: { de: string }; speciesId?: string };
+    type Rule = { taxon: { de: string; sci?: string }; speciesId?: string; alsoSpeciesIds?: string[] };
     for (const [path, data] of Object.entries(files)) {
       const d = data as Record<'closedSeasons' | 'minSizes' | 'protectedSpecies', Rule[]>;
       for (const r of [...d.closedSeasons, ...d.minSizes, ...d.protectedSpecies]) {
         if (/^(Atlantischer )?Lachs$/.test(r.taxon.de)) expect(r.speciesId, path).toBe('salmon');
         if (r.taxon.de === 'Meerforelle') expect(r.speciesId, path).toBe('sea_trout');
-        if (/Stör/.test(r.taxon.de)) expect(r.speciesId, path).toBeUndefined();
+        // Ausnahme: der Text meint ausdrücklich alle Störe (Brandenburg, „Familie Acipenseridae“) → Stör und Sterlet
+        if (/Stör/.test(r.taxon.de)) {
+          if (/Familie Acipenseridae/.test(r.taxon.sci ?? '')) {
+            expect(r.speciesId, path).toBe('sturgeon');
+            expect(r.alsoSpeciesIds, path).toEqual(['sterlet']);
+          } else expect(r.speciesId, path).toBeUndefined();
+        }
       }
     }
   });

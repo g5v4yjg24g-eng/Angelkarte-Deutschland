@@ -34,12 +34,56 @@ describe('Regeln für Arten ab 2026-11-19', () => {
     expect(r.set.closedSeasons.some((x) => x.speciesId === 'huchen')).toBe(true);
     expect(r.set.minSizes.some((x) => x.speciesId === 'huchen')).toBe(true);
   });
-  it('Stör bleibt unverknüpft (Gattung, nicht nur der geschützte Europäische Stör)', async () => {
+  it('Stör ist nur verknüpft, wo der Text alle Störe meint (Brandenburg: Familie Acipenseridae)', async () => {
     for (const code of STATE_CODES) {
       const r = await loadRegulation(code);
       if (r.kind !== 'ok') continue;
       const all = [...r.set.closedSeasons, ...r.set.minSizes, ...r.set.protectedSpecies];
-      expect(all.some((x) => x.speciesId === 'sturgeon'), code).toBe(false);
+      const linked = all.some((x) => x.speciesId === 'sturgeon' || x.alsoSpeciesIds?.includes('sturgeon'));
+      expect(linked, code).toBe(code === 'BB');
+    }
+  });
+  it('Hessen: Atlantische Forelle gilt für Bach-, Meer- und Seeforelle', async () => {
+    const r = await loadRegulation('HE');
+    if (r.kind !== 'ok') throw new Error('HE fehlt');
+    for (const id of ['brown_trout', 'sea_trout', 'lake_trout']) {
+      const f = findings(r.set, {
+        outcome: 'caught',
+        at: '2026-11-10T12:00:00Z',
+        released: undefined,
+        speciesId: id,
+      });
+      expect(
+        f.some((x) => x.kind === 'closed'),
+        id,
+      ).toBe(true);
+      const small = findings(r.set, {
+        outcome: 'caught',
+        at: '2026-07-10T12:00:00Z',
+        released: undefined,
+        speciesId: id,
+        lengthCm: 20,
+      });
+      expect(
+        small.some((x) => x.kind === 'undersize'),
+        id,
+      ).toBe(true);
+    }
+  });
+  it('Sachsen: „Alosa spec.“ schützt Maifisch und Finte', async () => {
+    const r = await loadRegulation('SN');
+    if (r.kind !== 'ok') throw new Error('SN fehlt');
+    for (const id of ['allis_shad', 'twaite_shad']) {
+      const f = findings(r.set, {
+        outcome: 'caught',
+        at: '2026-06-10T12:00:00Z',
+        released: undefined,
+        speciesId: id,
+      });
+      expect(
+        f.some((x) => x.kind === 'protected'),
+        id,
+      ).toBe(true);
     }
   });
 });

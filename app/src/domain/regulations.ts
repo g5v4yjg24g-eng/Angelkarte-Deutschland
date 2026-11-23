@@ -27,6 +27,11 @@ const SpeciesId = z.string().refine(speciesKnown, { message: 'Art fehlt in domai
 const SpeciesRef = {
   taxon: z.object({ de: z.string().trim().min(1), sci: z.string().trim().min(1).optional() }),
   speciesId: SpeciesId.optional(),
+  /**
+   * Weitere Fangbuch-Arten, die dieselbe Regel ausdrücklich mit meint (z. B. „Atlantische Forelle (Bachforellen,
+   * Meerforellen, Seeforellen)“). Nur zusammen mit `speciesId` (Hauptart) und nur, wenn der Rechtstext sie einschließt.
+   */
+  alsoSpeciesIds: z.array(SpeciesId).min(1).max(8).optional(),
 };
 
 const ClosedSeasonSchema = z.object({
@@ -193,7 +198,7 @@ export function reviewDue(
 
 /** Schonzeiten einer Art, die an diesem Tag gelten (mit Geltungsbereich, falls angegeben). */
 export function closedSeasonsOn(set: RegulationSet, speciesId: string, day: MonthDay): ClosedSeasonRule[] {
-  return set.closedSeasons.filter((r) => r.speciesId === speciesId && inClosedSeason(r, day));
+  return set.closedSeasons.filter((r) => ruleCovers(r, speciesId) && inClosedSeason(r, day));
 }
 
 /** Anzeigename einer Regel-Art: immer der Name aus dem Rechtstext. */
@@ -201,7 +206,16 @@ export function taxonLabel(r: { taxon: { de: string; sci?: string | undefined } 
   return r.taxon.de;
 }
 
-type SpeciesRule = { taxon: { de: string; sci?: string | undefined }; speciesId?: string | undefined };
+type SpeciesRule = {
+  taxon: { de: string; sci?: string | undefined };
+  speciesId?: string | undefined;
+  alsoSpeciesIds?: readonly string[] | undefined;
+};
+
+/** Gilt die Regel für diese Fangbuch-Art (Hauptart oder ausdrücklich mitgemeinte Art)? */
+export function ruleCovers(r: Pick<SpeciesRule, 'speciesId' | 'alsoSpeciesIds'>, id: string): boolean {
+  return r.speciesId === id || (r.alsoSpeciesIds?.includes(id) ?? false);
+}
 
 /** Gleiche Art über Listen hinweg: Fangbuch-Art, sonst der Name aus dem Rechtstext. */
 const speciesKey = (r: SpeciesRule) => r.speciesId ?? normalize(r.taxon.de);
@@ -210,8 +224,8 @@ const speciesKey = (r: SpeciesRule) => r.speciesId ?? normalize(r.taxon.de);
 export function matchesSpecies(r: SpeciesRule, query: string): boolean {
   const q = normalize(query);
   if (!q) return true;
-  const sp = r.speciesId ? speciesById(r.speciesId) : undefined;
-  const names = [r.taxon.de, r.taxon.sci, sp?.de, sp?.sci, ...(sp?.aliases ?? [])];
+  const all = [r.speciesId, ...(r.alsoSpeciesIds ?? [])].flatMap((id) => (id ? [speciesById(id)] : []));
+  const names = [r.taxon.de, r.taxon.sci, ...all.flatMap((sp) => [sp?.de, sp?.sci, ...(sp?.aliases ?? [])])];
   return names.some((n) => n !== undefined && normalize(n).includes(q));
 }
 

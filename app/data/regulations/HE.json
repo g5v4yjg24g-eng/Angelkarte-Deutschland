@@ -2,7 +2,7 @@
   "stateCode": "HE",
   "status": "partial",
   "missing": [
-    "Atlantische Forelle (§ 2 Abs. 1, Bachforellen, Meerforellen, Seeforellen): Regel ist keiner einzelnen Fangbuch-Art zugeordnet, die Prüfung beim Fang schweigt dazu"
+    "Schonbezirksverordnungen nach § 40 HFischG und Ausnahmen der oberen Fischereibehörde (§ 2 Abs. 2 HFischV)"
   ],
   "checkedAt": "2026-11-23",
   "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, GVBl. Hessen 2023 Nr. 15 von starweb.hessen.de); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Abgleich mit den vom Nutzer gelieferten PDFs (HFischV Erstfassung, HFischG Gesamtausgabe bis 23.12.2025) am 2026-11-23 durch Claude: Schonzeiten, Entnahmemaße und Fischereischein-Regeln unverändert, noch nicht vom Nutzer gegengeprüft",
@@ -62,6 +62,8 @@
         "de": "Atlantische Forelle",
         "sci": "Salmo trutta (LINNAEUS, 1758)"
       },
+      "speciesId": "brown_trout",
+      "alsoSpeciesIds": ["sea_trout", "lake_trout"],
       "note": "Bachforellen, Meerforellen, Seeforellen",
       "basisId": "HFischV",
       "basisRef": "§ 2 Abs. 1",
@@ -222,6 +224,8 @@
         "de": "Atlantische Forelle",
         "sci": "Salmo trutta (LINNAEUS, 1758)"
       },
+      "speciesId": "brown_trout",
+      "alsoSpeciesIds": ["sea_trout", "lake_trout"],
       "note": "Bachforellen, Meerforellen, Seeforellen",
       "basisId": "HFischV",
       "basisRef": "§ 2 Abs. 1",

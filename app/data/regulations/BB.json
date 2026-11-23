@@ -607,6 +607,8 @@
         "de": "Stör",
         "sci": "alle Arten der Familie Acipenseridae"
       },
+      "speciesId": "sturgeon",
+      "alsoSpeciesIds": ["sterlet"],
       "basisId": "BbgFischO",
       "basisRef": "Anlage (zu § 2 Abs. 1)"
     },
