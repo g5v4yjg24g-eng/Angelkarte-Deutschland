@@ -338,3 +338,14 @@ Checkliste je Gerät: Installation, Intro, Standortfreigabe, Fang offline mit Fo
 - [ ] Quellen- und Lizenzseite vollständig; Datenschutzhinweis vorhanden
 - [ ] NRW `verified`; alle anderen Länder mit klarem Status (`partial`/`draft` oder „keine Angaben")
 - [ ] Kein Feature behauptet Offline-Fähigkeit, die nicht durch PWA-6/CAT-2/M10-Test belegt ist
+
+## Cloud-Sicherung (BACKUP_PLAN.md)
+
+| ID | Prüfung |
+|---|---|
+| CLOUD-1 | Zustimmungsfenster → Ja: Ort wird gesichert, Stand und Verbrauch erscheinen, „Jetzt sichern“, kein erneutes Fenster |
+| CLOUD-2 | „Nicht jetzt“: nichts gesendet, kein erneutes Fenster; später per Schalter einschalten |
+| CLOUD-3 | Aus der Cloud wiederherstellen mit Vorschau; Cloud-Sicherung löschen |
+| CLOUD-4 | Grenze erreicht → Hinweis |
+| Server | `supabase/tests/cloud_backup.sql` (Rechte, Dateien, Grenze, Löschmarken, Sperre) |
+| Unit | `domain/cloudBackup.test.ts`, `data/cloudBackupService.test.ts` |

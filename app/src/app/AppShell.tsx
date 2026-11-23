@@ -10,6 +10,7 @@ import { SessionChip } from '../features/sessions/SessionChip';
 import { WeatherSync } from '../features/weather/WeatherSync';
 import { PostSync } from '../features/sharing/PostSync';
 import { CloudBackupSync } from '../features/backup/CloudBackupSync';
+import { CloudBackupConsent } from '../features/backup/CloudBackupConsent';
 import { AvatarSync } from '../features/profile/AvatarSync';
 import { ProfileExtrasSync } from '../features/profile/ProfileExtrasSync';
 import { AppLinkHandler } from '../features/links/AppLinkHandler';
@@ -72,6 +73,7 @@ export function RootLayout() {
       <WeatherSync />
       <PostSync />
       <CloudBackupSync />
+      <CloudBackupConsent />
       <AvatarSync />
       <ProfileExtrasSync />
       <AppLinkHandler />

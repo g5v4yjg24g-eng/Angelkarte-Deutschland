@@ -8,9 +8,11 @@ export function backupReminderDue(p: {
   oldestChange?: string | undefined;
   lastBackupAt?: string | undefined;
   snoozedUntil?: string | undefined;
+  /** Die Cloud-Sicherung ist aktuell (siehe cloudBackupFresh): dann keine Erinnerung */
+  cloudFresh?: boolean | undefined;
   now: number;
 }): boolean {
-  if (p.changes === 0) return false;
+  if (p.changes === 0 || p.cloudFresh) return false;
   if (p.snoozedUntil && Date.parse(p.snoozedUntil) > p.now) return false;
   if (p.changes >= REMIND_AFTER_CHANGES) return true;
   const ref = p.lastBackupAt ?? p.oldestChange;

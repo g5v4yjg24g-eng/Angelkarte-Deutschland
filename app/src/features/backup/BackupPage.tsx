@@ -14,6 +14,7 @@ import {
   type StorageStatus,
 } from '../../lib/storage';
 import { ImportPanel } from './ImportPanel';
+import { CloudBackupSection } from './CloudBackupSection';
 import { catchesCsv } from './catchCsv';
 import { getDb } from '../../data/db';
 import { toZonedIso } from '../../domain/time';
@@ -80,6 +81,8 @@ export function BackupPage() {
   return (
     <Page title={de.backup.title} back="/mehr">
       {message && <Notice tone={message.tone}>{message.text}</Notice>}
+
+      <CloudBackupSection />
 
       <Section title={de.backup.storageTitle}>
         <p>{de.backup.storageIntro}</p>

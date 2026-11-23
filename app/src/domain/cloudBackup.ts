@@ -422,6 +422,8 @@ export interface CloudDeviceState {
   /** nach der Zustimmung (oder später ausgeschaltet) */
   enabled: boolean;
   consentAt?: string | undefined;
+  /** „Nicht jetzt“ im Zustimmungsfenster; das Fenster kommt dann nicht wieder, einschalten geht unter Daten & Sicherung */
+  declinedAt?: string | undefined;
   state: DeviceBackupState;
   /** SHA-256 der Foto-Bytes je Foto-ID (Fotos ändern sich nie) – Grundlage für den Verweis statt Doppelablage */
   hashes: Record<string, string>;
@@ -448,3 +450,12 @@ export function nextCloudRun(s: CloudDeviceState, now: number): number {
   if (s.lastError === 'failed') return last + (RETRY_MS[Math.min(s.retries ?? 0, RETRY_MS.length - 1)] ?? 5 * 60 * 1000);
   return last + CLOUD_INTERVAL_MS;
 }
+
+/** Fragt die App einmal nach der Zustimmung? Nur wenn weder zugestimmt noch abgelehnt wurde. */
+export const shouldAskCloudConsent = (s: CloudDeviceState | undefined): boolean =>
+  !s || (!s.enabled && !s.consentAt && !s.declinedAt);
+
+/** Eine aktuelle Cloud-Sicherung ersetzt die Erinnerung an die Datei-Sicherung (nicht älter als 3 Tage, ohne Fehler) */
+export const CLOUD_FRESH_MS = 3 * 24 * 60 * 60 * 1000;
+export const cloudBackupFresh = (s: CloudDeviceState | undefined, now: number): boolean =>
+  !!s?.enabled && !s.lastError && !!s.lastOkAt && now - Date.parse(s.lastOkAt) <= CLOUD_FRESH_MS;

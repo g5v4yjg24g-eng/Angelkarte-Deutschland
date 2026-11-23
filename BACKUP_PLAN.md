@@ -1,6 +1,6 @@
 # BACKUP_PLAN.md – Sicherung des Fangbuchs auf dem Server (Planung)
 
-Stand: 2026-11-23 · Status: **Planung, Entscheidungen des Nutzers eingetragen (§7), Entwurf D wartet auf Freigabe**. Es ist noch nichts gebaut.
+Stand: 2026-11-23 · Status: **Etappen 1–4 umgesetzt** (Server, Logik, Dienst, Oberfläche); offen: Pro-Tarif ab Livegang, Datenschutzlabel im App Store, Sync später.
 
 ## 1. Ausgangslage
 
