@@ -2,13 +2,12 @@
   "stateCode": "SH",
   "status": "partial",
   "missing": [
-    "Küstengewässer (Küstenfischereiverordnung)",
-    "Gewässerliste der Winterschonzeit (Anlage 3)",
     "befristete Allgemeinverfügungen",
-    "Urlauberfischereischein und Höhe der Fischereiabgabe (Verordnungen nach § 26 Abs. 5 und § 29 Abs. 6 LFischG)"
+    "Urlauberfischereischein und Höhe der Fischereiabgabe (Verordnungen nach § 26 Abs. 5 und § 29 Abs. 6 LFischG)",
+    "Küstenfischereiverordnung: Anlage 2 Absatz 3 (Mündungen der Zuflüsse) und Absatz 4 bis 6 (u. a. Walschutzgebiet) nur zusammengefasst; Fischerei der Erwerbsfischer nicht erfasst"
   ],
-  "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedAt": "2026-11-23",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; BiFVO Anlage 3 (Winterschonzeit-Gewässerliste) und Küstenfischereiverordnung (Anlage 1, 2) ergänzt, Mindestmaße/Schonzeiten der Küste nur als Text (die App prüft den Geltungsbereich Küste/Binnen nicht) (Claude, 2026-11-23, noch nicht vom Nutzer gegengeprüft)",
   "legalBasis": [
     {
       "id": "BiFVO",
@@ -23,6 +22,13 @@
       "version": "§ 35 zuletzt geändert durch Art. 8 Ges. v. 11.12.2025 (GVOBl. 2025 Nr. 165); §§ 14, 26–29 gültig ab 01.10.2025; Gesamtausgabe Stand 22.10.2026",
       "url": "https://www.gesetze-rechtsprechung.sh.juris.de/",
       "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "KüFVO SH",
+      "title": "Landesverordnung über die Ausübung der Fischerei in den Küstengewässern (Küstenfischereiverordnung – KüFVO)",
+      "version": "vom 3. Dezember 2018, gültig ab 01.01.2019; vom Nutzer als PDF bereitgestellt (Gesamtausgabe)",
+      "url": "https://www.gesetze-rechtsprechung.sh.juris.de/",
+      "retrievedAt": "2026-11-23"
     }
   ],
   "closedSeasons": [
@@ -644,6 +650,30 @@
       "text": "In offenen Binnengewässern dürfen nur aus dem Gewässersystem des Fanggewässers stammende oder in Aquakulturanlagen erzeugte Fische heimischer und nicht gebietsfremder Arten oder Teile von ihnen als Köder verwendet werden.",
       "basisId": "BiFVO",
       "basisRef": "§ 8"
+    },
+    {
+      "topic": "Winterschonzeit: Gewässerliste",
+      "text": "Vom 1. Oktober bis 31. Dezember ist der Fischfang in folgenden Gewässern verboten, ebenso in ihren Zuläufen, soweit diese für kieslaichende Fischarten geeignete Substratstrukturen aufweisen. Ausgenommen sind die Seen im Zuge dieser Gewässer und Gewässerstrecken. 1. Bille: von der Quelle bis zur Mündung in den Reinbeker Mühlenteich 2. Alster und Ammersbek: Alster vom Zufluss der Alten Alster und Ammersbek unterhalb der L224 jeweils bis zur Landesgrenze mit der Freien und Hansestadt Hamburg 3. Nessendorfer Mühlenau, Flaßlandbek und Schmiedenau: jeweils von der Quelle bis zur Mündung in den Sehlendorfer Binnensee 4. Steinau (Büchen): von der Quelle bis zur Mündung in den Elbe-Lübeck-Kanal 5. Beste: vom Zufluss der Süderbeste bis zur Mündung in die Trave 6. Trave: unterhalb des Wardersees bis zur Brücke querab der Kupfermühle 7. Lachsbach und Kremper Au: von der Quelle bis zur Mündung in das Neustädter Binnenwasser sowie im Neustädter Binnenwasser bis zur Brücke der Bundesautobahn A 1 über das Gewässer 8. Treene: unterhalb des Winderatter Sees bis zur Mündung der Bollingstedter Au 9. Loiter Au: von der Quelle bis zur Mündung in die Schlei 10. Osterau: unterhalb der Straßenbrücke bei Rieshorn bis oberhalb der Mündung in die Bramau 11. Steinau (Nusse): unterhalb des Zuflusses des Ritzerauer Mühlenbachs bis zur Mündung in den Elbe-Lübeck-Kanal 12. Linau: von der Quelle bis zur Mündung in den Elbe-Lübeck-Kanal 13. Schafflunder Mühlenstrom: von der Quelle bis zur Mündung in den Randgraben 14. Hagener Au und Salzau: unterhalb des Selenter Sees bis zur Mündung in die Ostsee 15. Schwentine: unterhalb des Wasserkraftwerks am Auslauf des Rosensees zur Brücke bei der Oppendorfer Mühle 16. Mühlenau (Wehrau): unterhalb des Wardersees bis oberhalb des Zuflusses der Linnbek 17. Haaler Au: von der Quelle bis zur Mündung der Fuhlenau 18. Farver Au: von der Quelle bis zur Mündung in die Johannisbek 19. Kükelühner Mühlenau: von der Quelle bis zur Mündung in die Ostsee 20. Alte Schwentine: unterhalb des Stolper Sees bis zur Mündung in den Postsee 21. Hohenfelder Mühlenau: unterhalb des Selenter Sees bis zur Mündung in die Ostsee 22. Langballigau: unterhalb der Brücke bei Reumoos bis zur Mündung in die Ostsee 23. Tensfelder Au: unterhalb der Kläranlage Tensfeld bis zur Mündung in den Plöner See 24. Schwartau: unterhalb des Barkauer Sees bis zur Mündung der Curau 25. Pulverbek: von der Quelle bis zur Mündung in die Trave 26. Krückau: unterhalb der Brücke in Heede bis zum Zufluss der Offenau 27. Stör: von der Quelle bis zur Mündung der Bünzau 28. Mühlenau und Düpenau: jeweils von der Quelle bis zum Zusammenfluss beider Gewässer 29. Rantzau: von der Quelle bis zur Mündung in die Stör 30. Kossau: unterhalb der Brücke L55 bis zur Brücke L178 31. Kronsbek: von der Quelle bis zur Mündung in die Ostsee 32. Bünzau: vom Zusammenfluss von Fuhlenau und Buckener Au 33. Osterbek: von der Quelle bis zur Mündung in die Schlei 34. Goddestorfer Au: von der Quelle bis zur Mündung in die Ostsee 35. Johannisbek: von der Quelle bis zur Brücke in Johannisdorf 36. Mühlenbarbeker Au: von der Quelle bis zur Mündung in die Stör 37. Eider: unterhalb des Bothkamper Sees bis zur Eiderbrücke östlich von Schmalstede 38. Jevenau: von der Quelle bis zur Mündung in den Nord-Ostsee-Kanal 39. Schmalfelder Au: unterhalb vom Zufluss der Buerwischbek bis oberhalb der Klärteiche in Schmalfeld 40. Gieselau: von der Quelle bis zur Mündung in den Nord-Ostsee-Kanal 41. Lippingau: unterhalb der L248 bis zur Mündung in die Ostsee 42. Koseler Au: von der Quelle bis oberhalb des Zuflusses der Pukdammer Au 43. Unterlauf der Malenter Au: vom Ausfluss aus dem Schwonausee bis zur Mündung in den Kellersee 44. Kiebitzbek: von der Quelle bis zur Mündung in die Schwentine",
+      "basisId": "BiFVO",
+      "basisRef": "§ 5 Abs. 1 und 2, Anlage 3"
+    },
+    {
+      "topic": "Küstengewässer: Geltung",
+      "text": "Die Küstenfischereiverordnung gilt für die Küstengewässer nach § 2 Absatz 2 des Landesfischereigesetzes und für jede Art der Fischerei, soweit nicht durch Rechtsakte der Europäischen Union etwas anderes bestimmt wird. Mindestmaße werden von der Kopfspitze bis zum Ende der Schwanzflosse gemessen, sofern in Anlage 1 nicht anders angegeben. Es ist verboten, untermaßige oder in der Schonzeit gefangene Fische sich anzueignen, anzulanden, zu befördern, zu verkaufen oder anderweitig zu verwerten; sie sind vom Fanggerät zu befreien und unverzüglich frei zurückzusetzen.",
+      "basisId": "KüFVO SH",
+      "basisRef": "§ 1, § 2 Abs. 1 bis 3"
+    },
+    {
+      "topic": "Küstengewässer: Mindestmaße und Schonzeiten (Anlage 1)",
+      "text": "Mindestmaß und Schonzeit je Art in den Küstengewässern: Aal 45 cm. Aalmutter 23 cm, Schonzeit 15. September bis 31. Januar. Lachs 60 cm, Schonzeit 1. Oktober bis 31. Dezember für Fische im Laichkleid (silbrige Fische mit losen Schuppen sind ausgenommen). Meerforelle 40 cm, Schonzeit 1. Oktober bis 31. Dezember für Fische im Laichkleid (silbrige Fische mit losen Schuppen sind ausgenommen). Bachforelle 40 cm, Schonzeit 1. Oktober bis 31. Dezember für Fische im Laichkleid (silbrige Fische mit losen Schuppen sind ausgenommen). Hering: Nordsee 20 cm, Ostsee 11 cm. Steinbutt 30 cm, in der Ostsee Schonzeit 1. Juni bis 31. Juli. Glattbutt 30 cm, in der Ostsee Schonzeit 1. Juni bis 31. Juli. Scholle (Goldbutt): Nordsee 27 cm, Ostsee 25 cm, weibliche Scholle Schonzeit 1. Februar bis 30. April. Flunder: Nordsee 25 cm, Ostsee 25 cm, weibliche Flunder Schonzeit 1. Februar bis 30. April. Scharbe (Kliesche) 23 cm. Seezunge 24 cm. Dorsch (Kabeljau): Nordsee 35 cm, Ostsee 38 cm. Schellfisch in der Nordsee 30 cm. Wittling: Nordsee 27 cm, Ostsee 23 cm. Quappe ganzjährig geschont in der Elbe und ihren Nebengewässern. Makrele in der Nordsee 30 cm. Finte in der Nordsee 30 cm. Meeräsche 40 cm. Wolfsbarsch 42 cm. Zander 40 cm, Schonzeit 15. Februar bis 15. Mai in der Elbe und ihren Nebengewässern. Hecht 45 cm, Schonzeit 15. Februar bis 30. April. Wels 70 cm. Flusskrebs ganzjährig geschont. Hummer in der Nordsee 11 cm (gemessen von der Spitze des Stirnhornes bis zum Hinterende des Brustpanzers), Schonzeit 5. Juli bis 31. August; eiertragende weibliche Hummer in der Nordsee ganzjährig geschont, sofern nicht an die Biologische Anstalt Helgoland zu Zuchtzwecken geliefert. Herzmuschel Schonzeit 1. Mai bis 30. Juni. Miesmuschel außerhalb des Nationalparks 4 cm Schalenlänge, Schonzeit 15. April bis 14. Juli. Trogmuschel 3 cm Schalenlänge, Schonzeit 1. Mai bis 30. Juni. Pazifische Auster 50 g. Amerikanische Schwertmuschel 10 cm Schalenlänge. Störe (Acipenser sturio und Acipenser oxyrinchus), Alse (Maifisch), Nordseeschnäpel, Meerneunauge, Flussneunauge und Zährte ganzjährig geschont. Ostseeschnäpel 40 cm, Schonzeit 1. Dezember bis 28. Februar.",
+      "basisId": "KüFVO SH",
+      "basisRef": "§ 2 Abs. 1, Anlage 1"
+    },
+    {
+      "topic": "Küstengewässer: Laich- und Fischschonbezirke (Anlage 2)",
+      "text": "Zusammengefasst: Das Lindauer Noor mit Noorhals ist vom 1. März bis 31. Mai Laichschonbezirk. Vom 1. Juli bis 31. Dezember sind Fischschonbezirke: Nordsee-Küstengewässer im Kreis von 500 m um die grüne Leuchtbake an der Krückau-Mündung, im Kreis von 500 m um die Spitze der nördlichen Mole des Pinnau-Sperrwerkes sowie in der Stör 500 m oberhalb des Sperrwerkes bis zur Mündung und in der Elbe zwischen Ufer und Fahrwasser 500 m unterhalb bis 500 m oberhalb der Störmündung. Vom 1. Oktober bis 31. Dezember sind Fischschonbezirke: die Häfen von Schlüttsiel und Holmersiel und der Meldorfer Hafen im Sperrwerk Speicherkoog Dithmarschen sowie Ostsee-Küstengewässer vor den Mündungen zahlreicher Zuflüsse in der Flensburger Förde, der Eckernförder Bucht und weiteren Küstenabschnitten (Aufzählung und Begrenzung in Anlage 2 Absatz 3). In den Schonbezirken ist der Fischfang für die festgesetzten Zeiten verboten (§ 7 Abs. 1). Ausgenommen sind im Gebiet vor der Schleimündung der Fischfang mit der Handangel von Land aus und im Hummerschutzgebiet die Erwerbsfischerei mit Schleppangeln auf Makrele und Kabeljau.",
+      "basisId": "KüFVO SH",
+      "basisRef": "§ 7 Abs. 1, Anlage 2 Abs. 1 bis 3"
     }
   ]
 }

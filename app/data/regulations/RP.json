@@ -2,11 +2,11 @@
   "stateCode": "RP",
   "status": "partial",
   "missing": [
-    "Gewässerliste der Frühjahrsschonzeit im Detail (§ 18 Abs. 1, Anlage 3)",
+    "Frühjahrsschonzeit: die sommerwarmen Gewässer des Oberrheinischen Tieflands nach § 18 Abs. 1 Nr. 4 stehen nur als Karte in Anlage 3 und sind nicht erfasst",
     "Allgemeinverfügungen der oberen Fischereibehörde (§§ 21, 22)"
   ],
-  "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedAt": "2026-11-23",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; § 18 Abs. 1 und 2 (Gewässer der Frühjahrsschonzeit) aus der Gesamtausgabe ergänzt (Claude, 2026-11-23, noch nicht vom Nutzer gegengeprüft)",
   "legalBasis": [
     {
       "id": "LFischO RP",
@@ -627,6 +627,18 @@
       "text": "Zur Prüfung wird nicht zugelassen, wer das 13. Lebensjahr noch nicht vollendet hat; Voraussetzung ist ein Vorbereitungslehrgang von mindestens 30 Stunden, davon mindestens acht Stunden praktische Einweisung.",
       "basisId": "LFischO RP",
       "basisRef": "§ 5 Abs. 2 und 5"
+    },
+    {
+      "topic": "Frühjahrsschonzeit: Gewässer",
+      "text": "Die Frühjahrsschonzeit (15. April bis 31. Mai) gilt für: (1) im Zuständigkeitsbereich der Struktur- und Genehmigungsdirektion Nord: der Rhein; die Mosel, soweit sie nicht Grenzgewässer zu Luxemburg ist; die Lahn; die Nahe ab Bad Münster am Stein von der Mündung der Alsenz bis zur Gemarkungsgrenze Laubenheim/Bingen; der Glan von der Gemarkungsgrenze Odenbach/Meisenheim bis zur Mündung in die Nahe; die Sieg; die Ahr vom Bodendorfer Wehr (etwa 100 m oberhalb der ehemaligen Gemarkungsgrenze Bodendorf-Sinzig) bis zur Mündung in den Rhein; die Saar; die Prüm von der Mündung der Nims bis zur Mündung in die Sauer; die Kyll ab Kordel von der Mündung des Welschbilligerbaches bis zur Mündung in die Mosel. (2) im Zuständigkeitsbereich der Struktur- und Genehmigungsdirektion Süd: der Rhein; alle Altrheingewässer, Seitenarme und blind endende Gewässer, soweit sie mit dem Rhein eine offene Verbindung haben; der Michelsbach mit allen Nebengewässern von Leimersheim bis zur Sondernheimer Schleuse in Germersheim; der Glan von der Mündung des Ohmbaches bis zur Gemarkungsgrenze Odenbach/Meisenheim; die Nahe; die Lauter ab Kaiserslautern von der Mündung des Eselsbaches bis zur Mündung in den Glan; der Appelbach ab Badenheim von der Mündung des Karlebaches bis zur Mündung in die Nahe; der Wiesbach ab Flonheim bis zur Mündung in die Nahe; die Selz ab Framersheim von der Mündung des Weisasserbaches bis zur Mündung in den Rhein; die Pfrimm ab Harxheim von der Mündung des Ammelbaches bis zur Mündung in den Rhein; die Isenach ab Bad Dürkheim bis zur Mündung in den Rhein; der Speyer- und Rehbach ab Bad Neustadt einschließlich Ranschgraben bis zur Mündung in den Rhein; die Queich ab Queichheim von der Mündung des Birnbaches einschließlich Spiegelbach bis zur Mündung in den Rhein; der Otterbach ab Freckenfeld bis zur Mündung in den Rhein; die Lauter ab Altenstadt bis zur Mündung in den Rhein; der Saarbach ab Fischbach von der Mündung des Fischbaches bis zur Staatsgrenze. (3) die in (1) und (2) nicht aufgeführten Nebengewässer (Flüsse und Bäche) des Rheins, der Altrheingewässer, der Mosel, der Nahe (von der Mündung bis Idar-Oberstein) und der Lahn bis 1 km aufwärts von der Mündung. (4) die in (2) nicht aufgeführten sommerwarmen Gewässer im Naturraum Oberrheinisches Tiefland, die in Anlage 3 (Karte) dargestellt sind.",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 18 Abs. 1"
+    },
+    {
+      "topic": "Frühjahrsschonzeit: Ausnahmen",
+      "text": "Die Frühjahrsschonzeit gilt nicht für die Benutzung von Fanggeräten, die weder gezogen noch gestoßen werden (stille Fischerei, z. B. Stellnetze, Aalhamen, Ankerkuilen, Steerthamen, Garn-, Draht-, Korbreusen, Treib-(Schwimm-)netze ohne Begleitung von Fahrzeugen), und nicht für den Fischfang mit der Hand- und Schleppangel; jedoch sind der Gebrauch von Spinnern, Blinkern oder sonstigen künstlichen Ködern und Systemen mit Ausnahme der künstlichen Fliegen während dieser Zeit verboten.",
+      "basisId": "LFischO RP",
+      "basisRef": "§ 18 Abs. 2"
     }
   ]
 }
