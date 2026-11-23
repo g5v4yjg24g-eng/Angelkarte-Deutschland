@@ -7,6 +7,7 @@ import type { FeedPost } from '../domain/feed';
 import { PhotoSchema, PostSchema, type Photo, type Post } from '../domain/schemas';
 import { newId } from '../domain/id';
 import { nowIso } from '../domain/time';
+import { makeMid } from '../lib/processPhoto';
 import { getDb, type FangpunktDB } from './db';
 
 export interface PostSyncResult {
@@ -57,7 +58,14 @@ const clearSyncState = (p: Post) => {
 async function photosOf(p: Post, db: FangpunktDB) {
   const rows = await db.photos.bulkGet(p.photoIds);
   if (rows.some((r) => !r)) return undefined;
-  return rows.flatMap((r) => (r ? [{ blob: r.blob, mime: r.mime, thumb: r.thumb }] : []));
+  const out = [];
+  for (const r of rows) {
+    if (!r) continue;
+    // mittlere Größe für den Feed; schlägt das fehl, nimmt der Feed das Originalfoto
+    const mid = r.mime === 'image/jpeg' || r.mime === 'image/png' || r.mime === 'image/webp' ? await makeMid(r.blob) : undefined;
+    out.push({ blob: r.blob, mime: r.mime, thumb: r.thumb, ...(mid ? { mid } : {}) });
+  }
+  return out;
 }
 
 export async function syncPosts(

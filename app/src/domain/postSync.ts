@@ -105,6 +105,8 @@ export const photoExt = (mime: string) =>
 export const photoPath = (userId: string, postId: string, index: number, mime: string) =>
   `${userId}/${postId}/${index + 1}.${photoExt(mime)}`;
 export const thumbPath = (photo: string) => photo.replace(/\.(jpg|png|webp)$/, '.thumb.jpg');
+/** Mittlere Größe für den Feed: `<Nr>.mid.jpg` (fehlt bei älteren Beiträgen und kleinen Fotos) */
+export const midPath = (photo: string) => photo.replace(/\.(jpg|png|webp)$/, '.mid.jpg');
 /** Bildformat aus dem Pfad (für vom Server geholte Fotos) */
 export const mimeOfPath = (path: string): 'image/jpeg' | 'image/png' | 'image/webp' =>
   path.endsWith('.png') ? 'image/png' : path.endsWith('.webp') ? 'image/webp' : 'image/jpeg';

@@ -62,8 +62,8 @@ export interface SharedPostInput {
   caption?: string | undefined;
   visibility: PostVisibility;
   createdAt: string;
-  /** Fotos samt Vorschaubild (320 px); schon im Speicher vorhandene werden nicht erneut hochgeladen */
-  photos: { blob: Blob; mime: string; thumb?: Blob | undefined }[];
+  /** Fotos samt Vorschaubild (320 px) und mittlerer Größe (1080 px, nur wenn das Foto größer ist); schon im Speicher vorhandene werden nicht erneut hochgeladen */
+  photos: { blob: Blob; mime: string; thumb?: Blob | undefined; mid?: Blob | undefined }[];
   speciesId?: string | undefined;
   lengthCm?: number | undefined;
   /** Highlight einer gemeinsamen Session (Paket 8b) */

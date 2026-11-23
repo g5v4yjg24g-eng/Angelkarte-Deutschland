@@ -9,6 +9,7 @@ import {
   retryAt,
   shareStatus,
   syncSummary,
+  midPath,
   thumbPath,
 } from './postSync';
 
@@ -131,6 +132,8 @@ describe('Beiträge abgleichen (PST-1)', () => {
     expect(photoPath('u', 'p', 0, 'image/jpeg')).toBe('u/p/1.jpg');
     expect(photoPath('u', 'p', 1, 'image/png')).toBe('u/p/2.png');
     expect(thumbPath('u/p/2.png')).toBe('u/p/2.thumb.jpg');
+    expect(midPath('u/p/2.png')).toBe('u/p/2.mid.jpg');
+    expect(midPath('u/p/1.jpg')).toBe('u/p/1.mid.jpg');
     expect(mimeOfPath('u/p/2.webp')).toBe('image/webp');
   });
 });

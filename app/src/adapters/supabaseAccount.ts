@@ -13,7 +13,7 @@ import type { Profile } from '../domain/account';
 import { parseBadges } from '../domain/badges';
 import { parseFriendRows } from '../domain/friends';
 import { FollowResultSchema, parseFollowCounts, parseFollowRows } from '../domain/follows';
-import { photoPath, thumbPath } from '../domain/postSync';
+import { midPath, photoPath, thumbPath } from '../domain/postSync';
 import { FEED_PAGE, parseFeedRows, type FeedPost } from '../domain/feed';
 import { parsePrefs, parseSuggestionRows } from '../domain/suggestions';
 import { parseUserHits, parseUserProfile } from '../domain/userProfile';
@@ -81,13 +81,16 @@ async function withPhotoUrls(c: SupabaseClient, posts: Omit<FeedPost, 'photoUrls
   const paths = posts.flatMap((p) => p.photoPaths);
   const urls = new Map<string, string>();
   if (paths.length) {
+    // Originalfoto und mittlere Größe (Feed) zugleich signieren; Adressen kosten keinen Datenverkehr.
+    // Fehlt die mittlere Größe (ältere Beiträge, kleine Fotos), bleibt dieser Eintrag leer und das Original gilt.
     const { data: signed, error } = await c.storage
       .from(POST_BUCKET)
-      .createSignedUrls(paths, PHOTO_URL_SECONDS);
+      .createSignedUrls([...paths, ...paths.map(midPath)], PHOTO_URL_SECONDS);
     if (error) fail(error);
-    for (const s of signed ?? []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
+    for (const s of signed ?? []) if (s.path && s.signedUrl && !s.error) urls.set(s.path, s.signedUrl);
   }
-  return posts.map((p) => ({ ...p, photoUrls: p.photoPaths.map((path) => urls.get(path) ?? '') }));
+  const feedUrl = (path: string) => urls.get(midPath(path)) ?? urls.get(path) ?? '';
+  return posts.map((p) => ({ ...p, photoUrls: p.photoPaths.map(feedUrl) }));
 }
 const AVATAR_BUCKET = 'avatars';
 
@@ -345,6 +348,7 @@ export function supabaseAccount(
         const path = photoPath(id, post.id, i, photo.mime);
         await upload(path, photo.blob, photo.mime);
         if (photo.thumb) await upload(thumbPath(path), photo.thumb, 'image/jpeg');
+        if (photo.mid) await upload(midPath(path), photo.mid, 'image/jpeg');
         paths.push(path);
       }
       // Kein Upsert: der bräuchte Schreibrechte auf alle Spalten und scheiterte immer (*_publish_post.sql)
@@ -918,7 +922,10 @@ export function supabaseAccount(
     async modDeleteContent(kind, id, photoPaths, reportId, note) {
       const c = await get();
       if (kind === 'post' && photoPaths.length) {
-        const { error } = await c.storage.from(POST_BUCKET).remove(photoPaths);
+        // auch Vorschaubild und mittlere Größe (nicht vorhandene Dateien übergeht der Speicher)
+        const { error } = await c.storage
+          .from(POST_BUCKET)
+          .remove([...photoPaths, ...photoPaths.map(thumbPath), ...photoPaths.map(midPath)]);
         if (error) fail(error);
       }
       const { error } = await c.rpc('mod_delete_content', {
