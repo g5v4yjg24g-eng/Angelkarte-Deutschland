@@ -2,17 +2,17 @@
   "stateCode": "HH",
   "status": "partial",
   "missing": [
-    "Änderungen der HmbFAnGDVO nach der Gesamtausgabe vom 25.09.2023 nicht geprüft (Portal gesperrt; die abrufbare PDF-Fassung stammt von diesem Stand)"
+    "HmbFAnGDVO §§ 2 und 3 (Prüfungsausschüsse, Durchführung der Prüfung), § 5 (Zulassung von Angel-Guides) und §§ 11, 12 (Fischereifahrzeuge, Schutz des Aals) nicht übertragen"
   ],
   "checkedAt": "2026-11-23",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Quelle HmbFAnG mit Gesamtausgabe abgeglichen (Claude), gegengeprüft vom Nutzer am 2026-10-22; § 9 und § 10 HmbFAnGDVO aus dem amtlichen PDF (dokumente.hamburg.de) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Quelle HmbFAnG mit Gesamtausgabe abgeglichen (Claude), gegengeprüft vom Nutzer am 2026-10-22; § 9 und § 10 HmbFAnGDVO aus dem amtlichen PDF (dokumente.hamburg.de) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft; Stand der HmbFAnGDVO am 2026-11-23 mit der aktuellen Gesamtausgabe abgeglichen (Claude, PDF vom Nutzer): keine Änderung seit 2022, Entnahmefenster und Schonzeiten stichprobenartig verglichen",
   "legalBasis": [
     {
       "id": "HmbFAnGDVO",
       "title": "Verordnung zur Durchführung des Hamburgischen Fischerei- und Angelgesetzes",
-      "version": "vom 4. Juni 2019 (HmbGVBl. S. 169), geändert durch Verordnung vom 1. Februar 2022 (HmbGVBl. S. 88); Gesamtausgabe Stand 25.09.2023",
+      "version": "vom 4. Juni 2019 (HmbGVBl. S. 169), geändert durch Verordnung vom 1. Februar 2022 (HmbGVBl. S. 88); Gesamtausgabe, am 23.11.2026 aktuellste Fassung (keine Änderung seit 2022); vom Nutzer als PDF bereitgestellt",
       "url": "https://dokumente.hamburg.de/resource/blob/179406/1c1045f6e901b54e7ffc68ecfc432444/verordnung-zur-durchfuehrung-des-hamburgischen-fischerei-und-angelgesetzes-data.pdf",
-      "retrievedAt": "2026-10-22"
+      "retrievedAt": "2026-11-23"
     },
     {
       "id": "HmbFAnG",
