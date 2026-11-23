@@ -2,10 +2,10 @@
   "stateCode": "HB",
   "status": "partial",
   "missing": [
-    "übrige Regelungen der Binnenfischereiverordnung (§§ 6, 8–16, u. a. Elektrofischerei, Netze, Laichschutz) nicht einzeln erfasst"
+    "Bremische Binnenfischereiverordnung §§ 11 bis 16 (Besatz, Aalfischerei, Aufzeichnungs- und Registrierungspflichten der Erwerbsfischer, Ordnungswidrigkeiten) nicht übertragen; Anlage (Arten, die ohne Genehmigung ausgesetzt werden dürfen) nicht erfasst"
   ],
-  "checkedAt": "2026-10-22",
-  "checkedBy": "Fischereigesetz vom Nutzer gegengeprüft am 2026-10-22; Binnenfischereiverordnung maschinell übertragen (Claude), vom Nutzer gegengeprüft am 2026-10-22",
+  "checkedAt": "2026-11-23",
+  "checkedBy": "Fischereigesetz vom Nutzer gegengeprüft am 2026-10-22; Binnenfischereiverordnung maschinell übertragen (Claude), vom Nutzer gegengeprüft am 2026-10-22; §§ 6, 7 Abs. 1 und 2, 8, 9, 10 BremBiFischVO (Fassung vom 30. September 2011, PDF vom Nutzer) ergänzt (Claude, 2026-11-23, noch nicht vom Nutzer gegengeprüft)",
   "legalBasis": [
     {
       "id": "BremFiG",
@@ -487,6 +487,30 @@
       "text": "Angler haben neben den zugelassenen Fanggeräten einen Unterfangkescher, ein Maß zur Längenbestimmung, einen Schlagstock zum Betäuben, einen Hakenlöser und ein Messer mit sich zu führen. Die Landung der Fische hat, soweit örtlich möglich, mittels Unterfangkescher zu erfolgen. Für die Stockangelei ist nur das Ausbringen von zwei Stockangeln zulässig.",
       "basisId": "BremBiFischVO",
       "basisRef": "§ 7 Abs. 3 und 4"
+    },
+    {
+      "topic": "Ausnahmen",
+      "text": "Die oberste Fischereibehörde kann im Benehmen mit der obersten Naturschutzbehörde von den Verboten und Fangbeschränkungen der §§ 2 bis 5 Ausnahmen zulassen, wenn dies für wissenschaftliche Zwecke, zur nachhaltigen Bewirtschaftung von Gewässern oder für Hegemaßnahmen erforderlich ist und arten- oder sonstige naturschutz- oder tierschutzrechtliche Bestimmungen nicht entgegenstehen.",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 6 Abs. 1"
+    },
+    {
+      "topic": "Netze und ständige Fischereieinrichtungen",
+      "text": "Die Maschenöffnungsweite von Fischereinetzen muss im nassen Zustand mindestens 3 cm betragen; das gilt nicht für die Kehlen von Netzen, den hinteren Sackteil von Zugnetzen sowie für Aalreusen und Senken. Für wissenschaftliche Zwecke ist das Betreiben ständiger Fischereieinrichtungen sowie die Verwendung von Netzen mit weniger als 3 cm Maschenöffnungsweite zulässig.",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 7 Abs. 1 und 2"
+    },
+    {
+      "topic": "Wasserpflanzen und Laich",
+      "text": "Zum Schutz der Fischlaichplätze, des Fischlaichs, der Fischbrut und von Fischnährtieren ist die Entnahme oder sonstige Vernichtung von Wasserpflanzen vom 1. März bis 30. Juni verboten. Reinigung und Mähen von und an Gewässern darf im laufenden Jahr nur halbseitig erfolgen (gilt nicht für die ordnungsgemäße Gewässerunterhaltung nach dem Bremischen Wassergesetz). Fischlaich und Fischnährtiere geschützter Arten dürfen ohne Erlaubnis der obersten Fischereibehörde und der obersten Naturschutzbehörde nicht beschädigt oder den Gewässern entnommen werden; die Entnahme bedarf bei allen Arten der Genehmigung des Fischereiberechtigten oder Fischereipächters.",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 8 Abs. 1 und 2"
+    },
+    {
+      "topic": "Elektrofischerei",
+      "text": "In einem Binnengewässer darf ein Elektrofischereigerät nur mit Genehmigung der obersten Fischereibehörde im Benehmen mit der obersten Naturschutzbehörde benutzt werden (nur für die nachhaltige Bewirtschaftung oder wissenschaftliche Untersuchungen, mit nachgewiesener Ausbildung, Haftpflichtversicherung und geeignetem Gerät). Die Genehmigung gilt für ein bestimmtes Gerät und Gewässer, höchstens ein Jahr, und ist bei jeder Benutzung mitzuführen. Staatliche Stellen und Forschungseinrichtungen dürfen die Elektrofischerei für wissenschaftliche Untersuchungen ohne Genehmigung betreiben.",
+      "basisId": "BremBiFischVO",
+      "basisRef": "§ 9 Abs. 1 bis 4, § 10 Abs. 1"
     }
   ]
 }

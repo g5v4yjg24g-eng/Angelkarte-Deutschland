@@ -1,9 +1,11 @@
 {
   "stateCode": "NI",
   "status": "partial",
-  "missing": ["Küstenfischerei (eigene Verordnung)"],
-  "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
+  "missing": [
+    "Niedersächsische Küstenfischereiordnung: Registrierung und Kennzeichnung von Fischereifahrzeugen, Fanggeräte (§ 4), Elektro- und Muschelfischerei (§§ 7, 8) nicht übertragen; die Binnenfischereiordnung ist in der Fassung von 2005 erfasst, spätere Änderungen nicht geprüft"
+  ],
+  "checkedAt": "2026-11-23",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Küstenfischereiordnung §§ 5, 6 (PDF vom Nutzer) ergänzt (Claude, 2026-11-23, noch nicht vom Nutzer gegengeprüft)",
   "legalBasis": [
     {
       "id": "BiFischO",
@@ -18,6 +20,13 @@
       "version": "vom 1. Februar 1978, zuletzt geändert durch Artikel 8 des Gesetzes vom 22. September 2022 (Nds. GVBl. S. 593); § 57 in der Fassung ab 01.03.1978, § 59 ab 01.01.2023",
       "url": "https://voris.wolterskluwer-online.de/browse/document/55a09733-9b3f-312e-9d2a-1100c2ade51a",
       "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "NKüFischO",
+      "title": "Niedersächsische Küstenfischereiordnung (NKüFischO)",
+      "version": "vom 3. März 2006 (Nds. GVBl. S. 108, 200), geändert durch Verordnung vom 12. Februar 2013 (Nds. GVBl. S. 68); Rechtsstand ab 13.03.2013 (aktuelle Fassung laut VORIS); vom Nutzer als PDF bereitgestellt",
+      "url": "https://voris.wolterskluwer-online.de/",
+      "retrievedAt": "2026-11-23"
     }
   ],
   "closedSeasons": [
@@ -474,6 +483,24 @@
       "text": "Es ist verboten, Fische oder Krebse der in § 2 Abs. 1 oder § 3 Abs. 1 aufgeführten Arten als Köder zu verwenden.",
       "basisId": "BiFischO",
       "basisRef": "§ 5 Abs. 3"
+    },
+    {
+      "topic": "Küstengewässer: Geltung EU-Recht und Verbot für Nichterwerbsfischer",
+      "text": "Die Rechtsakte der Europäischen Gemeinschaft zur Erhaltung der Fischereiressourcen (Mindestmaschenöffnungen, Mindestgrößen von Fischen, Krebsen und Muscheln, Einschränkungen bestimmter Fangtätigkeiten) gelten auch in den Küstengewässern landwärts der Basislinien. Die nichterwerbsmäßige Fischerei mit einer Baumkurre über 3 m Länge oder mehreren Baumkurren mit einer Gesamtlänge von über 4 m, mit einem Schleppnetz, mit einem Stellnetz oder mit einem Hamen von mehr als 2 m Kantenlänge ist in den Küstengewässern verboten.",
+      "basisId": "NKüFischO",
+      "basisRef": "§ 5 Abs. 1 und 2"
+    },
+    {
+      "topic": "Küstengewässer: Mindestmaße",
+      "text": "In den Küstengewässern ist es verboten, Fische folgender Arten zu fangen, die nicht mindestens die angegebene Länge haben (gemessen von der Kopfspitze bis zum äußersten Ende der Schwanzflosse): Aal 45 cm, Lachs 60 cm, Meerforelle 40 cm, Hecht 45 cm, Zander 40 cm, Meeräsche 40 cm, Steinbutt 30 cm, Glattbutt (Kleist) 30 cm. Das gilt nicht für Aale, die als Satzaale verwendet werden sollen; sie dürfen nur mit Erlaubnis des Fischereiamtes gefangen werden.",
+      "basisId": "NKüFischO",
+      "basisRef": "§ 6 Abs. 1 und 2"
+    },
+    {
+      "topic": "Küstengewässer: Schonzeiten",
+      "text": "In den Küstengewässern ist es verboten, Fische folgender Arten während der angegebenen Zeiten zu fangen: Lachs 1. Oktober bis 15. März; Meerforelle 1. Oktober bis 15. Februar; Zander 15. März bis 15. Mai; ganzjährig geschont sind Stör, Maifisch, Nordseeschnäpel, Flussneunauge und Meerneunauge. Nicht entnehmbare Fische, die in den Fang geraten, sind unverzüglich wieder zurückzusetzen. Das Fischereiamt kann für Bestandsaufnahmen oder wissenschaftliche Zwecke Ausnahmen zulassen. Vom 1. Januar bis 30. Juni dürfen Nordseekrabben nicht für Fischmehl- oder Tierfutterzwecke gefischt oder angelandet werden.",
+      "basisId": "NKüFischO",
+      "basisRef": "§ 6 Abs. 3 bis 6"
     }
   ]
 }
