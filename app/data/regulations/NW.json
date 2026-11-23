@@ -3,11 +3,10 @@
   "status": "partial",
   "missing": [
     "Äschen-Gewässerabschnitte nach § 1a (Verwaltungsvorschrift im Ministerialblatt)",
-    "Prüfungsordnung für die Fischerprüfung",
-    "Gebühren für den Fischereischein"
+    "Gebührentarif der Verwaltungsgebühren (die Beträge stammen aus der Leistungsbeschreibung im Leistungsverzeichnis, ohne genannten Tarif); Höhe der Prüfungsgebühr (§ 3 Abs. 5 FischPrüfO verweist auf die Allgemeine Verwaltungsgebührenordnung)"
   ],
   "checkedAt": "2026-10-25",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude) am 2026-10-24; gegengeprüft vom Nutzer am 2026-10-25",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude) am 2026-10-24; gegengeprüft vom Nutzer am 2026-10-25; Fischerprüfungsordnung (PDF vom Nutzer) und Verwaltungsgebühren aus der Leistungsbeschreibung (auf Hinweis des Nutzers) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft",
   "legalBasis": [
     {
       "id": "LFischG",
@@ -22,6 +21,20 @@
       "version": "vom 9. März 2010 (GV. NRW. S. 172), zuletzt geändert durch Artikel 2 der Verordnung vom 1. Juli 2026 (GV. NRW. S. 414); gültig ab 03.07.2026",
       "url": "https://recht.nrw.de/lrgv/rechtsverordnung/03072026-landesfischereiverordnung-lfischvo",
       "retrievedAt": "2026-10-24"
+    },
+    {
+      "id": "FischPrüfO NRW",
+      "title": "Verordnung über die Fischerprüfung (Fischerprüfungsordnung)",
+      "version": "vom 26. November 1997 (GV. NRW. 1998 S. 62, ber. 2015 S. 572), zuletzt geändert durch Artikel 3 der Verordnung vom 1. Juli 2026 (GV. NRW. S. 414), Fassung gültig ab 03.07.2026; vom Nutzer als PDF bereitgestellt",
+      "url": "https://recht.nrw.de/",
+      "retrievedAt": "2026-11-23"
+    },
+    {
+      "id": "Leistungsbeschreibung NRW",
+      "title": "Leistungsbeschreibung „Entrichtung einer Fischereiabgabe“ im Leistungsverzeichnis des Bundes (Herausgeber Nordrhein-Westfalen; Behördenseite, nennt als Handlungsgrundlagen §§ 31 Abs. 1 und 8, 34, 35, 36 und 36a LFischG und § 22a Abs. 1 LFischVO, aber keinen Gebührentarif)",
+      "version": "Letzte Aktualisierung 23. Juni 2026; Abrufstand 23.11.2026; auf Hinweis des Nutzers übernommen",
+      "url": "https://verwaltung.bund.de/leistungsverzeichnis/de/leistung/99042010131000/herausgeber/NW-121339867/region/050000000000",
+      "retrievedAt": "2026-11-23"
     }
   ],
   "closedSeasons": [
@@ -595,6 +608,30 @@
       "text": "Wer in einem Gewässer fischt, in dem er nicht Fischereiberechtigter oder Fischereipächter ist, muss unabhängig vom Fischereischein einen Erlaubnisschein bei sich führen und ihn auf Verlangen aushändigen oder elektronisch vorzeigen. Nicht erforderlich u. a. bei Helfern der Berechtigten (ohne Handangel), Eigentümern von Privatgewässern und genehmigten fischereilichen Veranstaltungen.",
       "basisId": "LFischG",
       "basisRef": "§ 37"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Die Fischerprüfung ist bei der unteren Fischereibehörde abzulegen, in deren Bezirk die Person ihren ständigen Wohnsitz hat (Ausnahmen möglich). Anträge auf Zulassung sind spätestens vier Wochen vor dem Prüftermin einzureichen. Nicht zugelassen werden Personen, die das zwölfte Lebensjahr nicht vollendet haben oder aufgrund einer körperlichen oder geistigen Beeinträchtigung die Anforderungen an eine ordnungsgemäße Fischerei nicht erfüllen können. Für die Prüfung wird eine Gebühr nach der Allgemeinen Verwaltungsgebührenordnung erhoben.",
+      "basisId": "FischPrüfO NRW",
+      "basisRef": "§ 3 Abs. 3 bis 5, § 4"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Die Prüfung besteht aus einem theoretischen Teil mit sechzig schriftlichen Fragen (je zehn aus sechs Gebieten, höchstens sechzig Minuten) und einem praktischen Teil (Zusammenbau eines Angelgeräts und Nachweis der Artenkenntnis anhand von Bildtafeln). Bestanden ist sie, wenn mindestens 45 Fragen richtig beantwortet sind (davon mindestens sechs je Gebiet), im praktischen Teil mindestens 25 von 28 Punkten erreicht und mindestens vier von sechs vorgelegten Bildtafeln richtig benannt wurden. Ein nicht bestandener Teil kann einzeln wiederholt werden.",
+      "basisId": "FischPrüfO NRW",
+      "basisRef": "§ 5 Abs. 1 bis 5, § 6 Abs. 2, § 8 Abs. 3"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Nach bestandener Prüfung erhält die Person einen Zugangscode, mit dem sie den Fischereischein über das elektronische Antragsverfahren des Landesamts oder bei der örtlich zuständigen Gemeinde beantragen kann; auf Wunsch erhält sie ein Zeugnis über die bestandene Prüfung.",
+      "basisId": "FischPrüfO NRW",
+      "basisRef": "§ 8 Abs. 1"
+    },
+    {
+      "kind": "levy",
+      "text": "Hinweis aus der Leistungsbeschreibung „Entrichtung einer Fischereiabgabe“ (ohne genannten Gebührentarif): Für den Nachweis über die Entrichtung der Fischereiabgabe fällt neben der Abgabe (10 Euro für ein Kalenderjahr, 30 Euro für fünf Kalenderjahre) eine Verwaltungsgebühr an. Bei Online-Antrag: 4 Euro (ein Jahr, Gesamt 14 Euro) bzw. 12 Euro (fünf Jahre, Gesamt 42 Euro). Bei Antrag bei der örtlich zuständigen Behörde: 12 Euro (ein Jahr, Gesamt 22 Euro) bzw. 20 Euro (fünf Jahre, Gesamt 50 Euro). Bei Online-Antrag ist ausschließlich Zahlung per Kreditkarte möglich. Der Nachweis berechtigt nur in Verbindung mit einem in Nordrhein-Westfalen anerkannten Fischereischein zur Fischerei.",
+      "basisId": "Leistungsbeschreibung NRW",
+      "basisRef": "Kosten der Leistung"
     }
   ],
   "otherRules": [
