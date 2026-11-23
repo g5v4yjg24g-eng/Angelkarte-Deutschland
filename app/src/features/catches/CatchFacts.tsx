@@ -10,7 +10,7 @@ import { CatchWeather } from '../weather/CatchWeather';
 import { CatchGauge } from '../weather/CatchGauge';
 import { LawCheckCard } from '../law/LawCheckCard';
 import { SunsetScene } from '../../design/components/SunsetScene';
-import { EntryHead, EntryTiles } from '../map/EntryView';
+import { EntryHead, EntryTiles, RouteButton } from '../map/EntryView';
 import { useStateCrests } from '../map/useStateCrests';
 import { useLawCheck, useStateResolution } from '../law/useLawCheck';
 import { repo } from '../../data/repository';
@@ -107,6 +107,7 @@ export function CatchFacts({
         onAssignWater={item.position ? onAssignWater : undefined}
         onShowOnMap={onShowOnMap}
       />
+      {item.position && <RouteButton position={item.position} />}
       <CatchPhotos ids={item.photoIds} />
       {shown.length > 0 && (
         <section className={styles.details} aria-label={v.details}>
