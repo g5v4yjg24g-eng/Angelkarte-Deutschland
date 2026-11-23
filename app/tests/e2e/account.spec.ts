@@ -116,6 +116,14 @@ async function fakeSupabase(
     created_at: string;
   }[] = [];
   const storage = new Map<string, number>();
+  // Cloud-Sicherung: Zeilen (kind:id → Zeile), Dateien im Speicher „backups“ (Pfad → Bytes), laufende rev
+  const cloud = {
+    rows: new Map<string, Record<string, unknown> & { rev: number }>(),
+    files: new Map<string, Buffer>(),
+    rev: 0,
+    /** Fehler für backup_put vorgeben (z. B. 'backup_quota') */
+    fail: undefined as string | undefined,
+  };
   // Profilbilder (Paket 2b): Nutzer-ID → Pfad im Speicher „avatars“
   const avatars = new Map<string, string>();
   // Lesezeichen (Paket 7b): gespeicherte Beitrags-IDs in Reihenfolge des Speicherns
@@ -239,6 +247,30 @@ async function fakeSupabase(
         );
       }
       return route.fulfill({ status: 200, contentType: 'image/png', body: PNG });
+    }
+    // Cloud-Sicherung: Speicher „backups“
+    if (url.pathname.startsWith('/storage/v1/object/backups/') || url.pathname === '/storage/v1/object/backups') {
+      const path = decodeURIComponent(url.pathname.slice('/storage/v1/object/backups/'.length));
+      if (req.method() === 'POST' || req.method() === 'PUT') {
+        cloud.files.set(path, req.postDataBuffer() ?? Buffer.alloc(0));
+        return json(route, { Key: `backups/${path}` });
+      }
+      if (req.method() === 'GET')
+        return cloud.files.has(path)
+          ? route.fulfill({ status: 200, contentType: 'application/octet-stream', body: cloud.files.get(path) as Buffer })
+          : json(route, { statusCode: '404', error: 'not_found', message: 'Object not found' }, 400);
+      if (req.method() === 'DELETE') {
+        const { prefixes } = req.postDataJSON() as { prefixes: string[] };
+        prefixes.forEach((k) => cloud.files.delete(k));
+        return json(route, []);
+      }
+    }
+    if (url.pathname === '/storage/v1/object/list/backups') {
+      const { prefix } = req.postDataJSON() as { prefix: string };
+      const names = [...cloud.files.keys()]
+        .filter((k) => k.startsWith(`${prefix}/`))
+        .map((k) => ({ name: k.slice(prefix.length + 1) }));
+      return json(route, names);
     }
     // Fotospeicher (Etappe 2): hochladen, auflisten, löschen
     if (url.pathname.startsWith('/storage/v1/object/')) {
@@ -1340,6 +1372,65 @@ async function fakeSupabase(
       case 'POST /rest/v1/rpc/set_my_profile_extras':
         people.extras.push(req.postDataJSON() as Record<string, unknown>);
         return route.fulfill({ status: 204 });
+      case 'POST /rest/v1/rpc/backup_put': {
+        const { items } = req.postDataJSON() as { items: Record<string, unknown>[] };
+        if (cloud.fail) return json(route, { code: 'P0001', message: cloud.fail }, 400);
+        for (const i of items) {
+          if (i['file_ref'] === 'backups' && !cloud.files.has(String(i['file_path'])))
+            return json(route, { code: 'P0001', message: 'file_missing' }, 400);
+          if (i['file_ref'] === 'post-photos' && !storage.has(String(i['file_path'])))
+            return json(route, { code: 'P0001', message: 'file_missing' }, 400);
+        }
+        return json(
+          route,
+          items.map((i) => {
+            const rev = ++cloud.rev;
+            cloud.rows.set(`${String(i['kind'])}:${String(i['item_id'])}`, { ...i, rev });
+            return { kind: i['kind'], item_id: i['item_id'], rev };
+          }),
+        );
+      }
+      case 'POST /rest/v1/rpc/backup_list': {
+        const { since } = req.postDataJSON() as { since: number };
+        return json(
+          route,
+          [...cloud.rows.values()]
+            .filter((r) => r.rev > since)
+            .map((r) => ({
+              kind: r['kind'],
+              item_id: r['item_id'],
+              rev: r.rev,
+              deleted: r['deleted'] ?? false,
+              data: r['data'] ?? null,
+              file_ref: r['file_ref'] ?? null,
+              file_path: r['file_path'] ?? null,
+              file_bytes: 0,
+            })),
+        );
+      }
+      case 'POST /rest/v1/rpc/backup_usage': {
+        const live = [...cloud.rows.values()].filter((r) => !r['deleted']);
+        const fileBytes = live.reduce(
+          (n, r) => n + (r['file_ref'] === 'backups' ? (cloud.files.get(String(r['file_path']))?.length ?? 0) : 0),
+          0,
+        );
+        return json(route, [
+          {
+            item_count: live.length,
+            file_bytes: fileBytes,
+            data_bytes: JSON.stringify(live.map((r) => r['data'])).length,
+            limit_bytes: 524288000,
+            last_rev: cloud.rev,
+          },
+        ]);
+      }
+      case 'POST /rest/v1/rpc/backup_delete_all': {
+        const paths = [...cloud.rows.values()]
+          .filter((r) => r['file_ref'] === 'backups')
+          .map((r) => String(r['file_path']));
+        cloud.rows.clear();
+        return json(route, paths);
+      }
       case 'POST /rest/v1/rpc/publish_post': {
         const b = req.postDataJSON() as {
           post_id: string;
@@ -1464,6 +1555,7 @@ async function fakeSupabase(
   // nicht aufzählbar, damit `expect(calls).toEqual([...])` nur die Aufrufe vergleicht
   return Object.defineProperties(calls, {
     storage: { value: storage },
+    cloud: { value: cloud },
     posts: { value: posts },
     spots: { value: spots },
     reports: { value: reports },
@@ -1488,6 +1580,7 @@ async function fakeSupabase(
     reports: typeof reports;
     blocks: typeof blocks;
     storage: typeof storage;
+    cloud: typeof cloud;
     posts: typeof posts;
     spots: typeof spots;
   };
@@ -1611,7 +1704,7 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules|my_start_requests|my_session_signals|my_trip_invites|trip_invite_statuses|unread_notification_count|my_spot_links|my_suggestion_prefs|set_my_waters)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars|backups)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules|my_start_requests|my_session_signals|my_trip_invites|trip_invite_statuses|unread_notification_count|my_spot_links|my_suggestion_prefs|set_my_waters)))/.test(
         c,
       ),
     ),
@@ -5785,4 +5878,199 @@ test('MODAL-3: normale Konten sehen nie ein Pop-up und fragen nicht danach', asy
   await page.waitForTimeout(1000);
   await expect(page.getByRole('alert').filter({ hasText: 'Neue Meldung' })).toHaveCount(0);
   await expect(page.getByRole('dialog', { name: 'Meldungen warten' })).toHaveCount(0);
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Cloud-Sicherung (BACKUP_PLAN.md, Etappe 4)
+// ---------------------------------------------------------------------------------------------------------------------
+
+const CLOUD_FLAG = 'fangpunkt.e2e.cloudBackup';
+
+/** Einen Ort direkt in die Datenbank legen (ohne die Karte zu bedienen) */
+async function seedPlace(page: Page, id: string, name = 'Steg Test') {
+  await page.evaluate(
+    ([pid, pname]) =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open('fangpunkt');
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const tx = open.result.transaction('places', 'readwrite');
+          const at = '2026-11-01T10:00:00.000Z';
+          tx.objectStore('places').put({
+            id: pid,
+            createdAt: at,
+            updatedAt: at,
+            rev: 0,
+            type: 'spot',
+            name: pname,
+            position: { lat: 51.2, lng: 6.8, source: 'gps' },
+          });
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        };
+      }),
+    [id, name],
+  );
+}
+
+const countPlaces = (page: Page) =>
+  page.evaluate(
+    () =>
+      new Promise<number>((resolve, reject) => {
+        const open = indexedDB.open('fangpunkt');
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const req = open.result.transaction('places').objectStore('places').count();
+          req.onsuccess = () => resolve(req.result);
+        };
+      }),
+  );
+
+/** Angemeldet, ein Ort vorhanden, Zustimmungsfenster für Tests eingeschaltet */
+async function cloudSetup(page: Page) {
+  const calls = await fakeSupabase(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/');
+  await waitForApp(page);
+  await seedPlace(page, 'place-e2e-1');
+  await page.evaluate((k) => localStorage.setItem(k, '1'), CLOUD_FLAG);
+  return calls;
+}
+
+test('CLOUD-1: Zustimmungsfenster → Ja → der Ort wird gesichert, Stand und Verbrauch erscheinen, „Jetzt sichern“', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await cloudSetup(page);
+  await page.reload();
+  await waitForApp(page);
+  const dialog = page.getByRole('dialog', { name: 'Fangbuch in der Cloud sichern?' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('Nur du kannst sie lesen');
+  await animationsDone(dialog);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  // vor dem Ja wird nichts gesendet
+  expect(calls.filter((c) => c.includes('backup_'))).toEqual([]);
+  await dialog.getByRole('button', { name: 'Sicherung einschalten' }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect.poll(() => [...calls.cloud.rows.keys()]).toContain('place:place-e2e-1');
+  expect(calls.cloud.rows.get('place:place-e2e-1')?.['data']).toMatchObject({ name: 'Steg Test' });
+
+  await page.goto('/mehr/daten');
+  await waitForApp(page);
+  const section = page.getByRole('region', { name: 'Cloud-Sicherung' });
+  await expect(section.getByRole('switch', { name: 'Cloud-Sicherung' })).toBeChecked();
+  await expect(section).toContainText('Zuletzt gesichert');
+  await expect(section).toContainText('von 500 MB belegt');
+  await section.getByRole('button', { name: 'Jetzt sichern' }).click();
+  await expect(section).toContainText('Alles ist schon gesichert.');
+  // nach einem Neuladen kein erneutes Fenster
+  await page.reload();
+  await waitForApp(page);
+  await expect(page.getByRole('dialog', { name: 'Fangbuch in der Cloud sichern?' })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('CLOUD-2: „Nicht jetzt“ sichert nichts und fragt nicht wieder; später per Schalter einschalten', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await cloudSetup(page);
+  await page.reload();
+  await waitForApp(page);
+  const dialog = page.getByRole('dialog', { name: 'Fangbuch in der Cloud sichern?' });
+  await dialog.getByRole('button', { name: 'Nicht jetzt' }).click();
+  await expect(dialog).toHaveCount(0);
+  await page.waitForTimeout(800);
+  expect(calls.cloud.rows.size).toBe(0);
+  await page.reload();
+  await waitForApp(page);
+  await page.waitForTimeout(500);
+  await expect(dialog).toHaveCount(0);
+
+  await page.goto('/mehr/daten');
+  await waitForApp(page);
+  const section = page.getByRole('region', { name: 'Cloud-Sicherung' });
+  const sw = section.getByRole('switch', { name: 'Cloud-Sicherung' });
+  await expect(sw).not.toBeChecked();
+  await sw.click();
+  await expect(sw).toBeChecked();
+  await expect.poll(() => [...calls.cloud.rows.keys()]).toContain('place:place-e2e-1');
+  expect(errors).toEqual([]);
+});
+
+test('CLOUD-3: Ort lokal gelöscht → aus der Cloud wiederherstellen mit Vorschau; Cloud-Sicherung löschen', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await cloudSetup(page);
+  await page.reload();
+  await waitForApp(page);
+  await page
+    .getByRole('dialog', { name: 'Fangbuch in der Cloud sichern?' })
+    .getByRole('button', { name: 'Sicherung einschalten' })
+    .click();
+  await expect.poll(() => calls.cloud.rows.size).toBeGreaterThan(0);
+
+  // lokal löschen
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open('fangpunkt');
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const tx = open.result.transaction('places', 'readwrite');
+          tx.objectStore('places').clear();
+          tx.oncomplete = () => resolve();
+          tx.onerror = () => reject(tx.error);
+        };
+      }),
+  );
+  expect(await countPlaces(page)).toBe(0);
+
+  await page.goto('/mehr/daten');
+  await waitForApp(page);
+  await page.getByRole('button', { name: 'Aus der Cloud wiederherstellen' }).click();
+  const preview = page.getByRole('region', { name: 'Was würde importiert?' });
+  await expect(preview).toBeVisible();
+  await expect(preview).toContainText('Cloud-Sicherung');
+  await preview.getByRole('button', { name: /Datens(atz|ätze) importieren/ }).click();
+  await expect.poll(() => countPlaces(page)).toBe(1);
+
+  // Cloud-Sicherung löschen
+  page.once('dialog', (d) => void d.accept());
+  const section = page.getByRole('region', { name: 'Cloud-Sicherung' });
+  await section.getByRole('button', { name: 'Cloud-Sicherung löschen' }).click();
+  await expect(section).toContainText('Die Cloud-Sicherung ist gelöscht.');
+  expect(calls.cloud.rows.size).toBe(0);
+  await expect(section.getByRole('switch', { name: 'Cloud-Sicherung' })).not.toBeChecked();
+  expect(errors).toEqual([]);
+});
+
+test('CLOUD-4: Grenze erreicht → Hinweis statt Erfolg', async ({ page }) => {
+  const errors = collectErrors(page);
+  const calls = await cloudSetup(page);
+  calls.cloud.fail = 'backup_quota';
+  await page.reload();
+  await waitForApp(page);
+  await page
+    .getByRole('dialog', { name: 'Fangbuch in der Cloud sichern?' })
+    .getByRole('button', { name: 'Sicherung einschalten' })
+    .click();
+  // erst abwarten, bis der Lauf den Fehler bekommen hat (sonst bricht das Neuladen ihn ab)
+  await expect.poll(() => calls.filter((c) => c.includes('rpc/backup_put')).length).toBeGreaterThan(0);
+  await page.goto('/mehr/daten');
+  await waitForApp(page);
+  const section = page.getByRole('region', { name: 'Cloud-Sicherung' });
+  await expect(section).toContainText('Der Cloud-Speicher ist voll');
+  expect(calls.cloud.rows.size).toBe(0);
+  // der vorgegebene Fehler des nachgebildeten Servers (400) erscheint als Konsolenmeldung
+  expect(errors.filter((e) => !e.includes('status of 400'))).toEqual([]);
 });

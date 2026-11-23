@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   applyUploaded,
+  cloudBackupFresh,
+  shouldAskCloudConsent,
   backupErrorCode,
   CLOUD_INTERVAL_MS,
   emptyCloudState,
@@ -329,5 +331,25 @@ describe('nextCloudRun', () => {
   it('Grenze erreicht: normaler Abstand (kein schnelles Wiederholen)', () => {
     const st = { ...emptyCloudState(), lastRunAt: '2026-11-23T11:30:00.000Z', lastError: 'quota' as const };
     expect(nextCloudRun(st, now)).toBe(Date.parse('2026-11-23T11:30:00Z') + CLOUD_INTERVAL_MS);
+  });
+});
+
+describe('Zustimmung und Erinnerung', () => {
+  it('gefragt wird nur, wenn weder zugestimmt noch abgelehnt wurde', () => {
+    expect(shouldAskCloudConsent(undefined)).toBe(true);
+    expect(shouldAskCloudConsent(emptyCloudState())).toBe(true);
+    expect(shouldAskCloudConsent({ ...emptyCloudState(), declinedAt: T })).toBe(false);
+    expect(shouldAskCloudConsent({ ...emptyCloudState(), enabled: true, consentAt: T })).toBe(false);
+    // früher zugestimmt, dann ausgeschaltet: nicht erneut fragen
+    expect(shouldAskCloudConsent({ ...emptyCloudState(), enabled: false, consentAt: T })).toBe(false);
+  });
+  it('aktuell = eingeschaltet, ohne Fehler, nicht älter als 3 Tage', () => {
+    const now = Date.parse('2026-11-23T12:00:00Z');
+    const ok = { ...emptyCloudState(), enabled: true, lastOkAt: '2026-11-21T12:00:00.000Z' };
+    expect(cloudBackupFresh(ok, now)).toBe(true);
+    expect(cloudBackupFresh({ ...ok, lastOkAt: '2026-11-19T11:00:00.000Z' }, now)).toBe(false);
+    expect(cloudBackupFresh({ ...ok, lastError: 'failed' }, now)).toBe(false);
+    expect(cloudBackupFresh({ ...ok, enabled: false }, now)).toBe(false);
+    expect(cloudBackupFresh(undefined, now)).toBe(false);
   });
 });

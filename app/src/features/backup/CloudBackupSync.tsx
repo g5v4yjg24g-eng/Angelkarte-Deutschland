@@ -6,17 +6,9 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useProviders } from '../../ports/providersContext';
 import { useOnline } from '../../lib/useOnline';
 import { getSetting } from '../../data/settings';
-import { runCloudBackup } from '../../data/cloudBackupService';
+import { runCloudBackup, withCloudLock } from '../../data/cloudBackupService';
 import { nextCloudRun } from '../../domain/cloudBackup';
 import { useStoredUserId } from '../badges/badgeStore';
-
-function exclusive<T>(fn: () => Promise<T>): Promise<T | undefined> {
-  const locks = typeof navigator !== 'undefined' ? navigator.locks : undefined;
-  if (!locks) return fn();
-  return locks.request('fangpunkt-cloud-backup', { ifAvailable: true }, (lock) =>
-    lock ? fn() : undefined,
-  ) as Promise<T | undefined>;
-}
 
 export function CloudBackupSync() {
   const { account } = useProviders();
@@ -36,7 +28,7 @@ export function CloudBackupSync() {
     const timer = setTimeout(
       () => {
         // nach dem Lauf ändert sich der gespeicherte Stand (lastRunAt) und plant den nächsten
-        void exclusive(() => runCloudBackup(account, userId)).catch(() => undefined);
+        void withCloudLock(() => runCloudBackup(account, userId)).catch(() => undefined);
       },
       Math.min(wait, 2 ** 31 - 1),
     );

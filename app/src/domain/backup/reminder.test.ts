@@ -18,6 +18,10 @@ describe('BAK-6: Sicherungs-Erinnerung', () => {
     expect(backupReminderDue({ changes: 2, oldestChange: daysAgo(3), now })).toBe(false);
     expect(backupReminderDue({ changes: 2, oldestChange: daysAgo(20), now })).toBe(true);
   });
+  it('mit aktueller Cloud-Sicherung keine Erinnerung', () => {
+    expect(backupReminderDue({ changes: 9, lastBackupAt: daysAgo(30), cloudFresh: true, now })).toBe(false);
+    expect(backupReminderDue({ changes: 9, lastBackupAt: daysAgo(30), cloudFresh: false, now })).toBe(true);
+  });
   it('„Später" pausiert die Erinnerung', () => {
     expect(backupReminderDue({ changes: 9, snoozedUntil: new Date(now + 864e5).toISOString(), now })).toBe(
       false,

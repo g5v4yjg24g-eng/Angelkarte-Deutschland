@@ -4,6 +4,15 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31-3',
+    title: 'Cloud-Sicherung',
+    items: [
+      'Sicherung: Mit Konto und deiner Zustimmung sichert Fangpunkt dein Fangbuch samt Orten, Routen und Fotos automatisch auf dem Server – nur für dich lesbar.',
+      'Wiederherstellen: Unter Mehr → Daten & Sicherung holst du alles aus der Cloud zurück, mit Vorschau wie bei einer Datei.',
+      'Kontrolle: Du siehst den Verbrauch (bis 500 MB), schaltest die Sicherung aus und löschst sie jederzeit.',
+    ],
+  },
+  {
     id: '2026-12-31-2',
     title: 'Gemeinsam pausieren und beenden',
     items: [

@@ -106,6 +106,18 @@ async function removeFolder(c: SupabaseClient, folder: string) {
   }
 }
 
+/** Alle Dateien eines Ordners im Speicher „backups“ löschen (seitenweise, bis nichts mehr da ist) */
+async function removeBackupFolder(c: SupabaseClient, folder: string) {
+  for (let i = 0; i < 500; i++) {
+    const { data, error } = await c.storage.from(BACKUP_BUCKET).list(folder, { limit: 100 });
+    if (error) fail(error);
+    const files = (data ?? []).map((f) => `${folder}/${f.name}`);
+    if (!files.length) return;
+    const { error: e } = await c.storage.from(BACKUP_BUCKET).remove(files);
+    if (e) fail(e);
+  }
+}
+
 export function supabaseAccount(
   url: string | undefined,
   key: string | undefined,
@@ -1218,6 +1230,8 @@ export function supabaseAccount(
       const me = await uid(c);
       const { data: folders } = await c.storage.from(POST_BUCKET).list(me, { limit: 1000 });
       for (const f of folders ?? []) await removeFolder(c, `${me}/${f.name}`);
+      // Cloud-Sicherung: Fotos und Routen im Speicher „backups“ (die Zeilen entfernt das Löschen des Kontos mit)
+      for (const sub of ['photos', 'tracks']) await removeBackupFolder(c, `${me}/${sub}`);
       const { data: avatars } = await c.storage.from(AVATAR_BUCKET).list(me, { limit: 100 });
       const avatarFiles = (avatars ?? []).map((f) => `${me}/${f.name}`);
       if (avatarFiles.length) await c.storage.from(AVATAR_BUCKET).remove(avatarFiles);

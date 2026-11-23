@@ -1,5 +1,8 @@
 import { useId, useRef, useState } from 'react';
 import { de } from '../../i18n/de';
+import { useProviders } from '../../ports/providersContext';
+import { fetchCloudBackup } from '../../data/cloudBackupService';
+import { useStoredUserId } from '../badges/badgeStore';
 import { Button } from '../../design/components/Button';
 import { Notice } from '../../design/components/Notice';
 import { applyImport, prepareImport, readBackupFile, type ReadBackup } from '../../data/backupService';
@@ -28,6 +31,21 @@ export function ImportPanel() {
   const [strategy, setStrategy] = useState<ImportStrategy>('keepNewer');
   const input = useRef<HTMLInputElement>(null);
   const inputId = useId();
+  const { account } = useProviders();
+  const userId = useStoredUserId();
+  const cloud = account.enabled && !!userId;
+
+  async function onCloud() {
+    setState({ step: 'reading' });
+    try {
+      const read = await fetchCloudBackup(account);
+      const rows = Object.values(read.parsed.records).reduce((n, r) => n + (r as unknown[]).length, 0);
+      if (!rows) return setState({ step: 'error', message: de.cloudBackup.restoreEmpty });
+      setState({ step: 'preview', read, plan: await prepareImport(read), fileName: de.cloudBackup.source });
+    } catch (e) {
+      setState({ step: 'error', message: userMessage(e) });
+    }
+  }
 
   async function onFile(file: File | undefined) {
     if (!file) return;
@@ -63,9 +81,16 @@ export function ImportPanel() {
           className="visually-hidden"
           onChange={(e) => void onFile(e.target.files?.[0])}
         />
-        <label htmlFor={inputId} className={styles.fileButton}>
-          {de.backup.chooseFile}
-        </label>
+        <div className={styles.actions}>
+          <label htmlFor={inputId} className={styles.fileButton}>
+            {de.backup.chooseFile}
+          </label>
+          {cloud && (
+            <Button variant="secondary" onClick={() => void onCloud()} disabled={state.step === 'reading'}>
+              {de.cloudBackup.restore}
+            </Button>
+          )}
+        </div>
       </div>
 
       {state.step === 'reading' && <Notice>{de.backup.reading}</Notice>}

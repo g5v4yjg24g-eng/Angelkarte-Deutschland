@@ -63,6 +63,21 @@ export async function setCloudBackupEnabled(userId: string, enabled: boolean, db
   );
 }
 
+/** „Nicht jetzt“ im Zustimmungsfenster: das Fenster kommt nicht wieder, nichts wird gesichert */
+export async function declineCloudBackup(userId: string, db: FangpunktDB = getDb()) {
+  const cur = await loadCloudState(userId, db);
+  await saveCloudState(userId, { ...cur, enabled: false, declinedAt: nowIso() }, db);
+}
+
+/** Nur ein Lauf gleichzeitig – auch über Tabs hinweg. Mit `wait` wartet der Aufruf, sonst entfällt er, wenn schon einer läuft. */
+export function withCloudLock<T>(fn: () => Promise<T>, wait = false): Promise<T | undefined> {
+  const locks = typeof navigator !== 'undefined' ? navigator.locks : undefined;
+  if (!locks) return fn();
+  return locks.request('fangpunkt-cloud-backup', wait ? {} : { ifAvailable: true }, (lock) =>
+    lock ? fn() : undefined,
+  ) as Promise<T | undefined>;
+}
+
 /** Wann der nächste Lauf fällig ist (Zeitstempel in ms); `undefined`, wenn die Sicherung aus ist */
 export async function nextCloudRunAt(userId: string, now: number, db: FangpunktDB = getDb()) {
   const st = await loadCloudState(userId, db);

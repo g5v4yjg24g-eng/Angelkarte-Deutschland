@@ -3,15 +3,19 @@ import { getDb } from '../../data/db';
 import { changesSince } from '../../data/changes';
 import { getSetting } from '../../data/settings';
 import { backupReminderDue } from '../../domain/backup/reminder';
+import { cloudBackupFresh } from '../../domain/cloudBackup';
+import { storedUserId } from '../badges/badgeStore';
 
 /** Live-Zustand für Sicherung und Erinnerung (aktualisiert sich bei jeder DB-Änderung). */
 export function useBackupState() {
   return useLiveQuery(async () => {
     const db = getDb();
-    const [lastBackupAt, snoozedUntil] = await Promise.all([
+    const [lastBackupAt, snoozedUntil, cloud] = await Promise.all([
       getSetting('lastBackupAt'),
       getSetting('backupReminderSnoozedUntil'),
+      getSetting('cloudBackup'),
     ]);
+    const uid = storedUserId();
     const changes = await changesSince(lastBackupAt);
     const counts = {
       catches: await db.catches.filter((c) => !c.deletedAt).count(),
@@ -31,6 +35,7 @@ export function useBackupState() {
         oldestChange: changes.oldest,
         lastBackupAt,
         snoozedUntil,
+        cloudFresh: cloudBackupFresh(uid ? cloud?.[uid] : undefined, Date.now()),
         now: Date.now(),
       }),
     };
