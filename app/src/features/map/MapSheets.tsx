@@ -10,7 +10,7 @@ import { userMessage } from '../../data/errors';
 import { repo } from '../../data/repository';
 import type { Catch, Place, PlaceType } from '../../domain/schemas';
 import { CatchFacts } from '../catches/CatchFacts';
-import { EntryHead, EntryTiles, NoteCard, RowCard } from './EntryView';
+import { EntryHead, EntryTiles, NoteCard, RouteButton, RowCard } from './EntryView';
 import { CATCH_OUTCOMES, markerDataUrl, PLACE_TYPES } from './markerIcons';
 import { ALL_LAYERS, isFiltered, type MapFilter, type MapLayerKey } from '../../domain/mapFilter';
 import styles from './MapView.module.css';
@@ -186,6 +186,7 @@ export function PlaceDetails({
       <Button variant="secondary" onClick={onAddCatch}>
         {de.map.addCatchHere}
       </Button>
+      <RouteButton position={place.position} />
       {onToggleShared && (
         <RowCard label={de.map.sharedWithFriends}>
           <Switch

@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31-4',
+    title: 'Route zum Angelspot',
+    items: [
+      'Anfahrt: Bei jedem Ort und geteilten Spot startet „Route planen“ die Navigation in Apple Karten oder Google Maps.',
+      'Datenschutz: Das Ziel geht erst an die Karten-App, wenn du den Link antippst.',
+    ],
+  },
+  {
     id: '2026-12-31-3',
     title: 'Cloud-Sicherung',
     items: [

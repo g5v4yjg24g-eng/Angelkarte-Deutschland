@@ -285,10 +285,17 @@ test('Fang an einem gespeicherten Ort übernimmt Ort und Bezug', async ({ page }
     .getByRole('button', { name: 'Speichern' })
     .click();
   await tapRendered(page, 'fp-places', FIELD.lng, FIELD.lat, -18);
-  await page
-    .getByRole('dialog', { name: 'Angelstelle' })
-    .getByRole('button', { name: 'Fang hier erfassen' })
-    .click();
+  const placeSheet = page.getByRole('dialog', { name: 'Angelstelle' });
+  await placeSheet.getByRole('button', { name: 'Route planen' }).click();
+  await expect(placeSheet.getByRole('link', { name: 'Apple Karten' })).toHaveAttribute(
+    'href',
+    /^https:\/\/maps\.apple\.com\/\?daddr=[\d.]+,[\d.]+&dirflg=d$/,
+  );
+  await expect(placeSheet.getByRole('link', { name: 'Google Maps' })).toHaveAttribute(
+    'href',
+    /destination=[\d.]+,[\d.]+&travelmode=driving/,
+  );
+  await placeSheet.getByRole('button', { name: 'Fang hier erfassen' }).click();
   const form = page.getByRole('dialog', { name: 'Fang oder Kontakt erfassen' });
   await expect(form.getByText('Gespeicherter Ort')).toBeVisible();
   await form.getByRole('button', { name: 'Speichern' }).click();

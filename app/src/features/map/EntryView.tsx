@@ -1,7 +1,9 @@
 // Gemeinsame Bausteine der Detail-Ansichten für Fang, Ort und geteilten Spot (Vorlage Nutzer 2026-11-12): Kopf mit
 // Symbol im Kreis, Kacheln Gewässer · Position, Karte für Notizen, Karte mit Schalter.
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { de } from '../../i18n/de';
+import { Button } from '../../design/components/Button';
+import { routeLinks } from '../../domain/routeLinks';
 import { ChevronRightIcon, PinIcon, WavesIcon } from '../../design/icons';
 import { markerDataUrl, type MarkerKind } from './markerIcons';
 import styles from './EntryView.module.css';
@@ -118,5 +120,29 @@ export function RowCard({ label, children }: { label: string; children: ReactNod
       <span>{label}</span>
       {children}
     </div>
+  );
+}
+
+/** „Route planen“: öffnet die Anfahrt zum Ort in Apple Karten oder Google Maps (erst nach Antippen) */
+export function RouteButton({ position }: { position: { lat: number; lng: number } }) {
+  const [open, setOpen] = useState(false);
+  const links = routeLinks(position);
+  if (!links) return null;
+  return (
+    <>
+      <Button variant="secondary" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        {de.map.routePlan}
+      </Button>
+      {open && (
+        <div className={styles.routeLinks}>
+          <a className={styles.routeLink} href={links.apple} target="_blank" rel="noreferrer noopener">
+            {de.map.routeApple}
+          </a>
+          <a className={styles.routeLink} href={links.google} target="_blank" rel="noreferrer noopener">
+            {de.map.routeGoogle}
+          </a>
+        </div>
+      )}
+    </>
   );
 }
