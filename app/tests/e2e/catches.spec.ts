@@ -115,6 +115,11 @@ test('CAT-1/M5.3: Fang erfassen, im Fangbuch ansehen, bearbeiten, löschen und w
   await expect(page.getByText('1 Eintrag', { exact: true })).toBeVisible();
   await page.getByRole('link', { name: /Fang\s+Zander/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Fang' })).toBeVisible();
+  await page.getByRole('button', { name: 'Route planen' }).click();
+  await expect(page.getByRole('link', { name: 'Google Maps' })).toHaveAttribute(
+    'href',
+    /destination=[\d.]+,[\d.]+&travelmode=driving/,
+  );
   await page.getByRole('button', { name: 'Bearbeiten' }).click();
   await page.getByText('Mehr Details').click();
   await page.getByLabel('Länge (cm)').fill('54,5');

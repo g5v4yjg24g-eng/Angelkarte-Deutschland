@@ -4,6 +4,11 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31-5',
+    title: 'Route zum Fangplatz',
+    items: ['Anfahrt: Auch bei einem Fang mit Position startet „Route planen“ die Navigation in Apple Karten oder Google Maps.'],
+  },
+  {
     id: '2026-12-31-4',
     title: 'Route zum Angelspot',
     items: [
