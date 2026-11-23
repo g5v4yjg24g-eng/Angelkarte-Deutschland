@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
   applyUploaded,
+  backupErrorCode,
+  CLOUD_INTERVAL_MS,
+  emptyCloudState,
+  filesToRemove,
+  nextCloudRun,
+  toDeleteItem,
+  toPutItem,
   chunk,
   emptyDeviceState,
   KIND_OF_TABLE,
@@ -270,5 +277,57 @@ describe('quotaState', () => {
     expect(quotaState(450 * 1024 * 1024).level).toBe('near');
     expect(quotaState(524_288_000).level).toBe('full');
     expect(quotaState(10, 0).level).toBe('full');
+  });
+});
+
+describe('Schnittstelle zum Server', () => {
+  it('Eintrag für backup_put: Daten, Datei-Angaben, Löschmarke', () => {
+    const plan = planBackup(input({ records: { photos: [photo('f1', 'catch', 'c1')] } }));
+    const item = must(plan.upserts[0]);
+    expect(toPutItem(item)).toMatchObject({ kind: 'photo', item_id: 'f1', file_ref: 'backups', file_path: `${U}/photos/f1.jpg` });
+    expect(toDeleteItem({ kind: 'place', itemId: 'p1' })).toEqual({ kind: 'place', item_id: 'p1', deleted: true });
+    expect(toPutItem(must(planBackup(input({ records: { places: [place('p1')] } })).upserts[0]))).not.toHaveProperty('file_ref');
+  });
+
+  it('Fehlercodes werden an der Meldung erkannt', () => {
+    expect(backupErrorCode(new Error('backup_quota'), 'backup_quota')).toBe(true);
+    expect(backupErrorCode(new Error('x file_missing y'), 'file_missing')).toBe(true);
+    expect(backupErrorCode(new Error('Failed to fetch'), 'file_missing')).toBe(false);
+    expect(backupErrorCode('file_missing', 'file_missing')).toBe(false);
+  });
+
+  it('filesToRemove: alte Kopie nach Wechsel auf Verweis und Datei gelöschter Einträge', () => {
+    const before: DeviceBackupState = {
+      uploaded: {},
+      files: { 'photo:a': `${U}/photos/a.jpg`, 'photo:b': `${U}/photos/b.jpg`, 'track:t': `${U}/tracks/t.json` },
+    };
+    const toRef = must(planBackup(input({ records: { photos: [photo('a', 'post', 'b1')], posts: [post('b1', ['a'])] } })).upserts.find((i) => i.itemId === 'a'));
+    const same = must(planBackup(input({ records: { photos: [photo('b', 'catch', 'c1')] } })).upserts[0]);
+    expect(filesToRemove(before, [toRef, same], [{ kind: 'track', itemId: 't' }])).toEqual([
+      `${U}/photos/a.jpg`,
+      `${U}/tracks/t.json`,
+    ]);
+  });
+});
+
+describe('nextCloudRun', () => {
+  const now = Date.parse('2026-11-23T12:00:00Z');
+  it('nie gelaufen: sofort', () => expect(nextCloudRun(emptyCloudState(), now)).toBe(now));
+  it('nach Erfolg eine Stunde später', () => {
+    const st = { ...emptyCloudState(), lastRunAt: '2026-11-23T11:30:00.000Z' };
+    expect(nextCloudRun(st, now)).toBe(Date.parse('2026-11-23T11:30:00Z') + CLOUD_INTERVAL_MS);
+  });
+  it('nach Fehlern wachsende Pausen: 5 min, 30 min, 2 h, 6 h (dann bleibt es bei 6 h)', () => {
+    const last = '2026-11-23T11:00:00.000Z';
+    const at = (retries: number) => nextCloudRun({ ...emptyCloudState(), lastRunAt: last, lastError: 'failed', retries }, now) - Date.parse(last);
+    expect(at(0)).toBe(5 * 60_000);
+    expect(at(1)).toBe(30 * 60_000);
+    expect(at(2)).toBe(120 * 60_000);
+    expect(at(3)).toBe(360 * 60_000);
+    expect(at(9)).toBe(360 * 60_000);
+  });
+  it('Grenze erreicht: normaler Abstand (kein schnelles Wiederholen)', () => {
+    const st = { ...emptyCloudState(), lastRunAt: '2026-11-23T11:30:00.000Z', lastError: 'quota' as const };
+    expect(nextCloudRun(st, now)).toBe(Date.parse('2026-11-23T11:30:00Z') + CLOUD_INTERVAL_MS);
   });
 });

@@ -232,6 +232,24 @@ export function applyUploaded(state: DeviceBackupState, plan: BackupPlan, done: 
   return { uploaded: Object.fromEntries(uploaded), files: Object.fromEntries(files) };
 }
 
+/** Eigene Dateien, die nach einem erfolgreichen Schreiben nicht mehr gebraucht werden (alte Kopie, gelöschter Eintrag) */
+export function filesToRemove(
+  before: DeviceBackupState,
+  done: readonly PlannedItem[],
+  deleted: readonly { kind: string; itemId: string }[] = [],
+): string[] {
+  const out = new Set<string>();
+  for (const item of done) {
+    const old = before.files[keyOf(item.kind, item.itemId)];
+    if (old && !(item.file?.ref === 'backups' && item.file.path === old)) out.add(old);
+  }
+  for (const d of deleted) {
+    const old = before.files[keyOf(d.kind, d.itemId)];
+    if (old) out.add(old);
+  }
+  return [...out];
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Wiederherstellen
 // ---------------------------------------------------------------------------------------------------------------------
@@ -260,6 +278,8 @@ export interface RestorePlan {
   records: Records;
   /** herunterzuladende Dateien: Fotos und Routen */
   files: RestoreFile[];
+  /** Angaben der Routen (ohne Punkte), je Routen-ID; mit der Datei ergibt `parseTrackFile` die ganze Route */
+  trackMeta: Record<string, Record<string, unknown>>;
   /** Einträge mit Löschmarke */
   deleted: { kind: string; id: string }[];
   invalid: InvalidRecord[];
@@ -269,7 +289,14 @@ export interface RestorePlan {
 
 /** Zeilen von backup_list in Datensätze verwandeln; kaputte Zeilen werden gemeldet, die übrigen gelten */
 export function planRestore(rows: readonly unknown[]): RestorePlan {
-  const plan: RestorePlan = { records: emptyRecords(), files: [], deleted: [], invalid: [], lastRev: 0 };
+  const plan: RestorePlan = {
+    records: emptyRecords(),
+    files: [],
+    trackMeta: {},
+    deleted: [],
+    invalid: [],
+    lastRev: 0,
+  };
   rows.forEach((raw, index) => {
     const parsed = BackupRowSchema.safeParse(raw);
     if (!parsed.success) {
@@ -305,9 +332,10 @@ export function planRestore(rows: readonly unknown[]): RestorePlan {
     }
     if (table === 'tracks') {
       // Routen werden erst mit ihrer Datei vollständig (parseTrackFile); bis dahin nur vormerken
-      if (row.file_ref && row.file_path)
+      if (row.file_ref && row.file_path) {
         plan.files.push({ kind: 'track', id: row.item_id, ref: row.file_ref, path: row.file_path });
-      else plan.invalid.push({ table: 'tracks', index, id: row.item_id, reason: 'Route ohne Datei' });
+        plan.trackMeta[row.item_id] = row.data;
+      } else plan.invalid.push({ table: 'tracks', index, id: row.item_id, reason: 'Route ohne Datei' });
       return;
     }
     (plan.records[table] as unknown[]).push(check.data);
@@ -347,4 +375,76 @@ export type QuotaLevel = 'ok' | 'near' | 'full';
 export function quotaState(usedBytes: number, limitBytes = QUOTA_BYTES): { percent: number; level: QuotaLevel } {
   const percent = limitBytes > 0 ? Math.min(100, Math.round((usedBytes / limitBytes) * 100)) : 100;
   return { percent, level: percent >= 100 ? 'full' : percent >= 90 ? 'near' : 'ok' };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Schnittstelle zum Server (Port) und Gerätestand
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** Ein Eintrag für `backup_put`, so wie ihn die Server-Funktion erwartet */
+export interface BackupPutItem {
+  kind: string;
+  item_id: string;
+  deleted?: boolean;
+  data?: Record<string, unknown>;
+  file_ref?: 'backups' | 'post-photos';
+  file_path?: string;
+}
+
+export interface BackupUsage {
+  itemCount: number;
+  fileBytes: number;
+  dataBytes: number;
+  limitBytes: number;
+  lastRev: number;
+}
+
+export const toPutItem = (item: PlannedItem): BackupPutItem => ({
+  kind: item.kind,
+  item_id: item.itemId,
+  data: item.data,
+  ...(item.file ? { file_ref: item.file.ref, file_path: item.file.path } : {}),
+});
+
+export const toDeleteItem = (d: { kind: string; itemId: string }): BackupPutItem => ({
+  kind: d.kind,
+  item_id: d.itemId,
+  deleted: true,
+});
+
+/** Fehlercodes der Server-Funktionen (stehen in der Fehlermeldung) */
+export type BackupErrorCode = 'backup_quota' | 'file_missing' | 'item_too_large' | 'bad_file' | 'bad_items';
+export const backupErrorCode = (e: unknown, code: BackupErrorCode): boolean =>
+  e instanceof Error && e.message.includes(code);
+
+/** Stand der Cloud-Sicherung auf diesem Gerät, je Konto */
+export interface CloudDeviceState {
+  /** nach der Zustimmung (oder später ausgeschaltet) */
+  enabled: boolean;
+  consentAt?: string | undefined;
+  state: DeviceBackupState;
+  /** SHA-256 der Foto-Bytes je Foto-ID (Fotos ändern sich nie) – Grundlage für den Verweis statt Doppelablage */
+  hashes: Record<string, string>;
+  lastRunAt?: string | undefined;
+  lastOkAt?: string | undefined;
+  /** letzter Fehler: Grenze erreicht oder sonstiger Fehler (dann später erneut) */
+  lastError?: 'quota' | 'failed' | undefined;
+  retries?: number | undefined;
+  /** Zahl der Einträge, die nicht gesichert werden konnten (zu groß) */
+  skipped?: number | undefined;
+}
+export const emptyCloudState = (): CloudDeviceState => ({
+  enabled: false,
+  state: emptyDeviceState(),
+  hashes: {},
+});
+
+/** Mindestabstand zwischen zwei Läufen: eine Stunde; nach Fehlern wachsend 5 min, 30 min, 2 h, 6 h */
+export const CLOUD_INTERVAL_MS = 60 * 60 * 1000;
+const RETRY_MS = [5, 30, 120, 360].map((m) => m * 60 * 1000);
+export function nextCloudRun(s: CloudDeviceState, now: number): number {
+  const last = s.lastRunAt ? Date.parse(s.lastRunAt) : undefined;
+  if (last === undefined || Number.isNaN(last)) return now;
+  if (s.lastError === 'failed') return last + (RETRY_MS[Math.min(s.retries ?? 0, RETRY_MS.length - 1)] ?? 5 * 60 * 1000);
+  return last + CLOUD_INTERVAL_MS;
 }

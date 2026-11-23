@@ -1,4 +1,5 @@
 // Port für das freiwillige Nutzerkonto. Features kennen nur diese Schnittstelle, nicht den Anbieter.
+import type { BackupPutItem, BackupUsage } from '../domain/cloudBackup';
 import type { Profile } from '../domain/account';
 import type { Badge } from '../domain/badges';
 import type { FriendEntry } from '../domain/friends';
@@ -142,6 +143,22 @@ export interface AccountProvider {
    * vorhanden. Fehlt ein Foto, `undefined`.
    */
   downloadPostPhotos(paths: string[]): Promise<{ blob: Blob; thumb?: Blob | undefined }[] | undefined>;
+  /**
+   * Cloud-Sicherung (BACKUP_PLAN.md): Einträge schreiben (Server-Funktion backup_put, höchstens 200 je Aufruf).
+   * Fehler tragen den Code in der Meldung: `backup_quota` (500 MB erreicht), `file_missing` (Datei fehlt im Speicher).
+   */
+  backupPut(items: BackupPutItem[]): Promise<{ kind: string; itemId: string; rev: number }[]>;
+  /** Einträge mit rev > since (backup_list), ungeprüfte Zeilen – `planRestore` prüft sie */
+  backupList(since: number, max?: number): Promise<unknown[]>;
+  backupUsage(): Promise<BackupUsage | undefined>;
+  /** Die ganze Sicherung löschen; liefert die Pfade im Speicher `backups`, die danach entfernt werden */
+  backupDeleteAll(): Promise<string[]>;
+  /** Datei in den eigenen Ordner des Speichers `backups` legen (ersetzt eine vorhandene) */
+  backupUploadFile(path: string, blob: Blob, contentType: string): Promise<void>;
+  /** Datei holen (`backups` oder verwiesenes Beitragsfoto in `post-photos`); `undefined`, wenn sie fehlt */
+  backupDownloadFile(ref: 'backups' | 'post-photos', path: string): Promise<Blob | undefined>;
+  /** Eigene Dateien im Speicher `backups` entfernen (nicht vorhandene übergeht der Speicher) */
+  backupRemoveFiles(paths: string[]): Promise<void>;
   updateSharedPost(
     id: string,
     changes: {
