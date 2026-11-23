@@ -3,11 +3,10 @@
   "status": "partial",
   "missing": [
     "befristete Allgemeinverfügungen",
-    "Urlauberfischereischein und Höhe der Fischereiabgabe (Verordnungen nach § 26 Abs. 5 und § 29 Abs. 6 LFischG)",
     "Küstenfischereiverordnung: Anlage 2 Absatz 3 (Mündungen der Zuflüsse) und Absatz 4 bis 6 (u. a. Walschutzgebiet) nur zusammengefasst; Fischerei der Erwerbsfischer nicht erfasst"
   ],
   "checkedAt": "2026-11-23",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; BiFVO Anlage 3 (Winterschonzeit-Gewässerliste) und Küstenfischereiverordnung (Anlage 1, 2) ergänzt, Mindestmaße/Schonzeiten der Küste nur als Text (die App prüft den Geltungsbereich Küste/Binnen nicht) (Claude, 2026-11-23, noch nicht vom Nutzer gegengeprüft)",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; BiFVO Anlage 3 (Winterschonzeit-Gewässerliste) und Küstenfischereiverordnung (Anlage 1, 2) ergänzt, Mindestmaße/Schonzeiten der Küste nur als Text (die App prüft den Geltungsbereich Küste/Binnen nicht) (Claude, 2026-11-23, noch nicht vom Nutzer gegengeprüft); Urlauberfischereischein, Fischereischein mit Begleitung, Prüfung und Fischereiabgabe aus LFischG-DVO §§ 5, 5a, 6, 9 (PDF vom Nutzer) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft",
   "legalBasis": [
     {
       "id": "BiFVO",
@@ -27,6 +26,13 @@
       "id": "KüFVO SH",
       "title": "Landesverordnung über die Ausübung der Fischerei in den Küstengewässern (Küstenfischereiverordnung – KüFVO)",
       "version": "vom 3. Dezember 2018, gültig ab 01.01.2019; vom Nutzer als PDF bereitgestellt (Gesamtausgabe)",
+      "url": "https://www.gesetze-rechtsprechung.sh.juris.de/",
+      "retrievedAt": "2026-11-23"
+    },
+    {
+      "id": "LFischG-DVO",
+      "title": "Landesverordnung zur Durchführung des Landesfischereigesetzes (LFischG-DVO)",
+      "version": "vom 1. Juni 2018 (GVOBl. 2018, 354), Gesamtausgabe, am 23.11.2026 aktuellste Fassung (Anlagen neu gefasst durch LVO vom 26.06.2026, GVOBl. 2026 Nr. 58); vom Nutzer als PDF bereitgestellt",
       "url": "https://www.gesetze-rechtsprechung.sh.juris.de/",
       "retrievedAt": "2026-11-23"
     }
@@ -618,6 +624,36 @@
       "text": "Wer in einem Gewässer, ohne fischereiberechtigt oder fischereiausübungsberechtigt zu sein, den Fischfang ausübt, muß einen gültigen Fischereierlaubnisschein bei sich führen. Er darf nur an Personen mit gültigem Fischereischein oder Befreiung ausgegeben werden; nicht erforderlich in Gegenwart der ausstellungsbefugten Person und in geschlossenen Gewässern.",
       "basisId": "LFischG SH",
       "basisRef": "§ 14 Abs. 1, 2 und 4"
+    },
+    {
+      "kind": "tourist",
+      "text": "Personen ohne Fischereischein sollen auf Antrag für höchstens 28 aufeinander folgende Kalendertage von der Fischereischeinpflicht ausgenommen werden (Urlauberfischereischein). Er kann in einem Kalenderjahr bis zu zwei Mal erteilt werden. Das erzeugte Dokument ist ausgedruckt oder als elektronisches Dokument beim Fischfang mitzuführen.",
+      "basisId": "LFischG-DVO",
+      "basisRef": "§ 5 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Kein Fischereischein ist erforderlich für den Fischfang mit der Handangel in den Küstengewässern von einem gewerblich für die Freizeitfischerei unterhaltenen Wasserfahrzeug (Angelkutter) oder an einem gewerblich für die Freizeitfischerei unterhaltenen geschlossenen Gewässer (Angelteich). Der gewerbliche Anbieter muss eine Aufsicht durch eine volljährige Person gewährleisten, die die Regeln zu Schonzeiten, Mindestmaßen und tierschutzgerechter Fischerei sicherstellt.",
+      "basisId": "LFischG-DVO",
+      "basisRef": "§ 5 Abs. 4"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Personen, die aufgrund einer körperlichen oder geistigen Beeinträchtigung keine Fischereischeinprüfung ablegen können, erhalten auf Antrag eine Ausnahmegenehmigung von der Fischereischeinpflicht (Fischereischein mit Begleitung). Sie berechtigt zum Fischfang mit der Handangel in Begleitung einer erwachsenen Inhaberin oder eines erwachsenen Inhabers eines gültigen Fischereischeins. Vergleichbare Ausnahmegenehmigungen aus anderen Bundesländern werden anerkannt.",
+      "basisId": "LFischG-DVO",
+      "basisRef": "§ 5a Abs. 1 und 2"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Die für die Zulassung zur Fischereischeinprüfung erforderliche praktische Ausbildung umfasst mindestens acht Unterrichtsstunden von je 45 Minuten. Eine in einem anderen Bundesland bei einem anerkannten Träger durchgeführte vergleichbare praktische Ausbildung wird auch in Schleswig-Holstein anerkannt.",
+      "basisId": "LFischG-DVO",
+      "basisRef": "§ 6 Abs. 4 und 5"
+    },
+    {
+      "kind": "levy",
+      "text": "Die Fischereiabgabe beträgt 10 Euro pro Jahr bis zum 31. Dezember 2025 (auch beim Kauf für bis zu vier Jahre im Voraus). Ab dem Jahr 2026 beträgt sie 18 Euro pro Jahr. Der Nachweis über die Entrichtung wird nur als elektronisches Dokument ausgestellt, ist ausgedruckt oder elektronisch beim Fischfang mitzuführen und auf Verlangen vorzuzeigen.",
+      "basisId": "LFischG-DVO",
+      "basisRef": "§ 9 Abs. 1 und 3"
     }
   ],
   "otherRules": [
