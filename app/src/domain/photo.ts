@@ -2,6 +2,8 @@
 // dazu ein Vorschaubild. Neu kodieren entfernt EXIF zuverlässig, weil nur die Bildpunkte übernommen werden.
 export const PHOTO_MAX_EDGE = 1600;
 export const THUMB_MAX_EDGE = 320;
+/** Mittlere Größe für den Feed (spart etwa die Hälfte des Datenverkehrs gegenüber 1600 px) */
+export const MID_MAX_EDGE = 1080;
 export const PHOTO_QUALITY = 0.8;
 export const MAX_PHOTOS_PER_CATCH = 6;
 
@@ -11,3 +13,6 @@ export function fitSize(width: number, height: number, maxEdge: number): { width
   const scale = Math.min(1, maxEdge / Math.max(width, height));
   return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) };
 }
+
+/** Eine mittlere Größe lohnt sich nur, wenn das Foto größer als diese Kante ist (kleinere werden nicht vergrößert) */
+export const needsMid = (width: number, height: number) => Math.max(width, height) > MID_MAX_EDGE;

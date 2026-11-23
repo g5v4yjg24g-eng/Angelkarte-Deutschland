@@ -1,6 +1,6 @@
 // Foto für die Speicherung aufbereiten: Ausrichtung übernehmen, verkleinern, als JPEG neu kodieren.
 // Neu kodieren überträgt nur Bildpunkte – EXIF (inkl. GPS, Kameradaten) fällt dabei weg (CLAUDE.md, Datenschutz).
-import { fitSize, PHOTO_MAX_EDGE, PHOTO_QUALITY, THUMB_MAX_EDGE } from '../domain/photo';
+import { fitSize, MID_MAX_EDGE, needsMid, PHOTO_MAX_EDGE, PHOTO_QUALITY, THUMB_MAX_EDGE } from '../domain/photo';
 
 export interface ProcessedPhoto {
   blob: Blob;
@@ -47,5 +47,22 @@ export async function processPhoto(file: Blob): Promise<ProcessedPhoto> {
     return { blob: main.blob, thumb: thumb.blob, mime: 'image/jpeg', width: main.width, height: main.height };
   } finally {
     bitmap.close();
+  }
+}
+
+/**
+ * Mittlere Größe (1080 px) für den Feed aus einem schon aufbereiteten Foto; `undefined`, wenn das Foto
+ * nicht größer ist oder sich nicht lesen lässt (der Feed nimmt dann das Originalfoto).
+ */
+export async function makeMid(photo: Blob): Promise<Blob | undefined> {
+  let bitmap: ImageBitmap | undefined;
+  try {
+    bitmap = await createImageBitmap(photo, { imageOrientation: 'from-image' });
+    if (!needsMid(bitmap.width, bitmap.height)) return undefined;
+    return (await encode(bitmap, MID_MAX_EDGE)).blob;
+  } catch {
+    return undefined;
+  } finally {
+    bitmap?.close();
   }
 }

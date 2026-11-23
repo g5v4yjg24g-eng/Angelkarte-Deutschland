@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fitSize } from './photo';
+import { fitSize, needsMid } from './photo';
 
 describe('fitSize', () => {
   it('verkleinert auf die längste Kante, Seitenverhältnis bleibt', () => {
@@ -10,4 +10,13 @@ describe('fitSize', () => {
   it('vergrößert kleine Bilder nicht', () =>
     expect(fitSize(800, 600, 1600)).toEqual({ width: 800, height: 600 }));
   it('lehnt unsinnige Größen ab', () => expect(() => fitSize(0, 10, 100)).toThrow());
+});
+
+describe('needsMid', () => {
+  it('nur für Fotos über 1080 px', () => {
+    expect(needsMid(1600, 1200)).toBe(true);
+    expect(needsMid(900, 1200)).toBe(true);
+    expect(needsMid(1080, 800)).toBe(false);
+    expect(needsMid(640, 480)).toBe(false);
+  });
 });
