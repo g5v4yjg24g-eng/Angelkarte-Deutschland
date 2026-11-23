@@ -76,10 +76,16 @@ Wie in der ersten Fassung (Fotos sind fast der gesamte Bedarf, ca. 120 MB je akt
 | 2 | Standard | An für Angemeldete, **mit einmaliger Zustimmung beim Anmelden** |
 | 3 | Fotos | Ja, mit der Sicherung |
 | 4 | Grenze je Nutzer | 500 MB |
-| 5 | Tarif | Free bis zum ersten Engpass, dann Pro |
+| 5 | Tarif | **Pro ab Livegang der App** (Nutzer 2026-11-23). Bis dahin Free: Die Cloud-Sicherung wird gebaut, aber erst mit dem Upgrade für alle Nutzer eingeschaltet (Free: 1 GB Dateien, Pause nach einer Woche ohne Aktivität) |
 | 6 | Verschlüsselung | Supabase (erste Version) – noch nicht ausdrücklich bestätigt |
 | 7 | Mehrgeräte-Sync | Später, Tabelle wird vorbereitet |
 | 8 | **Neu:** eine gemeinsame Tabelle `backup_items` statt je Entität eine Tabelle | **offen, bitte bestätigen** |
+
+## 7a. Fotos nicht doppelt speichern (Vorschlag, noch nicht gebaut)
+
+Ein Foto, das als Beitrag geteilt wird, liegt schon im Speicher `post-photos` (1600 px, dazu `<Nr>.thumb.jpg` und seit PR #222 `<Nr>.mid.jpg` für den Feed). Die Cloud-Sicherung soll es nicht ein zweites Mal kopieren, sondern in `backup_items` auf die Datei verweisen. Voraussetzung: gemeinsame Aufräumregel (Löschen des Beitrags entfernt die Datei nicht, solange die Sicherung darauf zeigt – oder die Sicherung behält eine eigene Kopie, wenn der Beitrag gelöscht wird). Das ist in Etappe 1 (Server) zu entscheiden.
+
+**Bildumrechnung von Supabase (Image Transformations)** geprüft: nur Pro, 100 Originalbilder im Monat inklusive, danach 5 $ je 1.000 verschiedene Originalbilder. Bei einigen tausend Fotos teurer als eigene Größen; deshalb erzeugt die App die mittlere Größe selbst.
 
 ## 8. Offene Prüfungen
 
