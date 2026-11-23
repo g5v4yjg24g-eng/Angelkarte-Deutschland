@@ -1,0 +1,9 @@
+Ohne Meldung|0 -
+Mitteilungen|1|report_new:abuse|t
+Empfänger ist Moderator mit Gerät|t
+Nach zweiter Meldung|1
+Nach Pause|2
+Zusammenfassung|3 spot privacy true
+Normales Konto|FEHLER: not_moderator
+Normales Konto liest Mitteilungen|FEHLER: permission denied for table push_outbox
+Ohne Anmeldung|FEHLER: permission denied for function mod_alert_summary

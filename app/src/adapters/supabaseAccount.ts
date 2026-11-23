@@ -37,6 +37,7 @@ import {
   parseModUser,
   parseModUserItems,
 } from '../domain/modAdmin';
+import { parseModAlertSummary } from '../domain/modAlerts';
 import { ACCOUNT_STORAGE_KEY, AccountError, type AccountProvider, type AccountUser } from '../ports/account';
 import { parseCurrentRules, parseRulesHistory } from '../domain/communityRules';
 import { parseAppealInfo, parseModAppeals } from '../domain/appeals';
@@ -876,6 +877,12 @@ export function supabaseAccount(
       const { data: open, error: e } = await c.rpc('mod_reports', { state: 'open' });
       if (e) fail(e);
       return { openReports: parseModReports(open as unknown[] | null).length };
+    },
+    async modAlertSummary() {
+      const { data, error } = await (await get()).rpc('mod_alert_summary');
+      // Funktion (noch) nicht eingespielt oder kein Moderator: kein Pop-up, kein Fehler
+      if (error) return undefined;
+      return parseModAlertSummary(data as unknown[] | null);
     },
     async modContent(kind, id) {
       const { data, error } = await (await get()).rpc('mod_content', { kind, target: id });

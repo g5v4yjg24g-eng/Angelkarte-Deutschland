@@ -1,4 +1,4 @@
-Geprüfte mod_*-Funktionen|39
+Geprüfte mod_*-Funktionen|40
 Normales Konto kommt durch|keine
 Eigener Stand für normales Konto|mod_can_search_email=false, mod_my_role=∅
 Ohne Anmeldung kommt durch|keine

@@ -67,6 +67,8 @@ async function fakeSupabase(
   // Moderationsbereich: vom Test vorher befüllt
   const mod = {
     moderator: false,
+    /** Pop-up für neue Meldungen: nur wenn der Test es will (sonst „keine offenen Meldungen“) */
+    alerts: false,
     reports: [] as Record<string, unknown>[],
     content: new Map<string, Record<string, unknown>>(),
     users: new Map<string, Record<string, unknown>>(),
@@ -606,6 +608,25 @@ async function fakeSupabase(
             done_today: mod.log.filter((l) => l.action === 'resolve').length,
             banned_now: [...mod.users.values()].filter((u) => u.banned).length,
             new_users_7d: 2,
+          },
+        ]);
+      }
+      case 'POST /rest/v1/rpc/mod_alert_summary': {
+        if (!mod.moderator) return json(route, { code: 'P0001', message: 'not_moderator' }, 400);
+        const open = mod.alerts
+          ? mod.reports
+              .filter((r) => r.status === 'open')
+              .sort((a, b) => Date.parse(String(a.created_at)) - Date.parse(String(b.created_at)))
+          : [];
+        const newest = open.at(-1);
+        return json(route, [
+          {
+            open_count: open.length,
+            oldest_at: open[0]?.created_at ?? null,
+            newest_id: newest?.id ?? null,
+            newest_at: newest?.created_at ?? null,
+            newest_type: newest?.target_type ?? null,
+            newest_reason: newest?.reason ?? null,
           },
         ]);
       }
@@ -5662,4 +5683,106 @@ test('SIG-2: Ablehnen lässt die eigene Session laufen; Ende und Weiter ohne Wir
   await page.waitForTimeout(1500);
   expect(calls.group.signalSent).toEqual([]);
   expect(errors).toEqual([]);
+});
+
+// MODAL: Pop-up für Moderatoren bei neuen Meldungen (Wunsch Nutzer 2026-11-23)
+const reportAt = (id: string, msAgo: number, reason = 'abuse', type = 'post') => ({
+  id,
+  target_type: type,
+  target_id: `t-${id}`,
+  reason,
+  details: 'GEHEIMER Inhalt',
+  status: 'open',
+  created_at: new Date(Date.now() - msAgo).toISOString(),
+  reporter: 'u-ben',
+  reporter_name: 'Ben',
+  target_user: 'u-anna',
+  target_name: 'Anna',
+  target_username: 'anna',
+  target_banned: false,
+  open_against: 1,
+});
+
+test('MODAL-1: neue Meldung zeigt das Band mit Art und Grund – ohne Inhalt, Später merkt sich die Meldung', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  calls.mod.moderator = true;
+  calls.mod.alerts = true;
+  calls.mod.reports.push(reportAt('r-new', 5 * 60_000));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/');
+  const band = page.getByRole('alert').filter({ hasText: 'Neue Meldung' });
+  await expect(band).toBeVisible();
+  await expect(band).toContainText('Beitrag · Grund:');
+  await expect(band).not.toContainText('GEHEIMER');
+  await expect(band).not.toContainText('Ben');
+  await page.waitForTimeout(500); // Einblenden (die Dauerbewegung des Punktes endet nie)
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  // Später: weg, auch nach dem Neuladen
+  await band.getByRole('button', { name: 'Später' }).click();
+  await expect(band).toHaveCount(0);
+  await page.reload();
+  await waitForApp(page);
+  await page.waitForTimeout(800);
+  await expect(page.getByRole('alert').filter({ hasText: 'Neue Meldung' })).toHaveCount(0);
+  // eine weitere Meldung zeigt es wieder, mit Zähler
+  calls.mod.reports.push(reportAt('r-2', 60_000, 'spam', 'spot'));
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  const again = page.getByRole('alert').filter({ hasText: 'Neue Meldung' });
+  await expect(again).toContainText('Geteilter Spot · Grund:');
+  await expect(again).toContainText('2 Meldungen offen');
+  await again.getByRole('button', { name: 'Bearbeiten' }).click();
+  await expect(page).toHaveURL(/\/moderation\/meldungen$/);
+  expect(errors).toEqual([]);
+});
+
+test('MODAL-2: Meldung seit über 20 Stunden offen → Vollbild, „In 30 Minuten erinnern“ gibt Ruhe', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  calls.mod.moderator = true;
+  calls.mod.alerts = true;
+  calls.mod.reports.push(reportAt('r-old', 21 * 3_600_000), reportAt('r-new', 60_000, 'spam'));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/');
+  const full = page.getByRole('dialog', { name: 'Meldungen warten' });
+  await expect(full).toBeVisible();
+  await expect(full).toContainText('2 offene Meldungen');
+  await expect(full).toContainText('seit 21 Stunden offen');
+  await page.waitForTimeout(500);
+  const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  expect(
+    r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+  ).toEqual([]);
+  await full.getByRole('button', { name: 'In 30 Minuten erinnern' }).click();
+  await expect(full).toHaveCount(0);
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await page.waitForTimeout(800);
+  await expect(page.getByRole('dialog', { name: 'Meldungen warten' })).toHaveCount(0);
+  await expect(page.getByRole('alert').filter({ hasText: 'Neue Meldung' })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test('MODAL-3: normale Konten sehen nie ein Pop-up und fragen nicht danach', async ({ page }) => {
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  calls.mod.alerts = true;
+  calls.mod.reports.push(reportAt('r-new', 60_000));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/');
+  await waitForApp(page);
+  await page.waitForTimeout(1000);
+  await expect(page.getByRole('alert').filter({ hasText: 'Neue Meldung' })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: 'Meldungen warten' })).toHaveCount(0);
 });

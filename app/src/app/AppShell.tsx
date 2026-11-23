@@ -29,6 +29,7 @@ import { SessionTracker } from '../features/sessions/tracking/SessionTracker';
 import { GaugeSync } from '../features/weather/GaugeSync';
 import { RulesSync } from '../features/moderation/RulesSync';
 import { TripStartHost } from '../features/trips/TripStartHost';
+import { ModAlertHost } from '../features/moderation/admin/ModAlertHost';
 import { ProfileNavIcon } from '../features/profile/ProfileNavIcon';
 import { BottomNav, type NavItem } from './BottomNav';
 import { useProviders } from '../ports/providersContext';
@@ -89,6 +90,7 @@ export function RootLayout() {
       <GaugeSync />
       <RulesSync />
       <TripStartHost />
+      <ModAlertHost />
     </>
   );
 }

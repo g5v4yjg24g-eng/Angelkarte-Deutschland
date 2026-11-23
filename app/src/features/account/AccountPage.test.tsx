@@ -154,6 +154,7 @@ function fakeAccount(badges: Badge[] = []): FakeAccount {
     isModerator: () => Promise.resolve(false),
     modReports: () => Promise.resolve([]),
     modOverview: () => Promise.resolve({ openReports: 0 }),
+    modAlertSummary: () => Promise.resolve(undefined),
     modSetReportStatus: () => Promise.resolve(),
     modReportReporter: () => Promise.resolve(undefined),
     modReportLog: () => Promise.resolve([]),

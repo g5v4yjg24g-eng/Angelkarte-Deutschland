@@ -2345,6 +2345,21 @@ export const de = {
     decline: 'Nein',
     error: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
   },
+  // Pop-up für Moderatoren bei neuen Meldungen (Wunsch Nutzer 2026-11-23): nur Art und Grund, nie Inhalt
+  modAlert: {
+    bandTitle: 'Neue Meldung',
+    bandSub: (kind: string, reason: string) => `${kind} · Grund: ${reason}`,
+    more: (n: number) => (n === 1 ? '1 Meldung offen' : `${n} Meldungen offen`),
+    open: 'Bearbeiten',
+    later: 'Später',
+    fullCount: (n: number) => (n === 1 ? '1 offene Meldung' : `${n} offene Meldungen`),
+    fullTitle: 'Meldungen warten',
+    fullAge: (h: number) =>
+      h === 1 ? 'Die älteste ist seit 1 Stunde offen.' : `Die älteste ist seit ${h} Stunden offen.`,
+    fullOpen: 'Jetzt bearbeiten',
+    fullLater: 'In 30 Minuten erinnern',
+    pushTitle: 'Neue Meldung',
+  },
   tripStart: {
     waitTitle: 'Session startet',
     waiting: (names: string) => `Warte auf ${names} …`,
