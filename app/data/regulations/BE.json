@@ -2,11 +2,12 @@
   "stateCode": "BE",
   "status": "partial",
   "missing": [
-    "Fischereischein (Landesfischereischeingesetz vom 21. April 1995)",
+    "Landesfischereischeingesetz §§ 2–4 (u. a. Alter und Voraussetzungen des Jugendfischereischeins, Anglerprüfung, Geltungsdauer der Scheine): nur § 1 liegt als PDF vor",
+    "Gebühren und Fischereiabgabe für den Fischereischein",
     "Anordnungen der unteren Fischereibehörde (§ 8 Abs. 2 und 3)"
   ],
-  "checkedAt": "2026-10-22",
-  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22",
+  "checkedAt": "2026-11-23",
+  "checkedBy": "Maschinell aus dem amtlichen Text übertragen (Claude, PDF vom Nutzer); gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln ergänzt (Claude), gegengeprüft vom Nutzer am 2026-10-22; Fischereischein-Regeln aus LFischScheinG § 1 und DVO-LFischScheinG (PDFs vom Nutzer) ergänzt durch Claude am 2026-11-23, noch nicht vom Nutzer gegengeprüft",
   "legalBasis": [
     {
       "id": "LFischO",
@@ -21,6 +22,20 @@
       "version": "zuletzt geändert durch Artikel 28 des Gesetzes vom 02.02.2018 (GVBl. S. 160); Gesamtausgabe Stand 22.10.2026",
       "url": "https://gesetze.berlin.de/",
       "retrievedAt": "2026-10-22"
+    },
+    {
+      "id": "LFischScheinG",
+      "title": "Gesetz über den Fischereischein (Landesfischereischeingesetz – LFischScheinG)",
+      "version": "in der Fassung der Bekanntmachung vom 15. September 2000 (GVBl. 2000 S. 464), Fassung vom 27.09.2021, gültig ab 07.10.2021; vom Nutzer als PDF bereitgestellt (enthält nur § 1)",
+      "url": "https://gesetze.berlin.de/perma?j=FischScheinG_BE_!_1",
+      "retrievedAt": "2026-11-23"
+    },
+    {
+      "id": "DVO-LFischScheinG",
+      "title": "Verordnung über die Durchführung des Landesfischereischeingesetzes (DVO-LFischScheinG)",
+      "version": "vom 25. September 1997 (GVBl. 1997 S. 491), zuletzt geändert durch Artikel 45 der Verordnung vom 01.09.2020 (GVBl. S. 683); Gesamtausgabe, am 23.11.2026 aktuellste Fassung; vom Nutzer als PDF bereitgestellt",
+      "url": "https://gesetze.berlin.de/perma?j=FischScheinGDV_BE",
+      "retrievedAt": "2026-11-23"
     }
   ],
   "closedSeasons": [
@@ -690,6 +705,36 @@
     }
   ],
   "licences": [
+    {
+      "kind": "fishing_licence",
+      "text": "Die Ausübung der Fischerei bedarf der Genehmigung (Fischereischein). Das Fischereiamt als untere Fischereibehörde erteilt den Fischereischein B für Berufsfischer, den Fischereischein A für Angler zur Ausübung des Fischfangs mit der Handangel oder mit dem Senknetz und den Jugendfischereischein für Jugendliche zur Ausübung des Fischfangs mit der Friedfischangel.",
+      "basisId": "LFischScheinG",
+      "basisRef": "§ 1 Abs. 1"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Wer die Fischerei ausübt, muss den auf seinen Namen lautenden, mit Lichtbild versehenen Fischereischein bei sich führen und auf Verlangen den Bediensteten der Fischereibehörden, den Polizeivollzugsbeamten der Polizei Berlin, den Fischereiausübungsberechtigten und den Fischereiaufsehern zur Einsichtnahme aushändigen.",
+      "basisId": "LFischScheinG",
+      "basisRef": "§ 1 Abs. 3"
+    },
+    {
+      "kind": "tourist",
+      "text": "Kein Fischereischein ist erforderlich für Personen, die keinen Wohnsitz im Geltungsbereich des Grundgesetzes haben und entweder Mitglied einer ausländischen Fischereiorganisation oder im Besitz einer ausländischen Fischereilegitimation sind.",
+      "basisId": "LFischScheinG",
+      "basisRef": "§ 1 Abs. 4 Nr. 2"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Die Fischereischeine A und B dürfen, wenn sie für fünf Jahre ausgestellt sind, einmal um fünf Jahre verlängert werden, wenn sie für ein Jahr ausgestellt sind, einmal um ein Jahr. Ein Jugendfischereischein darf zweimal um jeweils ein Jahr verlängert werden.",
+      "basisId": "DVO-LFischScheinG",
+      "basisRef": "§ 2"
+    },
+    {
+      "kind": "fishing_licence",
+      "text": "Zusammengefasst: Zur Anglerprüfung wird zugelassen, wer den Vorbereitungslehrgang (mindestens 30 Stunden) absolviert hat und bei Prüfungsbeginn das 14. Lebensjahr vollendet hat. Die Prüfung nehmen die fischereilichen Landesverbände ab.",
+      "basisId": "DVO-LFischScheinG",
+      "basisRef": "§ 3 Abs. 1, § 4 Abs. 2, § 7 Abs. 1"
+    },
     {
       "kind": "permit",
       "text": "Wer in einem Gewässer, in dem er nicht Fischereiberechtigter oder Fischereipächter ist, den Fischfang mit der Handangel oder einem Senknetz ausübt, muß einen Fischereierlaubnisvertrag (Angelkarte) des Fischereiberechtigten oder Fischereipächters bei sich führen und diesen auf Verlangen aushändigen. Einen Fischereierlaubnisvertrag können nur Personen abschließen, die Inhaber eines Fischereischeins sind. Angelkarten gelten höchstens ein Jahr.",
