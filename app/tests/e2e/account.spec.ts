@@ -161,6 +161,10 @@ async function fakeSupabase(
     notificationsRead: 0,
     notificationDeletes: [] as string[],
     notificationClears: 0,
+    /** Pause/Weiter/Ende (2026-11-21): Zeilen von my_session_signals an Kevin, seine Meldungen und Antworten */
+    signals: [] as Record<string, unknown>[],
+    signalSent: [] as { session: string; what: string }[],
+    signalAnswers: [] as { signal: string; accept: boolean }[],
   };
   // Angler entdecken (2026-11-13): Zeilen von suggest_anglers, Ausgeblendete, Einstellungen, Region und Gewässer auf dem Server
   const suggest = {
@@ -1225,6 +1229,19 @@ async function fakeSupabase(
       }
       case 'POST /rest/v1/rpc/my_start_requests':
         return json(route, group.startRequests);
+      case 'POST /rest/v1/rpc/signal_session': {
+        const b = req.postDataJSON() as { session: string; what: string };
+        group.signalSent.push(b);
+        return json(route, `sig-sent-${group.signalSent.length}`);
+      }
+      case 'POST /rest/v1/rpc/my_session_signals':
+        return json(route, group.signals);
+      case 'POST /rest/v1/rpc/answer_session_signal': {
+        const b = req.postDataJSON() as { signal: string; accept: boolean };
+        group.signalAnswers.push(b);
+        group.signals = group.signals.filter((s) => s.id !== b.signal);
+        return route.fulfill({ status: 204 });
+      }
       case 'POST /rest/v1/rpc/my_notifications2': {
         const body = req.postDataJSON() as { before: string | null; max_rows: number };
         const rows = group.notifications
@@ -1573,7 +1590,7 @@ test('ACC-3: Konto registrieren mit Passwort und Bestätigungscode, Profil, Anze
   // keine Fangdaten an Supabase (beim Löschen werden nur die eigenen Beitragsfotos aufgelistet)
   expect(
     calls.every((c) =>
-      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules|my_start_requests|my_trip_invites|trip_invite_statuses|unread_notification_count|my_spot_links|my_suggestion_prefs|set_my_waters)))/.test(
+      /\/(auth\/v1|storage\/v1\/object\/list\/(post-photos|avatars)|rest\/v1\/(profiles|user_badges|rpc\/(username_available|delete_my_account|my_friends|my_follows|my_follow_counts|my_account_private|is_moderator|avatar_paths|user_posts|current_rules|my_rules_consent|accept_rules|my_start_requests|my_session_signals|my_trip_invites|trip_invite_statuses|unread_notification_count|my_spot_links|my_suggestion_prefs|set_my_waters)))/.test(
         c,
       ),
     ),
@@ -5523,5 +5540,126 @@ test('AVA-3: langes Drücken auf ein Profilbild zeigt es groß; kurzes Tippen ö
   await expect(avatar).toBeVisible();
   await tap({ x, y });
   await expect(page).toHaveURL(/\/profil\/nutzer\/anna$/);
+  expect(errors).toEqual([]);
+});
+
+// SIG: Pause, Weiter und Ende in gemeinsamen Sessions (Wunsch Nutzer 2026-11-21)
+async function seedGroupSession(page: Page) {
+  await page.evaluate(async () => {
+    const req = indexedDB.open('fangpunkt');
+    const db = await new Promise<IDBDatabase>((r) => (req.onsuccess = () => r(req.result)));
+    const start = new Date(Date.now() - 3_600_000).toISOString().replace('Z', '+00:00');
+    await new Promise<void>((resolve) => {
+      const tx = db.transaction(['sessions'], 'readwrite');
+      tx.objectStore('sessions').put({
+        id: 's-sig',
+        createdAt: start,
+        updatedAt: start,
+        rev: 0,
+        startAt: start,
+        tz: 'Europe/Berlin',
+        title: 'Abendansitz',
+        groupId: 'g-anna',
+      });
+      tx.oncomplete = () => resolve();
+    });
+    db.close();
+  });
+  await page.reload();
+  await waitForApp(page);
+}
+
+const nudge = (page: Page) => page.evaluate(() => window.dispatchEvent(new Event('focus')));
+
+const signalRow = (kind: string, id: string, minutesAgo = 1) => ({
+  id,
+  session_id: 'g-anna',
+  kind,
+  by_user_id: 'u-anna',
+  by_username: 'anna',
+  by_display_name: 'Anna',
+  at: new Date(Date.now() - minutesAgo * 60_000).toISOString(),
+  session_title: 'Abendansitz',
+  session_ended: false,
+});
+
+test('SIG-1: Annas Pause erscheint als Frage – Zustimmung pausiert die eigene Session, ohne zurückzumelden', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await seedGroupSession(page);
+
+  calls.group.signals.push(signalRow('pause', 'sig-1'));
+  await nudge(page);
+  const prompt = page.getByRole('dialog', { name: 'Gemeinsame Session' });
+  await expect(prompt).toContainText('Anna macht Pause. Auch pausieren?');
+  await animationsDone(prompt);
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme });
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    expect(
+      r.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => v.id),
+    ).toEqual([]);
+  }
+  await page.emulateMedia({ colorScheme: 'light' });
+  await prompt.getByRole('button', { name: 'Pausieren' }).click();
+  await expect.poll(() => calls.group.signalAnswers).toEqual([{ signal: 'sig-1', accept: true }]);
+  await expect(prompt).toHaveCount(0);
+
+  // Die eigene Session ist pausiert – und wurde nicht an die anderen zurückgemeldet
+  await page.goto('/fangbuch/sessions/s-sig');
+  await waitForApp(page);
+  await expect(page.getByText(/Pause seit/)).toBeVisible();
+  await page.waitForTimeout(1500);
+  expect(calls.group.signalSent).toEqual([]);
+
+  // Eigene Aktion wird gemeldet: Weiter angeln, dann Session beenden
+  await page.getByRole('button', { name: 'Weiter angeln' }).click();
+  await expect.poll(() => calls.group.signalSent).toEqual([{ session: 'g-anna', what: 'resume' }]);
+  await page.getByRole('button', { name: 'Pause', exact: true }).click();
+  await expect.poll(() => calls.group.signalSent.map((s) => s.what)).toEqual(['resume', 'pause']);
+  expect(errors).toEqual([]);
+});
+
+test('SIG-2: Ablehnen lässt die eigene Session laufen; Ende und Weiter ohne Wirkung werden still beantwortet', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  const calls = await fakeSupabase(page, [], [{ ...ANNA }]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await seedGroupSession(page);
+
+  // „Weiter“, obwohl die eigene Session läuft: nichts zu tun, keine Frage
+  calls.group.signals.push(signalRow('resume', 'sig-r'));
+  await nudge(page);
+  await expect.poll(() => calls.group.signalAnswers).toEqual([{ signal: 'sig-r', accept: false }]);
+  await expect(page.getByRole('dialog', { name: 'Gemeinsame Session' })).toHaveCount(0);
+
+  // Ende abgelehnt: Session läuft weiter
+  calls.group.signals.push(signalRow('end', 'sig-e'));
+  await nudge(page);
+  const prompt = page.getByRole('dialog', { name: 'Gemeinsame Session' });
+  await expect(prompt).toContainText('Anna beendet die Session. Auch beenden?');
+  await prompt.getByRole('button', { name: 'Nein' }).click();
+  await expect.poll(() => calls.group.signalAnswers.at(-1)).toEqual({ signal: 'sig-e', accept: false });
+  await page.goto('/fangbuch/sessions/s-sig');
+  await waitForApp(page);
+  await expect(page.getByRole('button', { name: 'Session beenden' })).toBeVisible();
+
+  // Ende angenommen: die eigene Session ist beendet (und wird nicht zurückgemeldet)
+  calls.group.signals.push(signalRow('end', 'sig-e2', 0));
+  await nudge(page);
+  await expect(page.getByRole('dialog', { name: 'Gemeinsame Session' })).toContainText('beendet die Session');
+  await page
+    .getByRole('dialog', { name: 'Gemeinsame Session' })
+    .getByRole('button', { name: 'Session beenden' })
+    .click();
+  await expect(page.getByRole('button', { name: 'Session beenden' })).toHaveCount(0);
+  await page.waitForTimeout(1500);
+  expect(calls.group.signalSent).toEqual([]);
   expect(errors).toEqual([]);
 });
