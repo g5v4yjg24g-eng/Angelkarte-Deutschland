@@ -598,6 +598,8 @@
         "de": "Maifisch",
         "sci": "Alosa spec."
       },
+      "speciesId": "allis_shad",
+      "alsoSpeciesIds": ["twaite_shad"],
       "basisId": "SächsFischVO",
       "basisRef": "Anlage Nr. 22 (zu § 2 Abs. 1)"
     },
