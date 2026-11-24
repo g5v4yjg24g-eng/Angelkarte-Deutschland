@@ -2902,7 +2902,7 @@ export const de = {
           'Beim Ablaufdatum erinnert dich die iPhone-App mit einer Mitteilung. Erlaube Mitteilungen, wenn Fangpunkt fragt.',
           'Hast du ein Papier verlängert, tippe es an und wähle „Verlängert“. Die Erinnerungen werden neu geplant.',
         ],
-        note: 'Die Papiere bleiben auf deinem Gerät und sind Teil der Sicherung.',
+        note: 'Die Papiere sind nur für dich sichtbar und Teil der Sicherung.',
         go: 'Angelpapiere öffnen',
       },
       knots: {
@@ -3725,7 +3725,7 @@ export const de = {
     sharedOn: (d: string) => `Stand: ${d}`,
     placeMissing: 'Diesen Ort gibt es auf diesem Gerät nicht mehr.',
     whatTitle: 'Was geteilt wird',
-    what: 'Art, Name, Notiz und die genaue Position des Orts. Fotos und Fänge bleiben auf deinem Gerät. Änderst du den Ort später, teile ihn noch einmal, damit deine Freunde den neuen Stand sehen.',
+    what: 'Art, Name, Notiz und die genaue Position des Orts. Fotos und Fänge werden nicht geteilt. Änderst du den Ort später, teile ihn noch einmal, damit deine Freunde den neuen Stand sehen.',
     withTitle: 'Teilen mit',
     allFriends: 'Alle Freunde',
     noFriends: 'Du hast noch keine Freunde – das sind Leute, denen du folgst und die dir auch folgen.',
