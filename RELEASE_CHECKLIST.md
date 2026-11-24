@@ -15,7 +15,7 @@ Eingereicht wird nur durch den Nutzer; TestFlight-Bauten nur auf ausdrücklichen
 | Bearbeitung von Meldungen binnen 24 h, Moderationsbereich, Sperren mit Mail | ✅ (`MODERATION_PLAN.md`) |
 | Kontaktadresse für Meldungen | ✅ moderation@fangpunkt.com |
 | „Mit Apple anmelden“ | nicht nötig – keine Anmeldung über Dritte (nur E-Mail und Passwort, seit 2026-11-10) [A] |
-| **Anmeldung mit Passwort**: Supabase-Einstellungen und Mailvorlagen nach `supabase/AUTH_EINRICHTUNG.md` (Bestätigung an, 10 min, Mindestlänge 10, Sicherheits-Mails), Function `password-notice` einspielen, danach Hinweis-Mail aus der Moderation; Website-AASA mit `webcredentials` | Nutzer, Claude | Anmelden funktioniert (TestFlight); 🔲 Nutzer bestätigt: Einstellungen, `password-notice`, AASA `webcredentials` erledigt |
+| **Anmeldung mit Passwort**: Supabase-Einstellungen und Mailvorlagen nach `supabase/AUTH_EINRICHTUNG.md` (Bestätigung an, 10 min, Mindestlänge 10, Sicherheits-Mails), Function `password-notice` einspielen, danach Hinweis-Mail aus der Moderation; Website-AASA mit `webcredentials` | Nutzer, Claude | ✅ 2026-11-24 vom Nutzer bestätigt: Supabase-Einstellungen (Abschnitt 1–4), `password-notice` eingespielt, 0 Konten ohne Passwort (Hinweis-Mail nicht nötig), AASA mit `webcredentials` auf der Website |
 
 ## B. Technik
 
@@ -34,7 +34,7 @@ Eingereicht wird nur durch den Nutzer; TestFlight-Bauten nur auf ausdrücklichen
 | **Cloud-Sicherung** (Server, Logik, Dienst, Oberfläche; Entscheidung Nutzer 2026-11-23) | Claude, Nutzer prüft am iPhone | ✅ gebaut, im TestFlight-Bau 2026-11-23 [V]; SQL `*_cloud_backup.sql` eingespielt; 🔲 am iPhone prüfen: Zustimmungsfenster erscheint einmal, Sicherung läuft (Mehr → Daten & Sicherung zeigt Stand und Verbrauch), Fotos erscheinen in Supabase unter Storage → `backups`, „Aus der Cloud wiederherstellen“ auf einem frischen Gerät, „Cloud-Sicherung löschen“; 🔲 **Supabase auf Pro vor dem Livegang** (Free: 1 GB, Pause nach einer Woche) |
 | Feed-Fotos in mittlerer Größe (1080 px) | Claude | ✅ gebaut (PR #222); Einsparung nur geschätzt, nicht gemessen |
 | Moderatoren-Pop-up für neue Meldungen (Band, Vollbild nach 20 h, Mitteilung) | Nutzer | ✅ am iPhone bestätigt 2026-11-23 |
-| **Universal Links** (geteilte Profile öffnen die App): „Associated Domains“ für `com.fangpunkt.app` im Apple-Entwicklerkonto einschalten, Team-ID in `apple-app-site-association` der Website | Nutzer (Apple-Konto), Claude | 🔲 vor dem nächsten TestFlight-Bau – sonst schlägt die Signierung fehl |
+| **Universal Links** (geteilte Profile öffnen die App): „Associated Domains“ für `com.fangpunkt.app`, Team-ID in `apple-app-site-association` der Website | Nutzer (Apple-Konto), Claude | ✅ Datei 2026-11-24 geprüft [V]: Team-ID `8QS58CR3VS`, `applinks` + `webcredentials`, ohne Weiterleitung, Apples CDN liefert sie aus (Inhaltstyp `application/octet-stream` von GitHub Pages ist unkritisch); TestFlight-Bauten mit dem Eintrag laufen durch; 🔲 am iPhone prüfen: Profil-Link antippen öffnet die App |
 | Kamera/Fotoauswahl nativ (`@capacitor/camera`) | Claude | 🔲 optional – `<input type=file>` öffnet Kamera/Fotos schon |
 | Datenschutz-Manifest (`PrivacyInfo.xcprivacy`): Capacitor bringt eigene mit; ob die App selbst eines braucht, zeigt Apples Rückmeldung beim Upload | Claude | 🔲 [A] Upload-Mail prüfen |
 | Versionsnummer je Einreichung erhöhen | Claude | 🔲 vor dem Einreichen |
@@ -95,9 +95,9 @@ Alle drei sind nur für die Person selbst lesbar (auch Moderatoren nicht), bis 5
 |---|---|---|
 | **Supabase auf Pro** (Free pausiert nach einer Woche ohne Aktivität, 1 GB Speicher; Pro: 25 $/Monat, 100 GB Dateien, 8 GB Datenbank, tägliche Sicherung 7 Tage) – Entscheidung Nutzer 2026-11-23: ab Livegang | Nutzer | 🔲 |
 | Zustellung der Mails: **DKIM** bei INWX bzw. Wechsel zu Brevo (sonst Spam bei Bestätigungs- und Passwort-Mails) | Nutzer | 🔲 [O] |
-| Universal Links: Associated Domains im Apple-Konto, Team-ID in der AASA | Nutzer | 🔲 (siehe Abschnitt B) |
+| Universal Links: Associated Domains im Apple-Konto, Team-ID in der AASA | Nutzer | ✅ Datei in Ordnung; 🔲 Test am iPhone (siehe Abschnitt B) |
 | iPhone-Prüfliste aus Abschnitt B durchgehen (neuer TestFlight-Bau 2026-11-23, Run 45228780290) | Nutzer | 🔲 |
 | Store-Texte, Prüfhinweis mit Testkonto, Versionsnummer erhöhen | Claude Entwurf | 🔲 |
 | Apple-Vorgabe: ab April 2027 Bau mit iOS-27-SDK (Xcode 27) – `ios.yml` rechtzeitig anpassen | Claude | 🔲 vor April 2027 |
-| Browser-Test SUG-1 („Angler entdecken“, Scroll-Position nach Folgen) ist seit Wochen rot (auch auf `main`) | Claude | 🔲 vor dem Livegang beheben |
+| Browser-Test SUG-1 („Angler entdecken“) war rot: Testfehler (Playwright scrollte beim Klick auf die halb sichtbare Karte), App unverändert | Claude | ✅ repariert in PR 230 |
 | Impressum und Nutzungsbedingungen auf der Website; rechtliche Prüfung der Zustimmungstexte | Nutzer | 🔲 |
