@@ -786,7 +786,6 @@ export const de = {
     posts: 'Beiträge',
     followersCount: 'Follower',
     followingCount: 'Gefolgt',
-    followRequests: (n: number) => (n === 1 ? '1 Folge-Anfrage' : `${n} Folge-Anfragen`),
     noCount: '–',
     edit: 'Bearbeiten',
     share: 'Profil teilen',

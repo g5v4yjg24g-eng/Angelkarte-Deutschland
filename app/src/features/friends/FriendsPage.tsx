@@ -221,7 +221,7 @@ export function FriendsPage() {
                 {requests.map((f) => (
                   <Person key={f.userId} f={f} onSafety={safetyDone} wrap>
                     <Button
-                      className={styles.rowButton ?? ''}
+                      className={`${styles.rowButton ?? ''} ${styles.rowButtonPrimary ?? ''}`}
                       disabled={busy}
                       onClick={() =>
                         void run(async () => {

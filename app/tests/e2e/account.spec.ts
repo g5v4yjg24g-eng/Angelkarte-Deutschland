@@ -1974,7 +1974,8 @@ test('FRD-2: Follower – Reiter, Suche, Anfrage bestätigen, folgen, zurückzie
   await signInWithProfile(page, 'kevin');
   await page.goto('/profil');
   await waitForApp(page);
-  await expect(page.getByRole('link', { name: '1 Folge-Anfrage' })).toBeVisible();
+  // kein Hinweistext zu offenen Anfragen im Profil (Wunsch Nutzer 2026-11-24)
+  await expect(page.getByText(/Folge-Anfrage/)).toHaveCount(0);
   await page.getByRole('button', { name: 'Leute finden' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Follower' })).toBeVisible();
   const tabs = page.getByRole('navigation', { name: 'Follower und Gefolgt' });
@@ -1984,7 +1985,14 @@ test('FRD-2: Follower – Reiter, Suche, Anfrage bestätigen, folgen, zurückzie
   const requests = page.getByRole('region', { name: 'Anfragen (1)' });
   await expect(requests.getByText('Anna', { exact: true })).toBeVisible();
   await expect(requests.getByRole('img', { name: /Abzeichen: Founder/ })).toBeVisible();
-  await requests.getByRole('button', { name: 'Bestätigen' }).click();
+  // der gefüllte Knopf hat sichtbare Schrift (nicht in der Farbe seines Hintergrunds)
+  const confirm = requests.getByRole('button', { name: 'Bestätigen' });
+  const colors = await confirm.evaluate((el) => {
+    const c = getComputedStyle(el);
+    return { text: c.color, bg: c.backgroundColor };
+  });
+  expect(colors.text).not.toBe(colors.bg);
+  await confirm.click();
   await expect(page.getByText('@anna folgt dir jetzt.')).toBeVisible();
   const followers = page.getByRole('list', { name: 'Follower (1)' });
   await expect(followers.getByText('@anna')).toBeVisible();

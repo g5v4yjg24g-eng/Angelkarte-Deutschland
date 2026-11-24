@@ -161,6 +161,10 @@
   color: var(--color-primary);
   white-space: nowrap;
 }
+/* gefüllter Knopf (Annehmen): Schrift in der Farbe auf Primärgrund, sonst ist der Text unsichtbar */
+.rowButtonPrimary {
+  color: var(--color-on-primary);
+}
 .block {
   display: grid;
   gap: var(--space-2);
