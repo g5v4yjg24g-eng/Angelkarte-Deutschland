@@ -94,7 +94,7 @@ Alle drei sind nur für die Person selbst lesbar (auch Moderatoren nicht), bis 5
 | Punkt | Wer | Stand |
 |---|---|---|
 | **Supabase auf Pro** (Free pausiert nach einer Woche ohne Aktivität, 1 GB Speicher; Pro: 25 $/Monat, 100 GB Dateien, 8 GB Datenbank, tägliche Sicherung 7 Tage) – Entscheidung Nutzer 2026-11-23: ab Livegang | Nutzer | 🔲 |
-| Zustellung der Mails: **DKIM** bei INWX bzw. Wechsel zu Brevo (sonst Spam bei Bestätigungs- und Passwort-Mails) | Nutzer | 🔲 [O] |
+| Zustellung der Mails (Bestätigung, Passwort) | Nutzer | ✅ 2026-11-24 [V]: Testmail an Gmail im Posteingang; SPF, DKIM (`d=fangpunkt.com`, INWX signiert selbst) und DMARC (`p=NONE`) = pass; Brevo nicht nötig. Später optional: DMARC auf `quarantine` verschärfen |
 | Universal Links: Associated Domains im Apple-Konto, Team-ID in der AASA | Nutzer | ✅ Datei in Ordnung; 🔲 Test am iPhone (siehe Abschnitt B) |
 | iPhone-Prüfliste aus Abschnitt B durchgehen (neuer TestFlight-Bau 2026-11-23, Run 45228780290) | Nutzer | 🔲 |
 | Store-Texte, Prüfhinweis mit Testkonto, Versionsnummer erhöhen | Claude Entwurf | 🔲 |
