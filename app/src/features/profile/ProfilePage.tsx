@@ -200,11 +200,6 @@ export function ProfilePage() {
                 to={counts ? '/profil/freunde#gefolgt' : undefined}
               />
             </div>
-            {!!counts?.requests && (
-              <Link to="/profil/freunde" className={styles.requestsLink}>
-                {t.followRequests(counts.requests)}
-              </Link>
-            )}
           </div>
         </section>
         {profile?.bio && <p className={styles.bio}>{profile.bio}</p>}
