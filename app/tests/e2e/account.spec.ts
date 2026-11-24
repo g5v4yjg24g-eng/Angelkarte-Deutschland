@@ -5406,7 +5406,16 @@ test('SUG-1: Angler entdecken – Karussell nach 5 Beiträgen, zweites nach 12 w
   const top = await mainTop(page);
   await first.nth(0).getByRole('button', { name: 'Angler 1 folgen' }).click();
   await expect(first.nth(0).getByRole('button', { name: 'Gefolgt' })).toBeVisible();
-  await first.nth(1).scrollIntoViewIfNeeded();
+  // Die zweite Karte schaut am Rand nur halb hervor: wie eine Person erst weiterblättern. Sonst scrollt Playwright
+  // beim Klick auf den halb verdeckten Knopf die ganze Seite, und der Positionsvergleich unten misst das Testgerät.
+  await first.nth(1).evaluate((el) => el.parentElement?.scrollIntoView({ inline: 'start', block: 'nearest' }));
+  await expect
+    .poll(async () => {
+      const a = await track.evaluate((el) => el.scrollLeft);
+      await page.waitForTimeout(250);
+      return a === (await track.evaluate((el) => el.scrollLeft));
+    })
+    .toBe(true);
   await first.nth(1).getByRole('button', { name: 'Angler 2 folgen' }).click();
   await expect(first.nth(1).getByRole('button', { name: 'Angefragt' })).toBeVisible();
   expect(calls.filter((c) => /rpc\/follow_user$/.test(c))).toHaveLength(2);
