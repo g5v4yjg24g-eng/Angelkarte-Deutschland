@@ -150,12 +150,53 @@
   font-weight: 700;
   letter-spacing: 0.03em;
 }
-/* Aktiver Bereich: eigene, etwas dunklere Kapsel (wie die Vorlage) */
+/* Aktiver Bereich: mobil zeigt ihn die leuchtende Umrandung mit Hügel (NavWave), Symbol und Text in der Hauptfarbe;
+   auf der Schiene (ab 900 px) eine etwas dunklere Kapsel */
 .active {
-  background: color-mix(in srgb, var(--color-text) 10%, transparent);
+  color: var(--color-primary);
 }
 .active .navIcon {
   color: var(--color-primary);
+}
+@media (min-width: 900px) {
+  .active {
+    background: color-mix(in srgb, var(--color-text) 10%, transparent);
+    color: var(--color-text);
+  }
+}
+
+/* Umrandung mit Hügel über dem aktiven Punkt (Wunsch Nutzer 2026-11-25, Vorlage: Video). Liegt auf dem Rand der
+   Kapsel, unter den Punkten; die Linie nimmt die Hauptfarbe der App. */
+.wave {
+  position: absolute;
+  z-index: 0;
+  top: -1px;
+  left: -1px;
+  overflow: visible;
+  pointer-events: none;
+  color: var(--color-primary);
+}
+.waveLine,
+.waveGlow {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.waveLine {
+  stroke-width: 2;
+}
+.waveGlow {
+  stroke-width: 5;
+  opacity: 0.6;
+}
+.waveFill {
+  fill: color-mix(in srgb, var(--color-primary) 14%, transparent);
+  stroke: none;
+}
+@media (min-width: 900px) {
+  .wave {
+    display: none;
+  }
 }
 
 /* Glas-Linse beim Drücken und Wischen (Vorlage: Video des Nutzers): folgt dem Finger, vergrößert den Punkt

@@ -2,7 +2,9 @@
 // Admin-Bereich (Wunsch Nutzer 2026-11-10): gleiche Form, Glas, Linse beim Wischen, aktive Kapsel; nur die Punkte
 // unterscheiden sich. Designänderungen hier gelten für beide.
 import {
+  useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -12,6 +14,7 @@ import {
 } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router';
 import { DRAG_START_PX, itemAt, lensCenter, type Span } from './navLens';
+import { NavWave } from './NavWave';
 import { useHaptics } from '../features/haptics/useHaptics';
 import styles from './AppShell.module.css';
 
@@ -50,6 +53,7 @@ function useNavLens(paths: readonly string[]) {
     null,
   );
   const haptics = useHaptics();
+  const itemEls = useCallback(() => itemRefs.current, []);
   const suppressClick = useRef(false);
   const [lens, setLens] = useState<Lens | null>(null);
   const timer = useRef<number | undefined>(undefined);
@@ -126,6 +130,7 @@ function useNavLens(paths: readonly string[]) {
     itemRef: (i: number) => (el: HTMLAnchorElement | null) => {
       itemRefs.current[i] = el;
     },
+    itemEls,
     handlers: {
       onPointerDown,
       onPointerMove,
@@ -143,10 +148,70 @@ function useNavLens(paths: readonly string[]) {
   };
 }
 
+/** Aktiv wie bei NavLink bzw. über `also` */
+const isActivePath = (n: NavItem, pathname: string) =>
+  (n.end ? pathname === n.to : pathname === n.to || pathname.startsWith(`${n.to}/`)) ||
+  (!!n.also && pathname.startsWith(n.also));
+
+interface Geo {
+  width: number;
+  height: number;
+  /** Mitte jedes Punkts, von der linken Außenkante der Leiste */
+  centers: number[];
+  tabWidth: number;
+}
+
+/** Maße der Leiste und der Punkte für die Umrandung; misst neu, wenn sich die Größe ändert. */
+function useNavGeo(
+  navRef: React.RefObject<HTMLElement | null>,
+  itemRefs: () => (HTMLAnchorElement | null)[],
+  count: number,
+) {
+  const [geo, setGeo] = useState<Geo | null>(null);
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const measure = () => {
+      const box = nav.getBoundingClientRect();
+      const spans = itemRefs()
+        .slice(0, count)
+        .map((el) => el?.getBoundingClientRect());
+      if (!box.width || spans.some((r) => !r)) return;
+      const next: Geo = {
+        width: box.width,
+        height: box.height,
+        centers: spans.map((r) => (r?.left ?? 0) - box.left + (r?.width ?? 0) / 2),
+        tabWidth: spans[0]?.width ?? 0,
+      };
+      // Nur bei echter Änderung neu zeichnen (sonst Schleife über die Größenbeobachtung)
+      setGeo((old) =>
+        old &&
+        old.width === next.width &&
+        old.height === next.height &&
+        old.tabWidth === next.tabWidth &&
+        old.centers.length === next.centers.length &&
+        old.centers.every((c, i) => c === next.centers[i])
+          ? old
+          : next,
+      );
+    };
+    measure();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(nav);
+    return () => ro.disconnect();
+  }, [navRef, itemRefs, count]);
+  return geo;
+}
+
 export function BottomNav({ items, label }: { items: readonly NavItem[]; label: string }) {
   const paths = items.map((n) => n.to);
-  const { lens, navRef, itemRef, handlers } = useNavLens(paths);
+  const { lens, navRef, itemRef, itemEls, handlers } = useNavLens(paths);
   const { pathname } = useLocation();
+  const geo = useNavGeo(navRef, itemEls, items.length);
+  const activeIndex = items.findIndex((n) => isActivePath(n, pathname));
+  // Der Hügel folgt beim Wischen der Linse, sonst dem aktiven Punkt
+  const target = lens ? lens.center : activeIndex >= 0 ? (geo?.centers[activeIndex] ?? null) : null;
   return (
     <nav
       ref={navRef}
@@ -155,6 +220,7 @@ export function BottomNav({ items, label }: { items: readonly NavItem[]; label: 
       style={{ '--nav-count': items.length } as CSSProperties}
       {...handlers}
     >
+      {geo && <NavWave width={geo.width} height={geo.height} tabWidth={geo.tabWidth} target={target} />}
       {lens && (
         <span
           className={[styles.lens, lens.snapping ? styles.lensSnap : ''].join(' ')}
