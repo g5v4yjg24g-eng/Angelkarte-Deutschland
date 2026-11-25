@@ -4,6 +4,11 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31-6',
+    title: 'Neue Leiste',
+    items: ['Navigation: Die untere Leiste zeigt den aktiven Bereich jetzt mit einer leuchtenden Linie, die sich als Hügel über ihn wölbt und beim Wechsel mitgleitet.'],
+  },
+  {
     id: '2026-12-31-5',
     title: 'Route zum Fangplatz',
     items: ['Anfahrt: Auch bei einem Fang mit Position startet „Route planen“ die Navigation in Apple Karten oder Google Maps.'],

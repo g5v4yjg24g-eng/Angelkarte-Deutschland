@@ -155,6 +155,40 @@ test('NAV-1: Gedrückt über die Leiste wischen – Glas-Linse folgt, Loslassen 
   expect(errors).toEqual([]);
 });
 
+test('NAV-3: Leuchtende Umrandung mit Hügel über dem aktiven Punkt, gleitet beim Wechsel mit', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, 'Nur die mobile Leiste hat die Umrandung');
+  const errors = collectErrors(page);
+  await page.goto('/fangbuch');
+  await waitForApp(page);
+  const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
+  const line = nav.locator('svg[aria-hidden="true"] path[stroke]').last();
+  // x des höchsten Punkts der Linie (Scheitel des Hügels), relativ zur Leiste
+  const apexX = async () =>
+    line.evaluate((el) => {
+      const pts = (el.getAttribute('d') ?? '').match(/[ML]([\d.]+) ([\d.]+)/g) ?? [];
+      let best = { x: 0, y: Infinity };
+      for (const p of pts) {
+        const [x, y] = p.slice(1).split(' ').map(Number) as [number, number];
+        if (y < best.y - 0.01) best = { x, y };
+      }
+      return best.x;
+    });
+  const centerOf = async (name: string) => {
+    const navBox = (await nav.boundingBox()) as { x: number };
+    const box = (await nav.getByRole('link', { name }).boundingBox()) as { x: number; width: number };
+    return box.x - navBox.x + box.width / 2;
+  };
+  await expect.poll(async () => Math.abs((await apexX()) - (await centerOf('Fangbuch')))).toBeLessThan(6);
+  await nav.getByRole('link', { name: 'Wetter' }).tap();
+  await expect(page.getByRole('heading', { level: 1, name: 'Wetter' })).toBeVisible();
+  // Hügel ist zum neuen Punkt gewandert
+  await expect.poll(async () => Math.abs((await apexX()) - (await centerOf('Wetter')))).toBeLessThan(6);
+  expect(errors).toEqual([]);
+});
+
 test('NAV-2: Leiste ist durchsichtig (Inhalt scheint durch), bei „Transparenz reduzieren" deckend', async ({
   page,
   isMobile,
