@@ -164,28 +164,39 @@ test('NAV-3: Leuchtende Umrandung mit Hügel über dem aktiven Punkt, gleitet be
   await page.goto('/fangbuch');
   await waitForApp(page);
   const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
-  const line = nav.locator('svg[aria-hidden="true"] path[stroke]').last();
-  // x des höchsten Punkts der Linie (Scheitel des Hügels), relativ zur Leiste
-  const apexX = async () =>
-    line.evaluate((el) => {
-      const pts = (el.getAttribute('d') ?? '').match(/[ML]([\d.]+) ([\d.]+)/g) ?? [];
-      let best = { x: 0, y: Infinity };
-      for (const p of pts) {
-        const [x, y] = p.slice(1).split(' ').map(Number) as [number, number];
-        if (y < best.y - 0.01) best = { x, y };
-      }
-      return best.x;
-    });
+  const hump = nav.locator('[data-wave="hump"]');
+  // Mitte des Hügels relativ zur Leiste (er wird per Transformation verschoben)
+  const humpCenter = async () => {
+    const navBox = (await nav.boundingBox()) as { x: number };
+    const box = (await hump.boundingBox()) as { x: number; width: number };
+    return box.x - navBox.x + box.width / 2;
+  };
   const centerOf = async (name: string) => {
     const navBox = (await nav.boundingBox()) as { x: number };
     const box = (await nav.getByRole('link', { name }).boundingBox()) as { x: number; width: number };
     return box.x - navBox.x + box.width / 2;
   };
-  await expect.poll(async () => Math.abs((await apexX()) - (await centerOf('Fangbuch')))).toBeLessThan(6);
+  await expect(hump).toBeVisible();
+  await expect
+    .poll(async () => Math.abs((await humpCenter()) - (await centerOf('Fangbuch'))))
+    .toBeLessThan(3);
+  // Das Gleiten läuft als Web-Animation (Transformation), nicht als Neuberechnung bei jedem Bild
+  await hump.evaluate((el) => {
+    const w = window as unknown as { __waveAnims: number };
+    w.__waveAnims = 0;
+    const orig = el.animate.bind(el);
+    el.animate = (...args: Parameters<Element['animate']>) => {
+      w.__waveAnims++;
+      return orig(...args);
+    };
+  });
   await nav.getByRole('link', { name: 'Wetter' }).tap();
   await expect(page.getByRole('heading', { level: 1, name: 'Wetter' })).toBeVisible();
   // Hügel ist zum neuen Punkt gewandert
-  await expect.poll(async () => Math.abs((await apexX()) - (await centerOf('Wetter')))).toBeLessThan(6);
+  await expect.poll(async () => Math.abs((await humpCenter()) - (await centerOf('Wetter')))).toBeLessThan(3);
+  expect(
+    await page.evaluate(() => (window as unknown as { __waveAnims: number }).__waveAnims),
+  ).toBeGreaterThan(0);
   expect(errors).toEqual([]);
 });
 
