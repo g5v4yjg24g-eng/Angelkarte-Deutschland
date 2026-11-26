@@ -4,6 +4,17 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31-7',
+    title: 'Erinnerung vor Angelterminen',
+    items: [
+      'Mitteilung: Die iPhone-App erinnert dich vor deinen Terminen. Du wählst in den Einstellungen: 1 Tag, 3 Stunden und/oder 1 Stunde vorher (Standard: 1 Stunde).',
+      'Knöpfe: Hältst du eine Erinnerung gedrückt, kannst du „Erneut in 1 Stunde erinnern“ oder „Nicht mehr erinnern“ wählen – ohne die App zu öffnen.',
+      'Knöpfe: Hältst du eine Erinnerung gedrückt, kannst du „Erneut in 1 Stunde erinnern“ oder „Nicht mehr erinnern“ wählen – ohne die App zu öffnen.',
+      'Ohne Uhrzeit: Bei Terminen ohne Uhrzeit kommt die Erinnerung am Abend davor um 18 Uhr bzw. am Morgen um 7 Uhr.',
+      'Erlaubnis: Beim ersten Speichern eines Termins fragt iOS einmal nach der Erlaubnis für Mitteilungen. Nichts verlässt dein Gerät.',
+    ],
+  },
+  {
     id: '2026-12-31-6',
     title: 'Neue Leiste',
     items: ['Navigation: Die untere Leiste zeigt den aktiven Bereich jetzt mit einer leuchtenden Linie, die sich als Hügel über ihn wölbt und beim Wechsel mitgleitet.'],

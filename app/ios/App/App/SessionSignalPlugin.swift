@@ -59,6 +59,8 @@ final class SignalNotificationDelegate: NSObject, UNUserNotificationCenterDelega
         center.getNotificationCategories { existing in
             var all = existing.filter { $0.identifier != category }
             all.insert(mine)
+            all = all.filter { $0.identifier != ReminderActions.category }
+            all.insert(ReminderActions.categoryDefinition)
             center.setNotificationCategories(all)
         }
         if center.delegate is SignalNotificationDelegate { return }
@@ -73,6 +75,10 @@ final class SignalNotificationDelegate: NSObject, UNUserNotificationCenterDelega
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let action = response.actionIdentifier
+        if ReminderActions.handle(response) {
+            completionHandler()
+            return
+        }
         if action == Self.acceptId || action == Self.declineId {
             if let signal = response.notification.request.content.userInfo["signal"] as? String {
                 SignalAnswerStore.add(signal: signal, accept: action == Self.acceptId)

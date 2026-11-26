@@ -8,6 +8,7 @@ import { useWeatherEnabled } from '../weather/useWeatherEnabled';
 import { useBoolSetting } from './useBoolSetting';
 import { SyncStatusSection } from '../sharing/SyncStatus';
 import { PushSettings } from '../push/PushSettings';
+import { TripReminderSettings } from './TripReminderSettings';
 import { useProviders } from '../../ports/providersContext';
 import { ListLink } from '../../design/components/ListLink';
 import { BookIcon } from '../../design/icons';
@@ -108,6 +109,7 @@ export function SettingsPage() {
       </Section>
       <SyncStatusSection />
       <PushSettings />
+      <TripReminderSettings />
       {haptics.available && (
         <Section title={de.settings.haptics}>
           {hapticsOn !== undefined && (
