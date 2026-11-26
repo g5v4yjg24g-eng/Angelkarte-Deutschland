@@ -79,14 +79,14 @@ describe('PaperReminderSync (PAP-2)', () => {
     });
     await waitFor(() => expect(r.replaceAll.mock.calls.at(-1)?.[0]).toHaveLength(1));
     expect(r.replaceAll.mock.calls.at(-1)?.[0][0]).toMatchObject({
-      id: `trip.${trip.id}.soon`,
+      id: `trip.${trip.id}.h1`,
       title: 'Hecht am See',
       body: 'Es geht gleich los: 06:30 Uhr.',
     });
     await savePaper({ input: { kind: 'permit', title: 'Karte', validUntil: `${year}-12-31`, remind: true } });
     await waitFor(() => expect(r.replaceAll.mock.calls.at(-1)?.[0]).toHaveLength(6));
     const ids = (r.replaceAll.mock.calls.at(-1)?.[0] ?? []).map((x) => x.id);
-    expect(ids[0]).toBe(`trip.${trip.id}.soon`); // früheste zuerst, beide Arten gemischt
+    expect(ids[0]).toBe(`trip.${trip.id}.h1`); // früheste zuerst, beide Arten gemischt
     await repo('trips', getDb()).remove(trip.id);
     await waitFor(() => expect(r.replaceAll.mock.calls.at(-1)?.[0]).toHaveLength(5));
   });

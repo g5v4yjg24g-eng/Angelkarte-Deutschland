@@ -28,6 +28,8 @@ export interface Settings {
   lastSeenChangelog: string;
   /** Stand der Anleitung (GUIDE_VERSION), den die Person schon gesehen oder übersprungen hat */
   guideSeen: number;
+  /** Wann vor einem Angeltermin erinnert wird (nur iPhone-App): 'day' = 1 Tag, 'h3' = 3 Stunden, 'h1' = 1 Stunde vorher; fehlt = nur 1 Stunde */
+  tripReminders: string[];
   /** Cloud-Sicherung je Konto-ID: Zustimmung, Stand dieses Geräts (nicht Teil der Sicherung) */
   cloudBackup: Record<string, CloudDeviceState>;
 }

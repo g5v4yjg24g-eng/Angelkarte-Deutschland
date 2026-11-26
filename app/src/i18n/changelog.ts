@@ -7,7 +7,8 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     id: '2026-12-31-7',
     title: 'Erinnerung vor Angelterminen',
     items: [
-      'Mitteilung: Die iPhone-App erinnert dich eine Stunde vor einem Termin mit Uhrzeit, bei Terminen ohne Uhrzeit am Abend davor um 18 Uhr.',
+      'Mitteilung: Die iPhone-App erinnert dich vor deinen Terminen. Du wählst in den Einstellungen: 1 Tag, 3 Stunden und/oder 1 Stunde vorher (Standard: 1 Stunde).',
+      'Ohne Uhrzeit: Bei Terminen ohne Uhrzeit kommt die Erinnerung am Abend davor um 18 Uhr bzw. am Morgen um 7 Uhr.',
       'Erlaubnis: Beim ersten Speichern eines Termins fragt iOS einmal nach der Erlaubnis für Mitteilungen. Nichts verlässt dein Gerät.',
     ],
   },

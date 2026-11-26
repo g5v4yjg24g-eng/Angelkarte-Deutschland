@@ -7,8 +7,9 @@ import { useEffect } from 'react';
 import { de } from '../../i18n/de';
 import { getDb } from '../../data/db';
 import { MAX_PENDING_REMINDERS, reminderPlan } from '../../domain/papers';
-import { tripReminderPlan } from '../../domain/tripReminders';
+import { normalizeOffsets, tripReminderPlan } from '../../domain/tripReminders';
 import { useProviders } from '../../ports/providersContext';
+import { getSetting } from '../../data/settings';
 import { usePapers } from './usePapers';
 
 export function PaperReminderSync() {
@@ -16,8 +17,10 @@ export function PaperReminderSync() {
   const papers = usePapers();
   const trips = useLiveQuery(async () => (await getDb().trips.toArray()).filter((t) => !t.deletedAt), []);
 
+  const offsets = useLiveQuery(async () => normalizeOffsets(await getSetting('tripReminders')), []);
+
   useEffect(() => {
-    if (!reminders || !papers || !trips) return;
+    if (!reminders || !papers || !trips || !offsets) return;
     let alive = true;
     const run = async () => {
       if ((await reminders.permission()) !== 'granted' || !alive) return;
@@ -32,9 +35,14 @@ export function PaperReminderSync() {
             title: t.title,
             water: t.waterSnapshot?.name ?? t.waterSnapshot?.customName,
           }),
-        body: (t, kind) =>
-          kind === 'soon' ? de.calendar.reminderSoon(t.from ?? '') : de.calendar.reminderEvening,
-      });
+        body: (t, kind) => {
+          const from = t.from ?? '';
+          if (kind === 'h1') return de.calendar.reminderSoon(from);
+          if (kind === 'h3') return de.calendar.reminderHours(from, 3);
+          if (kind === 'day') return de.calendar.reminderDay(from);
+          return kind === 'evening' ? de.calendar.reminderEvening : de.calendar.reminderMorning;
+        },
+      }, offsets);
       // zusammen höchstens so viele, wie iOS vormerkt: die frühesten zuerst
       const plan = [...paperPlan, ...tripPlan].sort((a, b) => a.at - b.at).slice(0, MAX_PENDING_REMINDERS);
       await reminders.replaceAll(plan);
@@ -48,7 +56,7 @@ export function PaperReminderSync() {
       alive = false;
       document.removeEventListener('visibilitychange', onVisible);
     };
-  }, [reminders, papers, trips]);
+  }, [reminders, papers, trips, offsets]);
 
   return null;
 }
