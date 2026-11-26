@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31-7',
+    title: 'Erinnerung vor Angelterminen',
+    items: [
+      'Mitteilung: Die iPhone-App erinnert dich eine Stunde vor einem Termin mit Uhrzeit, bei Terminen ohne Uhrzeit am Abend davor um 18 Uhr.',
+      'Erlaubnis: Beim ersten Speichern eines Termins fragt iOS einmal nach der Erlaubnis für Mitteilungen. Nichts verlässt dein Gerät.',
+    ],
+  },
+  {
     id: '2026-12-31-6',
     title: 'Neue Leiste',
     items: ['Navigation: Die untere Leiste zeigt den aktiven Bereich jetzt mit einer leuchtenden Linie, die sich als Hügel über ihn wölbt und beim Wechsel mitgleitet.'],

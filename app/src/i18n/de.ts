@@ -2469,6 +2469,10 @@ export const de = {
     allToCalendar: 'Alle anstehenden in den Kalender',
     icsDefaultTitle: 'Angeln',
     icsReminder: 'Angeltermin',
+    reminderTitle: (t: { title?: string | undefined; water?: string | undefined }) =>
+      t.title ?? (t.water ? `Angeln: ${t.water}` : 'Angeltermin'),
+    reminderSoon: (from: string) => `Es geht gleich los: ${from} Uhr.`,
+    reminderEvening: 'Morgen steht ein Angeltermin an.',
     weekTrips: 'Termine in dieser Woche',
     dayTrips: 'Termine an diesem Tag',
     noTripsWeek: 'In dieser Woche ist nichts eingetragen.',

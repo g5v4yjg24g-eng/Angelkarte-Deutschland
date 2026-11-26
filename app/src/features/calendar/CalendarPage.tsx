@@ -82,7 +82,7 @@ function TripForm({
   options: PlaceOption[];
   onDone: (saved?: Trip, note?: string) => void;
 }) {
-  const { account } = useProviders();
+  const { account, reminders } = useProviders();
   const { state: friends } = useFriends();
   const [invited, setInvited] = useState<Invitee[]>(() => initial?.invited ?? []);
   const [draft, setDraft] = useState<TripDraft>(() =>
@@ -125,6 +125,8 @@ function TripForm({
             ...(waterSnapshot ? { waterSnapshot } : {}),
             ...(invited.length ? { invited } : {}),
           });
+      // Erst nach dem Speichern um die Erlaubnis für Mitteilungen bitten (nur iPhone-App, nur beim ersten Mal)
+      if (reminders && (await reminders.permission()) === 'prompt') await reminders.request();
       // neu Eingeladene bekommen die Einladung; schlägt das fehl, gilt der Termin trotzdem (wird nachgeholt)
       const before = new Set((initial?.invited ?? []).filter((i) => i.sent).map((i) => i.userId));
       const fresh = invited.filter((i) => !before.has(i.userId));
