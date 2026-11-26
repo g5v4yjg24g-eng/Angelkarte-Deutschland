@@ -362,6 +362,8 @@ export const de = {
     windValue: (bft: number) => `${bft} Bft`,
   },
   sessions: {
+    checkTitle: 'Angelst du noch?',
+    checkBody: (hours: number) => `Deine Session läuft seit ${hours} Stunden.`,
     title: 'Sessions',
     start: 'Session starten',
     end: 'Session beenden',
@@ -2077,6 +2079,9 @@ export const de = {
     weatherOn: 'Automatisch laden',
     haptics: 'Vibration',
     hapticsOff: 'Aus',
+    sessionCheck: 'Nachfrage nach 5 Stunden',
+    sessionCheckOff: 'Aus',
+    sessionCheckOn: 'An',
     liveActivity: 'Live Activity',
     liveActivityOff: 'Aus',
     liveActivityOn: 'An',

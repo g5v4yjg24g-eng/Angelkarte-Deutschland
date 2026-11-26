@@ -30,6 +30,17 @@ export async function endSession(
   return repo('sessions', db).update(id, { endAt, pauses: pausesUntil(s.pauses, endAt) });
 }
 
+/** „Ja, ich angle noch“ (Antwort auf die Nachfrage nach 5 Stunden) – die nächste Nachfrage zählt ab diesem Zeitpunkt. */
+export async function confirmStillFishing(
+  id: string,
+  atMs: number = Date.now(),
+  db: FangpunktDB = getDb(),
+): Promise<void> {
+  const s = await db.sessions.get(id);
+  if (!s || s.deletedAt || s.endAt) return;
+  await repo('sessions', db).update(id, { stillFishingAt: toZonedIso(atMs, s.tz) });
+}
+
 export class SessionStateError extends Error {
   override name = 'SessionStateError';
 }

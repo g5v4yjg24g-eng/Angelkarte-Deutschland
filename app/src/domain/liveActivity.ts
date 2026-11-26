@@ -136,7 +136,8 @@ export function nextLiveAction(
 // ---------------------------------------------------------------------------------------------------------
 // Knöpfe ohne App-Öffnen (iOS 17, App Intents): die Aktionen kommen vorgemerkt mit Zeitpunkt aus dem Swift-Modul
 
-export type PendingKind = 'pause' | 'resume' | 'end';
+/** `keep` = „Ja, ich angle noch“ auf die Nachfrage nach 5 Stunden (Mitteilung, nicht Live Activity) */
+export type PendingKind = 'pause' | 'resume' | 'end' | 'keep';
 export interface PendingLiveAction {
   action: PendingKind;
   sessionId: string;
@@ -154,7 +155,7 @@ export function parsePendingActions(raw: unknown): PendingLiveAction[] {
   for (const r of raw) {
     if (!r || typeof r !== 'object') continue;
     const { action, sessionId, atMs } = r as Record<string, unknown>;
-    if (action !== 'pause' && action !== 'resume' && action !== 'end') continue;
+    if (action !== 'pause' && action !== 'resume' && action !== 'end' && action !== 'keep') continue;
     if (typeof sessionId !== 'string' || !sessionId || typeof atMs !== 'number' || !Number.isFinite(atMs))
       continue;
     out.push({ action, sessionId, atMs });

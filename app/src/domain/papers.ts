@@ -83,6 +83,8 @@ export interface Reminder {
   body: string;
   /** Gehört zu einem Papier bzw. Termin (mit Datum): „Nicht mehr erinnern“ am Gerät gilt für die ganze Gruppe */
   group?: string;
+  /** Nachfrage zu einer laufenden Session: bekommt am Gerät die Knöpfe „Ja“ / „Nein – Session beenden“ */
+  sessionId?: string;
 }
 
 export interface ReminderTexts {
