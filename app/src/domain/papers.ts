@@ -81,6 +81,8 @@ export interface Reminder {
   at: number;
   title: string;
   body: string;
+  /** Gehört zu einem Papier bzw. Termin (mit Datum): „Nicht mehr erinnern“ am Gerät gilt für die ganze Gruppe */
+  group?: string;
 }
 
 export interface ReminderTexts {
@@ -105,7 +107,7 @@ export function reminderPlan(
     for (const before of REMIND_DAYS) {
       const at = new Date(y, m - 1, d - before, REMIND_HOUR, 0, 0, 0).getTime();
       if (at <= nowMs) continue;
-      out.push({ id: `paper.${p.id}.${before}`, at, title: texts.title(p), body: texts.body(p, before) });
+      out.push({ id: `paper.${p.id}.${before}`, at, title: texts.title(p), body: texts.body(p, before), group: `paper.${p.id}:${p.validUntil}` });
     }
   }
   return out.sort((a, b) => a.at - b.at || a.id.localeCompare(b.id)).slice(0, max);

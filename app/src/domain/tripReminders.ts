@@ -42,7 +42,14 @@ export function tripReminderPlan(
   const out: Reminder[] = [];
   const push = (t: Trip, kind: TripReminderKind, at: number) => {
     if (!Number.isFinite(at) || at <= nowMs) return;
-    out.push({ id: `trip.${t.id}.${kind}`, at, title: texts.title(t), body: texts.body(t, kind) });
+    out.push({
+      id: `trip.${t.id}.${kind}`,
+      at,
+      title: texts.title(t),
+      body: texts.body(t, kind),
+      // Datum und Uhrzeit gehören dazu: wird der Termin verlegt, gilt „Nicht mehr erinnern“ nicht mehr
+      group: `trip.${t.id}:${t.date}T${t.from ?? ''}`,
+    });
   };
   for (const t of trips) {
     if (t.deletedAt) continue;
