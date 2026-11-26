@@ -41,11 +41,13 @@ interface Lens {
   width: number;
   index: number;
   snapping: boolean;
+  /** erst ab echtem Wischen: Der Hügel folgt dem Finger; beim bloßen Drücken gleitet er zum gedrückten Punkt */
+  dragging: boolean;
 }
 
 /** Drücken und Wischen auf der Leiste (nur Touch/Stift, nur mobile Leiste): Linse folgt dem Finger, Loslassen wählt. */
 /** `paths`: Router-Pfade der Punkte (ohne Basis-Pfad der Veröffentlichung) */
-function useNavLens(paths: readonly string[]) {
+function useNavLens(paths: readonly string[], onTap: (index: number) => void) {
   const navigate = useNavigate();
   const navRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
@@ -80,7 +82,13 @@ function useNavLens(paths: readonly string[]) {
     const item = sp[index];
     if (!item) return;
     drag.current = { id: e.pointerId, startX: e.clientX, moved: false, spans: sp, index };
-    setLens({ center: item.left + item.width / 2, width: item.width * LENS_SCALE, index, snapping: false });
+    setLens({
+      center: item.left + item.width / 2,
+      width: item.width * LENS_SCALE,
+      index,
+      snapping: false,
+      dragging: false,
+    });
   };
   const onPointerMove = (e: PointerEvent<HTMLElement>) => {
     const d = drag.current;
@@ -103,13 +111,17 @@ function useNavLens(paths: readonly string[]) {
       d.index = index;
       haptics.selectionChanged();
     }
-    setLens((l) => l && { ...l, center: lensCenter(x, d.spans), index });
+    setLens((l) => l && { ...l, center: lensCenter(x, d.spans), index, dragging: true });
   };
   const finish = (e: PointerEvent<HTMLElement>, select: boolean) => {
     const d = drag.current;
     if (!d || d.id !== e.pointerId) return;
     drag.current = null;
-    if (!d.moved) return setLens(null);
+    if (!d.moved) {
+      // Tipp: Der Klick folgt gleich; den gedrückten Punkt schon jetzt merken, damit der Hügel nicht kurz zurückspringt
+      if (select) onTap(d.index);
+      return setLens(null);
+    }
     haptics.selectionEnd();
     suppressClick.current = true;
     const index = itemAt(localX(e), d.spans);
@@ -119,6 +131,7 @@ function useNavLens(paths: readonly string[]) {
       setLens((l) => l && { ...l, center: item.left + item.width / 2, index, snapping: true });
       // Router-Pfad, nicht das href: Das enthält auf GitHub Pages schon den Basis-Pfad, der Router setzt ihn sonst doppelt
       const to = paths[index];
+      onTap(index);
       if (to) void navigate(to);
       timer.current = window.setTimeout(() => setLens(null), SNAP_MS);
     } else setLens(null);
@@ -206,13 +219,15 @@ function useNavGeo(
 
 export function BottomNav({ items, label }: { items: readonly NavItem[]; label: string }) {
   const paths = items.map((n) => n.to);
-  const { lens, navRef, itemRef, itemEls, handlers } = useNavLens(paths);
   const { pathname } = useLocation();
+  // Sofort beim Antippen losgleiten, nicht erst wenn die neue Ansicht fertig aufgebaut ist (Wunsch Nutzer 2026-11-26);
+  // gilt nur, solange der Pfad noch der alte ist, danach übernimmt der echte aktive Punkt
+  const [tap, setTap] = useState<{ index: number; from: string } | null>(null);
+  const { lens, navRef, itemRef, itemEls, handlers } = useNavLens(paths, (index) =>
+    setTap({ index, from: pathname }),
+  );
   const geo = useNavGeo(navRef, itemEls, items.length);
   const activeIndex = items.findIndex((n) => isActivePath(n, pathname));
-  // Sofort beim Antippen losgleiten, nicht erst wenn die neue Ansicht fertig aufgebaut ist (Wunsch Nutzer 2026-11-26)
-  // gilt nur, solange der Pfad noch der alte ist; danach übernimmt der echte aktive Punkt
-  const [tap, setTap] = useState<{ index: number; from: string } | null>(null);
   useEffect(() => {
     if (!tap) return;
     const t = window.setTimeout(() => setTap(null), 1500);
@@ -220,8 +235,15 @@ export function BottomNav({ items, label }: { items: readonly NavItem[]; label: 
   }, [tap]);
   const pending = tap && tap.from === pathname ? tap.index : null;
   const shownIndex = pending ?? activeIndex;
-  // Der Hügel folgt beim Wischen der Linse, sonst dem angetippten bzw. aktiven Punkt
-  const target = lens ? lens.center : shownIndex >= 0 ? (geo?.centers[shownIndex] ?? null) : null;
+  // Beim Wischen folgt der Hügel dem Finger; beim bloßen Drücken gleitet er zum gedrückten Punkt, sonst zum angetippten
+  // bzw. aktiven. Nie erst zur Linse und beim Loslassen kurz zurück (das war das Hin und Her).
+  const pressedIndex = lens ? lens.index : shownIndex;
+  const target =
+    lens && (lens.dragging || lens.snapping)
+      ? lens.center
+      : pressedIndex >= 0
+        ? (geo?.centers[pressedIndex] ?? null)
+        : null;
   return (
     <nav
       ref={navRef}
@@ -236,7 +258,7 @@ export function BottomNav({ items, label }: { items: readonly NavItem[]; label: 
           height={geo.height}
           tabWidth={geo.tabWidth}
           target={target}
-          follow={!!lens && !lens.snapping}
+          follow={!!lens && lens.dragging && !lens.snapping}
         />
       )}
       {lens && (

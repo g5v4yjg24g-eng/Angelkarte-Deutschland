@@ -200,6 +200,51 @@ test('NAV-3: Leuchtende Umrandung mit Hügel über dem aktiven Punkt, gleitet be
   expect(errors).toEqual([]);
 });
 
+test('NAV-4: Tippen mit kurzem Drücken – der Hügel läuft in einem Zug zum neuen Punkt, kein Hin und Her', async ({
+  page,
+  isMobile,
+}) => {
+  test.skip(!isMobile, 'Nur die mobile Leiste hat die Umrandung');
+  const errors = collectErrors(page);
+  await page.goto('/fangbuch');
+  await waitForApp(page);
+  const nav = page.getByRole('navigation', { name: 'Hauptnavigation' });
+  const hump = nav.locator('[data-wave="hump"]');
+  await expect(hump).toBeVisible();
+  // Mitte des Hügels in jedem Bild mitschreiben
+  await page.evaluate(() => {
+    const el = document.querySelector('[data-wave="hump"]') as SVGElement;
+    const w = window as unknown as { __humpX: number[] };
+    w.__humpX = [];
+    const tick = () => {
+      const r = el.getBoundingClientRect();
+      w.__humpX.push(r.left + r.width / 2);
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  const link = await nav.getByRole('link', { name: 'Wetter' }).boundingBox();
+  if (!link) throw new Error('Punkt nicht gefunden');
+  const x = link.x + link.width / 2;
+  const y = link.y + link.height / 2;
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true });
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+  await page.waitForTimeout(150); // Finger liegt kurz auf (die Linse ist sichtbar)
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await expect(page.getByRole('heading', { level: 1, name: 'Wetter' })).toBeVisible();
+  await page.waitForTimeout(700);
+  const xs = await page.evaluate(() => (window as unknown as { __humpX: number[] }).__humpX);
+  const start = xs[0] ?? 0;
+  const end = xs[xs.length - 1] ?? 0;
+  expect(end).toBeGreaterThan(start + 40);
+  // nie ein Stück zurück (mehr als 1 px) auf dem Weg zum neuen Punkt
+  let back = 0;
+  for (let i = 1; i < xs.length; i++) back = Math.max(back, (xs[i - 1] ?? 0) - (xs[i] ?? 0));
+  expect(back).toBeLessThan(1);
+  expect(errors).toEqual([]);
+});
+
 test('NAV-2: Leiste ist durchsichtig (Inhalt scheint durch), bei „Transparenz reduzieren" deckend', async ({
   page,
   isMobile,

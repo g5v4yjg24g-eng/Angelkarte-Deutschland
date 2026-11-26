@@ -16,8 +16,10 @@ import {
 } from '../domain/navWave';
 import styles from './AppShell.module.css';
 
-const MOVE_MS = 340;
-const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+// Sanfter Anlauf und langes Ausgleiten, je weiter, desto länger (vorher war der Anfang so steil, dass der Hügel
+// fast sprang, und lag genau in dem Bild, in dem die neue Seite erscheint)
+const EASE = 'cubic-bezier(0.45, 0, 0.15, 1)';
+const moveMs = (distance: number) => Math.min(560, Math.max(340, 300 + Math.abs(distance) * 0.8));
 
 const reduced = () =>
   typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -89,7 +91,10 @@ export function NavWave({
       el.getAnimations?.().forEach((x) => x.cancel());
       style.transform = b;
       if (animate && typeof el.animate === 'function' && fromCenter !== null)
-        el.animate([{ transform: a }, { transform: b }], { duration: MOVE_MS, easing: EASE });
+        el.animate([{ transform: a }, { transform: b }], {
+          duration: moveMs(center - (fromCenter ?? center)),
+          easing: EASE,
+        });
     }
     if (humpEl.current) humpEl.current.style.visibility = next.visible ? 'visible' : 'hidden';
     shown.current = center;
