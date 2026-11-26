@@ -166,15 +166,43 @@
 }
 
 /* Umrandung mit Hügel über dem aktiven Punkt (Wunsch Nutzer 2026-11-25, Vorlage: Video). Liegt auf dem Rand der
-   Kapsel, unter den Punkten; die Linie nimmt die Hauptfarbe der App. */
-.wave {
+   Kapsel, unter den Punkten; die Linie nimmt die Hauptfarbe der App. Hügel und die zwei Linien-Fenster werden nur
+   verschoben (Transformationen), damit es auch beim Seitenwechsel flüssig bleibt (Wunsch Nutzer 2026-11-26). */
+.waveClip {
   position: absolute;
   z-index: 0;
   top: -1px;
   left: -1px;
-  overflow: visible;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  /* iOS: Rundung klippt sonst bewegte Kinder nicht */
+  isolation: isolate;
+  transform: translateZ(0);
   pointer-events: none;
   color: var(--color-primary);
+}
+.waveWin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  will-change: transform;
+}
+.waveIn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+.waveHump {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  will-change: transform;
+}
+.waveSvg {
+  display: block;
 }
 .waveLine,
 .waveGlow {
@@ -185,16 +213,12 @@
 .waveLine {
   stroke-width: 2;
 }
-.waveGlow {
-  stroke-width: 5;
-  opacity: 0.6;
-}
 .waveFill {
   fill: color-mix(in srgb, var(--color-primary) 14%, transparent);
   stroke: none;
 }
 @media (min-width: 900px) {
-  .wave {
+  .waveClip {
     display: none;
   }
 }

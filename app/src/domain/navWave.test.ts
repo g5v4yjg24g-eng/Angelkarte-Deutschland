@@ -1,10 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import {
+  NO_WAVE,
   WAVE_INSET,
   approach,
   baseY,
+  baselinePath,
   bump,
   halfBaseFor,
+  humpFill,
+  humpPath,
+  humpPoints,
+  waveShifts,
   waveFill,
   wavePath,
   wavePoints,
@@ -92,5 +98,37 @@ describe('approach / halfBaseFor', () => {
     expect(halfBaseFor(10)).toBe(30);
     expect(halfBaseFor(58)).toBeCloseTo(41.76, 5);
     expect(halfBaseFor(400)).toBe(56);
+  });
+});
+
+describe('verschiebbarer Hügel', () => {
+  it('Grundlinie ist flach, der Hügel einzeln hat Scheitel in der Mitte und Füße auf der Grundlinie', () => {
+    const pts = humpPoints(42, 64);
+    const base = 64 - WAVE_INSET;
+    expect(pts[0]?.[1]).toBeCloseTo(base, 5);
+    expect(pts[pts.length - 1]?.[1]).toBeCloseTo(base, 5);
+    const top = pts.reduce((a, b) => (b[1] < a[1] ? b : a));
+    expect(Math.abs(top[0] - 42)).toBeLessThanOrEqual(4);
+    expect(top[1]).toBeLessThan(12);
+    expect(humpPath(42, 64)).toMatch(/^M/);
+    expect(humpFill(42, 64)).toMatch(/Z$/);
+  });
+  it('Grundlinie ohne Hügel hat keine Erhebung', () => {
+    const d = baselinePath(366, 64);
+    expect(d).toMatch(/^M/);
+    // niedrigster y-Wert (höchste Stelle) liegt an den Bögen der Enden, nicht in der Mitte
+    const ys = [...d.matchAll(/ ([\d.]+)(?=L|$)/g)].map((m) => Number(m[1]));
+    expect(Math.min(...ys)).toBeGreaterThan(30);
+  });
+  it('Fenster und Hügel liegen passend zusammen; ohne Hügel ist links alles, rechts nichts sichtbar', () => {
+    const s = waveShifts(183, 42, 366);
+    expect(s.hump).toBe(141);
+    expect(s.left + 366).toBe(183 - 42 + 1);
+    expect(s.right).toBe(183 + 42 - 1);
+    expect(s.visible).toBe(true);
+    const none = waveShifts(NO_WAVE, 42, 366);
+    expect(none.visible).toBe(false);
+    expect(none.left).toBe(0);
+    expect(none.right).toBe(366);
   });
 });

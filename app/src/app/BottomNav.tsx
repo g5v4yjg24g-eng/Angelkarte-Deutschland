@@ -210,8 +210,18 @@ export function BottomNav({ items, label }: { items: readonly NavItem[]; label: 
   const { pathname } = useLocation();
   const geo = useNavGeo(navRef, itemEls, items.length);
   const activeIndex = items.findIndex((n) => isActivePath(n, pathname));
-  // Der Hügel folgt beim Wischen der Linse, sonst dem aktiven Punkt
-  const target = lens ? lens.center : activeIndex >= 0 ? (geo?.centers[activeIndex] ?? null) : null;
+  // Sofort beim Antippen losgleiten, nicht erst wenn die neue Ansicht fertig aufgebaut ist (Wunsch Nutzer 2026-11-26)
+  // gilt nur, solange der Pfad noch der alte ist; danach übernimmt der echte aktive Punkt
+  const [tap, setTap] = useState<{ index: number; from: string } | null>(null);
+  useEffect(() => {
+    if (!tap) return;
+    const t = window.setTimeout(() => setTap(null), 1500);
+    return () => window.clearTimeout(t);
+  }, [tap]);
+  const pending = tap && tap.from === pathname ? tap.index : null;
+  const shownIndex = pending ?? activeIndex;
+  // Der Hügel folgt beim Wischen der Linse, sonst dem angetippten bzw. aktiven Punkt
+  const target = lens ? lens.center : shownIndex >= 0 ? (geo?.centers[shownIndex] ?? null) : null;
   return (
     <nav
       ref={navRef}
@@ -220,7 +230,15 @@ export function BottomNav({ items, label }: { items: readonly NavItem[]; label: 
       style={{ '--nav-count': items.length } as CSSProperties}
       {...handlers}
     >
-      {geo && <NavWave width={geo.width} height={geo.height} tabWidth={geo.tabWidth} target={target} />}
+      {geo && (
+        <NavWave
+          width={geo.width}
+          height={geo.height}
+          tabWidth={geo.tabWidth}
+          target={target}
+          follow={!!lens && !lens.snapping}
+        />
+      )}
       {lens && (
         <span
           className={[styles.lens, lens.snapping ? styles.lensSnap : ''].join(' ')}
@@ -235,6 +253,7 @@ export function BottomNav({ items, label }: { items: readonly NavItem[]; label: 
           to={to}
           end={end}
           draggable={false}
+          onClick={() => setTap({ index: i, from: pathname })}
           className={({ isActive }) =>
             [
               styles.navItem,

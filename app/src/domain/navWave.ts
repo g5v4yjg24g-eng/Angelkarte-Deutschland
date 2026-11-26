@@ -104,3 +104,45 @@ export function approach(current: number, target: number, dtMs: number, tauMs = 
 export function halfBaseFor(tabWidth: number): number {
   return Math.min(Math.max(tabWidth * 0.72, 30), 56);
 }
+
+/** Mitte „kein Hügel“ (Linie flach) */
+export const NO_WAVE = -9999;
+
+/** Linie ohne Hügel: unterer Rand der Kapsel samt Bögen an den Enden. */
+export function baselinePath(width: number, height: number): string {
+  return wavePath({ width, height, center: NO_WAVE, halfBase: 1 });
+}
+
+/** Nur der Hügel auf gerader Grundlinie (x von 0 bis 2·halfBase, Scheitel bei halfBase): wird verschoben, nicht neu berechnet. */
+export function humpPoints(halfBase: number, height: number): Pt[] {
+  const base = height - WAVE_INSET;
+  const apex = WAVE_INSET + height * APEX_RATIO;
+  const pts: Pt[] = [];
+  for (let x = 0; x < 2 * halfBase; x += STEP_PX)
+    pts.push([x, base + (apex - base) * bump(x - halfBase, halfBase)]);
+  pts.push([2 * halfBase, base]);
+  return pts;
+}
+
+export function humpPath(halfBase: number, height: number): string {
+  return toPath(humpPoints(halfBase, height));
+}
+
+/** Fläche unter dem Hügel bis zur Grundlinie. */
+export function humpFill(halfBase: number, height: number): string {
+  const base = height - WAVE_INSET;
+  const pts = humpPoints(halfBase, height);
+  return `${toPath(pts)}L${fmt(2 * halfBase)} ${fmt(base)}L0 ${fmt(base)}Z`;
+}
+
+/**
+ * Verschiebungen (px) der verschiebbaren Teile für einen Hügel bei `center`:
+ * Hügel selbst, linkes Fenster (zeigt die Linie links vom Hügel) und rechtes Fenster (rechts davon).
+ * Die Fenster sind Rahmen mit abgeschnittenem Inhalt; der Inhalt wird gegengleich verschoben und bleibt so an Ort und Stelle.
+ */
+export function waveShifts(center: number, halfBase: number, width: number) {
+  if (center <= NO_WAVE / 2) return { hump: -2 * halfBase, left: 0, right: width, visible: false };
+  const leftEdge = center - halfBase + 1; // 1 px Überlappung gegen Haarlinien
+  const rightEdge = center + halfBase - 1;
+  return { hump: center - halfBase, left: leftEdge - width, right: rightEdge, visible: true };
+}
