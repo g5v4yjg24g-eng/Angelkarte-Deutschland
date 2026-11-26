@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { de } from '../../i18n/de';
 import { getDb } from '../../data/db';
 import { MAX_PENDING_REMINDERS, reminderPlan } from '../../domain/papers';
+import { sessionCheckPlan } from '../../domain/sessionCheck';
 import { normalizeOffsets, tripReminderPlan } from '../../domain/tripReminders';
 import { useProviders } from '../../ports/providersContext';
 import { getSetting } from '../../data/settings';
@@ -19,8 +20,14 @@ export function PaperReminderSync() {
 
   const offsets = useLiveQuery(async () => normalizeOffsets(await getSetting('tripReminders')), []);
 
+  const sessions = useLiveQuery(
+    async () => (await getDb().sessions.toArray()).filter((s) => !s.deletedAt && !s.endAt),
+    [],
+  );
+  const check = useLiveQuery(async () => (await getSetting('sessionCheck')) ?? true, []);
+
   useEffect(() => {
-    if (!reminders || !papers || !trips || !offsets) return;
+    if (!reminders || !papers || !trips || !offsets || !sessions || check === undefined) return;
     let alive = true;
     const run = async () => {
       if ((await reminders.permission()) !== 'granted' || !alive) return;
@@ -43,8 +50,11 @@ export function PaperReminderSync() {
           return kind === 'evening' ? de.calendar.reminderEvening : de.calendar.reminderMorning;
         },
       }, offsets);
+      const sessionPlan = check
+        ? sessionCheckPlan(sessions, now, { title: de.sessions.checkTitle, body: (h) => de.sessions.checkBody(h) })
+        : [];
       // zusammen höchstens so viele, wie iOS vormerkt: die frühesten zuerst
-      const plan = [...paperPlan, ...tripPlan].sort((a, b) => a.at - b.at).slice(0, MAX_PENDING_REMINDERS);
+      const plan = [...paperPlan, ...tripPlan, ...sessionPlan].sort((a, b) => a.at - b.at).slice(0, MAX_PENDING_REMINDERS);
       await reminders.replaceAll(plan);
     };
     void run();
@@ -56,7 +66,7 @@ export function PaperReminderSync() {
       alive = false;
       document.removeEventListener('visibilitychange', onVisible);
     };
-  }, [reminders, papers, trips, offsets]);
+  }, [reminders, papers, trips, offsets, sessions, check]);
 
   return null;
 }

@@ -16,6 +16,8 @@ export interface Settings {
   usageCount: boolean;
   /** Vibration bei Speichern, „Gefällt mir“ und Wischen über die Leiste (nur iPhone-App); Standard: an */
   haptics: boolean;
+  /** Nach 5 Stunden fragen, ob man noch angelt (Mitteilung, nur iPhone-App); Standard: an */
+  sessionCheck: boolean;
   /** Live Activity der Session auf dem Sperrbildschirm (nur iPhone-App); Standard: an */
   liveActivity: boolean;
   /** Gewässername auf dem Sperrbildschirm zeigen (sichtbar für jeden, der das Handy sieht); Standard: an */

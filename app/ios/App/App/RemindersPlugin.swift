@@ -66,6 +66,53 @@ enum ReminderActions {
     }
 }
 
+/// Nachfrage „Angelst du noch?“ nach 5 Stunden (Wunsch Nutzer 2026-11-27): „Ja“ merkt die Antwort vor und fragt am Gerät
+/// in 5 Stunden erneut, „Nein – Session beenden“ merkt das Beenden vor. Beides holt die Web-App über dieselbe Ablage wie
+/// die Knöpfe der Live Activity (`PendingLiveActions`, Aktionen `keep` und `end`) und führt es zum Zeitpunkt des Knopfdrucks aus.
+enum SessionCheckActions {
+    static let category = "FP_SESSION_CHECK"
+    static let yesId = "fp.check.yes"
+    static let endId = "fp.check.end"
+    private static let again: TimeInterval = 5 * 3600
+
+    static var categoryDefinition: UNNotificationCategory {
+        UNNotificationCategory(
+            identifier: category,
+            actions: [
+                UNNotificationAction(identifier: yesId, title: "Ja", options: []),
+                UNNotificationAction(identifier: endId, title: "Nein – Session beenden", options: [.destructive]),
+            ],
+            intentIdentifiers: [], options: []
+        )
+    }
+
+    /// `true`, wenn es einer unserer Knöpfe war
+    static func handle(_ response: UNNotificationResponse) -> Bool {
+        let action = response.actionIdentifier
+        guard action == yesId || action == endId else { return false }
+        let content = response.notification.request.content
+        guard let sessionId = content.userInfo["sessionId"] as? String, !sessionId.isEmpty else { return true }
+        PendingLiveActions.append(action: action == yesId ? "keep" : "end", sessionId: sessionId, at: Date())
+        let center = UNUserNotificationCenter.current()
+        let id = "fp.paper.session.\(sessionId).check"
+        if action == yesId {
+            // Falls die App nicht mehr läuft: trotzdem in 5 Stunden erneut fragen (die App ersetzt das beim nächsten Öffnen)
+            let next = UNMutableNotificationContent()
+            next.title = content.title
+            next.body = content.body
+            next.sound = .default
+            next.categoryIdentifier = category
+            next.userInfo = content.userInfo
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: again, repeats: false)
+            center.add(UNNotificationRequest(identifier: id, content: next, trigger: trigger), withCompletionHandler: nil)
+        } else {
+            center.removePendingNotificationRequests(withIdentifiers: [id])
+        }
+        NotificationCenter.default.post(name: .fangpunktLiveAction, object: nil)
+        return true
+    }
+}
+
 @objc(RemindersPlugin)
 public class RemindersPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "RemindersPlugin"
@@ -116,8 +163,13 @@ public class RemindersPlugin: CAPPlugin, CAPBridgedPlugin {
                 content.title = (item["title"] as? String) ?? "Fangpunkt"
                 content.body = (item["body"] as? String) ?? ""
                 content.sound = .default
-                content.categoryIdentifier = ReminderActions.category
-                if let group { content.userInfo = ["group": group] }
+                if let sessionId = item["sessionId"] as? String {
+                    content.categoryIdentifier = SessionCheckActions.category
+                    content.userInfo = ["sessionId": sessionId]
+                } else {
+                    content.categoryIdentifier = ReminderActions.category
+                    if let group { content.userInfo = ["group": group] }
+                }
                 let parts = calendar.dateComponents([.year, .month, .day, .hour, .minute], from: date)
                 let trigger = UNCalendarNotificationTrigger(dateMatching: parts, repeats: false)
                 let request = UNNotificationRequest(identifier: Self.prefix + id, content: content, trigger: trigger)

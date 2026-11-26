@@ -41,6 +41,11 @@ const HAPTICS_OPTIONS = [
   { value: 'on', label: de.settings.hapticsOn },
 ] as const;
 
+const CHECK_OPTIONS = [
+  { value: 'off', label: de.settings.sessionCheckOff },
+  { value: 'on', label: de.settings.sessionCheckOn },
+] as const;
+
 const LIVE_OPTIONS = [
   { value: 'off', label: de.settings.liveActivityOff },
   { value: 'on', label: de.settings.liveActivityOn },
@@ -58,7 +63,8 @@ export function SettingsPage() {
   const trackSessions = useBoolSetting('trackSessions', true);
   const usageCount = useBoolSetting('usageCount', true);
   // Vibration gibt es nur in der iPhone-App
-  const { haptics } = useProviders();
+  const { haptics, reminders } = useProviders();
+  const checkOn = useBoolSetting('sessionCheck', true);
   const hapticsOn = useBoolSetting('haptics', true);
   // Live Activity gibt es nur in der iPhone-App ab iOS 16.2 (und wenn das System sie erlaubt)
   const liveAvailable = useLiveAvailable();
@@ -118,6 +124,18 @@ export function SettingsPage() {
               options={HAPTICS_OPTIONS}
               value={hapticsOn ? 'on' : 'off'}
               onChange={(v) => void setSetting('haptics', v === 'on')}
+            />
+          )}
+        </Section>
+      )}
+      {reminders && (
+        <Section title={de.settings.sessionCheck}>
+          {checkOn !== undefined && (
+            <SegmentedControl
+              label={de.settings.sessionCheck}
+              options={CHECK_OPTIONS}
+              value={checkOn ? 'on' : 'off'}
+              onChange={(v) => void setSetting('sessionCheck', v === 'on')}
             />
           )}
         </Section>

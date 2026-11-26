@@ -61,6 +61,8 @@ final class SignalNotificationDelegate: NSObject, UNUserNotificationCenterDelega
             all.insert(mine)
             all = all.filter { $0.identifier != ReminderActions.category }
             all.insert(ReminderActions.categoryDefinition)
+            all = all.filter { $0.identifier != SessionCheckActions.category }
+            all.insert(SessionCheckActions.categoryDefinition)
             center.setNotificationCategories(all)
         }
         if center.delegate is SignalNotificationDelegate { return }
@@ -75,6 +77,18 @@ final class SignalNotificationDelegate: NSObject, UNUserNotificationCenterDelega
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let action = response.actionIdentifier
+        if SessionCheckActions.handle(response) {
+            // Kurz wach bleiben, damit die Web-Ansicht die Antwort verarbeiten kann (wie bei den Signal-Knöpfen)
+            var task = UIBackgroundTaskIdentifier.invalid
+            task = UIApplication.shared.beginBackgroundTask(withName: "fp.check.answer") {
+                UIApplication.shared.endBackgroundTask(task)
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                completionHandler()
+                if task != .invalid { UIApplication.shared.endBackgroundTask(task) }
+            }
+            return
+        }
         if ReminderActions.handle(response) {
             completionHandler()
             return

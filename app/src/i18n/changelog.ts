@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31-8',
+    title: 'Angelst du noch?',
+    items: [
+      'Nachfrage: Läuft eine Session 5 Stunden, fragt die iPhone-App per Mitteilung, ob du noch angelst. Am Sperrbildschirm lange drücken zeigt „Ja“ und „Nein – Session beenden“.',
+      'Ja: Die nächste Nachfrage kommt nach weiteren 5 Stunden. Pausierte Sessions werden nicht gefragt. Ausschalten kannst du es in den Einstellungen.',
+    ],
+  },
+  {
     id: '2026-12-31-7',
     title: 'Erinnerung vor Angelterminen',
     items: [

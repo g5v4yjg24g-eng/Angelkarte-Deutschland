@@ -90,4 +90,21 @@ describe('PaperReminderSync (PAP-2)', () => {
     await repo('trips', getDb()).remove(trip.id);
     await waitFor(() => expect(r.replaceAll.mock.calls.at(-1)?.[0]).toHaveLength(5));
   });
+
+  it('laufende Session: Nachfrage nach 5 Stunden mit Session-Kennung, ohne Nachfrage wenn abgeschaltet', async () => {
+    const r = fake('granted');
+    const { startSession } = await import('../../data/sessionService');
+    const { setSetting } = await import('../../data/settings');
+    const s = await startSession(getDb());
+    mount(r);
+    await waitFor(() =>
+      expect(r.replaceAll.mock.calls.at(-1)?.[0]).toEqual([
+        expect.objectContaining({ id: `session.${s.id}.check`, sessionId: s.id, title: 'Angelst du noch?' }),
+      ]),
+    );
+    await act(async () => {
+      await setSetting('sessionCheck', false, getDb());
+    });
+    await waitFor(() => expect(r.replaceAll.mock.calls.at(-1)?.[0]).toEqual([]));
+  });
 });

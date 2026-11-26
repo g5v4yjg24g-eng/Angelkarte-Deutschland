@@ -162,6 +162,8 @@ export const SessionSchema = MetaSchema.extend({
   /** Pausen (aktive Angelzeit); `to` fehlt nur bei der laufenden Pause einer laufenden Session */
   pauses: z.array(z.object({ from: isoDateTime, to: isoDateTime.optional() })).optional(),
   defaults: z.object({ method: MethodSchema.optional(), baitPresetId: id.optional() }).optional(),
+  /** Letzte Antwort „Ja, ich angle noch“ auf die Nachfrage nach 5 Stunden; die nächste Nachfrage zählt ab hier */
+  stillFishingAt: isoDateTime.optional(),
   /** Gemeinsame Session auf dem Server (Paket 8a); fehlt = nur eigene Session */
   groupId: id.optional(),
   legacy: LegacySchema.optional(),

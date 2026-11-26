@@ -42,6 +42,17 @@ describe('Aktionen der Live-Activity-Knöpfe ausführen', () => {
     expect(endGroup).toHaveBeenCalledWith('g1');
   });
 
+  it('„Ja“ auf die Nachfrage nach 5 Stunden merkt den Zeitpunkt, die Session läuft weiter', async () => {
+    const db = freshDb();
+    setDb(db);
+    const s = await startSession(db);
+    const t0 = Date.parse(s.startAt);
+    await applyPendingActions([{ action: 'keep', sessionId: s.id, atMs: t0 + 5 * 3600e3 }], undefined, t0 + 5.1 * 3600e3);
+    const after = await db.sessions.get(s.id);
+    expect(Date.parse(after?.stillFishingAt ?? '') - t0).toBe(5 * 3600e3);
+    expect(after?.endAt).toBeUndefined();
+  });
+
   it('doppelte, veraltete und unpassende Aktionen werden übergangen', async () => {
     const db = freshDb();
     setDb(db);

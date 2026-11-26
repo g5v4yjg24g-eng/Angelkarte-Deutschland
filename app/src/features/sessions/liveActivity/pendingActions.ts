@@ -2,7 +2,7 @@
 // umgesetzt und merkt die Aktion samt Zeitpunkt vor. Hier wird sie wirklich ausgeführt – zum Zeitpunkt des Knopfdrucks,
 // auch wenn die App erst später dazukommt. Fehler (Session schon beendet, Pause nicht möglich) werden still übergangen.
 import { getDb } from '../../../data/db';
-import { endSession, pauseSession, resumeSession } from '../../../data/sessionService';
+import { confirmStillFishing, endSession, pauseSession, resumeSession } from '../../../data/sessionService';
 import { freshPendingActions, type PendingLiveAction } from '../../../domain/liveActivity';
 import { openPause } from '../../../domain/session';
 
@@ -19,6 +19,8 @@ export async function applyPendingActions(
       if (!openPause(s)) await pauseSession(s.id, a.atMs).catch(() => undefined);
     } else if (a.action === 'resume') {
       if (openPause(s)) await resumeSession(s.id, a.atMs).catch(() => undefined);
+    } else if (a.action === 'keep') {
+      await confirmStillFishing(s.id, a.atMs).catch(() => undefined);
     } else {
       const ended = await endSession(s.id, a.atMs).catch(() => undefined);
       if (ended?.groupId && endGroup) await endGroup(ended.groupId).catch(() => undefined);

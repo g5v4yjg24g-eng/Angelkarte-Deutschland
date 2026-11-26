@@ -6,7 +6,7 @@ import type { RemindersProvider, ReminderPermission } from '../ports/reminders';
 interface RemindersPlugin {
   permission(): Promise<{ status: string }>;
   request(): Promise<{ granted: boolean }>;
-  replaceAll(p: { items: { id: string; at: number; title: string; body: string; group?: string }[] }): Promise<void>;
+  replaceAll(p: { items: { id: string; at: number; title: string; body: string; group?: string; sessionId?: string }[] }): Promise<void>;
 }
 
 const isPermission = (s: unknown): s is ReminderPermission =>
@@ -28,7 +28,14 @@ export function capacitorReminders(): RemindersProvider | undefined {
       ),
     replaceAll: (items) =>
       plugin
-        .replaceAll({ items: items.map(({ id, at, title, body, group }) => ({ id, at, title, body, ...(group ? { group } : {}) })) })
+        .replaceAll({ items: items.map(({ id, at, title, body, group, sessionId }) => ({
+          id,
+          at,
+          title,
+          body,
+          ...(group ? { group } : {}),
+          ...(sessionId ? { sessionId } : {}),
+        })) })
         .catch(() => undefined),
   };
 }
