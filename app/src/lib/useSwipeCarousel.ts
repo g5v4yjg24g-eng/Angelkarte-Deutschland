@@ -49,7 +49,7 @@ export function useSwipeCarousel(
       const dx = e.clientX - d.x;
       d.axis ??= swipeAxis(dx, e.clientY - d.y);
       if (d.axis !== 'x') return;
-      el.style.scrollSnapType = 'none';
+      if (el.style.scrollSnapType !== 'none') el.style.scrollSnapType = 'none';
       el.scrollLeft = d.left - dx;
     },
     onPointerUp: (e: PointerEvent) => {

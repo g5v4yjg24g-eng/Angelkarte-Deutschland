@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31-9',
+    title: 'Fotos wischen',
+    items: [
+      'Flüssiger: Beiträge mit mehreren Fotos lassen sich jetzt ruckelfrei hin- und herwischen.',
+      'Punkte: Die Punkte unter den Fotos kannst du gedrückt halten und bewegen, dann springt das Karussell mit dem Finger von Foto zu Foto.',
+    ],
+  },
+  {
     id: '2026-12-31-8',
     title: 'Angelst du noch?',
     items: [

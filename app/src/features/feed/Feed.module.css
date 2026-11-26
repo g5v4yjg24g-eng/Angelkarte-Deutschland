@@ -88,6 +88,8 @@
   outline-offset: -3px;
 }
 .photos li {
+  /* jede Seite für sich zeichnen: weniger Arbeit beim Wischen */
+  contain: layout paint;
   position: relative;
   flex: 0 0 100%;
   height: 100%;
@@ -96,6 +98,8 @@
   place-items: center;
 }
 .photos img {
+  /* eigene Ebene: die Grafikkarte schiebt das Bild, statt es neu zu zeichnen */
+  will-change: transform;
   position: absolute;
   inset: 0;
   width: 100%;
@@ -110,7 +114,13 @@
 .dots {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 5px;
+  /* größere Fläche zum Drücken; das Halten und Bewegen steuert useDotScrub */
+  min-height: 28px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .dot,
 .dotOn {
@@ -121,6 +131,20 @@
 }
 .dotOn {
   background: var(--color-primary);
+}
+.dot,
+.dotOn {
+  transition: transform 120ms ease-out;
+}
+.dotsActive .dot,
+.dotsActive .dotOn {
+  transform: scale(1.5);
+}
+@media (prefers-reduced-motion: reduce) {
+  .dot,
+  .dotOn {
+    transition: none;
+  }
 }
 .caption {
   margin: 0;

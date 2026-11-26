@@ -17,6 +17,18 @@ export function swipeAxis(dx: number, dy: number): 'x' | 'y' | undefined {
 }
 
 /**
+ * Foto zu einer Fingerposition über den Punkten (Instagram: Punkte gedrückt halten und bewegen). `first` und `last`
+ * sind die Mittelpunkte des ersten und letzten Punkts; dazwischen liegen die übrigen gleichmäßig. Außerhalb: Rand.
+ */
+export function dotIndexAt(x: number, first: number, last: number, count: number): number {
+  if (count <= 1) return 0;
+  const span = last - first;
+  if (!(span > 0)) return 0;
+  const i = Math.round(((x - first) / span) * (count - 1));
+  return Math.max(0, Math.min(count - 1, i));
+}
+
+/**
  * Ziel-Foto nach dem Loslassen: weiter, wenn um mindestens 20 % der Breite gewischt oder schnell (≥ 0,3 px/ms über
  * mindestens 20 px) – sonst zurück zum Ausgangsfoto. Nie über den Rand hinaus.
  */

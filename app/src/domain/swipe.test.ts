@@ -1,5 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { swipeAxis, swipeTarget } from './swipe';
+import { dotIndexAt, swipeAxis, swipeTarget } from './swipe';
+
+describe('Punkte gedrückt halten und wischen', () => {
+  it('Fingerposition → Foto, mit Rand', () => {
+    // 4 Punkte, Mittelpunkte bei 100 und 130
+    expect(dotIndexAt(100, 100, 130, 4)).toBe(0);
+    expect(dotIndexAt(111, 100, 130, 4)).toBe(1);
+    expect(dotIndexAt(120, 100, 130, 4)).toBe(2);
+    expect(dotIndexAt(130, 100, 130, 4)).toBe(3);
+    expect(dotIndexAt(40, 100, 130, 4)).toBe(0);
+    expect(dotIndexAt(300, 100, 130, 4)).toBe(3);
+    expect(dotIndexAt(50, 100, 100, 1)).toBe(0);
+  });
+});
 
 describe('Foto-Karussell wischen (FEED-6)', () => {
   it('Richtung erst ab 10 px, waagerecht nur bei deutlicher Seitwärtsbewegung', () => {

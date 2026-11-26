@@ -3637,6 +3637,49 @@ test('FEED-4: Doppeltipp im Feed – Hecht schwimmt zum Daumen, „Gefällt mir�
   expect(errors).toEqual([]);
 });
 
+test('FEED-7: Punkte unter den Fotos gedrückt halten und bewegen – das Karussell folgt von Foto zu Foto', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await fakeSupabase(
+    page,
+    [],
+    [{ ...ANNA }],
+    [{ ...FEED_ANNA, photo_paths: ['u-anna/post-anna-1/1.jpg', 'u-anna/post-anna-1/2.jpg'] }],
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed');
+  await waitForApp(page);
+  const card = page.getByRole('article', { name: /Beitrag von Anna/ });
+  const list = card.getByRole('list', { name: /Fotos/ });
+  const dots = card.locator('[data-dot]');
+  await expect(dots).toHaveCount(2);
+  // die Punkte nicht unter der schwebenden Leiste
+  await dots.first().evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  const pos = async (i: number) => {
+    const b = await dots.nth(i).boundingBox();
+    return { x: (b?.x ?? 0) + (b?.width ?? 0) / 2, y: (b?.y ?? 0) + (b?.height ?? 0) / 2 };
+  };
+  const left = () => list.evaluate((el) => Math.round(el.scrollLeft));
+  const a = await pos(0);
+  const b = await pos(1);
+  await page.mouse.move(a.x, a.y);
+  await page.mouse.down();
+  expect(await left()).toBe(0);
+  await page.mouse.move(b.x, b.y, { steps: 4 });
+  await expect.poll(left).toBeGreaterThan(300);
+  // Finger weit rechts neben den Punkten: bleibt beim letzten Foto
+  await page.mouse.move(b.x + 150, b.y, { steps: 3 });
+  await expect.poll(left).toBeGreaterThan(300);
+  await page.mouse.move(a.x, a.y, { steps: 4 });
+  await expect.poll(left).toBe(0);
+  await page.mouse.up();
+  // danach rastet das Karussell wieder ein und lässt sich normal wischen
+  await expect(list).toHaveCSS('scroll-snap-type', /x mandatory/);
+  expect(errors).toEqual([]);
+});
+
 test('FEED-5: Fischart und Länge – gehen mit dem Beitrag auf den Server und stehen im Feed', async ({
   page,
 }) => {

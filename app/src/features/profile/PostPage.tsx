@@ -35,6 +35,8 @@ import {
 import { Toast } from '../../design/components/Toast';
 import { LOCAL_AUTHOR, type Photo, type Post, type PostVisibility } from '../../domain/schemas';
 import { useObjectUrl } from '../../lib/useObjectUrl';
+import { useDisplayBlob } from '../../lib/useDisplayBlob';
+import { useDotScrub } from '../../lib/useDotScrub';
 import { mergeHandlers, useSwipeCarousel } from '../../lib/useSwipeCarousel';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useMyBadges } from '../badges/badgeStore';
@@ -61,10 +63,10 @@ const dateOf = (iso: string, style: 'long' | 'medium' = 'long') =>
   new Date(iso).toLocaleDateString('de-DE', { dateStyle: style, timeZone: 'Europe/Berlin' });
 
 function Slide({ photo, n, total }: { photo: Photo; n: number; total: number }) {
-  const url = useObjectUrl(photo.blob);
+  const url = useObjectUrl(useDisplayBlob(photo.id, photo.blob));
   return (
     <li className={styles.slide} aria-roledescription="slide" aria-label={t.photoOf(n, total)}>
-      {url && <img src={url} alt={t.photoAlt(n)} draggable={false} />}
+      {url && <img src={url} alt={t.photoAlt(n)} draggable={false} decoding="async" />}
     </li>
   );
 }
@@ -251,6 +253,7 @@ function PostCard({ post }: { post: Post }) {
 
   const total = photos?.length ?? post.photoIds.length;
   const swipe = useSwipeCarousel(listRef, total);
+  const scrub = useDotScrub(listRef, total, haptics.light);
   const name = profile?.name || t.placeholderName;
   // Teilen (Paket 10): nur eigene Beiträge, Fotos und Text – nie Fangort oder Koordinaten
   const share = canShare()
@@ -303,9 +306,13 @@ function PostCard({ post }: { post: Post }) {
           <canvas ref={canvasRef} className={styles.pikeLayer} aria-hidden="true" />
         </div>
         {total > 1 && (
-          <p className={styles.dots} aria-hidden="true">
+          <p
+            className={scrub.scrubbing ? `${styles.dots} ${styles.dotsActive}` : styles.dots}
+            aria-hidden="true"
+            {...scrub.handlers}
+          >
             {Array.from({ length: total }, (_, i) => (
-              <span key={i} className={i === index ? styles.dotOn : styles.dot} />
+              <span key={i} data-dot="" className={i === index ? styles.dotOn : styles.dot} />
             ))}
           </p>
         )}
