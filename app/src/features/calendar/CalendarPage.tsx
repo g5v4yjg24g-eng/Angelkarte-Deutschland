@@ -17,6 +17,9 @@ import { groupFriends } from '../../domain/friends';
 import { toggleInvitee, type Invitee } from '../../domain/tripStart';
 import { invitedWithReplies, type TripReply } from '../../domain/tripInvites';
 import { useProviders } from '../../ports/providersContext';
+import { TripReminderPicker } from './TripReminderPicker';
+import type { TripRemindOffset } from '../../domain/tripReminders';
+import { Link } from 'react-router';
 import { useFriends } from '../friends/useFriends';
 import { TripStartBusyError, startTripWithInvitees } from '../trips/startTrip';
 import { sendTripInvites } from '../trips/sendInvites';
@@ -84,6 +87,7 @@ function TripForm({
 }) {
   const { account, reminders } = useProviders();
   const { state: friends } = useFriends();
+  const [remind, setRemind] = useState<TripRemindOffset[] | undefined>(() => initial?.reminders);
   const [invited, setInvited] = useState<Invitee[]>(() => initial?.invited ?? []);
   const [draft, setDraft] = useState<TripDraft>(() =>
     initial ? tripDraftFrom(initial, keyForTrip(initial, options)) : emptyTripDraft(date),
@@ -118,12 +122,18 @@ function TripForm({
     setBusy(true);
     try {
       const saved = initial
-        ? await repo('trips').update(initial.id, { ...fields, waterSnapshot, invited })
+        ? await repo('trips').update(initial.id, {
+            ...fields,
+            waterSnapshot,
+            invited,
+            ...(remind ? { reminders: remind } : {}),
+          })
         : await repo('trips').create({
             ...fields,
             tz: DEFAULT_TZ,
             ...(waterSnapshot ? { waterSnapshot } : {}),
             ...(invited.length ? { invited } : {}),
+            ...(remind ? { reminders: remind } : {}),
           });
       // Erst nach dem Speichern um die Erlaubnis für Mitteilungen bitten (nur iPhone-App, nur beim ersten Mal)
       if (reminders && (await reminders.permission()) === 'prompt') await reminders.request();
@@ -190,6 +200,13 @@ function TripForm({
         value={draft.notes}
         onChange={(e) => set('notes', e.target.value)}
       />
+      {reminders && <TripReminderPicker value={remind} onChange={setRemind} />}
+      {friends.kind === 'signedOut' && (
+        <p className="muted">
+          {t.inviteSignedOut} <Link to="/mehr/konto">{t.inviteSignIn}</Link>
+        </p>
+      )}
+      {friends.kind === 'error' && <p className="muted">{t.inviteLoadFailed}</p>}
       {friends.kind === 'ready' && (
         <fieldset className={styles.invite}>
           <legend>{t.inviteTitle}</legend>

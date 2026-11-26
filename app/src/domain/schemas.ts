@@ -218,6 +218,8 @@ export const TripSchema = MetaSchema.extend({
     )
     .max(9)
     .optional(),
+  /** Wann vor dem Termin erinnert wird (nur iPhone-App): 'day' = 1 Tag, 'h3' = 3 Stunden, 'h1' = 1 Stunde vorher; fehlt = Einstellung der App */
+  reminders: z.array(z.enum(['day', 'h3', 'h1'])).max(3).optional(),
   /** Termin stammt aus einer Einladung (Wunsch Nutzer 2026-11-11) */
   invitedBy: z.object({ userId: z.string().min(1).max(64), name: text(60) }).optional(),
   legacy: LegacySchema.optional(),

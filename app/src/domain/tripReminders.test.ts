@@ -56,4 +56,16 @@ describe('tripReminderPlan', () => {
     expect(normalizeOffsets(['h1', 'x', 'day', 'day'])).toEqual(['day', 'h1']);
     expect(normalizeOffsets([])).toEqual([]);
   });
+  it('eigene Zeiten am Termin gehen der Einstellung vor', () => {
+    const plan = tripReminderPlan(
+      [trip({ id: 'a', from: '06:30', reminders: ['day'] }), trip({ id: 'b', from: '06:30' })],
+      NOW,
+      texts,
+      ['h1'],
+    );
+    expect(plan.map((r) => r.id)).toEqual(['trip.a.day', 'trip.b.h1']);
+  });
+  it('leere eigene Wahl = keine Erinnerung für diesen Termin', () => {
+    expect(tripReminderPlan([trip({ from: '06:30', reminders: [] })], NOW, texts, ['h1'])).toEqual([]);
+  });
 });

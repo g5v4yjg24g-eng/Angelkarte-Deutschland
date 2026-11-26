@@ -2,6 +2,7 @@
 // Wann erinnert wird, wählt die Person in den Einstellungen: 1 Tag, 3 Stunden und/oder 1 Stunde vorher (Standard: 1 Stunde).
 // Ganztägige Termine haben keine Uhrzeit: „1 Tag vorher“ = Abend davor 18 Uhr (wie in der Kalenderdatei, domain/ics.ts),
 // „3 Stunden/1 Stunde vorher“ = am Morgen des Tages um 7 Uhr (zusammen nur eine Mitteilung).
+// Jeder Termin kann eigene Zeiten haben (`Trip.reminders`, im Terminformular); fehlen sie, gilt die Einstellung der App.
 // Rein, ohne Gerätezugriff; die App übergibt den Plan zusammen mit dem der Angelpapiere.
 import { ALLDAY_REMIND_TIME } from './ics';
 import type { Reminder } from './papers';
@@ -37,7 +38,7 @@ export function tripReminderPlan(
   trips: readonly Trip[],
   nowMs: number,
   texts: TripReminderTexts,
-  offsets: readonly TripRemindOffset[] = DEFAULT_TRIP_REMIND,
+  defaults: readonly TripRemindOffset[] = DEFAULT_TRIP_REMIND,
 ): Reminder[] {
   const out: Reminder[] = [];
   const push = (t: Trip, kind: TripReminderKind, at: number) => {
@@ -53,6 +54,7 @@ export function tripReminderPlan(
   };
   for (const t of trips) {
     if (t.deletedAt) continue;
+    const offsets = t.reminders ?? defaults;
     if (t.from) {
       const start = Date.parse(localToZonedIso(t.date, t.from, t.tz));
       for (const o of offsets) push(t, o, start - HOURS[o] * 3_600_000);
