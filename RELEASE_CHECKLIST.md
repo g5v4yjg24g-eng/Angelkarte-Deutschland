@@ -24,6 +24,7 @@ Eingereicht wird nur durch den Nutzer; TestFlight-Bauten nur auf ausdrücklichen
 | Bau und Upload über GitHub Actions (`ios.yml`) | – | ✅ erste Version 2026-11-03 [V], zweite 2026-11-10 mit Paketen 7–12 und Hintergrund-Route [V] |
 | Push-Mitteilungen (Server, Function `send-push`, APNs-Secrets) | Nutzer prüft am iPhone | ✅ am iPhone bestätigt 2026-11-23: Mitteilung „Neue Meldung“ für Moderatoren kommt an (Sperrbildschirm und Pop-up) |
 | Haptik, Tastatur, „wie eine echte App“ | Nutzer prüft am iPhone | ✅ am iPhone vom Nutzer bestätigt 2026-11-24 (Haptik genannt; Tastatur nicht ausdrücklich) |
+| Untere Leiste mit leuchtender Umrandung und Hügel (Wunsch Nutzer 2026-11-25, PR 238/239/240) | Claude, Nutzer prüft am iPhone | ✅ am iPhone vom Nutzer bestätigt 2026-11-26: läuft flüssig |
 | Folge-Anfragen: Hinweis im Profil entfernt, Knopf „Bestätigen“ mit lesbarer Schrift (Wunsch Nutzer 2026-11-24) | Claude, Nutzer prüft am iPhone | ✅ PR 235, im TestFlight-Bau 2026-11-24 [V]; 🔲 am iPhone prüfen |
 | Route planen (Ort, geteilter Spot, Fang) | Nutzer | ✅ am iPhone vom Nutzer bestätigt 2026-11-24 |
 | **Dateien speichern in der App** (Sicherung, CSV, Kalenderdatei) über das Teilen-Menü (Web Share, ohne neue Abhängigkeit, Paket 10) | Claude, Nutzer prüft am iPhone | ✅ gebaut; ✅ am iPhone vom Nutzer bestätigt 2026-11-24 |
@@ -101,7 +102,8 @@ Alle drei sind nur für die Person selbst lesbar (auch Moderatoren nicht), bis 5
 | Zustellung der Mails (Bestätigung, Passwort) | Nutzer | ✅ 2026-11-24 [V]: Testmail an Gmail im Posteingang; SPF, DKIM (`d=fangpunkt.com`, INWX signiert selbst) und DMARC (`p=NONE`) = pass; Brevo nicht nötig. Später optional: DMARC auf `quarantine` verschärfen |
 | Universal Links: Associated Domains im Apple-Konto, Team-ID in der AASA | Nutzer | ✅ Datei in Ordnung, ✅ Test am iPhone bestanden (siehe Abschnitt B) |
 | iPhone-Prüfliste aus Abschnitt B durchgehen | Nutzer | ✅ 2026-11-24 abgehakt; offen nur das, was in Abschnitt B noch 🔲 steht (Folge-Anfragen, Berechtigungstexte) |
-| Store-Texte, Prüfhinweis mit Testkonto, Versionsnummer erhöhen | Claude Entwurf | 🔲 |
+| Store-Texte (Name, Untertitel, Beschreibung, Stichworte), Antworten für App-Datenschutz und Altersfreigabe | Claude Entwurf (Word-Datei 2026-11-26) | ✅ App-Datenschutz bei Apple ausgefüllt (Nutzer 2026-11-26); 🔲 Texte und Altersfreigabe eintragen |
+| Versionsnummer erhöhen | Claude | 🔲 direkt vor dem Einreichen (steht auf 1.0, passt für die erste Einreichung) |
 | Apple-Vorgabe: ab April 2027 Bau mit iOS-27-SDK (Xcode 27) – `ios.yml` rechtzeitig anpassen | Claude | 🔲 vor April 2027 |
 | Browser-Test SUG-1 („Angler entdecken“) war rot: Testfehler (Playwright scrollte beim Klick auf die halb sichtbare Karte), App unverändert | Claude | ✅ repariert in PR 230 |
 | Impressum und Nutzungsbedingungen auf der Website; rechtliche Prüfung der Zustimmungstexte | Nutzer | 🔲 |
