@@ -40,6 +40,7 @@ import {
   INTERACTIVE_LAYERS,
   LAYERS,
   setHeatmap,
+  setWaterMarks,
   setOverlayData,
   type OverlayData,
   WATER,
@@ -94,6 +95,16 @@ const VIEW_KEY = 'fangpunkt.mapView';
 const GERMANY = { center: [10.4, 51.2] as [number, number], zoom: 5.2 };
 const LOC_HINT_KEY = 'fangpunkt.locHintSeen';
 const HEAT_KEY = 'fangpunkt.heatmap';
+const MARKS_KEY = 'fangpunkt.waterMarks';
+
+/** Fisch-Marken der Gewässer: fehlt/kaputt = an. */
+function readMarks(): boolean {
+  try {
+    return localStorage.getItem(MARKS_KEY) !== '0';
+  } catch {
+    return true;
+  }
+}
 const FILTER_KEY = 'fangpunkt.mapFilter';
 
 function readFilter(): MapFilter {
@@ -297,6 +308,8 @@ export default function MapView() {
     return readHeat() && !st?.focusCatch && !st?.assignWater;
   });
   const heatRef = useRef(heat);
+  const [waterMarks, setWaterMarksOn] = useState(readMarks);
+  const marksRef = useRef(waterMarks);
   // Kartenfilter (Paket 4): welche Arten zu sehen sind; pro Gerät gemerkt
   const [filter, setFilter] = useState<MapFilter>(readFilter);
   const changeFilter = (f: MapFilter) => {
@@ -419,6 +432,7 @@ export default function MapView() {
             water.tilesUrl(m),
             `${m.source.attribution} (${m.source.license})`,
             themeRef.current,
+            marksRef.current,
           );
         setReady(true);
       });
@@ -543,6 +557,7 @@ export default function MapView() {
         water.tilesUrl(waterManifest),
         `${waterManifest.source.attribution} (${waterManifest.source.license})`,
         themeRef.current,
+        marksRef.current,
       );
   }, [ready, waterManifest, water]);
 
@@ -647,6 +662,17 @@ export default function MapView() {
       zoom: Math.max(mapRef.current.getZoom(), 14),
     });
   }, [geo.fix]);
+
+  useEffect(() => {
+    marksRef.current = waterMarks;
+    const map = mapRef.current;
+    if (map && ready) setWaterMarks(map, waterMarks);
+    try {
+      localStorage.setItem(MARKS_KEY, waterMarks ? '1' : '0');
+    } catch {
+      // nur Komfort
+    }
+  }, [waterMarks, ready]);
 
   useEffect(() => {
     heatRef.current = heat;
@@ -1062,6 +1088,8 @@ export default function MapView() {
           counts={layerCounts}
           shared={shared.length > 0}
           onChange={changeFilter}
+          waterMarks={waterMarks}
+          onWaterMarks={setWaterMarksOn}
         />
         <Legend withCatches={false} />
       </>

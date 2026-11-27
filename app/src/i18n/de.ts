@@ -50,6 +50,7 @@ export const de = {
     legendTitle: 'Ebenen & Legende',
     layers: {
       title: 'Anzeigen',
+      waters: 'Gewässer-Marken',
       places: 'Deine Orte',
       shared: 'Spots von Freunden',
       showAll: 'Alle anzeigen',

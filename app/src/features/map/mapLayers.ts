@@ -1,7 +1,7 @@
 // Eigene Kartenebenen (Orte, Fänge, Standort). Werden nach jedem Stilwechsel neu eingehängt.
 import type { ExpressionSpecification, GeoJSONSource, Map as MlMap, StyleSpecification } from 'maplibre-gl';
 import type { FeatureCollection } from 'geojson';
-import { ALL_MARKERS, markerDataUrl } from './markerIcons';
+import { ALL_MARKERS, WATER_MARKERS, markerDataUrl } from './markerIcons';
 
 export const LAYERS = {
   places: 'fp-places',
@@ -20,6 +20,8 @@ export const WATER = {
   outline: 'fp-water-outline',
   lineHit: 'fp-water-line-hit',
   lineSel: 'fp-water-line-sel',
+  marksAreas: 'fp-water-marks-areas',
+  marksLines: 'fp-water-marks-lines',
 } as const;
 
 const minZoomFilter: ExpressionSpecification = ['>=', ['zoom'], ['get', 'mz']];
@@ -29,7 +31,13 @@ const selected: ExpressionSpecification = ['boolean', ['feature-state', 'sel'], 
  * Gewässer aus der Pipeline (PMTiles). Unsichtbar, solange nichts ausgewählt ist – die Basiskarte zeichnet
  * das Wasser schon; diese Ebenen dienen dem Antippen und der Hervorhebung. Liegen unter den eigenen Symbolen.
  */
-export function addWaterLayers(map: MlMap, tilesUrl: string, attribution: string, theme: 'light' | 'dark') {
+export function addWaterLayers(
+  map: MlMap,
+  tilesUrl: string,
+  attribution: string,
+  theme: 'light' | 'dark',
+  marks = true,
+) {
   // Hervorhebung muss sich vom Wasser der Basiskarte abheben (hell: Hellblau, dunkel: Tiefblau)
   const sel = theme === 'dark' ? '#7FE0EE' : '#0F5C6E';
   if (!map.getSource(WATER.source))
@@ -78,6 +86,52 @@ export function addWaterLayers(map: MlMap, tilesUrl: string, attribution: string
     filter: minZoomFilter,
     paint: { 'line-color': sel, 'line-width': 4, 'line-opacity': ['case', selected, 1, 0] },
   });
+  // Fisch-Marken (Wunsch Nutzer 2026-11-27): ein Symbol je Gewässer aus den vorhandenen Kacheln, Platz schaffen
+  // übernimmt die Kollisionsprüfung (große Gewässer zuerst). Antippen trifft die Fläche bzw. Linie darunter.
+  const markLayout = (sortKey: ExpressionSpecification): Record<string, unknown> => ({
+    'icon-image': markIcon,
+    'icon-size': ['interpolate', ['linear'], ['zoom'], 6, 0.6, 10, 0.75, 13, 0.9],
+    'icon-allow-overlap': false,
+    'icon-padding': 3,
+    'symbol-sort-key': sortKey,
+    visibility: marks ? 'visible' : 'none',
+  });
+  add({
+    id: WATER.marksAreas,
+    type: 'symbol',
+    source: WATER.source,
+    'source-layer': 'areas',
+    minzoom: 6,
+    maxzoom: 15,
+    filter: minZoomFilter,
+    layout: markLayout(['*', -1, ['coalesce', ['get', 'ha'], 0]]) as never,
+  });
+  add({
+    id: WATER.marksLines,
+    type: 'symbol',
+    source: WATER.source,
+    'source-layer': 'lines',
+    minzoom: 6,
+    maxzoom: 15,
+    filter: minZoomFilter,
+    layout: markLayout(['match', ['get', 't'], 'river', 1e6, 'canal', 2e6, 3e6]) as never,
+  });
+}
+
+const markIcon: ExpressionSpecification = [
+  'match',
+  ['get', 't'],
+  'pond',
+  'water-pond',
+  ['river', 'canal', 'stream'],
+  'water-river',
+  'water-lake',
+];
+
+/** Fisch-Marken der Gewässer ein/aus (Schalter unter „Ebenen & Legende“). */
+export function setWaterMarks(map: MlMap, on: boolean) {
+  for (const id of [WATER.marksAreas, WATER.marksLines])
+    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
 }
 
 const EMPTY: FeatureCollection = { type: 'FeatureCollection', features: [] };
@@ -102,7 +156,7 @@ export function fallbackStyle(theme: 'light' | 'dark'): StyleSpecification {
 let iconCache: Promise<Map<string, ImageData>> | undefined;
 function rasterIcons(): Promise<Map<string, ImageData>> {
   iconCache ??= Promise.all(
-    ALL_MARKERS.map(
+    [...ALL_MARKERS, ...WATER_MARKERS].map(
       (kind) =>
         new Promise<[string, ImageData]>((resolve, reject) => {
           const img = new Image(72, 72);

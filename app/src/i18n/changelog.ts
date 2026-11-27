@@ -4,6 +4,14 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31-11',
+    title: 'Gewässer-Marken',
+    items: [
+      'Fisch-Marken: Seen, Flüsse und Teiche haben auf der Karte ein kleines Fisch-Schild, Farbe nach Gewässerart. Antippen öffnet das Gewässer.',
+      'Ausschalten: Unter „Ebenen & Legende“ lässt sich „Gewässer-Marken“ ein- und ausschalten.',
+    ],
+  },
+  {
     id: '2026-12-31-10',
     title: 'Angefragt',
     items: ['Folge-Anfrage: Der Knopf „Angefragt“ ist jetzt kurz. Antippen öffnet ein Blatt, in dem du die Anfrage zurückziehen kannst.'],
