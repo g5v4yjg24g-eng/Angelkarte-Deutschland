@@ -4,7 +4,7 @@
 // Beim Loslassen gleitet die Seite per Übergang ins Ziel (bei reduzierter Bewegung sofort). Senkrecht scrollt weiter die
 // Seite (touch-action: pan-y). Maus (Ziehen, seitliches Trackpad) und Pfeiltasten gehen ebenfalls.
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type WheelEvent } from 'react';
-import { swipeAxis, swipeTarget } from '../domain/swipe';
+import { swipeTarget } from '../domain/swipe';
 
 const SETTLE_MS = 260;
 const EDGE_RESIST = 0.35;
@@ -16,6 +16,15 @@ interface Drag {
   w: number;
   axis?: 'x' | 'y' | undefined;
 }
+
+/**
+ * Ab wie vielen Pixeln die Richtung feststeht, und wie die Seitwärtsbewegung gewertet wird: waagerecht, sobald sie
+ * mindestens so weit geht wie die senkrechte (Wunsch Nutzer 2026-11-27: schräge Wischer ließen die Seite mitscrollen,
+ * das Karussell sprang zurück).
+ */
+const LOCK_PX = 4;
+export const lockAxis = (dx: number, dy: number): 'x' | 'y' | undefined =>
+  Math.max(Math.abs(dx), Math.abs(dy)) < LOCK_PX ? undefined : Math.abs(dx) >= Math.abs(dy) ? 'x' : 'y';
 
 export function usePhotoCarousel(count: number, onChange?: (index: number) => void) {
   const ref = useRef<HTMLUListElement>(null);
@@ -49,6 +58,73 @@ export function usePhotoCarousel(count: number, onChange?: (index: number) => vo
     if (changed) onChangeRef.current?.(next);
   };
 
+  // Ziehen: Finger (Touch-Ereignisse, damit die Seite bei waagerechtem Wischen nicht mitscrollt), Maus und Stift
+  // (Zeiger-Ereignisse) laufen durch dieselben drei Schritte.
+  const begin = (x: number, y: number, t: number) => {
+    const el = ref.current;
+    if (!el || count < 2) return;
+    drag.current = { x, y, t, w: Math.max(1, el.clientWidth) };
+  };
+  /** `true`, solange die Bewegung waagerecht ist (dann soll die Seite nicht scrollen) */
+  const move = (x: number, y: number): boolean => {
+    const d = drag.current;
+    if (!d) return false;
+    const dx = x - d.x;
+    d.axis ??= lockAxis(dx, y - d.y);
+    if (d.axis !== 'x') return false;
+    const beyond = (current.current === 0 && dx > 0) || (current.current === count - 1 && dx < 0);
+    place(beyond ? dx * EDGE_RESIST : dx, false);
+    // die Punkte folgen schon, sobald mehr als die halbe Seite gezogen ist
+    const live = Math.max(0, Math.min(count - 1, current.current - Math.round(dx / d.w)));
+    setIndex((cur) => (cur === live ? cur : live));
+    return true;
+  };
+  const finish = (x: number, t: number) => {
+    const d = drag.current;
+    drag.current = undefined;
+    if (!d || d.axis !== 'x') return;
+    goTo(swipeTarget(current.current, count, x - d.x, d.w, t - d.t), true);
+  };
+  const abort = () => {
+    const d = drag.current;
+    drag.current = undefined;
+    if (d?.axis === 'x') goTo(current.current, true);
+  };
+  const actions = useRef({ begin, move, finish, abort });
+  useEffect(() => {
+    actions.current = { begin, move, finish, abort };
+  });
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const onStart = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (e.touches.length === 1 && t) actions.current.begin(t.clientX, t.clientY, e.timeStamp);
+      else actions.current.abort();
+    };
+    // nicht „passive“: nur so kann die Seite am Scrollen gehindert werden, wenn die Bewegung waagerecht ist
+    const onMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (t && actions.current.move(t.clientX, t.clientY) && e.cancelable) e.preventDefault();
+    };
+    const onEnd = (e: TouchEvent) => {
+      const t = e.changedTouches[0];
+      if (t) actions.current.finish(t.clientX, e.timeStamp);
+    };
+    const onCancel = () => actions.current.abort();
+    el.addEventListener('touchstart', onStart, { passive: true });
+    el.addEventListener('touchmove', onMove, { passive: false });
+    el.addEventListener('touchend', onEnd, { passive: true });
+    el.addEventListener('touchcancel', onCancel, { passive: true });
+    return () => {
+      el.removeEventListener('touchstart', onStart);
+      el.removeEventListener('touchmove', onMove);
+      el.removeEventListener('touchend', onEnd);
+      el.removeEventListener('touchcancel', onCancel);
+    };
+  }, []);
+
   // Seiten nachträglich weniger geworden (Fotos werden geladen oder entfernt)
   useEffect(() => {
     if (count > 0 && current.current > count - 1) goTo(count - 1, false);
@@ -70,34 +146,23 @@ export function usePhotoCarousel(count: number, onChange?: (index: number) => vo
     index,
     goTo,
     handlers: {
+      // Zeiger-Ereignisse nur für Maus und Stift; Finger laufen über die Touch-Ereignisse oben
       onPointerDown: (e: PointerEvent) => {
-        const el = ref.current;
-        if (!el || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0) || count < 2) return;
-        drag.current = { x: e.clientX, y: e.clientY, t: e.timeStamp, w: Math.max(1, el.clientWidth) };
+        if (e.pointerType === 'touch' || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
+        begin(e.clientX, e.clientY, e.timeStamp);
       },
       onPointerMove: (e: PointerEvent) => {
-        const d = drag.current;
-        if (!d || !e.isPrimary) return;
-        const dx = e.clientX - d.x;
-        d.axis ??= swipeAxis(dx, e.clientY - d.y);
-        if (d.axis !== 'x') return;
-        if (e.pointerType === 'mouse') (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-        const beyond = (current.current === 0 && dx > 0) || (current.current === count - 1 && dx < 0);
-        place(beyond ? dx * EDGE_RESIST : dx, false);
-        // die Punkte folgen schon, sobald mehr als die halbe Seite gezogen ist
-        const live = Math.max(0, Math.min(count - 1, current.current - Math.round(dx / d.w)));
-        setIndex((cur) => (cur === live ? cur : live));
+        if (e.pointerType === 'touch' || !e.isPrimary) return;
+        if (move(e.clientX, e.clientY) && e.pointerType === 'mouse')
+          (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
       },
       onPointerUp: (e: PointerEvent) => {
-        const d = drag.current;
-        drag.current = undefined;
-        if (!d || d.axis !== 'x') return;
-        goTo(swipeTarget(current.current, count, e.clientX - d.x, d.w, e.timeStamp - d.t), true);
+        if (e.pointerType === 'touch') return;
+        finish(e.clientX, e.timeStamp);
       },
-      onPointerCancel: () => {
-        const d = drag.current;
-        drag.current = undefined;
-        if (d?.axis === 'x') goTo(current.current, true);
+      onPointerCancel: (e: PointerEvent) => {
+        if (e.pointerType === 'touch') return;
+        abort();
       },
       onWheel: (e: WheelEvent) => {
         if (Math.abs(e.deltaX) < 20 || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;

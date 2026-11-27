@@ -3666,7 +3666,8 @@ test('FEED-7: Fotos wischen und Punkte gedrückt halten – das Karussell folgt 
   expect(await shift()).toBe(0);
 
   // 1) ziehen (Maus wie Finger): weit genug → nächstes Foto, danach zurück
-  const box = (await list.boundingBox())!;
+  const box = await list.boundingBox();
+  if (!box) throw new Error('Karussell nicht sichtbar');
   const y = box.y + box.height / 2;
   await page.mouse.move(box.x + 300, y);
   await page.mouse.down();
@@ -3706,6 +3707,55 @@ test('FEED-7: Fotos wischen und Punkte gedrückt halten – das Karussell folgt 
   await page.mouse.move(a.x, a.y, { steps: 4 });
   await expect.poll(shift).toBe(0);
   await page.mouse.up();
+  expect(errors).toEqual([]);
+});
+
+test('FEED-8: Fotos mit dem Finger wischen – auch leicht schräg, ohne dass die Seite mitscrollt', async ({
+  page,
+}) => {
+  const errors = collectErrors(page);
+  await fakeSupabase(
+    page,
+    [],
+    [{ ...ANNA }],
+    [{ ...FEED_ANNA, photo_paths: ['u-anna/post-anna-1/1.jpg', 'u-anna/post-anna-1/2.jpg'] }],
+  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signInWithProfile(page, 'kevin');
+  await page.goto('/feed');
+  await waitForApp(page);
+  const card = page.getByRole('article', { name: /Beitrag von Anna/ });
+  const list = card.getByRole('list', { name: /Fotos/ });
+  await list.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  const shift = () =>
+    list.evaluate((el) =>
+      Math.round(el.getBoundingClientRect().left - (el.children[0] as HTMLElement).getBoundingClientRect().left),
+    );
+  const width = await list.evaluate((el) => Math.round(el.clientWidth));
+  const mainTop = () => page.locator('#main').evaluate((el) => el.scrollTop);
+  const topBefore = await mainTop();
+  const box = await list.boundingBox();
+  if (!box) throw new Error('Karussell nicht sichtbar');
+  const cdp = await page.context().newCDPSession(page);
+  const touch = async (type: 'touchStart' | 'touchMove' | 'touchEnd', x: number, y: number) =>
+    cdp.send('Input.dispatchTouchEvent', {
+      type,
+      touchPoints: type === 'touchEnd' ? [] : [{ x, y, id: 1 }],
+    });
+  const swipe = async (fromX: number, toX: number, dy: number) => {
+    const y = box.y + box.height / 2;
+    await touch('touchStart', fromX, y);
+    for (let i = 1; i <= 8; i++) await touch('touchMove', fromX + ((toX - fromX) * i) / 8, y + (dy * i) / 8);
+    await touch('touchEnd', toX, y + dy);
+  };
+  // schräg nach links (200 px zur Seite, 90 px nach oben): nächstes Foto, Seite bleibt stehen
+  await swipe(box.x + 300, box.x + 100, -90);
+  await expect.poll(shift).toBe(width);
+  expect(await mainTop()).toBe(topBefore);
+  // und zurück
+  await swipe(box.x + 100, box.x + 300, 60);
+  await expect.poll(shift).toBe(0);
+  expect(await mainTop()).toBe(topBefore);
   expect(errors).toEqual([]);
 });
 
