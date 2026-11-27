@@ -112,9 +112,11 @@ export function addWaterLayers(
     source: WATER.source,
     'source-layer': 'lines',
     minzoom: 6,
-    maxzoom: 15,
-    filter: minZoomFilter,
-    layout: markLayout(['match', ['get', 't'], 'river', 1e6, 'canal', 2e6, 3e6]) as never,
+    // Nur Flüsse und Kanäle, und nur in der Übersicht: Bäche sind Linien, deren Abschnitte oft an Straßen und
+    // Rohrdurchlässen beginnen – dort säße die Marke mitten auf der Straße (Rückmeldung Nutzer 2026-11-27)
+    maxzoom: 13,
+    filter: ['all', minZoomFilter, ['match', ['get', 't'], ['river', 'canal'], true, false]],
+    layout: markLayout(['match', ['get', 't'], 'river', 1, 2]) as never,
   });
 }
 
