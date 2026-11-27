@@ -4,6 +4,11 @@ import type { ChangelogEntry } from '../domain/whatsNew';
 
 export const CHANGELOG: readonly ChangelogEntry[] = [
   {
+    id: '2026-12-31-10',
+    title: 'Angefragt',
+    items: ['Folge-Anfrage: Der Knopf „Angefragt“ ist jetzt kurz. Antippen öffnet ein Blatt, in dem du die Anfrage zurückziehen kannst.'],
+  },
+  {
     id: '2026-12-31-9',
     title: 'Fotos wischen',
     items: [

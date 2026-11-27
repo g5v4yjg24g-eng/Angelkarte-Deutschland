@@ -8,7 +8,8 @@ import { Page } from '../../design/components/Page';
 import { Button } from '../../design/components/Button';
 import { EmptyState } from '../../design/components/EmptyState';
 import { Notice } from '../../design/components/Notice';
-import { FeedIcon, ImagesIcon } from '../../design/icons';
+import { ChevronDownIcon, ClockIcon, FeedIcon, ImagesIcon } from '../../design/icons';
+import { Sheet } from '../../design/components/Sheet';
 import { followErrorKind } from '../../domain/follows';
 import type { PublicProfile } from '../../domain/userProfile';
 import { FEED_PAGE, type FeedPost } from '../../domain/feed';
@@ -45,6 +46,7 @@ export function UserProfilePage() {
   const [tick, setTick] = useState(0);
   const [busy, setBusy] = useState(false);
   const [confirm, setConfirm] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [message, setMessage] = useState<string>();
   const [error, setError] = useState<string>();
   const signedIn = !!storedUserId();
@@ -204,17 +206,9 @@ export function UserProfilePage() {
             </Button>
           )}
           {p.relation === 'requested' && (
-            <Button
-              variant="secondary"
-              disabled={busy}
-              onClick={() =>
-                void act(async () => {
-                  await account.unfollow(p.userId);
-                  return undefined;
-                })
-              }
-            >
-              {t.requested} · {t.withdraw}
+            // kurzer Knopf; Zurückziehen steckt im Blatt darunter (Wunsch Nutzer 2026-11-27, Entwurf A)
+            <Button variant="secondary" disabled={busy} onClick={() => setWithdrawOpen(true)}>
+              <ClockIcon size={18} aria-hidden="true" /> {t.requested} <ChevronDownIcon size={14} aria-hidden="true" />
             </Button>
           )}
           {isFollowing &&
@@ -253,6 +247,26 @@ export function UserProfilePage() {
             }}
           />
         </div>
+        <Sheet open={withdrawOpen} title={t.requestTo(p.username)} onClose={() => setWithdrawOpen(false)}>
+          <div className={styles.withdrawActions}>
+            <Button
+              variant="danger"
+              disabled={busy}
+              onClick={() =>
+                void act(async () => {
+                  await account.unfollow(p.userId);
+                  setWithdrawOpen(false);
+                  return undefined;
+                })
+              }
+            >
+              {t.withdraw}
+            </Button>
+            <Button variant="ghost" onClick={() => setWithdrawOpen(false)}>
+              {t.cancel}
+            </Button>
+          </div>
+        </Sheet>
         <p role="status" className="muted">
           {message}
         </p>
