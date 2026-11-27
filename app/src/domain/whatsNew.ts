@@ -6,6 +6,12 @@ export interface ChangelogEntry {
   items: string[];
 }
 
+/** Sortierschlüssel: der Zähler hinter dem Datum zählt als Zahl (-10 kommt nach -9). */
+export function idKey(id: string): string {
+  const [, d = '', n = '0'] = /^(\d{4}-\d{2}-\d{2})(?:-(\d+))?$/.exec(id) ?? [];
+  return `${d}#${n.padStart(6, '0')}`;
+}
+
 export const latestId = (entries: readonly ChangelogEntry[]) => entries[0]?.id;
 
 /**
@@ -18,5 +24,6 @@ export function unseenEntries(
   hasData: boolean,
 ): ChangelogEntry[] {
   if (lastSeen === undefined) return hasData ? entries.slice(0, 1) : [];
-  return entries.filter((e) => e.id > lastSeen);
+  const seen = idKey(lastSeen);
+  return entries.filter((e) => idKey(e.id) > seen);
 }

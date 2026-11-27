@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Catch, Place } from '../../domain/schemas';
 import type { SharedSpot } from '../../domain/sharedSpots';
 import { circlePolygon, toFeatures } from './geojson';
-import { ALL_MARKERS, markerSvg } from './markerIcons';
+import { ALL_MARKERS, WATER_MARKERS, markerSvg } from './markerIcons';
 
 const meta = { createdAt: '2026-06-14T07:10:00+02:00', updatedAt: '2026-06-14T07:10:00+02:00', rev: 0 };
 const place = (id: string, extra: Partial<Place> = {}): Place => ({
@@ -64,6 +64,17 @@ describe('Kartenobjekte', () => {
       expect(svg).toMatch(/^<svg [^>]*viewBox="0 0 40 40">/);
       expect(svg.match(/<(path|circle|rect)/g)?.length, k).toBeGreaterThanOrEqual(2);
     }
+  });
+
+  it('Fisch-Marken der Gewässer sind gültige SVG mit Fisch und Welle, je Art in eigener Farbe', () => {
+    const colors = new Set<string>();
+    for (const k of WATER_MARKERS) {
+      const svg = markerSvg(k);
+      expect(svg).toMatch(/^<svg [^>]*viewBox="0 0 40 40">/);
+      expect(svg.match(/<(path|circle|rect)/g)?.length, k).toBeGreaterThanOrEqual(6);
+      colors.add(/<rect [^>]*fill="(#[0-9a-f]{6})"/i.exec(svg)?.[1] ?? '');
+    }
+    expect(colors.size).toBe(WATER_MARKERS.length);
   });
 
   it('Genauigkeitskreis hat den richtigen Radius', () => {

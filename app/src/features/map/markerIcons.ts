@@ -1,8 +1,28 @@
 // Symbolsystem (ARCHITECTURE §5.3): Form = Art des Orts, Kreis = Fangereignis; Farbe nie allein –
 // jedes Symbol hat zusätzlich ein eigenes Zeichen. SVGs werden für die Karte und die Legende genutzt.
 import type { CatchOutcome, PlaceType } from '../../domain/schemas';
+import fish from '../../design/brand/fish.json';
 
-export type MarkerKind = `place-${PlaceType}` | `catch-${CatchOutcome}` | 'shared-spot';
+export const WATER_MARKERS = ['water-lake', 'water-river', 'water-pond'] as const;
+export type WaterMarkerKind = (typeof WATER_MARKERS)[number];
+export type MarkerKind = `place-${PlaceType}` | `catch-${CatchOutcome}` | 'shared-spot' | WaterMarkerKind;
+
+// Fisch-Marke für Gewässer (Wunsch Nutzer 2026-11-27, Variante 3): abgerundetes Schild in der Farbe der
+// Gewässerart, weißer Fisch aus dem Marken-Master über der Wellenlinie. Farbe nie allein: Fisch + Welle sind das Zeichen.
+const WATER_COLOR: Record<WaterMarkerKind, string> = {
+  'water-lake': '#1B9DB5',
+  'water-river': '#2F6FD6',
+  'water-pond': '#3A9D78',
+};
+function waterMark(kind: WaterMarkerKind): string {
+  const c = WATER_COLOR[kind];
+  const fishShapes = [fish.tail, fish.body, ...fish.fins].map((d) => `<path d="${d}" fill="#ffffff"/>`).join('');
+  return (
+    `<rect x="3" y="3" width="34" height="34" rx="10" fill="${c}" stroke="#ffffff" stroke-width="2.5"/>` +
+    `<g transform="translate(20 18) scale(0.25) translate(-50 -50)">${fishShapes}<circle cx="${fish.eye.cx}" cy="${fish.eye.cy}" r="${fish.eye.r}" fill="${c}"/></g>` +
+    `<path d="M11 31.5q2.4-1.8 4.8 0t4.8 0t4.8 0t4.8 0" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity="0.9"/>`
+  );
+}
 
 // Von Freunden geteilter Spot (Etappe 4): Pin wie „Angelstelle“, aber violett und mit zwei Köpfen
 const SHARED = `<path d="M20 3C12.8 3 7 8.6 7 15.6 7 25 20 37 20 37s13-12 13-21.4C33 8.6 27.2 3 20 3Z" fill="#6B3FA0" stroke="#ffffff" stroke-width="2.5"/><circle cx="16.2" cy="13" r="2.9" fill="#ffffff"/><circle cx="23.8" cy="13" r="2.9" fill="#ffffff"/><path d="M11.6 22c.6-3 2.4-4.6 4.6-4.6s4 1.6 4.6 4.6M19.2 22c.6-3 2.4-4.6 4.6-4.6s4 1.6 4.6 4.6" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"/>`;
@@ -35,7 +55,9 @@ export function markerSvg(kind: MarkerKind): string {
   const body =
     kind === 'shared-spot'
       ? SHARED
-      : kind.startsWith('place-')
+      : kind.startsWith('water-')
+        ? waterMark(kind as WaterMarkerKind)
+        : kind.startsWith('place-')
         ? PLACE[kind.slice(6) as PlaceType]
         : CATCH[kind.slice(6) as CatchOutcome];
   return `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">${body}</svg>`;

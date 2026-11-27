@@ -275,11 +275,15 @@ export function LayerSwitches({
   counts,
   shared,
   onChange,
+  waterMarks,
+  onWaterMarks,
 }: {
   filter: MapFilter;
   counts: Readonly<Record<MapLayerKey, number>>;
   shared: boolean;
   onChange: (f: MapFilter) => void;
+  waterMarks: boolean;
+  onWaterMarks: (on: boolean) => void;
 }) {
   const t = de.map.layers;
   const rows: { key: MapLayerKey; icon: Parameters<typeof markerDataUrl>[0]; label: string }[] = [
@@ -295,6 +299,13 @@ export function LayerSwitches({
     <fieldset className={styles.layers}>
       <legend className={styles.legendHead}>{t.title}</legend>
       <ul>
+        <li>
+          <label>
+            <input type="checkbox" checked={waterMarks} onChange={(e) => onWaterMarks(e.target.checked)} />
+            <Icon kind="water-lake" />
+            <span className={styles.layerName}>{t.waters}</span>
+          </label>
+        </li>
         {rows.map((r) => (
           <li key={r.key}>
             <label>

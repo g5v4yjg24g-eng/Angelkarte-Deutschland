@@ -572,3 +572,32 @@ test('WAT-11: Gewässerprofil lässt sich nach unten wegschieben, im gescrollten
   await swipe('dialog[open] [role="tablist"]', 400);
   await expect(page.getByRole('dialog', { name: 'De Wittsee' })).toHaveCount(0);
 });
+
+test('MRK-4: Fisch-Marken der Gewässer – Standard an, Schalter unter „Ebenen & Legende“ schaltet aus und bleibt', async ({
+  page,
+}) => {
+  await openMapAt(page, 6.2425, 51.3245, 13);
+  const marks = () =>
+    page.evaluate(
+      () =>
+        window.__fangpunktMap?.queryRenderedFeatures({
+          layers: ['fp-water-marks-areas', 'fp-water-marks-lines'],
+        }).length ?? 0,
+    );
+  await expect.poll(marks, { timeout: 20_000 }).toBeGreaterThan(0);
+
+  await page.getByRole('button', { name: 'Ebenen & Legende' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Ebenen & Legende' });
+  const box = sheet.getByRole('checkbox', { name: 'Gewässer-Marken' });
+  await expect(box).toBeChecked();
+  await box.uncheck();
+  await expect.poll(marks).toBe(0);
+  expect(await page.evaluate(() => localStorage.getItem('fangpunkt.waterMarks'))).toBe('0');
+
+  await page.reload();
+  await waitForApp(page);
+  await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-water-marks-areas'));
+  expect(
+    await page.evaluate(() => window.__fangpunktMap?.getLayoutProperty('fp-water-marks-areas', 'visibility')),
+  ).toBe('none');
+});
