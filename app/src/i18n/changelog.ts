@@ -8,7 +8,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     title: 'Gewässer-Marken',
     items: [
       'Fisch-Marken: Seen, Flüsse und Teiche haben auf der Karte ein kleines Fisch-Schild, Farbe nach Gewässerart. Antippen öffnet das Gewässer.',
-      'Ausschalten: Unter „Ebenen & Legende“ lässt sich „Gewässer-Marken“ ein- und ausschalten.',
+      'Ausschalten: Unter „Ebenen & Legende“ lässt sich „Gewässer-Marken“ ein- und ausschalten. Startest du eine Session, gehen sie von selbst aus.',
     ],
   },
   {

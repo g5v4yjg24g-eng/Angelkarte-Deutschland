@@ -96,6 +96,7 @@ const GERMANY = { center: [10.4, 51.2] as [number, number], zoom: 5.2 };
 const LOC_HINT_KEY = 'fangpunkt.locHintSeen';
 const HEAT_KEY = 'fangpunkt.heatmap';
 const MARKS_KEY = 'fangpunkt.waterMarks';
+const MARKS_SESSION_KEY = 'fangpunkt.waterMarksSession';
 
 /** Fisch-Marken der Gewässer: fehlt/kaputt = an. */
 function readMarks(): boolean {
@@ -673,6 +674,28 @@ export default function MapView() {
       // nur Komfort
     }
   }, [waterMarks, ready]);
+
+  // Beim Start einer Session gehen die Gewässer-Marken einmal aus (Wunsch Nutzer 2026-11-27); wieder einschalten
+  // bleibt möglich. Gemerkt wird die Session, für die das schon geschah – auch wenn sie anderswo gestartet wurde.
+  const runningId = runningSession?.id;
+  const [marksHandled, setMarksHandled] = useState(() => {
+    try {
+      return localStorage.getItem(MARKS_SESSION_KEY) ?? '';
+    } catch {
+      return '';
+    }
+  });
+  if (runningId && runningId !== marksHandled) {
+    setMarksHandled(runningId);
+    setWaterMarksOn(false);
+  }
+  useEffect(() => {
+    try {
+      if (marksHandled) localStorage.setItem(MARKS_SESSION_KEY, marksHandled);
+    } catch {
+      // ohne Speicher gilt es bei jedem Öffnen der Karte erneut
+    }
+  }, [marksHandled]);
 
   useEffect(() => {
     heatRef.current = heat;

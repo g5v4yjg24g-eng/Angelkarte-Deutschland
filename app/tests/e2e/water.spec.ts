@@ -601,3 +601,30 @@ test('MRK-4: Fisch-Marken der Gewässer – Standard an, Schalter unter „Ebene
     await page.evaluate(() => window.__fangpunktMap?.getLayoutProperty('fp-water-marks-areas', 'visibility')),
   ).toBe('none');
 });
+
+test('MRK-5: Beim Start einer Session gehen die Gewässer-Marken aus; wieder einschalten bleibt möglich', async ({
+  page,
+}) => {
+  await openMapAt(page, 6.2425, 51.3245, 13);
+  const visibility = () =>
+    page.evaluate(() => window.__fangpunktMap?.getLayoutProperty('fp-water-marks-areas', 'visibility'));
+  await expect.poll(visibility).toBe('visible');
+
+  await page.getByRole('button', { name: 'Session starten' }).click();
+  await expect.poll(visibility).toBe('none');
+
+  await page.getByRole('button', { name: 'Ebenen & Legende' }).click();
+  const box = page.getByRole('dialog', { name: 'Ebenen & Legende' }).getByRole('checkbox', {
+    name: 'Gewässer-Marken',
+  });
+  await expect(box).not.toBeChecked();
+  await box.check();
+  await expect.poll(visibility).toBe('visible');
+  await page.keyboard.press('Escape');
+
+  // Dieselbe Session löst es nicht noch einmal aus
+  await page.reload();
+  await waitForApp(page);
+  await page.waitForFunction(() => !!window.__fangpunktMap?.getLayer('fp-water-marks-areas'));
+  await expect.poll(visibility).toBe('visible');
+});
