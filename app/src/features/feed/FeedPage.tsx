@@ -13,7 +13,8 @@ import { TabLinks } from '../../design/components/TabLinks';
 import { hasMore, initialOf, type FeedPost } from '../../domain/feed';
 import { useProviders } from '../../ports/providersContext';
 import { useDotScrub } from '../../lib/useDotScrub';
-import { mergeHandlers, useSwipeCarousel } from '../../lib/useSwipeCarousel';
+import { mergeHandlers } from '../../lib/useSwipeCarousel';
+import { usePhotoCarousel } from '../../lib/usePhotoCarousel';
 import { usePullToRefresh } from '../../lib/usePullToRefresh';
 import { PullIndicator } from './PullIndicator';
 import { FounderBadge } from '../badges/FounderBadge';
@@ -67,10 +68,8 @@ function FeedCard({
   onSave: () => void;
 }) {
   const [commentsOpen, setCommentsOpen] = useState(false);
-  const [index, setIndex] = useState(0);
   const [pulse, setPulse] = useState(0);
   const frameRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLUListElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const likeIconRef = useRef<HTMLSpanElement>(null);
   const haptics = useHaptics();
@@ -88,8 +87,9 @@ function FeedCard({
     },
   });
   const total = post.photoUrls.length;
-  const swipe = useSwipeCarousel(listRef, total);
-  const scrub = useDotScrub(listRef, total, haptics.light);
+  // bei jedem Wechsel des Fotos kurz vibrieren (Wunsch Nutzer 2026-11-27)
+  const { ref: listRef, index, goTo, handlers: swipe } = usePhotoCarousel(total, () => haptics.light());
+  const scrub = useDotScrub(total, (i) => goTo(i, false), () => haptics.medium());
   return (
     <article className={styles.card} aria-label={t.postLabel(post.displayName, dateOf(post.createdAt))}>
       <header className={styles.head}>
@@ -135,18 +135,16 @@ function FeedCard({
         <ul
           ref={listRef}
           {...mergeHandlers(pike.handlers, swipe)}
+          onWheel={swipe.onWheel}
+          onKeyDown={swipe.onKeyDown}
           className={styles.photos}
           aria-label={t.photos(post.displayName)}
           tabIndex={0}
-          onScroll={(e) => {
-            const el = e.currentTarget;
-            setIndex(Math.round(el.scrollLeft / Math.max(1, el.clientWidth)));
-          }}
         >
           {post.photoUrls.map((url, i) => (
             <li key={post.photoPaths[i] ?? i} aria-roledescription="slide" aria-label={t.photo(i + 1, total)}>
               {url ? (
-                <img src={url} alt="" loading={i < 3 ? 'eager' : 'lazy'} decoding="async" draggable={false} />
+                <img src={url} alt="" loading="eager" decoding="async" draggable={false} />
               ) : (
                 <span className={styles.missing}>{t.photoMissing}</span>
               )}

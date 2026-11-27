@@ -6,6 +6,8 @@ export interface HapticsProvider {
   success(): void;
   /** Leichter Stoß (z. B. „Gefällt mir“) */
   light(): void;
+  /** Mittlerer Stoß (z. B. langes Drücken wird erkannt) */
+  medium(): void;
   /** Auswahl beginnt / wechselt / endet (z. B. Wischen über die Leiste) */
   selectionStart(): void;
   selectionChanged(): void;
@@ -17,6 +19,7 @@ export const NO_HAPTICS: HapticsProvider = {
   available: false,
   success: noop,
   light: noop,
+  medium: noop,
   selectionStart: noop,
   selectionChanged: noop,
   selectionEnd: noop,

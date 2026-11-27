@@ -9,6 +9,7 @@ export const CHANGELOG: readonly ChangelogEntry[] = [
     items: [
       'Flüssiger: Beiträge mit mehreren Fotos lassen sich jetzt ruckelfrei hin- und herwischen.',
       'Punkte: Die Punkte unter den Fotos kannst du gedrückt halten und bewegen, dann springt das Karussell mit dem Finger von Foto zu Foto.',
+      'Vibration: Beim Wechsel des Fotos vibriert das iPhone kurz, beim Halten der Punkte einmal etwas stärker.',
     ],
   },
   {

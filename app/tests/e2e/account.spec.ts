@@ -3637,7 +3637,7 @@ test('FEED-4: Doppeltipp im Feed – Hecht schwimmt zum Daumen, „Gefällt mir�
   expect(errors).toEqual([]);
 });
 
-test('FEED-7: Punkte unter den Fotos gedrückt halten und bewegen – das Karussell folgt von Foto zu Foto', async ({
+test('FEED-7: Fotos wischen und Punkte gedrückt halten – das Karussell folgt von Foto zu Foto', async ({
   page,
 }) => {
   const errors = collectErrors(page);
@@ -3657,26 +3657,55 @@ test('FEED-7: Punkte unter den Fotos gedrückt halten und bewegen – das Karuss
   await expect(dots).toHaveCount(2);
   // die Punkte nicht unter der schwebenden Leiste
   await dots.first().evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  // wie weit die erste Seite nach links geschoben ist (0 = erstes Foto, Rahmenbreite = zweites Foto)
+  const shift = () =>
+    list.evaluate((el) =>
+      Math.round(el.getBoundingClientRect().left - (el.children[0] as HTMLElement).getBoundingClientRect().left),
+    );
+  const width = await list.evaluate((el) => Math.round(el.clientWidth));
+  expect(await shift()).toBe(0);
+
+  // 1) ziehen (Maus wie Finger): weit genug → nächstes Foto, danach zurück
+  const box = (await list.boundingBox())!;
+  const y = box.y + box.height / 2;
+  await page.mouse.move(box.x + 300, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 100, y, { steps: 6 });
+  expect(await shift()).toBeGreaterThan(100);
+  await page.mouse.up();
+  await expect.poll(shift).toBe(width);
+  await page.mouse.move(box.x + 100, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 300, y, { steps: 6 });
+  await page.mouse.up();
+  await expect.poll(shift).toBe(0);
+
+  // 2) Pfeiltaste
+  await list.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect.poll(shift).toBe(width);
+  await page.keyboard.press('ArrowLeft');
+  await expect.poll(shift).toBe(0);
+
+  // 3) Punkte gedrückt halten und bewegen
+  await dots.first().evaluate((el) => el.scrollIntoView({ block: 'center' }));
   const pos = async (i: number) => {
     const b = await dots.nth(i).boundingBox();
     return { x: (b?.x ?? 0) + (b?.width ?? 0) / 2, y: (b?.y ?? 0) + (b?.height ?? 0) / 2 };
   };
-  const left = () => list.evaluate((el) => Math.round(el.scrollLeft));
   const a = await pos(0);
   const b = await pos(1);
   await page.mouse.move(a.x, a.y);
   await page.mouse.down();
-  expect(await left()).toBe(0);
+  expect(await shift()).toBe(0);
   await page.mouse.move(b.x, b.y, { steps: 4 });
-  await expect.poll(left).toBeGreaterThan(300);
+  await expect.poll(shift).toBe(width);
   // Finger weit rechts neben den Punkten: bleibt beim letzten Foto
   await page.mouse.move(b.x + 150, b.y, { steps: 3 });
-  await expect.poll(left).toBeGreaterThan(300);
+  await expect.poll(shift).toBe(width);
   await page.mouse.move(a.x, a.y, { steps: 4 });
-  await expect.poll(left).toBe(0);
+  await expect.poll(shift).toBe(0);
   await page.mouse.up();
-  // danach rastet das Karussell wieder ein und lässt sich normal wischen
-  await expect(list).toHaveCSS('scroll-snap-type', /x mandatory/);
   expect(errors).toEqual([]);
 });
 

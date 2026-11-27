@@ -37,7 +37,8 @@ import { LOCAL_AUTHOR, type Photo, type Post, type PostVisibility } from '../../
 import { useObjectUrl } from '../../lib/useObjectUrl';
 import { useDisplayBlob } from '../../lib/useDisplayBlob';
 import { useDotScrub } from '../../lib/useDotScrub';
-import { mergeHandlers, useSwipeCarousel } from '../../lib/useSwipeCarousel';
+import { mergeHandlers } from '../../lib/useSwipeCarousel';
+import { usePhotoCarousel } from '../../lib/usePhotoCarousel';
 import { FounderBadge } from '../badges/FounderBadge';
 import { useMyBadges } from '../badges/badgeStore';
 import { retryPost } from '../../data/postSyncService';
@@ -221,10 +222,8 @@ function PostCard({ post }: { post: Post }) {
   const pinned = !!profile?.highlightPostIds?.includes(post.id);
   const founder = useMyBadges().includes('founder');
   const [editing, setEditing] = useState(false);
-  const [index, setIndex] = useState(0);
   const [pulse, setPulse] = useState(0);
   const frameRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLUListElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const likeIconRef = useRef<HTMLSpanElement>(null);
   const [commentsOpen, setCommentsOpen] = useState(false);
@@ -252,8 +251,9 @@ function PostCard({ post }: { post: Post }) {
   });
 
   const total = photos?.length ?? post.photoIds.length;
-  const swipe = useSwipeCarousel(listRef, total);
-  const scrub = useDotScrub(listRef, total, haptics.light);
+  // bei jedem Wechsel des Fotos kurz vibrieren (Wunsch Nutzer 2026-11-27)
+  const { ref: listRef, index, goTo, handlers: swipe } = usePhotoCarousel(total, () => haptics.light());
+  const scrub = useDotScrub(total, (i) => goTo(i, false), () => haptics.medium());
   const name = profile?.name || t.placeholderName;
   // Teilen (Paket 10): nur eigene Beiträge, Fotos und Text – nie Fangort oder Koordinaten
   const share = canShare()
@@ -290,14 +290,12 @@ function PostCard({ post }: { post: Post }) {
           <ul
             ref={listRef}
             {...mergeHandlers(pike.handlers, swipe)}
+            onWheel={swipe.onWheel}
+            // mit der Tastatur wischbar (Pfeiltasten)
+            onKeyDown={swipe.onKeyDown}
             className={styles.carousel}
             aria-label={t.postPhotos}
-            // mit der Tastatur wischbar (Pfeiltasten)
             tabIndex={0}
-            onScroll={(e) => {
-              const el = e.currentTarget;
-              setIndex(Math.round(el.scrollLeft / Math.max(1, el.clientWidth)));
-            }}
           >
             {(photos ?? []).map((p, i) => (
               <Slide key={p.id} photo={p} n={i + 1} total={total} />

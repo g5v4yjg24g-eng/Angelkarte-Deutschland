@@ -72,34 +72,26 @@
   touch-action: pan-y pinch-zoom;
   user-select: none;
   -webkit-user-select: none;
-  overflow-x: auto;
-  /* nie senkrecht im Rahmen scrollen (Video Nutzer 2026-11-10: Foto rutschte im Rahmen mit) */
-  overflow-y: hidden;
+  /* kein Scrollen: die Seiten werden per Transformation geschoben (lib/usePhotoCarousel.ts) */
+  overflow: hidden;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
   background: var(--color-surface-2);
-}
-.photos::-webkit-scrollbar {
-  display: none;
 }
 .photos:focus-visible {
   outline: 3px solid var(--color-focus);
   outline-offset: -3px;
 }
 .photos li {
-  /* jede Seite für sich zeichnen: weniger Arbeit beim Wischen */
+  /* jede Seite auf eigener Ebene (klein, nur Rahmengröße) und für sich gezeichnet */
+  will-change: transform;
   contain: layout paint;
   position: relative;
   flex: 0 0 100%;
   height: 100%;
-  scroll-snap-align: center;
   display: grid;
   place-items: center;
 }
 .photos img {
-  /* eigene Ebene: die Grafikkarte schiebt das Bild, statt es neu zu zeichnen */
-  will-change: transform;
   position: absolute;
   inset: 0;
   width: 100%;

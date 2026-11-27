@@ -16,6 +16,7 @@ export function capacitorHaptics(): HapticsProvider {
     available: true,
     success: () => run((m) => m.Haptics.notification({ type: m.NotificationType.Success })),
     light: () => run((m) => m.Haptics.impact({ style: m.ImpactStyle.Light })),
+    medium: () => run((m) => m.Haptics.impact({ style: m.ImpactStyle.Medium })),
     selectionStart: () => run((m) => m.Haptics.selectionStart()),
     selectionChanged: () => run((m) => m.Haptics.selectionChanged()),
     selectionEnd: () => run((m) => m.Haptics.selectionEnd()),
