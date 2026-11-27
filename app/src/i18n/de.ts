@@ -3867,6 +3867,7 @@ export const de = {
     requested: 'Angefragt',
     isFollowing: 'Gefolgt',
     withdraw: 'Anfrage zurückziehen',
+    requestTo: (u: string) => `Anfrage an @${u}`,
     unfollow: 'Nicht mehr folgen',
     confirmUnfollow: (name: string) => `${name} nicht mehr folgen?`,
     yesUnfollow: 'Ja, nicht mehr folgen',

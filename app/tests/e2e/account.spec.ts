@@ -445,6 +445,9 @@ async function fakeSupabase(
         const dir = key.endsWith('unfollow_user') ? 'following' : 'follower';
         const i = follows.findIndex((f) => f.user_id === other && f.direction === dir);
         if (i >= 0) follows.splice(i, 1);
+        if (dir === 'following')
+          for (const pr of people.profiles.values())
+            if (String(pr.user_id ?? '') === other) pr.relation = 'none';
         return route.fulfill({ status: 204 });
       }
       case 'POST /rest/v1/rpc/respond_follow_request': {
@@ -4684,7 +4687,15 @@ test('SOC-1: Nutzer suchen, Profil mit Follower/Gefolgt, Angaben, Highlights und
   await expect(page.locator('dl')).toHaveCount(0);
   await page.getByRole('button', { name: 'Folgen', exact: true }).click();
   await expect(page.getByText('Anfrage an @fremd gesendet – @fremd muss sie bestätigen.')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Angefragt · Anfrage zurückziehen' })).toBeVisible();
+  // kurzer Knopf „Angefragt“; Zurückziehen im Blatt
+  await page.getByRole('button', { name: 'Angefragt', exact: true }).click();
+  const withdraw = page.getByRole('dialog', { name: 'Anfrage an @fremd' });
+  await expect(withdraw.getByRole('button', { name: 'Anfrage zurückziehen' })).toBeVisible();
+  await withdraw.getByRole('button', { name: 'Abbrechen' }).click();
+  await expect(page.getByRole('button', { name: 'Angefragt', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Angefragt', exact: true }).click();
+  await page.getByRole('dialog', { name: 'Anfrage an @fremd' }).getByRole('button', { name: 'Anfrage zurückziehen' }).click();
+  await expect(page.getByRole('button', { name: 'Folgen', exact: true })).toBeVisible();
 
   // unbekannt
   await page.goto('/profil/nutzer/niemand');
